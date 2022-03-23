@@ -26,6 +26,7 @@ prettytable = "*"
 ipython = "*"
 black = "*"
 tqdm = "*"
+mypy = "*"
 
 [requires]
 python_version = "3"
