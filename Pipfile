@@ -1,0 +1,34 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+pydocstyle = "*"
+rope = "*"
+black = "*"
+mypy = "*"
+pycln = "*"
+
+[packages]
+pandas = "*"
+matplotlib = "*"
+sklearn = "*"
+numpy = "*"
+json-tricks = "*"
+tabulate = "*"
+jupyter = "*"
+seaborn = "*"
+ipykernel = "*"
+data-science-types = "*"
+prettytable = "*"
+ipython = "*"
+black = "*"
+tqdm = "*"
+
+[requires]
+python_version = "3"
+
+[pipenv]
+allow_prereleases = true
