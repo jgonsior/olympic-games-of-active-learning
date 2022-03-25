@@ -48,3 +48,6 @@ random_seed_df = pd.DataFrame(
 
 random_seed_df.to_csv(config.OUTPUT_PATH + "/workload.csv", header=True)
 config.save_to_file()
+
+
+# außerdem jetzt noch slurm und slurm_python_parallel files erstellen die dann 02_run_experiment aufrufen!

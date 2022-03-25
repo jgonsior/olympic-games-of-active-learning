@@ -20,3 +20,7 @@ worker_dataset_id, worker_strategy_id, worker_random_seed = random_seed_df.loc[c
 print(worker_dataset_id)
 print(worker_strategy_id)
 print(worker_random_seed)
+
+
+# take a look at the mapping from id to dataset + id to strategy_id
+# then run the experiment!
