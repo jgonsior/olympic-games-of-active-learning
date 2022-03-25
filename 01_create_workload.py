@@ -9,4 +9,6 @@ from misc.logging import log_it
 cfg = Config()
 
 print(cfg.RANDOM_SEED)
-log_it("random_seed")
+print(cfg.LEARNER_ML_MODEL)
+print(cfg.HPC_DATASET_PATH)
+log_it(cfg)
