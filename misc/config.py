@@ -1,6 +1,7 @@
 import argparse
 from configparser import RawConfigParser
 from distutils.command.config import config
+from enum import Enum
 import json
 import os
 import pathlib
@@ -11,6 +12,22 @@ from typing import List, Literal, get_args
 import numpy as np
 
 from misc.logging import init_logger
+
+
+class Dataset(Enum):
+    DWTC = 1
+    FLAG = 2
+    IRIS = 3
+    WINE = 4
+    GERMAN = 5
+
+
+class Strategy(Enum):
+    ALIPY_RANDOM = 1
+    ALIPY_UNCERTAINTY_LC = 2
+    ALIPY_UNCERTAINTY_ENT = 3
+    ALIPY_UNCERTAINTY_MM = 4
+    ALIPY_UNCERTAINTY_QUIRE = 5
 
 
 class Config:
@@ -34,14 +51,16 @@ class Config:
     LOCAL_OUTPUT_PATH: str
 
     EXP_TITLE: str = "tmp"
-    EXP_DATASETS: List[int]
-    EXP_STRATEGIES: List[int]
+    EXP_DATASETS: List[Dataset]
+    EXP_STRATEGIES: List[Strategy]
     EXP_RANDOM_SEEDS_START: int = 0
     EXP_RANDOM_SEEDS_END: int = 10
     EXP_RANDOM_SEEDS: List[int]
     EXP_RESULTS_FILE: str
 
     WORKER_INDEX: int
+
+    # TODO: schauen, ob ich mir bei argparse speichern kann, welche dinge explizit angegeben wurden, welche default waren -> und dann dies die explizit angegeben wurden im "overwrite with local config file" ignoriren
 
     def __init__(self) -> None:
         self._parse_cli_arguments()
