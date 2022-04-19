@@ -1,7 +1,7 @@
 import argparse
 from configparser import RawConfigParser
 from distutils.command.config import config
-from enum import Enum, IntEnum
+from enum import Enum, IntEnum, auto
 import json
 import os
 import pathlib
@@ -34,11 +34,11 @@ class Strategy(IntEnum):
     ALIPY_UNCERTAINTY_QUIRE = 5
 
 
-class SKLEARN_ML_MODELS(Enum):
-    RF = RandomForestClassifier
-    DT = DecisionTreeClassifier
-    NB = naive_bayes
-    SVM = svm
+class SKLEARN_ML_MODELS(IntEnum):
+    RF = 1
+    DT = 2
+    NB = 3
+    SVM = 4
 
 
 class Config:
