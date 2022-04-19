@@ -1,7 +1,7 @@
 import argparse
 from configparser import RawConfigParser
 from distutils.command.config import config
-from enum import Enum
+from enum import Enum, IntEnum
 import json
 import os
 import pathlib
@@ -10,11 +10,15 @@ import sys
 from typing import List, Literal, get_args
 
 import numpy as np
+from sklearn import naive_bayes, svm
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import explained_variance_score
+from sklearn.tree import DecisionTreeClassifier
 
 from misc.logging import init_logger
 
 
-class Dataset(Enum):
+class Dataset(IntEnum):
     DWTC = 1
     FLAG = 2
     IRIS = 3
@@ -22,7 +26,7 @@ class Dataset(Enum):
     GERMAN = 5
 
 
-class Strategy(Enum):
+class Strategy(IntEnum):
     ALIPY_RANDOM = 1
     ALIPY_UNCERTAINTY_LC = 2
     ALIPY_UNCERTAINTY_ENT = 3
@@ -30,10 +34,17 @@ class Strategy(Enum):
     ALIPY_UNCERTAINTY_QUIRE = 5
 
 
+class SKLEARN_ML_MODELS(Enum):
+    RF = RandomForestClassifier
+    DT = DecisionTreeClassifier
+    NB = naive_bayes
+    SVM = svm
+
+
 class Config:
     IGNORE_CONFIG_FILE: bool = False
 
-    LEARNER_ML_MODEL: Literal["RF", "DT", "NB", "SVM"] = "RF"
+    LEARNER_ML_MODEL: SKLEARN_ML_MODELS = SKLEARN_ML_MODELS.RF
     DATASETS_PATH: str = "~/datasets"
     N_JOBS: int = 1
     RANDOM_SEED: int = -1
@@ -63,9 +74,9 @@ class Config:
     # TODO: schauen, ob ich mir bei argparse speichern kann, welche dinge explizit angegeben wurden, welche default waren -> und dann dies die explizit angegeben wurden im "overwrite with local config file" ignoriren
 
     def __init__(self) -> None:
-        self._parse_cli_arguments()
+        arg_parser = self._parse_cli_arguments()
 
-        self._load_config_from_file(".server_access_credentials.cfg")
+        self._load_config_from_file(".server_access_credentials.cfg", arg_parser)
 
         # some config magic
         self.EXP_RANDOM_SEEDS = list(
@@ -96,19 +107,28 @@ class Config:
 
         self.EXP_RESULTS_FILE = self.OUTPUT_PATH + "/results.csv"
 
-    def _load_config_from_file(self, path: str) -> None:
+    def _load_config_from_file(
+        self, path: str, arg_parser: argparse.ArgumentParser
+    ) -> None:
         config_parser = RawConfigParser()
         config_parser.read(path)
 
+        # check, which arguments have been specified in the args list
+        # TODO
+        explicitly_defined_arguments: List[str] = []
+
         for section in config_parser.sections():
             for k, v in config_parser.items(section):
+                if k in explicitly_defined_arguments:
+                    # we do not overwrite our config with arguments which have been specified as CLI arguments
+                    continue
                 self.__setattr__(section + "_" + k.upper(), v)
 
     """
         Magically convert the type hints from the class attributes of this class into argparse config values
     """
 
-    def _parse_cli_arguments(self) -> None:
+    def _parse_cli_arguments(self) -> argparse.ArgumentParser:
         parser = argparse.ArgumentParser()
         for k, v in Config.__annotations__.items():
             if not hasattr(Config, k):
@@ -124,6 +144,16 @@ class Config:
                 choices = get_args(v)
                 arg_type = str
             elif str(v) == "typing.List[int]":
+                nargs = "*"
+                arg_type = int
+            elif str(v).startswith("typing.List[misc.config."):
+                full_str = str(v).split("[")[1][:-1].split(".")
+                module_str = ".".join(full_str[:-1])
+                class_str = full_str[-1]
+                v_class = getattr(sys.modules[module_str], class_str)
+
+                # allow all possible integer values from the enum classes
+                choices = [e.value for e in v_class]
                 nargs = "*"
                 arg_type = int
 
@@ -155,6 +185,8 @@ class Config:
             random.seed(self.RANDOM_SEED)
 
         init_logger(self.LOG_FILE)
+
+        return parser
 
     """
         Saves the config to a file -> can be read in later to know the details of the experiment
