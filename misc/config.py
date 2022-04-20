@@ -74,9 +74,8 @@ class Config:
     # TODO: schauen, ob ich mir bei argparse speichern kann, welche dinge explizit angegeben wurden, welche default waren -> und dann dies die explizit angegeben wurden im "overwrite with local config file" ignoriren
 
     def __init__(self) -> None:
-        arg_parser = self._parse_cli_arguments()
-
-        self._load_config_from_file(".server_access_credentials.cfg", arg_parser)
+        self._parse_cli_arguments()
+        self._load_config_from_file(".server_access_credentials.cfg")
 
         # some config magic
         self.EXP_RANDOM_SEEDS = list(
@@ -107,19 +106,20 @@ class Config:
 
         self.EXP_RESULTS_FILE = self.OUTPUT_PATH + "/results.csv"
 
-    def _load_config_from_file(
-        self, path: str, arg_parser: argparse.ArgumentParser
-    ) -> None:
+    def _load_config_from_file(self, path: str) -> None:
         config_parser = RawConfigParser()
         config_parser.read(path)
 
         # check, which arguments have been specified in the args list
         # TODO
         explicitly_defined_arguments: List[str] = []
+        for arg in sys.argv:
+            if arg.startswith("--"):
+                explicitly_defined_arguments.append(arg[2:])
 
         for section in config_parser.sections():
             for k, v in config_parser.items(section):
-                if k in explicitly_defined_arguments:
+                if section + "_" + k.upper() in explicitly_defined_arguments:
                     # we do not overwrite our config with arguments which have been specified as CLI arguments
                     continue
                 self.__setattr__(section + "_" + k.upper(), v)
@@ -128,7 +128,7 @@ class Config:
         Magically convert the type hints from the class attributes of this class into argparse config values
     """
 
-    def _parse_cli_arguments(self) -> argparse.ArgumentParser:
+    def _parse_cli_arguments(self) -> None:
         parser = argparse.ArgumentParser()
         for k, v in Config.__annotations__.items():
             if not hasattr(Config, k):
@@ -186,8 +186,6 @@ class Config:
 
         init_logger(self.LOG_FILE)
 
-        return parser
-
     """
         Saves the config to a file -> can be read in later to know the details of the experiment
     """
@@ -197,8 +195,8 @@ class Config:
             k: v
             for k, v in self.__dict__.items()
             if not k.startswith("HPC_")
-            or not k.startswith("LOCAL_")
-            or not k.startswith("_")
+            and not k.startswith("LOCAL_")
+            and not k.startswith("_")
         }
 
         with open(self._CONFIG_FILE_PATH, "w") as fp:
