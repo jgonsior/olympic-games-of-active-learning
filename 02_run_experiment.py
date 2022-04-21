@@ -9,7 +9,7 @@ import os
 config = Config()
 print(config.WORKER_INDEX)
 random_seed_df = pd.read_csv(
-    config.OUTPUT_PATH + "/workload.csv",
+    config.WORKLOAD_FILE_PATH,
     header=0,
     index_col=0,
     nrows=config.WORKER_INDEX + 1,

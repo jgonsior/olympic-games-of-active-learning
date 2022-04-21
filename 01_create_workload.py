@@ -1,6 +1,7 @@
-from calendar import c
 import itertools
 from pathlib import Path
+from typing import Any, Dict
+from jinja2 import Template
 import pandas as pd
 from misc.config import Config
 from misc.logging import log_it
@@ -49,33 +50,50 @@ def create_workload(config: Config) -> None:
 
 
 def _write_template_file(
-    config: Config, template_name: Path, destination_path: Path
+    config: Config, template_path: Path, destination_path: Path, **kwargs
 ) -> None:
-    pass
+    template = Template(template_path.read_text())
+
+    data: Dict[str, Any] = {**config.__dict__, **kwargs}
+
+    rendered_template = template.render(**data)
+    log_it(rendered_template)
+    destination_path.write_text(rendered_template)
 
 
 def create_AL_experiment_slurm_files(config: Config) -> None:
-    print(config.OUTPUT_PATH)
     _write_template_file(
-        config, Path("slurm_templates/parallel.sh"), config.EXPERIMENT_SLURM_FILE_PATH
+        config,
+        Path("slurm_templates/slurm_parallel.sh"),
+        config.EXPERIMENT_SLURM_FILE_PATH,
+        array=True,
+        PYTHON_FILE="02_run_experiment.py",
+        START=config.EXP_RANDOM_SEEDS[0],
+        END=int(config.EXP_RANDOM_SEEDS[-1] / config.SLURM_ITERATIONS_PER_BATCH),
+        CLI_ARGS="",
+        APPEND_OUTPUT_PATH=False,
     )
-    # read in template
-
-    # put in config parameters
-
-    # write out slurm file
-    pass
 
 
 def create_AL_experiment_bash_files(config: Config) -> None:
-
-    pass
+    _write_template_file(
+        config,
+        Path("slurm_templates/bash_parallel_runner.sh"),
+        config.EXPERIMENT_BASH_FILE_PATH,
+        PYTHON_FILE="02_run_experiment.py",
+        START=config.EXP_RANDOM_SEEDS[0],
+        END=int(config.EXP_RANDOM_SEEDS[-1] / config.SLURM_ITERATIONS_PER_BATCH),
+    )
 
 
 def create_run_files(config: Config) -> None:
     # create rsync/slurm start file
     # create local run file
-    pass
+    _write_template_file(
+        config,
+        Path("slurm_templates/sync_and_run.sh"),
+        config.EXPERIMENT_SYNC_AND_RUN_FILE_PATH,
+    )
 
 
 # usage example: python 01_create_workload.py --EXP_DATASETS 1,2,3,4,5,6 --EXP_STRATEGIES 5,10 --EXP_RANDOM_SEEDS 100

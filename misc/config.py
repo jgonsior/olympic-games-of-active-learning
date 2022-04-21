@@ -58,7 +58,7 @@ class Config:
     HPC_OUTPUT_PATH: Path
 
     LOCAL_DATASETS_PATH: Path
-    LOCAL_LOCAL_CODE_PATH: Path
+    LOCAL_CODE_PATH: Path
     LOCAL_OUTPUT_PATH: Path
 
     EXP_TITLE: str = "tmp"
@@ -70,16 +70,24 @@ class Config:
 
     WORKER_INDEX: int
 
-    # todo variablen von _FILE zu _FILE_PATH umbenennen
-    # überall wo ansonsten path verwendet wird entfernen und durch meine neue ersetzen -> neue klasse dafür?!
+    SLURM_TIME_LIMIT: str = "1:59:59"
+    SLURM_NR_THREADS: int = 1
+    SLURM_MEMORY: int = 1875
+    HPC_SLURM_MAIL: str
+    HPC_SLURM_PROJECT: str
+    SLURM_OFFSET: int = 0
+    SLURM_ITERATIONS_PER_BATCH: int = 10
+
+    BASH_PARALLEL_RUNNERS: int = 10
 
     DATASETS_PATH: Path
-    LOCAL_CONFIG_FILE_PATH: Path = ".server_access_credentials.cfg"
-    CONFIG_FILE_PATH: Path = "00_config.json"
-    WORKLOAD_FILE_PATH: Path = "01_workload.csv"
-    EXPERIMENT_SLURM_FILE_PATH: Path = "02_slurm.csv"
-    EXPERIMENT_BASH_FILE_PATH: Path = "02_bash.sh"
-    RESULTS_FILE_PATH: Path = "03_results.csv"
+    LOCAL_CONFIG_FILE_PATH: Path = ".server_access_credentials.cfg"  # type: ignore
+    CONFIG_FILE_PATH: Path = "00_config.json"  # type: ignore
+    WORKLOAD_FILE_PATH: Path = "01_workload.csv"  # type: ignore
+    EXPERIMENT_SLURM_FILE_PATH: Path = "02_slurm.slurm"  # type: ignore
+    EXPERIMENT_BASH_FILE_PATH: Path = "02_bash.sh"  # type: ignore
+    EXPERIMENT_SYNC_AND_RUN_FILE_PATH: Path = "03_sync_and_run.sh"  # type: ignore
+    RESULTS_FILE_PATH: Path = "04_results.csv"  # type: ignore
 
     def __init__(self) -> None:
         self._parse_cli_arguments()
@@ -104,8 +112,7 @@ class Config:
 
         if not self.IGNORE_CONFIG_FILE:
             if os.path.exists(self.CONFIG_FILE_PATH):
-                with open(self.CONFIG_FILE_PATH, "r") as fp:
-                    cfg_values = json.load(fp)
+                cfg_values = json.loads(self.CONFIG_FILE_PATH.read_text())
 
                 for k, v in cfg_values.items():
                     if v is not None:
@@ -116,14 +123,17 @@ class Config:
     def _create_pathes(self) -> None:
         self.LOCAL_CONFIG_FILE_PATH = Path(self.LOCAL_CONFIG_FILE_PATH)
         self.CONFIG_FILE_PATH = Path(self.CONFIG_FILE_PATH)
-        self.WORKLOAD_FILE_PATH = Path(self.OUTPUT_PATH) / self.WORKLOAD_FILE_PATH
+        self.WORKLOAD_FILE_PATH = self.OUTPUT_PATH / self.WORKLOAD_FILE_PATH
         self.EXPERIMENT_SLURM_FILE_PATH = (
-            Path(self.OUTPUT_PATH) / self.EXPERIMENT_SLURM_FILE_PATH
+            self.OUTPUT_PATH / self.EXPERIMENT_SLURM_FILE_PATH
         )
         self.EXPERIMENT_BASH_FILE_PATH = (
-            Path(self.OUTPUT_PATH) / self.EXPERIMENT_BASH_FILE_PATH
+            self.OUTPUT_PATH / self.EXPERIMENT_BASH_FILE_PATH
         )
-        self.RESULTS_FILE_PATH = Path(self.OUTPUT_PATH) / self.RESULTS_FILE_PATH
+        self.RESULTS_FILE_PATH = self.OUTPUT_PATH / self.RESULTS_FILE_PATH
+        self.EXPERIMENT_SYNC_AND_RUN_FILE_PATH = (
+            self.OUTPUT_PATH / self.EXPERIMENT_SYNC_AND_RUN_FILE_PATH
+        )
 
     def _load_config_from_file(self, config_path: Path) -> None:
         config_parser = RawConfigParser()
@@ -223,5 +233,6 @@ class Config:
         def _default_json(t):
             return f"{t}"
 
-        with open(self.CONFIG_FILE_PATH, "w") as fp:
-            json.dump(to_save_config_values, fp, default=_default_json)
+        self.CONFIG_FILE_PATH.write_text(
+            json.dumps(to_save_config_values, default=_default_json)
+        )
