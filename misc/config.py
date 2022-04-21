@@ -7,7 +7,8 @@ import os
 import pathlib
 import random
 import sys
-from typing import List, Literal, get_args
+from typing import List, Literal, NewType, Union, get_args
+from pathlib import Path
 
 import numpy as np
 from sklearn import naive_bayes, svm
@@ -16,6 +17,8 @@ from sklearn.metrics import explained_variance_score
 from sklearn.tree import DecisionTreeClassifier
 
 from misc.logging import init_logger
+
+Str_Or_Path = Path  # Union[str, Path]
 
 
 class Dataset(IntEnum):
@@ -45,7 +48,6 @@ class Config:
     IGNORE_CONFIG_FILE: bool = False
 
     LEARNER_ML_MODEL: SKLEARN_ML_MODELS = SKLEARN_ML_MODELS.RF
-    DATASETS_PATH: str = "~/datasets"
     N_JOBS: int = 1
     RANDOM_SEED: int = -1
     TRAIN_TEST_SPLIT: float = 0.5
@@ -53,13 +55,13 @@ class Config:
     RUNNING_ENVIRONMENT: Literal["local", "hpc"] = "local"
 
     HPC_SSH_LOGIN: str
-    HPC_WS_PATH: str
-    HPC_DATASET_PATH: str
-    HPC_OUTPUT_PATH: str
+    HPC_WS_PATH: Str_Or_Path
+    HPC_DATASETS_PATH: Str_Or_Path
+    HPC_OUTPUT_PATH: Str_Or_Path
 
-    LOCAL_DATASET_PATH: str
-    LOCAL_LOCAL_CODE_PATH: str
-    LOCAL_OUTPUT_PATH: str
+    LOCAL_DATASETS_PATH: Str_Or_Path
+    LOCAL_LOCAL_CODE_PATH: Str_Or_Path
+    LOCAL_OUTPUT_PATH: Str_Or_Path
 
     EXP_TITLE: str = "tmp"
     EXP_DATASETS: List[Dataset]
@@ -67,15 +69,23 @@ class Config:
     EXP_RANDOM_SEEDS_START: int = 0
     EXP_RANDOM_SEEDS_END: int = 10
     EXP_RANDOM_SEEDS: List[int]
-    EXP_RESULTS_FILE: str
 
     WORKER_INDEX: int
 
-    # TODO: schauen, ob ich mir bei argparse speichern kann, welche dinge explizit angegeben wurden, welche default waren -> und dann dies die explizit angegeben wurden im "overwrite with local config file" ignoriren
+    # todo variablen von _FILE zu _FILE_PATH umbenennen
+    # überall wo ansonsten path verwendet wird entfernen und durch meine neue ersetzen -> neue klasse dafür?!
+
+    DATASETS_PATH: Str_Or_Path
+    LOCAL_CONFIG_FILE_PATH: Str_Or_Path = ".server_access_credentials.cfg"
+    CONFIG_FILE_PATH: Str_Or_Path = "00_config.json"
+    WORKLOAD_FILE_PATH: Str_Or_Path = "01_workload.csv"
+    EXPERIMENT_SLURM_FILE_PATH: Str_Or_Path = "02_slurm.csv"
+    EXPERIMENT_BASH_FILE_PATH: Str_Or_Path = "02_bash.sh"
+    RESULTS_FILE_PATH: Str_Or_Path = "03_results.csv"
 
     def __init__(self) -> None:
         self._parse_cli_arguments()
-        self._load_config_from_file(".server_access_credentials.cfg")
+        self._load_config_from_file(Path(self.LOCAL_CONFIG_FILE_PATH))
 
         # some config magic
         self.EXP_RANDOM_SEEDS = list(
@@ -83,32 +93,44 @@ class Config:
         )
 
         if self.RUNNING_ENVIRONMENT == "local":
-            self.OUTPUT_PATH = self.LOCAL_OUTPUT_PATH
+            self.OUTPUT_PATH = Path(self.LOCAL_OUTPUT_PATH)
         elif self.RUNNING_ENVIRONMENT == "hpc":
-            self.OUTPUT_PATH = self.HPC_OUTPUT_PATH
+            self.OUTPUT_PATH = Path(self.HPC_OUTPUT_PATH)
 
-        self.OUTPUT_PATH += "/" + self.EXP_TITLE
+        self.OUTPUT_PATH = self.OUTPUT_PATH / self.EXP_TITLE
 
         # check if a config file exists which could be read in
-        self._CONFIG_FILE_PATH = self.OUTPUT_PATH + "/config.json"
+        self.CONFIG_FILE_PATH = self.OUTPUT_PATH / self.CONFIG_FILE_PATH
+
+        self._create_pathes()
 
         if not self.IGNORE_CONFIG_FILE:
-            if os.path.exists(self._CONFIG_FILE_PATH):
-                with open(self._CONFIG_FILE_PATH, "r") as fp:
+            if os.path.exists(self.CONFIG_FILE_PATH):
+                with open(self.CONFIG_FILE_PATH, "r") as fp:
                     cfg_values = json.load(fp)
 
                 for k, v in cfg_values.items():
                     if v is not None:
                         self.__setattr__(k, v)
 
-        tmp_path = pathlib.Path(self.OUTPUT_PATH)
+        tmp_path = Path(self.OUTPUT_PATH)
         tmp_path.mkdir(parents=True, exist_ok=True)
 
-        self.EXP_RESULTS_FILE = self.OUTPUT_PATH + "/results.csv"
+    def _create_pathes(self) -> None:
+        self.LOCAL_CONFIG_FILE_PATH = Path(self.LOCAL_CONFIG_FILE_PATH)
+        self.CONFIG_FILE_PATH = Path(self.CONFIG_FILE_PATH)
+        self.WORKLOAD_FILE_PATH = Path(self.OUTPUT_PATH) / self.WORKLOAD_FILE_PATH
+        self.EXPERIMENT_SLURM_FILE_PATH = (
+            Path(self.OUTPUT_PATH) / self.EXPERIMENT_SLURM_FILE_PATH
+        )
+        self.EXPERIMENT_BASH_FILE_PATH = (
+            Path(self.OUTPUT_PATH) / self.EXPERIMENT_BASH_FILE_PATH
+        )
+        self.RESULTS_FILE_PATH = Path(self.OUTPUT_PATH) / self.RESULTS_FILE_PATH
 
-    def _load_config_from_file(self, path: str) -> None:
+    def _load_config_from_file(self, config_path: Path) -> None:
         config_parser = RawConfigParser()
-        config_parser.read(path)
+        config_parser.read(config_path)
 
         # check, which arguments have been specified in the args list
         # TODO
@@ -156,6 +178,8 @@ class Config:
                 choices = [e.value for e in v_class]
                 nargs = "*"
                 arg_type = int
+            elif str(v) == "typing.Union[str, pathlib.Path]":
+                arg_type = str
 
             if str(v) == "<class 'bool'>":
                 parser.add_argument(
@@ -199,5 +223,8 @@ class Config:
             and not k.startswith("_")
         }
 
-        with open(self._CONFIG_FILE_PATH, "w") as fp:
-            json.dump(to_save_config_values, fp)
+        def _default_json(t):
+            return f"{t}"
+
+        with open(self.CONFIG_FILE_PATH, "w") as fp:
+            json.dump(to_save_config_values, fp, default=_default_json)
