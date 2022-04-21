@@ -18,8 +18,6 @@ from sklearn.tree import DecisionTreeClassifier
 
 from misc.logging import init_logger
 
-Str_Or_Path = Path  # Union[str, Path]
-
 
 class Dataset(IntEnum):
     DWTC = 1
@@ -55,13 +53,13 @@ class Config:
     RUNNING_ENVIRONMENT: Literal["local", "hpc"] = "local"
 
     HPC_SSH_LOGIN: str
-    HPC_WS_PATH: Str_Or_Path
-    HPC_DATASETS_PATH: Str_Or_Path
-    HPC_OUTPUT_PATH: Str_Or_Path
+    HPC_WS_PATH: Path
+    HPC_DATASETS_PATH: Path
+    HPC_OUTPUT_PATH: Path
 
-    LOCAL_DATASETS_PATH: Str_Or_Path
-    LOCAL_LOCAL_CODE_PATH: Str_Or_Path
-    LOCAL_OUTPUT_PATH: Str_Or_Path
+    LOCAL_DATASETS_PATH: Path
+    LOCAL_LOCAL_CODE_PATH: Path
+    LOCAL_OUTPUT_PATH: Path
 
     EXP_TITLE: str = "tmp"
     EXP_DATASETS: List[Dataset]
@@ -75,13 +73,13 @@ class Config:
     # todo variablen von _FILE zu _FILE_PATH umbenennen
     # überall wo ansonsten path verwendet wird entfernen und durch meine neue ersetzen -> neue klasse dafür?!
 
-    DATASETS_PATH: Str_Or_Path
-    LOCAL_CONFIG_FILE_PATH: Str_Or_Path = ".server_access_credentials.cfg"
-    CONFIG_FILE_PATH: Str_Or_Path = "00_config.json"
-    WORKLOAD_FILE_PATH: Str_Or_Path = "01_workload.csv"
-    EXPERIMENT_SLURM_FILE_PATH: Str_Or_Path = "02_slurm.csv"
-    EXPERIMENT_BASH_FILE_PATH: Str_Or_Path = "02_bash.sh"
-    RESULTS_FILE_PATH: Str_Or_Path = "03_results.csv"
+    DATASETS_PATH: Path
+    LOCAL_CONFIG_FILE_PATH: Path = ".server_access_credentials.cfg"
+    CONFIG_FILE_PATH: Path = "00_config.json"
+    WORKLOAD_FILE_PATH: Path = "01_workload.csv"
+    EXPERIMENT_SLURM_FILE_PATH: Path = "02_slurm.csv"
+    EXPERIMENT_BASH_FILE_PATH: Path = "02_bash.sh"
+    RESULTS_FILE_PATH: Path = "03_results.csv"
 
     def __init__(self) -> None:
         self._parse_cli_arguments()
@@ -113,8 +111,7 @@ class Config:
                     if v is not None:
                         self.__setattr__(k, v)
 
-        tmp_path = Path(self.OUTPUT_PATH)
-        tmp_path.mkdir(parents=True, exist_ok=True)
+        self.OUTPUT_PATH.mkdir(parents=True, exist_ok=True)
 
     def _create_pathes(self) -> None:
         self.LOCAL_CONFIG_FILE_PATH = Path(self.LOCAL_CONFIG_FILE_PATH)
