@@ -1,5 +1,6 @@
 import itertools
 from pathlib import Path
+import stat
 from typing import Any, Dict
 from jinja2 import Template
 import pandas as pd
@@ -61,6 +62,14 @@ def _write_template_file(
     destination_path.write_text(rendered_template)
 
 
+def _chmod_u_plus_x(path: Path) -> None:
+    st = os.stat(path)
+    os.chmod(
+        path,
+        st.st_mode | stat.S_IEXEC,
+    )
+
+
 def create_AL_experiment_slurm_files(config: Config) -> None:
     _write_template_file(
         config,
@@ -84,19 +93,17 @@ def create_AL_experiment_bash_files(config: Config) -> None:
         START=config.EXP_RANDOM_SEEDS[0],
         END=int(config.EXP_RANDOM_SEEDS[-1] / config.SLURM_ITERATIONS_PER_BATCH),
     )
+    _chmod_u_plus_x(config.EXPERIMENT_BASH_FILE_PATH)
 
 
 def create_run_files(config: Config) -> None:
-    # create rsync/slurm start file
-    # create local run file
     _write_template_file(
         config,
         Path("slurm_templates/sync_and_run.sh"),
         config.EXPERIMENT_SYNC_AND_RUN_FILE_PATH,
     )
+    _chmod_u_plus_x(config.EXPERIMENT_SYNC_AND_RUN_FILE_PATH)
 
-
-# usage example: python 01_create_workload.py --EXP_DATASETS 1,2,3,4,5,6 --EXP_STRATEGIES 5,10 --EXP_RANDOM_SEEDS 100
 
 config = Config()
 

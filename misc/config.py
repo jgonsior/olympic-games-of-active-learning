@@ -4,11 +4,11 @@ from distutils.command.config import config
 from enum import Enum, IntEnum, auto
 import json
 import os
-import pathlib
 import random
 import sys
 from typing import List, Literal, NewType, Union, get_args
 from pathlib import Path
+import git
 
 import numpy as np
 from sklearn import naive_bayes, svm
@@ -229,6 +229,10 @@ class Config:
             and not k.startswith("LOCAL_")
             and not k.startswith("_")
         }
+
+        to_save_config_values["GIT_COMMIT_HASH"] = git.Repo(
+            search_parent_directories=True
+        ).head.object.hexsha
 
         def _default_json(t):
             return f"{t}"

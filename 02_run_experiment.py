@@ -4,8 +4,6 @@ from misc.config import Config
 from misc.logging import log_it
 import os
 
-# usage example: python 01_create_workload.py --EXP_DATASETS 1,2,3,4,5,6 --EXP_STRATEGIES 5,10 --EXP_RANDOM_SEEDS 100
-
 config = Config()
 print(config.WORKER_INDEX)
 random_seed_df = pd.read_csv(

@@ -27,6 +27,7 @@ ipython = "*"
 black = "*"
 tqdm = "*"
 mypy = "*"
+gitpython = "*"
 
 [requires]
 python_version = "3.10"
