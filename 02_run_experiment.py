@@ -1,8 +1,7 @@
-import itertools
 import pandas as pd
+from datasets.datasets import load_dataset
 from misc.config import Config
 from misc.logging import log_it
-import os
 
 config = Config()
 
@@ -25,6 +24,11 @@ log_it(
         worker_dataset_id, worker_strategy_id, worker_random_seed
     )
 )
+
+# load dataset
+load_dataset(worker_dataset_id, config)
+
+# start AL experiment
 
 # take a look at the mapping from id to dataset + id to strategy_id
 # then run the experiment!

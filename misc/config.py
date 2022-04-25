@@ -19,14 +19,6 @@ from sklearn.tree import DecisionTreeClassifier
 from misc.logging import init_logger
 
 
-class Dataset(IntEnum):
-    DWTC = 1
-    FLAG = 2
-    IRIS = 3
-    WINE = 4
-    GERMAN = 5
-
-
 class Strategy(IntEnum):
     ALIPY_RANDOM = 1
     ALIPY_UNCERTAINTY_LC = 2
