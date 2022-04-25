@@ -58,7 +58,7 @@ def _write_template_file(
     data: Dict[str, Any] = {**config.__dict__, **kwargs}
 
     rendered_template = template.render(**data)
-    log_it(rendered_template)
+    # log_it(rendered_template)
     destination_path.write_text(rendered_template)
 
 

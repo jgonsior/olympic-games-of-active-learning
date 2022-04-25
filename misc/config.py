@@ -116,6 +116,8 @@ class Config:
 
                 for k, v in cfg_values.items():
                     if v is not None:
+                        if k.endswith("_PATH"):
+                            v = Path(v)
                         self.__setattr__(k, v)
 
         self.OUTPUT_PATH.mkdir(parents=True, exist_ok=True)

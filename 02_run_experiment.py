@@ -5,7 +5,9 @@ from misc.logging import log_it
 import os
 
 config = Config()
+
 print(config.WORKER_INDEX)
+
 random_seed_df = pd.read_csv(
     config.WORKLOAD_FILE_PATH,
     header=0,

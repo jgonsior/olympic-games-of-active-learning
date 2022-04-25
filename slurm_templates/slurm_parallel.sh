@@ -21,5 +21,5 @@ module load Python/3.8.6
 {% if array %}i=$(( {{ SLURM_OFFSET }} + $SLURM_ARRAY_TASK_ID * {{ SLURM_ITERATIONS_PER_BATCH }} )){% endif %}
 module load Python/3.8.6
 
-MPLCONFIGPATH={{HPC_WS_PATH}}/cache python3 -m pipenv run python {{HPC_WS_PATH}}/code/{{PYTHON_FILE}} {{ CLI_ARGS }} {% if APPEND_OUTPUT_PATH %} {{ OUTPUT_PATH }}/{{ EXP_TITLE }} {% endif %} --WORKER_INDEX $SLURM_ARRAY_TASK_ID
+MPLCONFIGPATH={{HPC_WS_PATH}}/cache python3 -m pipenv run python {{HPC_WS_PATH}}/code/{{PYTHON_FILE}} --EXP_TITLE {{EXP_TITLE}} {{ CLI_ARGS }} {% if APPEND_OUTPUT_PATH %} {{ OUTPUT_PATH }}/{{ EXP_TITLE }} {% endif %} --WORKER_INDEX $SLURM_ARRAY_TASK_ID
 exit 0
