@@ -110,6 +110,10 @@ class Config:
 
         self.OUTPUT_PATH.mkdir(parents=True, exist_ok=True)
 
+        if self.RANDOM_SEED != -1 and self.RANDOM_SEED != -2:
+            np.random.seed(self.RANDOM_SEED)
+            random.seed(self.RANDOM_SEED)
+
     def _create_pathes(self) -> None:
         self.LOCAL_CONFIG_FILE_PATH = Path(self.LOCAL_CONFIG_FILE_PATH)
         self.CONFIG_FILE_PATH = Path(self.CONFIG_FILE_PATH)
@@ -205,10 +209,6 @@ class Config:
 
         # if len(sys.argv[:-1]) == 0:
         #    parser.print_help()
-
-        if self.RANDOM_SEED != -1 and self.RANDOM_SEED != -2:
-            np.random.seed(self.RANDOM_SEED)
-            random.seed(self.RANDOM_SEED)
 
         init_logger(self.LOG_FILE)
 

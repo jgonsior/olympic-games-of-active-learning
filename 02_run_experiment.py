@@ -1,17 +1,14 @@
-import math
 import multiprocessing
-from typing import Any, Dict, List, Tuple
+import random
+from typing import Any, List
 import pandas as pd
 from datasets import DATASET, load_dataset, split_dataset
 from misc.config import Config
 from misc.logging import log_it
-from misc.data_types import AL_STRATEGY, SampleIndiceList, strategy_mapping
-from alipy import ToolBox
+from misc.data_types import AL_STRATEGY, strategy_mapping
 import numpy as np
-from sklearn.preprocessing import MinMaxScaler, RobustScaler
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, f1_score
-from tqdm import tqdm
 
 config = Config()
 
@@ -28,6 +25,10 @@ random_seed_df = pd.read_csv(
     nrows=config.WORKER_INDEX + 1,
 )
 worker_dataset_id, worker_strategy_id, worker_random_seed = random_seed_df.loc[config.WORKER_INDEX]  # type: ignore
+
+np.random.seed(worker_random_seed)
+random.seed(worker_random_seed)
+
 
 dataset = DATASET(worker_dataset_id)
 strategy = AL_STRATEGY(worker_strategy_id)
