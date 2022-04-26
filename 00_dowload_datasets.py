@@ -6,4 +6,4 @@ from misc.logging import log_it
 config = Config()
 
 kaggle = Kaggle(config)
-kaggle.download_datasets()
+kaggle.download_all_datasets()

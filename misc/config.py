@@ -1,7 +1,7 @@
 import argparse
 from configparser import RawConfigParser
 from distutils.command.config import config
-from enum import Enum, IntEnum, auto
+from enum import Enum, IntEnum, auto, unique
 import json
 import os
 import random
@@ -15,10 +15,13 @@ from sklearn import naive_bayes, svm
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import explained_variance_score
 from sklearn.tree import DecisionTreeClassifier
+from datasets import Dataset
 
 from misc.logging import init_logger
 
 
+# TODO maybe move to yaml file, same as for datasets
+@unique
 class Strategy(IntEnum):
     ALIPY_RANDOM = 1
     ALIPY_UNCERTAINTY_LC = 2
@@ -27,6 +30,8 @@ class Strategy(IntEnum):
     ALIPY_UNCERTAINTY_QUIRE = 5
 
 
+# TODO maybe move to yaml file, same as for datasets
+@unique
 class SKLEARN_ML_MODELS(IntEnum):
     RF = 1
     DT = 2
@@ -75,6 +80,8 @@ class Config:
     DATASETS_PATH: Path
     RAW_DATASETS_PATH: Path = "_raw"  # type: ignore
 
+    KAGGLE_DATASETS_PATH: Path = "datasets/kaggle_parameters.yaml"  # type: ignore
+
     LOCAL_CONFIG_FILE_PATH: Path = ".server_access_credentials.cfg"  # type: ignore
     CONFIG_FILE_PATH: Path = "00_config.json"  # type: ignore
     WORKLOAD_FILE_PATH: Path = "01_workload.csv"  # type: ignore
@@ -94,8 +101,10 @@ class Config:
 
         if self.RUNNING_ENVIRONMENT == "local":
             self.OUTPUT_PATH = Path(self.LOCAL_OUTPUT_PATH)
+            self.DATASETS_PATH = Path(self.LOCAL_DATASETS_PATH)
         elif self.RUNNING_ENVIRONMENT == "hpc":
             self.OUTPUT_PATH = Path(self.HPC_OUTPUT_PATH)
+            self.DATASETS_PATH = Path(self.HPC_DATASETS_PATH)
 
         self.OUTPUT_PATH = self.OUTPUT_PATH / self.EXP_TITLE
 
@@ -132,6 +141,8 @@ class Config:
         )
 
         self.RAW_DATASETS_PATH = self.DATASETS_PATH / self.RAW_DATASETS_PATH
+
+        self.KAGGLE_DATASETS_PATH = Path(self.KAGGLE_DATASETS_PATH)
 
     def _load_config_from_file(self, config_path: Path) -> None:
         config_parser = RawConfigParser()
@@ -173,7 +184,8 @@ class Config:
             elif str(v) == "typing.List[int]":
                 nargs = "*"
                 arg_type = int
-            elif str(v).startswith("typing.List[misc.config."):
+            # enum classes:
+            elif str(v).startswith("typing.List["):
                 full_str = str(v).split("[")[1][:-1].split(".")
                 module_str = ".".join(full_str[:-1])
                 class_str = full_str[-1]

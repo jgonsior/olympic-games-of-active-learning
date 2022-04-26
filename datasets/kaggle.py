@@ -1,58 +1,85 @@
-import pathlib
+from pathlib import Path
 from typing import Any, Dict
+import requests
 
 import pandas as pd
 import yaml
-
+from tqdm.auto import tqdm
 from misc.config import Config
+import kaggle
+from misc.logging import log_it
 
 
 class Kaggle:
     def __init__(self, config: Config) -> None:
         self.config = config
-        with open("dataset_parameters.yaml", "r") as params_file:
-            self.parameter_dict: Dict[str, Any] = yaml.safe_load(params_file)
+        self.parameter_dict: Dict[str, Any] = yaml.safe_load(
+            config.KAGGLE_DATASETS_PATH.read_text()
+        )
 
-    def download_datasets(self) -> None:
+    def download_all_datasets(self) -> None:
         for dataset_name in self.parameter_dict.keys():
-            self.download_dataset(dataset_name)
+            self.download_single_dataset(dataset_name)
+            self.preprocess_dataset(dataset_name)
 
-    def download_dataset(self, dataset_name: str) -> None:
+    def download_single_dataset(self, dataset_name: str) -> None:
+        destination_path: Path = (
+            self.config.RAW_DATASETS_PATH
+            / self.parameter_dict[dataset_name]["kaggle_file"]
+        )
+
+        if not destination_path.exists():
+            log_it(
+                "Dowloading {} to {}/{}".format(
+                    dataset_name,
+                    destination_path,
+                    self.parameter_dict[dataset_name]["kaggle_file"],
+                )
+            )
+            kaggle.api.dataset_download_file(
+                dataset=self.parameter_dict[dataset_name]["kaggle_name"],
+                file_name=self.parameter_dict[dataset_name]["kaggle_file"],
+                path=destination_path.parent,
+            )
+
+    def preprocess_dataset(self, dataset_name: str) -> None:
         datasets_raw_path = self.config.RAW_DATASETS_PATH
         datasets_cleaned_path = self.config.DATASETS_PATH
 
-        parsing_args = self.parameter_dict[dataset_name]
+        datasets_raw_path.mkdir(parents=True, exist_ok=True)
+        destination_path = dataset_name + ".csv"
+        datasets_cleaned_path = datasets_cleaned_path / destination_path
+        print(datasets_cleaned_path)
+        if not datasets_cleaned_path.exists():
 
-        with open(datasets_raw_path, "r") as f:
-            df: pd.DataFrame = pd.read_csv(f, sep=",")
+            parsing_args = self.parameter_dict[dataset_name]
 
-        if parsing_args["drop_columns"] is not None:
-            df.drop(parsing_args["drop_columns"], axis=1, inplace=True)
+            with open(
+                datasets_raw_path / self.parameter_dict[dataset_name]["kaggle_file"],
+                "r",
+            ) as f:
+                df: pd.DataFrame = pd.read_csv(f, sep=",")
 
-        for column, dtype in df.dtypes.items():  # type: ignore
-            if dtype not in ["int64", "float64"]:
-                if dtype.name != "category":
-                    df[column] = df[column].astype("category")
-                df[column] = df[column].cat.codes  # type: ignore
+            if parsing_args["drop_columns"] is not None:
+                df.drop(parsing_args["drop_columns"], axis=1, inplace=True)
 
-        label_column = parsing_args["target"]
-        if label_column is not None:
-            if isinstance(label_column, list):
-                labels = df[label_column]
-            else:
-                labels = df[label_column].to_frame()
-            df.drop(label_column, axis=1, inplace=True)
-        else:
-            labels = None
+            for column, dtype in df.dtypes.items():  # type: ignore
+                if dtype not in ["int64", "float64"]:
+                    if dtype.name != "category":
+                        df[column] = df[column].astype("category")
+                    df[column] = df[column].cat.codes  # type: ignore
 
-        datasets_cleaned_path.mkdir(parents=True, exist_ok=True)
-        df.to_csv(
-            datasets_cleaned_path / parsing_args["save_name"] + "_dataset.csv",
-            index=False,
-        )
+            label_column = parsing_args["target"]
+            df.rename(columns={label_column: "LABEL_TARGET"}, inplace=True)
 
-        if labels is not None:
-            labels.to_csv(
-                datasets_cleaned_path / parsing_args["save_name"] + "_label.csv",
+            df.to_csv(
+                datasets_cleaned_path,
                 index=False,
+            )
+
+            log_it(
+                "Done Preprocessing {} to {}".format(
+                    dataset_name,
+                    datasets_cleaned_path,
+                )
             )

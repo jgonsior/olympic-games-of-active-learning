@@ -1,6 +1,6 @@
 import pandas as pd
-from datasets.datasets import load_dataset
-from misc.config import Config
+from datasets import Dataset
+from misc.config import Config, Strategy
 from misc.logging import log_it
 
 config = Config()
@@ -20,13 +20,18 @@ random_seed_df = pd.read_csv(
 worker_dataset_id, worker_strategy_id, worker_random_seed = random_seed_df.loc[config.WORKER_INDEX]  # type: ignore
 
 log_it(
-    "Job Parameters are dataset_id {}, strategy_id {} and random_seed {}".format(
-        worker_dataset_id, worker_strategy_id, worker_random_seed
+    "Job Parameters are dataset_id {}-{}, strategy_id {}-{} and random_seed {}".format(
+        worker_dataset_id,
+        Dataset(worker_dataset_id).name,
+        worker_strategy_id,
+        Strategy(worker_strategy_id).name,
+        worker_random_seed,
     )
 )
 
+
 # load dataset
-load_dataset(worker_dataset_id, config)
+# load_dataset(worker_dataset_id, config)
 
 # start AL experiment
 
