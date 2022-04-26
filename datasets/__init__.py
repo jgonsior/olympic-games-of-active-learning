@@ -1,5 +1,4 @@
 from __future__ import annotations
-from cgi import test
 
 from enum import unique
 from enum import IntEnum
@@ -9,15 +8,11 @@ from typing import Any, Dict, Tuple, Union
 import pandas as pd
 import yaml
 import math
-import multiprocessing
 from typing import List
 import pandas as pd
 from misc.logging import log_it
-from alipy import ToolBox
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler, RobustScaler
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, f1_score
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -85,14 +80,14 @@ def split_dataset(
     unlabel_idx: SampleIndiceList = train_idx.copy()
     label_idx: SampleIndiceList = []
 
-    for label in np.unique(Y):
-        if label not in Y[train_idx]:
+    for label in np.unique(Y):  # type: ignore
+        if label not in Y[train_idx]:  # type: ignore
             print(np.where(Y[test_idx] == label))
-        init_labeled_index = np.where(Y[train_idx] == label)[0][0]
+        init_labeled_index = np.where(Y[train_idx] == label)[0][0]  # type: ignore
         label_idx.append(init_labeled_index)
         unlabel_idx.remove(init_labeled_index)
 
-    if al_framework == AL_FRAMEWORK.ALIPY:
+    if al_framework == AL_FRAMEWORK.ALIPY:  # type: ignore
         train_idx = [train_idx]  # type: ignore
         test_idx = [test_idx]  # type: ignore
         label_idx = [label_idx]  # type: ignore

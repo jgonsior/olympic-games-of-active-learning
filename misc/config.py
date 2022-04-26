@@ -177,7 +177,7 @@ class Config:
                 v_class = getattr(sys.modules[module_str], class_str)
 
                 # allow all possible integer values from the enum classes
-                choices = [e.value for e in v_class]
+                choices = [e.value for e in v_class]  # type: ignore
                 nargs = "*"
                 arg_type = int
             elif str(v) == "typing.Union[str, pathlib.Path]":
@@ -195,7 +195,7 @@ class Config:
                     default=default,
                     type=arg_type,
                     choices=choices,
-                    nargs=nargs,
+                    nargs=nargs,  # type: ignore
                 )
 
         config: argparse.Namespace = parser.parse_args()
@@ -225,7 +225,7 @@ class Config:
             and not k.startswith("_")
         }
 
-        to_save_config_values["GIT_COMMIT_HASH"] = git.Repo(
+        to_save_config_values["GIT_COMMIT_HASH"] = git.Repo(  # type: ignore
             search_parent_directories=True
         ).head.object.hexsha
 
