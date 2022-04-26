@@ -1,6 +1,5 @@
 from typing import Dict, Tuple
 import pandas as pd
-from datasets.uci import UCI
 
 # import uci_dataset as uci
 

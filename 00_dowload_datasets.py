@@ -1,7 +1,9 @@
-from datasets.uci import UCI
+from datasets.kaggle import Kaggle
+import pandas as pd
+from misc.config import Config
+from misc.logging import log_it
 
+config = Config()
 
-uci_datasets = UCI()
-
-meta = uci_datasets.get_meta()
-meta.to_csv("meta.csv")
+kaggle = Kaggle(config)
+kaggle.download_datasets()

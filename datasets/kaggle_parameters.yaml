@@ -1,0 +1,956 @@
+Rain_in_Australia:
+  {
+    url: "https://www.kaggle.com/jsphyg/weather-dataset-rattle-package",
+    target: "RainTomorrow",
+    drop_columns: null,
+    kaggle_name: "jsphyg/weather-dataset-rattle-package",
+    save_name: "weather_dataset_rattle_package",
+    files: [ "Rain_in_Australia.csv" ]
+}
+Campus_Recruitment:
+  {
+    url: "https://www.kaggle.com/benroshan/factors-affecting-campus-placement",
+    target: null,
+    drop_columns: [ "sl_no" ],
+    kaggle_name: "benroshan/factors-affecting-campus-placement",
+    save_name: "factors_affecting_campus_placement",
+    files: [ "Campus_Recruitment.csv" ]
+}
+HR_Analytics_Job_Change_of_Data_Scientists:
+  {
+    url: "https://www.kaggle.com/arashnic/hr-analytics-job-change-of-data-scientists",
+    target: "target",
+    drop_columns: [ "enrollee_id" ],
+    kaggle_name: "arashnic/hr-analytics-job-change-of-data-scientists",
+    save_name: "hr_analytics_job_change_of_data_scientists",
+    files: [ "HR_Analytics_Job_Change_of_Data_Scientists.csv" ]
+}
+adult:
+  {
+    url: "https://www.kaggle.com/kashnitsky/mlcourse",
+    target: "Target",
+    drop_columns: null,
+    kaggle_name: "kashnitsky/mlcourse",
+    save_name: "adult",
+    files: [ "adult.csv" ]
+}
+affairs:
+  {
+    url: "https://www.kaggle.com/kashnitsky/mlcourse",
+    target: "affairs",
+    drop_columns: [ "id" ],
+    kaggle_name: "kashnitsky/mlcourse",
+    save_name: "affairs",
+    files: [ "affairs.csv" ]
+}
+WFH_WFO_dataset:
+  {
+    url: "https://www.kaggle.com/anninasimon/predict-if-people-prefer-wfh-verses-wfo-data",
+    target: "Target",
+    drop_columns: [ "ID", "Name" ],
+    kaggle_name: "anninasimon/predict-if-people-prefer-wfh-verses-wfo-data",
+    save_name: "predict-if-people-prefer-wfh-verses-wfo-data",
+    files: [ "WFH_WFO_dataset.csv" ]
+}
+Airline_Passenger_Satisfaction:
+  {
+    url: "https://www.kaggle.com/teejmahal20/airline-passenger-satisfaction",
+    target: "satisfaction",
+    drop_columns: [ "num", "id" ],
+    kaggle_name: "teejmahal20/airline-passenger-satisfaction",
+    save_name: "airline_passenger_satisfaction",
+    files: [ "Airline_Passenger_Satisfaction.csv" ]
+}
+Hepatitis_C_virus:
+  {
+    url: "https://www.kaggle.com/amritpal333/hepatitis-c-virus-blood-biomarkers",
+    target: null,
+    drop_columns: [ "id" ],
+    kaggle_name: "amritpal333/hepatitis-c-virus-blood-biomarkers",
+    save_name: "hepatitis_c_virus",
+    files: [ "Hepatitis_C_virus.csv" ]
+}
+Health_Insurance_Cross_Sell_Prediction:
+  {
+    url: "https://www.kaggle.com/anmolkumar/health-insurance-cross-sell-prediction",
+    target: "Response",
+    drop_columns: [ "id" ],
+    kaggle_name: "anmolkumar/health-insurance-cross-sell-prediction",
+    save_name: "health_insurance_cross_sell_prediction",
+    files: [ "Health_Insurance_Cross_Sell_Prediction.csv" ]
+}
+Heart_Failure_Prediction:
+  {
+    url: "https://www.kaggle.com/andrewmvd/heart-failure-clinical-data",
+    target: "DEATH_EVENT",
+    drop_columns: null,
+    kaggle_name: "andrewmvd/heart-failure-clinical-data",
+    save_name: "heart_failure_clinical_data",
+    files: [ "Heart_Failure_Prediction.csv" ]
+}
+anomaly:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: null,
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "anomaly",
+    files: [ "anomaly.csv" ]
+}
+automobile:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "price",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "automobile",
+    files: [ "automobile.csv" ]
+}
+bank:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "deposit",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "bank",
+    files: [ "bank.csv" ]
+}
+bike:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "cnt",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "bike",
+    files: [ "bike.csv" ]
+}
+blood:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "Class",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "blood",
+    files: [ "blood.csv" ]
+}
+boston:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "medv",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "boston",
+    files: [ "boston.csv" ]
+}
+cancer:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "Class",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "cancer",
+    files: [ "cancer.csv" ]
+}
+concrete:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "strength",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "concrete",
+    files: [ "concrete.csv" ]
+}
+credit:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "default",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "credit",
+    files: [ "credit.csv" ]
+}
+diabetes:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "Class variable",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "diabetes",
+    files: [ "diabetes.csv" ]
+}
+elections:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: null,
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "elections",
+    files: [ "elections.csv" ]
+}
+electrical_grid:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "stabf",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "electrical_grid",
+    files: [ "electrical_grid.csv" ]
+}
+employee:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "left",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "employee",
+    files: [ "employee.csv" ]
+}
+energy:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: ["Heating Load", "Cooling Load"],
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "energy",
+    files: [ "energy.csv" ]
+}
+facebook:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: null,
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "facebook",
+    files: [ "facebook.csv" ]
+}
+forest:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "area",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "forest",
+    files: [ "forest.csv" ]
+}
+gold:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "Gold_T+22",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "gold",
+    files: [ "gold.csv" ]
+}
+heart:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "DEATH",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "heart",
+    files: [ "heart.csv" ]
+}
+heart_disease:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "Disease",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "heart_disease",
+    files: [ "heart_disease.csv" ]
+}
+hepatitis:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "Class",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "hepatitis",
+    files: [ "hepatitis.csv" ]
+}
+house:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "SalePrice",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "house",
+    files: [ "house.csv" ]
+}
+income:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "income >50K",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "income",
+    files: [ "income.csv" ]
+}
+insurance:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "charges",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "insurance",
+    files: [ "insurance.csv" ]
+}
+ipl:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: null,
+    drop_columns: [ "BBI", "y" ],
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "ipl",
+    files: [ "ipl.csv" ]
+}
+iris:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "species",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "iris",
+    files: [ "iris.csv" ]
+}
+jewellery:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: null,
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "jewellery",
+    files: [ "jewellery.csv" ]
+}
+juice:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "Purchase",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "juice",
+    files: [ "juice.csv" ]
+}
+mice:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: null,
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "mice",
+    files: [ "mice.csv" ]
+}
+migration:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: null,
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "migration",
+    files: [ "migration.csv" ]
+}
+nba:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "TARGET_5Yrs",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "nba",
+    files: [ "nba.csv" ]
+}
+parkinsons:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "PPE",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "parkinsons",
+    files: [ "parkinsons.csv" ]
+}
+pokemon:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: null,
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "pokemon",
+    files: [ "pokemon.csv" ]
+}
+poker:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "CLASS",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "poker",
+    files: [ "poker.csv" ]
+}
+population:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: null,
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "population",
+    files: [ "population.csv" ]
+}
+public_health:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: null,
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "public_health",
+    files: [ "public_health.csv" ]
+}
+questions:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "Next_Question",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "questions",
+    files: [ "questions.csv" ]
+}
+satellite:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "Class",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "satellite",
+    files: [ "satellite.csv" ]
+}
+seeds:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: null,
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "seeds",
+    files: [ "seeds.csv" ]
+}
+traffic:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "traffic_volume",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "traffic",
+    files: [ "traffic.csv" ]
+}
+wholesale:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: null,
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "wholesale",
+    files: [ "wholesale.csv" ]
+}
+wine:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "type",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "wine",
+    files: [ "wine.csv" ]
+}
+zoo:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "class_type",
+    drop_columns: [ "animal_name" ],
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "zoo",
+    files: [ "zoo.csv" ]
+}
+glass:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "Type",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "glass",
+    files: [ "glass.csv" ]
+}
+
+
+Rain_in_Australia:
+  {
+    url: "https://www.kaggle.com/jsphyg/weather-dataset-rattle-package",
+    target: "RainTomorrow",
+    drop_columns: null,
+    kaggle_name: "jsphyg/weather-dataset-rattle-package",
+    save_name: "weather_dataset_rattle_package",
+    files: [ "Rain_in_Australia.csv" ]
+}
+Campus_Recruitment:
+  {
+    url: "https://www.kaggle.com/benroshan/factors-affecting-campus-placement",
+    target: null,
+    drop_columns: [ "sl_no" ],
+    kaggle_name: "benroshan/factors-affecting-campus-placement",
+    save_name: "factors_affecting_campus_placement",
+    files: [ "Campus_Recruitment.csv" ]
+}
+HR_Analytics_Job_Change_of_Data_Scientists:
+  {
+    url: "https://www.kaggle.com/arashnic/hr-analytics-job-change-of-data-scientists",
+    target: "target",
+    drop_columns: [ "enrollee_id" ],
+    kaggle_name: "arashnic/hr-analytics-job-change-of-data-scientists",
+    save_name: "hr_analytics_job_change_of_data_scientists",
+    files: [ "HR_Analytics_Job_Change_of_Data_Scientists.csv" ]
+}
+adult:
+  {
+    url: "https://www.kaggle.com/kashnitsky/mlcourse",
+    target: "Target",
+    drop_columns: null,
+    kaggle_name: "kashnitsky/mlcourse",
+    save_name: "adult",
+    files: [ "adult.csv" ]
+}
+affairs:
+  {
+    url: "https://www.kaggle.com/kashnitsky/mlcourse",
+    target: "affairs",
+    drop_columns: [ "id" ],
+    kaggle_name: "kashnitsky/mlcourse",
+    save_name: "affairs",
+    files: [ "affairs.csv" ]
+}
+WFH_WFO_dataset:
+  {
+    url: "https://www.kaggle.com/anninasimon/predict-if-people-prefer-wfh-verses-wfo-data",
+    target: "Target",
+    drop_columns: [ "ID", "Name" ],
+    kaggle_name: "anninasimon/predict-if-people-prefer-wfh-verses-wfo-data",
+    save_name: "predict-if-people-prefer-wfh-verses-wfo-data",
+    files: [ "WFH_WFO_dataset.csv" ]
+}
+Airline_Passenger_Satisfaction:
+  {
+    url: "https://www.kaggle.com/teejmahal20/airline-passenger-satisfaction",
+    target: "satisfaction",
+    drop_columns: [ "num", "id" ],
+    kaggle_name: "teejmahal20/airline-passenger-satisfaction",
+    save_name: "airline_passenger_satisfaction",
+    files: [ "Airline_Passenger_Satisfaction.csv" ]
+}
+Hepatitis_C_virus:
+  {
+    url: "https://www.kaggle.com/amritpal333/hepatitis-c-virus-blood-biomarkers",
+    target: null,
+    drop_columns: [ "id" ],
+    kaggle_name: "amritpal333/hepatitis-c-virus-blood-biomarkers",
+    save_name: "hepatitis_c_virus",
+    files: [ "Hepatitis_C_virus.csv" ]
+}
+Health_Insurance_Cross_Sell_Prediction:
+  {
+    url: "https://www.kaggle.com/anmolkumar/health-insurance-cross-sell-prediction",
+    target: "Response",
+    drop_columns: [ "id" ],
+    kaggle_name: "anmolkumar/health-insurance-cross-sell-prediction",
+    save_name: "health_insurance_cross_sell_prediction",
+    files: [ "Health_Insurance_Cross_Sell_Prediction.csv" ]
+}
+Heart_Failure_Prediction:
+  {
+    url: "https://www.kaggle.com/andrewmvd/heart-failure-clinical-data",
+    target: "DEATH_EVENT",
+    drop_columns: null,
+    kaggle_name: "andrewmvd/heart-failure-clinical-data",
+    save_name: "heart_failure_clinical_data",
+    files: [ "Heart_Failure_Prediction.csv" ]
+}
+anomaly:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: null,
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "anomaly",
+    files: [ "anomaly.csv" ]
+}
+automobile:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "price",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "automobile",
+    files: [ "automobile.csv" ]
+}
+bank:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "deposit",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "bank",
+    files: [ "bank.csv" ]
+}
+bike:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "cnt",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "bike",
+    files: [ "bike.csv" ]
+}
+blood:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "Class",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "blood",
+    files: [ "blood.csv" ]
+}
+boston:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "medv",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "boston",
+    files: [ "boston.csv" ]
+}
+cancer:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "Class",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "cancer",
+    files: [ "cancer.csv" ]
+}
+concrete:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "strength",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "concrete",
+    files: [ "concrete.csv" ]
+}
+credit:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "default",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "credit",
+    files: [ "credit.csv" ]
+}
+diabetes:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "Class variable",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "diabetes",
+    files: [ "diabetes.csv" ]
+}
+elections:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: null,
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "elections",
+    files: [ "elections.csv" ]
+}
+electrical_grid:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "stabf",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "electrical_grid",
+    files: [ "electrical_grid.csv" ]
+}
+employee:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "left",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "employee",
+    files: [ "employee.csv" ]
+}
+energy:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: ["Heating Load", "Cooling Load"],
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "energy",
+    files: [ "energy.csv" ]
+}
+facebook:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: null,
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "facebook",
+    files: [ "facebook.csv" ]
+}
+forest:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "area",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "forest",
+    files: [ "forest.csv" ]
+}
+gold:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "Gold_T+22",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "gold",
+    files: [ "gold.csv" ]
+}
+heart:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "DEATH",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "heart",
+    files: [ "heart.csv" ]
+}
+heart_disease:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "Disease",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "heart_disease",
+    files: [ "heart_disease.csv" ]
+}
+hepatitis:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "Class",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "hepatitis",
+    files: [ "hepatitis.csv" ]
+}
+house:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "SalePrice",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "house",
+    files: [ "house.csv" ]
+}
+income:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "income >50K",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "income",
+    files: [ "income.csv" ]
+}
+insurance:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "charges",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "insurance",
+    files: [ "insurance.csv" ]
+}
+ipl:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: null,
+    drop_columns: [ "BBI", "y" ],
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "ipl",
+    files: [ "ipl.csv" ]
+}
+iris:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "species",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "iris",
+    files: [ "iris.csv" ]
+}
+jewellery:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: null,
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "jewellery",
+    files: [ "jewellery.csv" ]
+}
+juice:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "Purchase",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "juice",
+    files: [ "juice.csv" ]
+}
+mice:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: null,
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "mice",
+    files: [ "mice.csv" ]
+}
+migration:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: null,
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "migration",
+    files: [ "migration.csv" ]
+}
+nba:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "TARGET_5Yrs",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "nba",
+    files: [ "nba.csv" ]
+}
+parkinsons:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "PPE",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "parkinsons",
+    files: [ "parkinsons.csv" ]
+}
+pokemon:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: null,
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "pokemon",
+    files: [ "pokemon.csv" ]
+}
+poker:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "CLASS",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "poker",
+    files: [ "poker.csv" ]
+}
+population:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: null,
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "population",
+    files: [ "population.csv" ]
+}
+public_health:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: null,
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "public_health",
+    files: [ "public_health.csv" ]
+}
+questions:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "Next_Question",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "questions",
+    files: [ "questions.csv" ]
+}
+satellite:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "Class",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "satellite",
+    files: [ "satellite.csv" ]
+}
+seeds:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: null,
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "seeds",
+    files: [ "seeds.csv" ]
+}
+traffic:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "traffic_volume",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "traffic",
+    files: [ "traffic.csv" ]
+}
+wholesale:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: null,
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "wholesale",
+    files: [ "wholesale.csv" ]
+}
+wine:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "type",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "wine",
+    files: [ "wine.csv" ]
+}
+zoo:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "class_type",
+    drop_columns: [ "animal_name" ],
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "zoo",
+    files: [ "zoo.csv" ]
+}
+glass:
+  {
+    url: "https://www.kaggle.com/ahmettezcantekin/beginner-datasets",
+    target: "Type",
+    drop_columns: null,
+    kaggle_name: "ahmettezcantekin/beginner-datasets",
+    save_name: "glass",
+    files: [ "glass.csv" ]
+}

@@ -73,6 +73,8 @@ class Config:
     BASH_PARALLEL_RUNNERS: int = 10
 
     DATASETS_PATH: Path
+    RAW_DATASETS_PATH: Path = "_raw"  # type: ignore
+
     LOCAL_CONFIG_FILE_PATH: Path = ".server_access_credentials.cfg"  # type: ignore
     CONFIG_FILE_PATH: Path = "00_config.json"  # type: ignore
     WORKLOAD_FILE_PATH: Path = "01_workload.csv"  # type: ignore
@@ -128,6 +130,8 @@ class Config:
         self.EXPERIMENT_SYNC_AND_RUN_FILE_PATH = (
             self.OUTPUT_PATH / self.EXPERIMENT_SYNC_AND_RUN_FILE_PATH
         )
+
+        self.RAW_DATASETS_PATH = self.DATASETS_PATH / self.RAW_DATASETS_PATH
 
     def _load_config_from_file(self, config_path: Path) -> None:
         config_parser = RawConfigParser()

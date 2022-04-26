@@ -32,6 +32,7 @@ lxml = "*"
 html5lib = "*"
 bs4 = "*"
 requests = "*"
+pyyaml = "*"
 
 [requires]
 python_version = "3.10"
