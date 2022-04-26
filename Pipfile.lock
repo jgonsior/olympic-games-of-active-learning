@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "804037ae2e407014aa4b548e98a22e31074c25f21781a2ba99c7ceb5eb7bbeff"
+            "sha256": "e9e11ba4c917497bd3bc39e99b12f8372dbb3bb3dec490fe627e2cccc86f85c3"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -24,6 +24,11 @@
             ],
             "index": "pypi",
             "version": "==3.1.11"
+        },
+        "alipy": {
+            "editable": true,
+            "git": "https://github.com/jgonsior/ALiPy.git",
+            "ref": "0a14464fabdba6055e553b4ea9a2416bc6a1bdf3"
         },
         "anyio": {
             "hashes": [
@@ -1407,7 +1412,7 @@
                 "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc",
                 "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"
             ],
-            "markers": "python_version < '3.11'",
+            "markers": "python_version >= '3.7'",
             "version": "==2.0.1"
         },
         "tornado": {
@@ -1804,7 +1809,7 @@
                 "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc",
                 "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"
             ],
-            "markers": "python_version < '3.11'",
+            "markers": "python_version >= '3.7'",
             "version": "==2.0.1"
         },
         "typer": {

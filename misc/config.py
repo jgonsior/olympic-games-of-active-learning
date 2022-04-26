@@ -15,28 +15,10 @@ from sklearn import naive_bayes, svm
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import explained_variance_score
 from sklearn.tree import DecisionTreeClassifier
-from datasets import Dataset
+from datasets import DATASET
+from misc.data_types import AL_STRATEGY, SKLEARN_ML_MODELS
 
 from misc.logging import init_logger
-
-
-# TODO maybe move to yaml file, same as for datasets
-@unique
-class Strategy(IntEnum):
-    ALIPY_RANDOM = 1
-    ALIPY_UNCERTAINTY_LC = 2
-    ALIPY_UNCERTAINTY_ENT = 3
-    ALIPY_UNCERTAINTY_MM = 4
-    ALIPY_UNCERTAINTY_QUIRE = 5
-
-
-# TODO maybe move to yaml file, same as for datasets
-@unique
-class SKLEARN_ML_MODELS(IntEnum):
-    RF = 1
-    DT = 2
-    NB = 3
-    SVM = 4
 
 
 class Config:
@@ -59,11 +41,14 @@ class Config:
     LOCAL_OUTPUT_PATH: Path
 
     EXP_TITLE: str = "tmp"
-    EXP_DATASETS: List[Dataset]
-    EXP_STRATEGIES: List[Strategy]
+    EXP_DATASETS: List[DATASET]
+    EXP_STRATEGIES: List[AL_STRATEGY]
     EXP_RANDOM_SEEDS_START: int = 0
     EXP_RANDOM_SEEDS_END: int = 10
     EXP_RANDOM_SEEDS: List[int]
+    EXP_NUM_QUERIES: int = 0
+    EXP_BATCH_SIZE: int = 5
+    EXP_TEST_RATIO: float = 0.5
 
     WORKER_INDEX: int
 
