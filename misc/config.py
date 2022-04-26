@@ -218,8 +218,8 @@ class Config:
         for k, v in config.__dict__.items():
             self.__setattr__(k, v)
 
-        if len(sys.argv[:-1]) == 0:
-            parser.print_help()
+        # if len(sys.argv[:-1]) == 0:
+        #    parser.print_help()
 
         if self.RANDOM_SEED != -1 and self.RANDOM_SEED != -2:
             np.random.seed(self.RANDOM_SEED)

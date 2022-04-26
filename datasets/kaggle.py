@@ -49,7 +49,7 @@ class Kaggle:
         datasets_raw_path.mkdir(parents=True, exist_ok=True)
         destination_path = dataset_name + ".csv"
         datasets_cleaned_path = datasets_cleaned_path / destination_path
-        print(datasets_cleaned_path)
+
         if not datasets_cleaned_path.exists():
 
             parsing_args = self.parameter_dict[dataset_name]
