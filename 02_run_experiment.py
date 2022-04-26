@@ -51,14 +51,14 @@ X, Y, train_idx, test_idx, label_idx, unlabel_idx = split_dataset(df, config)
 model = RandomForestClassifier(n_jobs=multiprocessing.cpu_count())
 
 # initially train model on initally labeled data
-model.fit(X=X[label_idx[0], :], y=Y[label_idx[0]])
+model.fit(X=X[label_idx, :], y=Y[label_idx])  # type: ignore
 
 # select the AL strategy to use
 al_strategy = strategy_mapping[strategy][0](X=X, y=Y, **strategy_mapping[strategy][1])
 
 # either we stop until all samples are labeled, or earlier
 if config.EXP_NUM_QUERIES == 0:
-    total_amount_of_iterations = int(len(unlabel_idx[0]) / config.EXP_BATCH_SIZE) + 1
+    total_amount_of_iterations = int(len(unlabel_idx) / config.EXP_BATCH_SIZE) + 1
 else:
     total_amount_of_iterations = config.EXP_NUM_QUERIES
 
@@ -66,10 +66,6 @@ else:
 accs: List[float] = []
 f1_scores: List[float] = []
 select_indices: List[np.ndarray] = []
-
-label_idx: SampleIndiceList = label_idx[0]  # type: ignore
-unlabel_idx: SampleIndiceList = unlabel_idx[0]  # type: ignore
-test_idx: SampleIndiceList = test_idx[0]  # type: ignore
 
 # efficient list difference
 def _list_difference(long_list: List[Any], short_list: List[Any]) -> List[Any]:

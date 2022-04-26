@@ -12,7 +12,7 @@ SampleIndiceList = List[int]
 FeatureVectors = np.ndarray
 LabelList = np.ndarray
 
-# TODO maybe move to yaml file, same as for datasets
+# TODO move to yaml file, same as for datasets
 @unique
 class AL_STRATEGY(IntEnum):
     ALIPY_RANDOM = 1
@@ -45,7 +45,7 @@ strategy_mapping = {
     ),
 }
 
-# TODO maybe move to yaml file, same as for datasets
+# TODO move to yaml file, same as for datasets
 @unique
 class SKLEARN_ML_MODELS(IntEnum):
     RF = 1

@@ -53,10 +53,10 @@ def split_dataset(
 ) -> Tuple[
     FeatureVectors,
     LabelList,
-    Union[SampleIndiceList, List[SampleIndiceList]],
-    Union[SampleIndiceList, List[SampleIndiceList]],
-    Union[SampleIndiceList, List[SampleIndiceList]],
-    Union[SampleIndiceList, List[SampleIndiceList]],
+    SampleIndiceList,
+    SampleIndiceList,
+    SampleIndiceList,
+    SampleIndiceList,
 ]:
     X = df.loc[:, df.columns != "LABEL_TARGET"].to_numpy()  # type: ignore
     Y = df["LABEL_TARGET"].to_numpy()  # type: ignore
@@ -86,11 +86,5 @@ def split_dataset(
         init_labeled_index = np.where(Y[train_idx] == label)[0][0]  # type: ignore
         label_idx.append(init_labeled_index)
         unlabel_idx.remove(init_labeled_index)
-
-    if al_framework == AL_FRAMEWORK.ALIPY:  # type: ignore
-        train_idx = [train_idx]  # type: ignore
-        test_idx = [test_idx]  # type: ignore
-        label_idx = [label_idx]  # type: ignore
-        unlabel_idx = [unlabel_idx]  # type: ignore
 
     return X, Y, train_idx, test_idx, label_idx, unlabel_idx
