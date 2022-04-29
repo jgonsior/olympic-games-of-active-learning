@@ -3,7 +3,7 @@ import random
 from typing import Any, List
 import pandas as pd
 from datasets import DATASET, load_dataset, split_dataset
-from misc.config import Config
+from config.config import Config
 from misc.logging import log_it
 from misc.data_types import AL_STRATEGY, strategy_mapping
 import numpy as np

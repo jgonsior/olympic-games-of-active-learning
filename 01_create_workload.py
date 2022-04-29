@@ -4,7 +4,7 @@ import stat
 from typing import Any, Dict
 from jinja2 import Template
 import pandas as pd
-from misc.config import Config
+from config.config import Config
 from misc.logging import log_it
 import os
 

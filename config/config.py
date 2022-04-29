@@ -16,7 +16,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import explained_variance_score
 from sklearn.tree import DecisionTreeClassifier
 from datasets import DATASET
-from misc.data_types import AL_STRATEGY, SKLEARN_ML_MODELS
+from misc.data_types import AL_STRATEGY, LEARNER_MODEL
 
 from misc.logging import init_logger
 
@@ -24,7 +24,6 @@ from misc.logging import init_logger
 class Config:
     IGNORE_CONFIG_FILE: bool = False
 
-    LEARNER_ML_MODEL: SKLEARN_ML_MODELS = SKLEARN_ML_MODELS.RF
     N_JOBS: int = 1
     RANDOM_SEED: int = -1
     TRAIN_TEST_SPLIT: float = 0.5
@@ -46,9 +45,10 @@ class Config:
     EXP_RANDOM_SEEDS_START: int = 0
     EXP_RANDOM_SEEDS_END: int = 10
     EXP_RANDOM_SEEDS: List[int]
-    EXP_NUM_QUERIES: int = 0
-    EXP_BATCH_SIZE: int = 5
+    EXP_NUM_QUERIES: List[int] = [0]
+    EXP_BATCH_SIZE: List[int] = [5]
     EXP_TEST_RATIO: float = 0.5
+    EXP_LEARNER_MODEL: List[LEARNER_MODEL] = [LEARNER_MODEL.RF]
 
     WORKER_INDEX: int
 

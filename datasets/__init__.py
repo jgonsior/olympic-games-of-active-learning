@@ -16,7 +16,7 @@ from sklearn.preprocessing import MinMaxScaler, RobustScaler
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from misc.config import (
+    from config.config import (
         Config,
     )
 

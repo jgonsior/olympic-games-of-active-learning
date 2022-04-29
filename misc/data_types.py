@@ -47,7 +47,7 @@ strategy_mapping = {
 
 # TODO move to yaml file, same as for datasets
 @unique
-class SKLEARN_ML_MODELS(IntEnum):
+class LEARNER_MODEL(IntEnum):
     RF = 1
     DT = 2
     NB = 3
