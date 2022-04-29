@@ -1,4 +1,4 @@
-from typing import Dict, List, Set, Tuple
+from typing import Any, Callable, Dict, List, Set, Tuple
 import numpy as np
 from enum import IntEnum, unique
 from alipy.query_strategy.query_labels import (
@@ -7,12 +7,17 @@ from alipy.query_strategy.query_labels import (
     QueryInstanceQUIRE,
 )
 from alipy.query_strategy.base import BaseIndexQuery
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.svm import SVC
+from sklearn.naive_bayes import MultinomialNB, GaussianNB
+from sklearn.neural_network import MLPClassifier
 
 SampleIndiceList = List[int]
 FeatureVectors = np.ndarray
 LabelList = np.ndarray
 
-# TODO move to yaml file, same as for datasets
+
 @unique
 class AL_STRATEGY(IntEnum):
     ALIPY_RANDOM = 1
@@ -22,7 +27,9 @@ class AL_STRATEGY(IntEnum):
     ALIPY_UNCERTAINTY_QUIRE = 5
 
 
-strategy_mapping = {
+al_strategy_to_python_classes_mapping: Dict[
+    AL_STRATEGY, Tuple[Callable, Dict[Any, Any]]
+] = {
     AL_STRATEGY.ALIPY_UNCERTAINTY_LC: (
         QueryInstanceUncertainty,
         {"measure": "least_confident"},
@@ -45,13 +52,39 @@ strategy_mapping = {
     ),
 }
 
-# TODO move to yaml file, same as for datasets
+
 @unique
 class LEARNER_MODEL(IntEnum):
     RF = 1
     DT = 2
-    NB = 3
-    SVM = 4
+    MNB = 3
+    GNB = 4
+    RBF_SVM = 5
+    LINEAR_SVM = 6
+    POLY_SVM = 7
+    MLP = 8
+    LBFGS_MLP = 9
+
+
+learner_models_to_classes_mapping: Dict[
+    LEARNER_MODEL, Tuple[Callable, Dict[Any, Any]]
+] = {
+    LEARNER_MODEL.RF: (RandomForestClassifier, {}),
+    LEARNER_MODEL.DT: (DecisionTreeClassifier, {}),
+    LEARNER_MODEL.MNB: (MultinomialNB, {}),
+    LEARNER_MODEL.GNB: (GaussianNB, {}),
+    LEARNER_MODEL.RBF_SVM: (SVC, {"kernel": "rbf"}),
+    LEARNER_MODEL.LINEAR_SVM: (SVC, {"kernel": "linear"}),
+    LEARNER_MODEL.POLY_SVM: (SVC, {"kernel": "poly"}),
+    LEARNER_MODEL.MLP: (
+        MLPClassifier,
+        {"hidden_layer_sizes": (100,), "activation": "relu", "solver": "adam"},
+    ),  # default values
+    LEARNER_MODEL.MLP: (
+        MLPClassifier,
+        {"hidden_layer_sizes": (100,), "activation": "relu", "solver": "lbfgs"},
+    ),
+}
 
 
 @unique

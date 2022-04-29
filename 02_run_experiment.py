@@ -5,7 +5,7 @@ import pandas as pd
 from datasets import DATASET, load_dataset, split_dataset
 from config.config import Config
 from misc.logging import log_it
-from misc.data_types import AL_STRATEGY, strategy_mapping
+from misc.data_types import AL_STRATEGY, al_strategy_to_python_classes_mapping
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, f1_score
@@ -55,7 +55,9 @@ model = RandomForestClassifier(n_jobs=multiprocessing.cpu_count())
 model.fit(X=X[label_idx, :], y=Y[label_idx])  # type: ignore
 
 # select the AL strategy to use
-al_strategy = strategy_mapping[strategy][0](X=X, y=Y, **strategy_mapping[strategy][1])
+al_strategy = al_strategy_to_python_classes_mapping[strategy][0](
+    X=X, y=Y, **al_strategy_to_python_classes_mapping[strategy][1]
+)
 
 # either we stop until all samples are labeled, or earlier
 if config.EXP_NUM_QUERIES == 0:
