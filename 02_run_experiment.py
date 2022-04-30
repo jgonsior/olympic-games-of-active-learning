@@ -3,7 +3,7 @@ import random
 from typing import Any, List
 import pandas as pd
 from datasets import DATASET, load_dataset, split_dataset
-from config.config import Config
+from misc.config import Config
 from misc.logging import log_it
 from misc.data_types import AL_STRATEGY, al_strategy_to_python_classes_mapping
 import numpy as np
@@ -12,11 +12,7 @@ from sklearn.metrics import accuracy_score, f1_score
 
 config = Config()
 
-log_it(
-    "Executing Job # {} of workload {}".format(
-        config.WORKER_INDEX, config.WORKLOAD_FILE_PATH
-    )
-)
+log_it(f"Executing Job # {config.WORKER_INDEX} of workload {config.WORKLOAD_FILE_PATH}")
 
 random_seed_df = pd.read_csv(
     config.WORKLOAD_FILE_PATH,
@@ -34,13 +30,7 @@ dataset = DATASET(worker_dataset_id)
 strategy = AL_STRATEGY(worker_strategy_id)
 
 log_it(
-    "Job Parameters are dataset_id {}-{}, strategy_id {}-{} and random_seed {}".format(
-        worker_dataset_id,
-        dataset.name,
-        worker_strategy_id,
-        strategy.name,
-        worker_random_seed,
-    )
+    f"Job Parameters are dataset_id {worker_dataset_id}-{dataset.name}, strategy_id {worker_strategy_id}-{strategy.name} and random_seed {worker_random_seed}"
 )
 
 
@@ -76,10 +66,10 @@ def _list_difference(long_list: List[Any], short_list: List[Any]) -> List[Any]:
     return [i for i in long_list if not i in short_set]
 
 
-log_it("Running for a total of {} iterations".format(total_amount_of_iterations))
+log_it(f"Running for a total of {total_amount_of_iterations} iterations")
 
 for iteration in range(0, total_amount_of_iterations):
-    log_it("#{}".format(iteration))
+    log_it(f"#{iteration}")
 
     # select some samples by indice to label
     select_ind = al_strategy.select(

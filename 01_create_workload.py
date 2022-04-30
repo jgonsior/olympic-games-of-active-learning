@@ -1,15 +1,28 @@
 import itertools
 from pathlib import Path
 import stat
-from typing import Any, Dict
+from typing import Any, Dict, List
 from jinja2 import Template
 import pandas as pd
-from config.config import Config
+from misc.config import Config
 from misc.logging import log_it
 import os
 
+# determine config parameters which are to be used -> they all start with EXP_ and have a typing hint of [List[XXX]]
+def _determine_exp_grid_parameters(config: Config) -> List[str]:
+    result_list = []
+
+    for k, v in Config.__annotations__.items():
+        print(f"{k}\t{v}")
+
+    return result_list
+
 
 def create_workload(config: Config) -> None:
+    exp_grid_params = _determine_exp_grid_parameters(config)
+
+    # compute grid
+
     # check results
     if os.path.isfile(config.RESULTS_FILE_PATH):
         result_df = pd.read_csv(

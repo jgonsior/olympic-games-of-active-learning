@@ -26,7 +26,6 @@ class Config:
 
     N_JOBS: int = 1
     RANDOM_SEED: int = -1
-    TRAIN_TEST_SPLIT: float = 0.5
     LOG_FILE: str = "console"
     RUNNING_ENVIRONMENT: Literal["local", "hpc"] = "local"
 
@@ -47,8 +46,8 @@ class Config:
     EXP_RANDOM_SEEDS: List[int]
     EXP_NUM_QUERIES: List[int] = [0]
     EXP_BATCH_SIZE: List[int] = [5]
-    EXP_TEST_RATIO: float = 0.5
     EXP_LEARNER_MODEL: List[LEARNER_MODEL] = [LEARNER_MODEL.RF]
+    EXP_TRAIN_TEST_SPLIT: List[float] = [0.5]
 
     WORKER_INDEX: int
 
@@ -65,7 +64,7 @@ class Config:
     DATASETS_PATH: Path
     RAW_DATASETS_PATH: Path = "_raw"  # type: ignore
 
-    KAGGLE_DATASETS_PATH: Path = "datasets/kaggle_parameters.yaml"  # type: ignore
+    KAGGLE_DATASETS_PATH: Path = "ressources/datasets.yaml"  # type: ignore
 
     LOCAL_CONFIG_FILE_PATH: Path = ".server_access_credentials.cfg"  # type: ignore
     CONFIG_FILE_PATH: Path = "00_config.json"  # type: ignore
@@ -213,7 +212,7 @@ class Config:
         init_logger(self.LOG_FILE)
 
     """
-        Saves the config to a file -> can be read in later to know the details of the experiment
+        Saves the config to a file -> can be read in later to know the details of which the experiment was run with
     """
 
     def save_to_file(self) -> None:

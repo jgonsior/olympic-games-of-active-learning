@@ -1,9 +1,10 @@
-test_exp: {
-    exp_datasets: [1,2,3],
-    exp_strategies: [2,5],
-    exp_random_seeds_end: 100,
-    exp_num_queries: 50,
-    exp_batch_size: [1,5,10,25,50],
-    exp_learner_model: [RF,NB,MLP],
-
-}
+test_exp:
+    {
+        exp_datasets: [1, 2, 3],
+        exp_strategies:
+            [ALIPY_UNCERTAINTY_LC, ALIPY_RANDOM, ALIPY_UNCERTAINTY_MM],
+        exp_random_seeds_end: 100,
+        exp_num_queries: 50,
+        exp_batch_size: [1, 5, 10, 25, 50],
+        exp_learner_model: [RF, MNB, MLP, LBFGS_MLP],
+    }

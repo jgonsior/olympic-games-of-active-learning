@@ -5,7 +5,7 @@ import requests
 import pandas as pd
 import yaml
 from tqdm.auto import tqdm
-from config.config import Config
+from misc.config import Config
 import kaggle
 from misc.logging import log_it
 
@@ -77,9 +77,4 @@ class Kaggle:
                 index=False,
             )
 
-            log_it(
-                "Done Preprocessing {} to {}".format(
-                    dataset_name,
-                    datasets_cleaned_path,
-                )
-            )
+            log_it(f"Done Preprocessing {dataset_name} to {datasets_cleaned_path}")
