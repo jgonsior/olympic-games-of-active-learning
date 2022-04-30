@@ -10,7 +10,7 @@ from typing import List, Literal, NewType, Union, get_args
 from pathlib import Path
 import git
 import yaml
-
+import pandas as pd
 import numpy as np
 from sklearn import naive_bayes, svm
 from sklearn.ensemble import RandomForestClassifier
@@ -19,7 +19,7 @@ from sklearn.tree import DecisionTreeClassifier
 from datasets import DATASET
 from ressources.data_types import AL_STRATEGY, LEARNER_MODEL
 
-from misc.logging import init_logger
+from misc.logging import init_logger, log_it
 
 
 class Config:
@@ -40,15 +40,15 @@ class Config:
     USE_EXP_YAML: str = "NOOOOO"
 
     EXP_TITLE: str = "tmp"
-    EXP_DATASETS: List[DATASET]
-    EXP_STRATEGIES: List[AL_STRATEGY]
+    EXP_DATASET: Union[List[DATASET], DATASET]
+    EXP_STRATEGY: Union[List[AL_STRATEGY], AL_STRATEGY]
     EXP_RANDOM_SEEDS_START: int = 0
     EXP_RANDOM_SEEDS_END: int = 10
-    EXP_RANDOM_SEEDS: List[int]
-    EXP_NUM_QUERIES: List[int] = [0]
-    EXP_BATCH_SIZE: List[int] = [5]
-    EXP_LEARNER_MODEL: List[LEARNER_MODEL] = [LEARNER_MODEL.RF]
-    EXP_TRAIN_TEST_SPLIT: List[float] = [0.5]
+    EXP_RANDOM_SEED: Union[List[int], int]
+    EXP_NUM_QUERIES: Union[List[int], int] = [0]
+    EXP_BATCH_SIZE: Union[List[int], int] = [5]
+    EXP_LEARNER_MODEL: Union[List[LEARNER_MODEL], LEARNER_MODEL] = [LEARNER_MODEL.RF]
+    EXP_TRAIN_TEST_SPLIT: Union[List[float], float] = [0.5]
 
     WORKER_INDEX: int
 
@@ -86,7 +86,7 @@ class Config:
             # yes, we have -> overwrite everything, except for the stuff which was explicitly defined
             self._load_exp_yaml()
 
-        self.EXP_RANDOM_SEEDS = list(
+        self.EXP_RANDOM_SEED = list(
             range(self.EXP_RANDOM_SEEDS_START, self.EXP_RANDOM_SEEDS_END)
         )
 
@@ -167,12 +167,12 @@ class Config:
                 continue
 
             # convert str/ints to enum data types first
-            if k == "EXP_STRATEGIES":
+            if k == "EXP_STRATEGY":
                 if type(v[0]) == int:
                     v = [AL_STRATEGY(x) for x in v]
                 else:
                     v = [AL_STRATEGY[x] for x in v]
-            elif k == "EXP_DATASETS":
+            elif k == "EXP_DATASET":
                 if type(v[0]) == int:
                     v = [DATASET(x) for x in v]
                 else:
@@ -183,6 +183,28 @@ class Config:
                 else:
                     v = [LEARNER_MODEL[x] for x in v]
 
+            self.__setattr__(k, v)
+
+    def load_workload(self) -> None:
+        workload_df = pd.read_csv(
+            self.WORKLOAD_FILE_PATH,
+            header=0,
+            index_col=0,
+            nrows=self.WORKER_INDEX + 1,
+        )
+        workload = workload_df.loc[self.WORKER_INDEX]  # type: ignore
+        for k, v in workload.items():
+
+            # convert str/ints to enum data types first
+            if k == "EXP_STRATEGY":
+                v = AL_STRATEGY(int(v))
+            elif k == "EXP_DATASET":
+                v = DATASET(int(v))
+            elif k == "EXP_LEARNER_MODEL":
+                v = LEARNER_MODEL(int(v))
+
+            if str(self.__annotations__[k]).endswith("int]"):
+                v = int(v)
             self.__setattr__(k, v)
 
     """
@@ -204,13 +226,15 @@ class Config:
             if str(v).startswith("typing.Literal"):
                 choices = get_args(v)
                 arg_type = str
-            elif str(v) == "typing.List[int]":
+            elif (
+                str(v) == "typing.List[int]" or str(v) == "typing.Union[typing.List[int"
+            ):
                 nargs = "*"
                 arg_type = int
             # enum classes:
             elif (
-                str(v).startswith("typing.List[misc")
-                or str(v) == "typing.List[datasets.DATASET]"
+                str(v).startswith("typing.Union[typing.List[misc")
+                or str(v) == "typing.Union[typing.List[datasets.DATASET]"
             ):
                 full_str = str(v).split("[")[1][:-1].split(".")
                 module_str = ".".join(full_str[:-1])

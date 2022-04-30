@@ -4,7 +4,7 @@ from enum import unique
 from enum import IntEnum
 from pathlib import Path
 from aenum import extend_enum
-from typing import Any, Dict, Tuple, Union
+from typing import Any, Dict, Tuple, Union, cast
 import pandas as pd
 import yaml
 import math
@@ -49,7 +49,9 @@ def load_dataset(dataset: DATASET, config: Config) -> pd.DataFrame:
 
 
 def split_dataset(
-    df: pd.DataFrame, config: Config, al_framework: AL_FRAMEWORK = AL_FRAMEWORK.ALIPY
+    df: pd.DataFrame,
+    config: Config,
+    al_framework: AL_FRAMEWORK = AL_FRAMEWORK.ALIPY,
 ) -> Tuple[
     FeatureVectors,
     LabelList,
@@ -73,7 +75,7 @@ def split_dataset(
     X = scaler.fit_transform(X)
 
     # fancy ALiPy train/test split
-    test_ratio = config.EXP_TEST_RATIO
+    test_ratio = cast(float, config.EXP_TRAIN_TEST_SPLIT)
     indices: SampleIndiceList = [i for i in range(0, len(Y))]
     train_idx: SampleIndiceList = indices[: math.floor(len(Y) * (1 - test_ratio))]
     test_idx: SampleIndiceList = indices[math.floor(len(Y) * (1 - test_ratio)) :]

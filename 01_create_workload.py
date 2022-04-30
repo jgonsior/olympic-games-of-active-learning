@@ -16,7 +16,7 @@ def _determine_exp_grid_parameters(config: Config) -> List[str]:
     result_list: List[str] = []
 
     for k, v in Config.__annotations__.items():
-        if k.startswith("EXP_") and str(v).startswith("typing.List["):
+        if k.startswith("EXP_") and str(v).startswith("typing.Union[typing.List["):
             result_list.append(k)
     return result_list
 
@@ -57,7 +57,10 @@ def create_workload(config: Config) -> None:
 
     random_seed_df = pd.DataFrame(data=missing_ids, columns=exp_grid_params_names)
 
-    random_seed_df.to_csv(config.WORKLOAD_FILE_PATH, header=True)
+    random_seed_df.to_csv(
+        config.WORKLOAD_FILE_PATH,
+        header=True,
+    )
     config.save_to_file()
 
 
@@ -88,8 +91,8 @@ def create_AL_experiment_slurm_files(config: Config) -> None:
         config.EXPERIMENT_SLURM_FILE_PATH,
         array=True,
         PYTHON_FILE="02_run_experiment.py",
-        START=config.EXP_RANDOM_SEEDS[0],
-        END=int(config.EXP_RANDOM_SEEDS[-1] / config.SLURM_ITERATIONS_PER_BATCH),
+        START=config.EXP_RANDOM_SEED[0],
+        END=int(config.EXP_RANDOM_SEED[-1] / config.SLURM_ITERATIONS_PER_BATCH),
         CLI_ARGS="",
         APPEND_OUTPUT_PATH=False,
     )
@@ -101,8 +104,8 @@ def create_AL_experiment_bash_files(config: Config) -> None:
         Path("slurm_templates/bash_parallel_runner.sh"),
         config.EXPERIMENT_BASH_FILE_PATH,
         PYTHON_FILE="02_run_experiment.py",
-        START=config.EXP_RANDOM_SEEDS[0],
-        END=int(config.EXP_RANDOM_SEEDS[-1] / config.SLURM_ITERATIONS_PER_BATCH),
+        START=config.EXP_RANDOM_SEED[0],
+        END=int(config.EXP_RANDOM_SEED[-1] / config.SLURM_ITERATIONS_PER_BATCH),
     )
     _chmod_u_plus_x(config.EXPERIMENT_BASH_FILE_PATH)
 

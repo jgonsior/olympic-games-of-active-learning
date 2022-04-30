@@ -1,11 +1,17 @@
 import multiprocessing
 import random
-from typing import Any, List
+from typing import Any, List, cast
 import pandas as pd
 from datasets import DATASET, load_dataset, split_dataset
 from misc.config import Config
 from misc.logging import log_it
-from ressources.data_types import AL_STRATEGY, al_strategy_to_python_classes_mapping
+from ressources.data_types import (
+    AL_STRATEGY,
+    LEARNER_MODEL,
+    al_strategy_to_python_classes_mapping,
+    learner_models_to_classes_mapping,
+)
+from sklearn.metrics import classification_report
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, f1_score
@@ -14,53 +20,45 @@ config = Config()
 
 # TODO: in order to run >1.000.000 jobs on taurus -> specify a random seeds range for this file to work through!
 
+config.load_workload()
+
 log_it(f"Executing Job # {config.WORKER_INDEX} of workload {config.WORKLOAD_FILE_PATH}")
-
-random_seed_df = pd.read_csv(
-    config.WORKLOAD_FILE_PATH,
-    header=0,
-    index_col=0,
-    nrows=config.WORKER_INDEX + 1,
-)
-worker_dataset_id, worker_strategy_id, worker_random_seed = random_seed_df.loc[config.WORKER_INDEX]  # type: ignore
-
-np.random.seed(worker_random_seed)
-random.seed(worker_random_seed)
+np.random.seed(int(cast(int, config.EXP_RANDOM_SEED)))
+random.seed(int(cast(int, config.EXP_RANDOM_SEED)))
 
 
-dataset = DATASET(worker_dataset_id)
-strategy = AL_STRATEGY(worker_strategy_id)
-
-log_it(
-    f"Job Parameters are dataset_id {worker_dataset_id}-{dataset.name}, strategy_id {worker_strategy_id}-{strategy.name} and random_seed {worker_random_seed}"
-)
-
+dataset = DATASET(cast(DATASET, config.EXP_DATASET))
 
 # load dataset
 df = load_dataset(dataset, config)
 X, Y, train_idx, test_idx, label_idx, unlabel_idx = split_dataset(df, config)
 
-# TODO change depending on config parameter
-model = RandomForestClassifier(n_jobs=multiprocessing.cpu_count())
+# load ml model
+model_instantiation_tuple = learner_models_to_classes_mapping[
+    cast(LEARNER_MODEL, config.EXP_LEARNER_MODEL)
+]
+model = model_instantiation_tuple[0](**model_instantiation_tuple[1])
 
 # initially train model on initally labeled data
 model.fit(X=X[label_idx, :], y=Y[label_idx])  # type: ignore
 
 # select the AL strategy to use
-al_strategy = al_strategy_to_python_classes_mapping[strategy][0](
-    X=X, y=Y, **al_strategy_to_python_classes_mapping[strategy][1]
+al_strategy = AL_STRATEGY(cast(AL_STRATEGY, config.EXP_STRATEGY))
+al_strategy = al_strategy_to_python_classes_mapping[al_strategy][0](
+    X=X, y=Y, **al_strategy_to_python_classes_mapping[al_strategy][1]
 )
 
 # either we stop until all samples are labeled, or earlier
-if config.EXP_NUM_QUERIES == 0:
-    total_amount_of_iterations = int(len(unlabel_idx) / config.EXP_BATCH_SIZE) + 1
+if cast(int, config.EXP_NUM_QUERIES) == 0:
+    total_amount_of_iterations = (
+        int(len(unlabel_idx) / cast(int, config.EXP_BATCH_SIZE)) + 1
+    )
 else:
-    total_amount_of_iterations = config.EXP_NUM_QUERIES
+    total_amount_of_iterations = cast(int, config.EXP_NUM_QUERIES)
 
 # the metrics we want to analyze later on
-accs: List[float] = []
-f1_scores: List[float] = []
-select_indices: List[np.ndarray] = []
+confusion_matrices: List[np.ndarray] = []
+selected_indices: List[np.ndarray] = []
 
 # efficient list difference
 def _list_difference(long_list: List[Any], short_list: List[Any]) -> List[Any]:
@@ -75,13 +73,13 @@ for iteration in range(0, total_amount_of_iterations):
 
     # select some samples by indice to label
     select_ind = al_strategy.select(
-        label_idx, unlabel_idx, model=model, batch_size=config.EXP_BATCH_SIZE
+        label_idx, unlabel_idx, model=model, batch_size=cast(int, config.EXP_BATCH_SIZE)
     )
     label_idx = label_idx + select_ind.tolist()
     unlabel_idx = _list_difference(unlabel_idx, select_ind.tolist())
 
     # save indices for later
-    select_indices.append(select_ind.tolist())
+    selected_indices.append(select_ind.tolist())
 
     # update our learner model
     model.fit(X=X[label_idx, :], y=Y[label_idx])
@@ -89,21 +87,14 @@ for iteration in range(0, total_amount_of_iterations):
     # prediction on test set for metrics
     pred = model.predict(X[test_idx, :])
 
-    # calculate some metrics
-    accuracy = accuracy_score(
-        y_true=Y[test_idx],
-        y_pred=pred,
+    current_confusion_matrix = classification_report(
+        y_true=Y[test_idx], y_pred=pred, output_dict=True, zero_division=0
     )
-    accs.append(accuracy)
-
-    f1 = f1_score(y_true=Y[test_idx], y_pred=pred, average="macro")
-    f1_scores.append(f1)
-
-    # TODO calculate more metrics
-    # TODO calculate here only TP FP TN FN
+    confusion_matrices.append(current_confusion_matrix)
 
 
-# TODO store metrics
-print(accs)
-print(f1_scores)
-print(select_indices)
+# TODO
+output_df = pd.DataFrame(
+    {"selected_indices": selected_indices, "confusion_matrix": confusion_matrices}
+)
+print(output_df)

@@ -1,7 +1,7 @@
 test_exp_1:
     {
-        EXP_DATASETS: [1, 2, 3],
-        EXP_STRATEGIES:
+        EXP_DATASET: [1, 2, 3],
+        EXP_STRATEGY:
             [ALIPY_UNCERTAINTY_LC, ALIPY_RANDOM, ALIPY_UNCERTAINTY_MM],
         EXP_RANDOM_SEEDS_END: 10,
         EXP_NUM_QUERIES: [50],
@@ -11,8 +11,8 @@ test_exp_1:
     }
 test_exp_2:
     {
-        EXP_DATASETS: [1, 2, 3],
-        EXP_STRATEGIES:
+        EXP_DATASET: [1, 2, 3],
+        EXP_STRATEGY:
             [ALIPY_UNCERTAINTY_LC, ALIPY_RANDOM, ALIPY_UNCERTAINTY_MM],
         EXP_RANDOM_SEEDS_END: 100,
         EXP_NUM_QUERIES: [50],

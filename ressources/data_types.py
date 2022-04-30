@@ -1,3 +1,4 @@
+import multiprocessing
 from typing import Any, Callable, Dict, List, Set, Tuple
 import numpy as np
 from enum import IntEnum, unique
@@ -69,20 +70,39 @@ class LEARNER_MODEL(IntEnum):
 learner_models_to_classes_mapping: Dict[
     LEARNER_MODEL, Tuple[Callable, Dict[Any, Any]]
 ] = {
-    LEARNER_MODEL.RF: (RandomForestClassifier, {}),
-    LEARNER_MODEL.DT: (DecisionTreeClassifier, {}),
+    LEARNER_MODEL.RF: (RandomForestClassifier, {"n_jobs": multiprocessing.cpu_count()}),
+    LEARNER_MODEL.DT: (DecisionTreeClassifier, {"n_jobs": multiprocessing.cpu_count()}),
     LEARNER_MODEL.MNB: (MultinomialNB, {}),
     LEARNER_MODEL.GNB: (GaussianNB, {}),
-    LEARNER_MODEL.RBF_SVM: (SVC, {"kernel": "rbf"}),
-    LEARNER_MODEL.LINEAR_SVM: (SVC, {"kernel": "linear"}),
-    LEARNER_MODEL.POLY_SVM: (SVC, {"kernel": "poly"}),
+    LEARNER_MODEL.RBF_SVM: (
+        SVC,
+        {"kernel": "rbf", "n_jobs": multiprocessing.cpu_count()},
+    ),
+    LEARNER_MODEL.LINEAR_SVM: (
+        SVC,
+        {"kernel": "linear", "n_jobs": multiprocessing.cpu_count()},
+    ),
+    LEARNER_MODEL.POLY_SVM: (
+        SVC,
+        {"kernel": "poly", "n_jobs": multiprocessing.cpu_count()},
+    ),
     LEARNER_MODEL.MLP: (
         MLPClassifier,
-        {"hidden_layer_sizes": (100,), "activation": "relu", "solver": "adam"},
+        {
+            "hidden_layer_sizes": (100,),
+            "activation": "relu",
+            "solver": "adam",
+            "n_jobs": multiprocessing.cpu_count(),
+        },
     ),  # default values
     LEARNER_MODEL.MLP: (
         MLPClassifier,
-        {"hidden_layer_sizes": (100,), "activation": "relu", "solver": "lbfgs"},
+        {
+            "hidden_layer_sizes": (100,),
+            "activation": "relu",
+            "solver": "lbfgs",
+            "n_jobs": multiprocessing.cpu_count(),
+        },
     ),
 }
 
