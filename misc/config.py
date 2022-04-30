@@ -9,6 +9,7 @@ import sys
 from typing import List, Literal, NewType, Union, get_args
 from pathlib import Path
 import git
+import yaml
 
 import numpy as np
 from sklearn import naive_bayes, svm
@@ -16,14 +17,12 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import explained_variance_score
 from sklearn.tree import DecisionTreeClassifier
 from datasets import DATASET
-from misc.data_types import AL_STRATEGY, LEARNER_MODEL
+from ressources.data_types import AL_STRATEGY, LEARNER_MODEL
 
 from misc.logging import init_logger
 
 
 class Config:
-    IGNORE_CONFIG_FILE: bool = False
-
     N_JOBS: int = 1
     RANDOM_SEED: int = -1
     LOG_FILE: str = "console"
@@ -37,6 +36,8 @@ class Config:
     LOCAL_DATASETS_PATH: Path
     LOCAL_CODE_PATH: Path
     LOCAL_OUTPUT_PATH: Path
+
+    USE_EXP_YAML: str = "NOOOOO"
 
     EXP_TITLE: str = "tmp"
     EXP_DATASETS: List[DATASET]
@@ -65,9 +66,9 @@ class Config:
     RAW_DATASETS_PATH: Path = "_raw"  # type: ignore
 
     KAGGLE_DATASETS_PATH: Path = "ressources/datasets.yaml"  # type: ignore
-
     LOCAL_CONFIG_FILE_PATH: Path = ".server_access_credentials.cfg"  # type: ignore
-    CONFIG_FILE_PATH: Path = "00_config.json"  # type: ignore
+    LOCAL_YAML_EXP_PATH: Path = "ressources/exp_config.yaml"  # type: ignore
+    CONFIG_FILE_PATH: Path = "00_config.yaml"  # type: ignore
     WORKLOAD_FILE_PATH: Path = "01_workload.csv"  # type: ignore
     EXPERIMENT_SLURM_FILE_PATH: Path = "02_slurm.slurm"  # type: ignore
     EXPERIMENT_BASH_FILE_PATH: Path = "02_bash.sh"  # type: ignore
@@ -76,13 +77,24 @@ class Config:
 
     def __init__(self) -> None:
         self._parse_cli_arguments()
-        self._load_config_from_file(Path(self.LOCAL_CONFIG_FILE_PATH))
+        self._load_server_setup_from_file(Path(self.LOCAL_CONFIG_FILE_PATH))
 
-        # some config magic
+        self._pathes_magic()
+
+        # check if we have a yaml defined experiment
+        if self.USE_EXP_YAML != "NOOOOO":
+            # yes, we have -> overwrite everything, except for the stuff which was explicitly defined
+            self._load_exp_yaml()
+
         self.EXP_RANDOM_SEEDS = list(
             range(self.EXP_RANDOM_SEEDS_START, self.EXP_RANDOM_SEEDS_END)
         )
 
+        if self.RANDOM_SEED != -1 and self.RANDOM_SEED != -2:
+            np.random.seed(self.RANDOM_SEED)
+            random.seed(self.RANDOM_SEED)
+
+    def _pathes_magic(self) -> None:
         if self.RUNNING_ENVIRONMENT == "local":
             self.OUTPUT_PATH = Path(self.LOCAL_OUTPUT_PATH)
             self.DATASETS_PATH = Path(self.LOCAL_DATASETS_PATH)
@@ -90,30 +102,14 @@ class Config:
             self.OUTPUT_PATH = Path(self.HPC_OUTPUT_PATH)
             self.DATASETS_PATH = Path(self.HPC_DATASETS_PATH)
 
+        if self.USE_EXP_YAML != "NOOOOO":
+            self.EXP_TITLE = self.USE_EXP_YAML
+
         self.OUTPUT_PATH = self.OUTPUT_PATH / self.EXP_TITLE
 
         # check if a config file exists which could be read in
         self.CONFIG_FILE_PATH = self.OUTPUT_PATH / self.CONFIG_FILE_PATH
 
-        self._create_pathes()
-
-        if not self.IGNORE_CONFIG_FILE:
-            if os.path.exists(self.CONFIG_FILE_PATH):
-                cfg_values = json.loads(self.CONFIG_FILE_PATH.read_text())
-
-                for k, v in cfg_values.items():
-                    if v is not None:
-                        if k.endswith("_PATH"):
-                            v = Path(v)
-                        self.__setattr__(k, v)
-
-        self.OUTPUT_PATH.mkdir(parents=True, exist_ok=True)
-
-        if self.RANDOM_SEED != -1 and self.RANDOM_SEED != -2:
-            np.random.seed(self.RANDOM_SEED)
-            random.seed(self.RANDOM_SEED)
-
-    def _create_pathes(self) -> None:
         self.LOCAL_CONFIG_FILE_PATH = Path(self.LOCAL_CONFIG_FILE_PATH)
         self.CONFIG_FILE_PATH = Path(self.CONFIG_FILE_PATH)
         self.WORKLOAD_FILE_PATH = self.OUTPUT_PATH / self.WORKLOAD_FILE_PATH
@@ -132,16 +128,23 @@ class Config:
 
         self.KAGGLE_DATASETS_PATH = Path(self.KAGGLE_DATASETS_PATH)
 
-    def _load_config_from_file(self, config_path: Path) -> None:
-        config_parser = RawConfigParser()
-        config_parser.read(config_path)
+        self.OUTPUT_PATH.mkdir(parents=True, exist_ok=True)
 
-        # check, which arguments have been specified in the args list
-        # TODO
+    def _return_list_of_explicitly_defined_cli_args(self) -> List[str]:
         explicitly_defined_arguments: List[str] = []
         for arg in sys.argv:
             if arg.startswith("--"):
                 explicitly_defined_arguments.append(arg[2:])
+        return explicitly_defined_arguments
+
+    def _load_server_setup_from_file(self, config_path: Path) -> None:
+        config_parser = RawConfigParser()
+        config_parser.read(config_path)
+
+        # check, which arguments have been specified in the args list
+        explicitly_defined_arguments = (
+            self._return_list_of_explicitly_defined_cli_args()
+        )
 
         for section in config_parser.sections():
             for k, v in config_parser.items(section):
@@ -149,6 +152,38 @@ class Config:
                     # we do not overwrite our config with arguments which have been specified as CLI arguments
                     continue
                 self.__setattr__(section + "_" + k.upper(), v)
+
+    def _load_exp_yaml(self) -> None:
+        yaml_config_params = yaml.safe_load(self.LOCAL_YAML_EXP_PATH.read_bytes())
+
+        yaml_config_params = yaml_config_params[self.USE_EXP_YAML]
+
+        self.EXP_TITLE = self.USE_EXP_YAML
+
+        explicitly_defined_cli_args = self._return_list_of_explicitly_defined_cli_args()
+
+        for k, v in yaml_config_params.items():
+            if k in explicitly_defined_cli_args:
+                continue
+
+            # convert str/ints to enum data types first
+            if k == "EXP_STRATEGIES":
+                if type(v[0]) == int:
+                    v = [AL_STRATEGY(x) for x in v]
+                else:
+                    v = [AL_STRATEGY[x] for x in v]
+            elif k == "EXP_DATASETS":
+                if type(v[0]) == int:
+                    v = [DATASET(x) for x in v]
+                else:
+                    v = [DATASET[x] for x in v]
+            elif k == "EXP_LEARNER_MODEL":
+                if type(v[0]) == int:
+                    v = [LEARNER_MODEL(x) for x in v]
+                else:
+                    v = [LEARNER_MODEL[x] for x in v]
+
+            self.__setattr__(k, v)
 
     """
         Magically convert the type hints from the class attributes of this class into argparse config values
@@ -173,7 +208,10 @@ class Config:
                 nargs = "*"
                 arg_type = int
             # enum classes:
-            elif str(v).startswith("typing.List["):
+            elif (
+                str(v).startswith("typing.List[misc")
+                or str(v) == "typing.List[datasets.DATASET]"
+            ):
                 full_str = str(v).split("[")[1][:-1].split(".")
                 module_str = ".".join(full_str[:-1])
                 class_str = full_str[-1]
@@ -228,9 +266,4 @@ class Config:
             search_parent_directories=True
         ).head.object.hexsha
 
-        def _default_json(t):
-            return f"{t}"
-
-        self.CONFIG_FILE_PATH.write_text(
-            json.dumps(to_save_config_values, default=_default_json)
-        )
+        self.CONFIG_FILE_PATH.write_text(yaml.dump(to_save_config_values))

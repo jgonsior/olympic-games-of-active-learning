@@ -20,7 +20,7 @@ if TYPE_CHECKING:
         Config,
     )
 
-from misc.data_types import (
+from ressources.data_types import (
     SampleIndiceList,
     AL_STRATEGY,
     FeatureVectors,

@@ -5,12 +5,14 @@ import pandas as pd
 from datasets import DATASET, load_dataset, split_dataset
 from misc.config import Config
 from misc.logging import log_it
-from misc.data_types import AL_STRATEGY, al_strategy_to_python_classes_mapping
+from ressources.data_types import AL_STRATEGY, al_strategy_to_python_classes_mapping
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, f1_score
 
 config = Config()
+
+# TODO: in order to run >1.000.000 jobs on taurus -> specify a random seeds range for this file to work through!
 
 log_it(f"Executing Job # {config.WORKER_INDEX} of workload {config.WORKLOAD_FILE_PATH}")
 
@@ -98,6 +100,7 @@ for iteration in range(0, total_amount_of_iterations):
     f1_scores.append(f1)
 
     # TODO calculate more metrics
+    # TODO calculate here only TP FP TN FN
 
 
 # TODO store metrics

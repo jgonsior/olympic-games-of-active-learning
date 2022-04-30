@@ -6,58 +6,55 @@ from jinja2 import Template
 import pandas as pd
 from misc.config import Config
 from misc.logging import log_it
+from sklearn.model_selection import ParameterGrid
 import os
+from joblib import Parallel, delayed
 
 # determine config parameters which are to be used -> they all start with EXP_ and have a typing hint of [List[XXX]]
 def _determine_exp_grid_parameters(config: Config) -> List[str]:
-    result_list = []
+    result_list: List[str] = []
 
     for k, v in Config.__annotations__.items():
-        print(f"{k}\t{v}")
-
+        if k.startswith("EXP_") and str(v).startswith("typing.List["):
+            result_list.append(k)
     return result_list
 
 
 def create_workload(config: Config) -> None:
-    exp_grid_params = _determine_exp_grid_parameters(config)
-
-    # compute grid
+    exp_grid_params_names = _determine_exp_grid_parameters(config)
 
     # check results
     if os.path.isfile(config.RESULTS_FILE_PATH):
         result_df = pd.read_csv(
             config.RESULTS_FILE_PATH,
             index_col=None,
-            usecols=["dataset_id", "strategy_id", "dataset_random_seed"],
+            usecols=exp_grid_params_names,
         )
     else:
-        result_df = pd.DataFrame(
-            data=None, columns=["dataset_id", "strategy_id", "dataset_random_seed"]
-        )
+        result_df = pd.DataFrame(data=None, columns=exp_grid_params_names)
 
     missing_ids = []
 
-    for dataset_id, strategy_id, dataset_random_seed in itertools.product(
-        config.EXP_DATASETS,
-        config.EXP_STRATEGIES,
-        config.EXP_RANDOM_SEEDS,
-        repeat=1,
-    ):
-        if (
-            len(
-                result_df.loc[
-                    (result_df["dataset_id"] == dataset_id)
-                    & (result_df["strategy_id"] == strategy_id)
-                    & (result_df["dataset_random_seed"] == dataset_random_seed)
-                ]
-            )
-            == 0
-        ):
-            missing_ids.append([dataset_id, strategy_id, dataset_random_seed])
+    exp_param_grid = {
+        exp_parameter: config.__getattribute__(exp_parameter)
+        for exp_parameter in exp_grid_params_names
+    }
 
-    random_seed_df = pd.DataFrame(
-        data=missing_ids, columns=["dataset_id", "strategy_id", "dataset_random_seed"]
+    def _check_if_workload_has_already_been_run(single_workload: Dict[str, Any]):
+        selection_key = ()
+        for k, v in single_workload.items():
+            selection_key &= result_df[k] == v
+        possible_existing_results_row = result_df.loc[selection_key]
+
+        if len(possible_existing_results_row) == 0:
+            return single_workload
+
+    missing_ids = Parallel(n_jobs=8)(
+        delayed(_check_if_workload_has_already_been_run)(single_workload)
+        for single_workload in ParameterGrid(exp_param_grid)
     )
+
+    random_seed_df = pd.DataFrame(data=missing_ids, columns=exp_grid_params_names)
 
     random_seed_df.to_csv(config.WORKLOAD_FILE_PATH, header=True)
     config.save_to_file()
