@@ -1,4 +1,5 @@
 import itertools
+import multiprocessing
 from pathlib import Path
 import stat
 from typing import Any, Dict, List
@@ -49,7 +50,7 @@ def create_workload(config: Config) -> None:
         if len(possible_existing_results_row) == 0:
             return single_workload
 
-    missing_ids = Parallel(n_jobs=8)(
+    missing_ids = Parallel(n_jobs=multiprocessing.cpu_count())(
         delayed(_check_if_workload_has_already_been_run)(single_workload)
         for single_workload in ParameterGrid(exp_param_grid)
     )
