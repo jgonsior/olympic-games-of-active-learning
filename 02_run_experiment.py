@@ -1,4 +1,3 @@
-import multiprocessing
 import random
 from typing import Any, List, cast
 import pandas as pd
@@ -13,8 +12,6 @@ from ressources.data_types import (
 )
 from sklearn.metrics import classification_report
 import numpy as np
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, f1_score
 
 config = Config()
 

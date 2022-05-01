@@ -1,10 +1,8 @@
 from pathlib import Path
 from typing import Any, Dict
-import requests
 
 import pandas as pd
 import yaml
-from tqdm.auto import tqdm
 from misc.config import Config
 import kaggle
 from misc.logging import log_it

@@ -1,5 +1,5 @@
 import multiprocessing
-from typing import Any, Callable, Dict, List, Set, Tuple
+from typing import Any, Callable, Dict, List, Tuple
 import numpy as np
 from enum import IntEnum, unique
 from alipy.query_strategy.query_labels import (
@@ -7,7 +7,6 @@ from alipy.query_strategy.query_labels import (
     QueryInstanceRandom,
     QueryInstanceQUIRE,
 )
-from alipy.query_strategy.base import BaseIndexQuery
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC

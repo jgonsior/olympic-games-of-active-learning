@@ -1,25 +1,18 @@
 import argparse
-from configparser import RawConfigParser
-from distutils.command.config import config
-from enum import Enum, IntEnum, auto, unique
-import json
-import os
 import random
 import sys
-from typing import List, Literal, NewType, Union, get_args
+from configparser import RawConfigParser
 from pathlib import Path
-import git
-import yaml
-import pandas as pd
-import numpy as np
-from sklearn import naive_bayes, svm
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import explained_variance_score
-from sklearn.tree import DecisionTreeClassifier
-from datasets import DATASET
-from ressources.data_types import AL_STRATEGY, LEARNER_MODEL
+from typing import List, Literal, Union, get_args
 
-from misc.logging import init_logger, log_it
+import git
+import numpy as np
+import pandas as pd
+import yaml
+
+from datasets import DATASET
+from misc.logging import init_logger
+from ressources.data_types import AL_STRATEGY, LEARNER_MODEL
 
 
 class Config:
@@ -73,7 +66,7 @@ class Config:
     EXPERIMENT_SLURM_FILE_PATH: Path = "02_slurm.slurm"  # type: ignore
     EXPERIMENT_BASH_FILE_PATH: Path = "02_bash.sh"  # type: ignore
     EXPERIMENT_SYNC_AND_RUN_FILE_PATH: Path = "03_sync_and_run.sh"  # type: ignore
-    RESULTS_FILE_PATH: Path = "04_results.csv"  # type: ignore
+    RESULTS_FILE_PATH: Path = "_results.csv"  # type: ignore
 
     def __init__(self) -> None:
         self._parse_cli_arguments()
