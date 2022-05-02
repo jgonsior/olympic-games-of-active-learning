@@ -70,7 +70,7 @@ class Kaggle:
             label_column = parsing_args["target"]
             df.rename(columns={label_column: "LABEL_TARGET"}, inplace=True)
 
-            df.to_csv(
+            df.to_feather(
                 datasets_cleaned_path,
                 index=False,
             )

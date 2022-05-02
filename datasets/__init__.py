@@ -4,7 +4,7 @@ from enum import unique
 from enum import IntEnum
 from pathlib import Path
 from aenum import extend_enum
-from typing import Any, Dict, Tuple, cast
+from typing import Any, Dict, Tuple
 import pandas as pd
 import yaml
 import math
@@ -42,7 +42,7 @@ for dataset_name in datasets_yaml_parameter_dict:
 def load_dataset(dataset: DATASET, config: Config) -> pd.DataFrame:
     dataset_file = dataset.name + ".csv"
     dataset_path: Path = config.DATASETS_PATH / dataset_file
-    return pd.read_csv(dataset_path)
+    return pd.read_feather(dataset_path)
 
 
 def split_dataset(
@@ -72,7 +72,8 @@ def split_dataset(
     X = scaler.fit_transform(X)
 
     # fancy ALiPy train/test split
-    test_ratio = cast(float, config.EXP_TRAIN_TEST_SPLIT)
+    # TODO train-test splits schon vorab berechnen
+    test_ratio = config.EXP_TRAIN_TEST_SPLIT
     indices: SampleIndiceList = [i for i in range(0, len(Y))]
     train_idx: SampleIndiceList = indices[: math.floor(len(Y) * (1 - test_ratio))]
     test_idx: SampleIndiceList = indices[math.floor(len(Y) * (1 - test_ratio)) :]

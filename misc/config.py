@@ -33,15 +33,21 @@ class Config:
     USE_EXP_YAML: str = "NOOOOO"
 
     EXP_TITLE: str = "tmp"
-    EXP_DATASET: Union[List[DATASET], DATASET]
-    EXP_STRATEGY: Union[List[AL_STRATEGY], AL_STRATEGY]
+    EXP_DATASET: DATASET
+    EXP_GRID_DATASET: List[DATASET]
+    EXP_STRATEGY: AL_STRATEGY
+    EXP_GRID_STRATEGY: List[AL_STRATEGY]
     EXP_RANDOM_SEEDS_START: int = 0
     EXP_RANDOM_SEEDS_END: int = 10
-    EXP_RANDOM_SEED: Union[List[int], int]
-    EXP_NUM_QUERIES: Union[List[int], int] = [0]
-    EXP_BATCH_SIZE: Union[List[int], int] = [5]
-    EXP_LEARNER_MODEL: Union[List[LEARNER_MODEL], LEARNER_MODEL] = [LEARNER_MODEL.RF]
-    EXP_TRAIN_TEST_SPLIT: Union[List[float], float] = [0.5]
+    EXP_RANDOM_SEED: List[int]
+    EXP_NUM_QUERIES: int
+    EXP_GRID_NUM_QUERIES: List[int] = [0]
+    EXP_BATCH_SIZE: int
+    EXP_GRID_BATCH_SIZE: List[int] = [5]
+    EXP_LEARNER_MODEL: LEARNER_MODEL
+    EXP_GRID_LEARNER_MODEL: List[LEARNER_MODEL] = [LEARNER_MODEL.RF]
+    EXP_TRAIN_TEST_BUCKET: int
+    EXP_GRID_TRAIN_TEST_BUCKET_SIZE: List[int] = list(range(0, 10))
 
     WORKER_INDEX: int
 
@@ -66,7 +72,8 @@ class Config:
     EXPERIMENT_SLURM_FILE_PATH: Path = "02_slurm.slurm"  # type: ignore
     EXPERIMENT_BASH_FILE_PATH: Path = "02_bash.sh"  # type: ignore
     EXPERIMENT_SYNC_AND_RUN_FILE_PATH: Path = "03_sync_and_run.sh"  # type: ignore
-    RESULTS_FILE_PATH: Path = "_results.csv"  # type: ignore
+    RESULTS_PATH_APPENDIX: str = "_metric_results.csv"
+    RESULTS_FILE_PATH_OR_PATHES: Path | List[Path]  # one per each dataset!
 
     def __init__(self) -> None:
         self._parse_cli_arguments()
@@ -86,6 +93,19 @@ class Config:
         if self.RANDOM_SEED != -1 and self.RANDOM_SEED != -2:
             np.random.seed(self.RANDOM_SEED)
             random.seed(self.RANDOM_SEED)
+
+        if self.WORKER_INDEX is not None:
+            self.load_workload()
+            # magically create the output path
+            output_file_name = str(self.RANDOM_SEED) + self.RESULTS_PATH_APPENDIX
+            self.RESULTS_FILE_PATH_OR_PATHES = (
+                self.OUTPUT_PATH / self.EXP_DATASET.name / output_file_name
+            )
+        else:
+            self.RESULTS_FILE_PATH_OR_PATHES = []
+
+            for dataset in self.EXP_GRID_DATASET:
+                self.RESULTS_FILE_PATH_OR_PATHES.append(self.OUTPUT_PATH / dataset.name)
 
     def _pathes_magic(self) -> None:
         if self.RUNNING_ENVIRONMENT == "local":
@@ -112,7 +132,7 @@ class Config:
         self.EXPERIMENT_BASH_FILE_PATH = (
             self.OUTPUT_PATH / self.EXPERIMENT_BASH_FILE_PATH
         )
-        self.RESULTS_FILE_PATH = self.OUTPUT_PATH / self.RESULTS_FILE_PATH
+
         self.EXPERIMENT_SYNC_AND_RUN_FILE_PATH = (
             self.OUTPUT_PATH / self.EXPERIMENT_SYNC_AND_RUN_FILE_PATH
         )
@@ -160,17 +180,17 @@ class Config:
                 continue
 
             # convert str/ints to enum data types first
-            if k == "EXP_STRATEGY":
+            if k == "EXP_GRID_STRATEGY":
                 if type(v[0]) == int:
                     v = [AL_STRATEGY(x) for x in v]
                 else:
                     v = [AL_STRATEGY[x] for x in v]
-            elif k == "EXP_DATASET":
+            elif k == "EXP_GRID_DATASET":
                 if type(v[0]) == int:
                     v = [DATASET(x) for x in v]
                 else:
                     v = [DATASET[x] for x in v]
-            elif k == "EXP_LEARNER_MODEL":
+            elif k == "EXP_GRID_LEARNER_MODEL":
                 if type(v[0]) == int:
                     v = [LEARNER_MODEL(x) for x in v]
                 else:
@@ -179,7 +199,8 @@ class Config:
             self.__setattr__(k, v)
 
     def load_workload(self) -> None:
-        workload_df = pd.read_csv(
+        # FIXME
+        workload_df = pd.read_feather(
             self.WORKLOAD_FILE_PATH,
             header=0,
             index_col=0,
@@ -226,8 +247,8 @@ class Config:
                 arg_type = int
             # enum classes:
             elif (
-                str(v).startswith("typing.Union[typing.List[misc")
-                or str(v) == "typing.Union[typing.List[datasets.DATASET]"
+                str(v).startswith("typing.List[misc")
+                or str(v) == "typing.List[datasets.DATASET]"
             ):
                 full_str = str(v).split("[")[1][:-1].split(".")
                 module_str = ".".join(full_str[:-1])

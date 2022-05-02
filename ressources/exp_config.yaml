@@ -1,22 +1,22 @@
 test_exp_1:
     {
-        EXP_DATASET: [1, 2, 3],
-        EXP_STRATEGY:
+        EXP_GRID_DATASET: [1, 2, 3],
+        EXP_GRID_STRATEGY:
             [ALIPY_UNCERTAINTY_LC, ALIPY_RANDOM, ALIPY_UNCERTAINTY_MM],
-        EXP_RANDOM_SEEDS_END: 10,
-        EXP_NUM_QUERIES: [50],
-        EXP_BATCH_SIZE: [1, 5, 50],
-        EXP_LEARNER_MODEL: [RF, MNB, MLP, LBFGS_MLP],
-        EXP_TRAIN_TEST_SPLIT: [0.3, 0.7],
+        EXP_GRID_RANDOM_SEEDS_END: 2,
+        EXP_GRID_NUM_QUERIES: [10],
+        EXP_GRID_BATCH_SIZE: [1, 5, 50],
+        EXP_GRID_LEARNER_MODEL: [RF, MNB, MLP, LBFGS_MLP],
+        EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0, 1, 2, 3, 4, 5],
     }
 test_exp_2:
     {
-        EXP_DATASET: [1, 2, 3],
-        EXP_STRATEGY:
+        EXP_GRID_DATASET: [1, 2, 3],
+        EXP_GRID_STRATEGY:
             [ALIPY_UNCERTAINTY_LC, ALIPY_RANDOM, ALIPY_UNCERTAINTY_MM],
-        EXP_RANDOM_SEEDS_END: 100,
-        EXP_NUM_QUERIES: [50],
-        EXP_BATCH_SIZE: [1, 5, 10, 25, 50],
-        EXP_LEARNER_MODEL: [RF, MNB, MLP, LBFGS_MLP],
-        EXP_TRAIN_TEST_SPLIT: [0.3, 0.5, 0.7],
+        EXP_GRID_RANDOM_SEEDS_END: 100,
+        EXP_GRID_NUM_QUERIES: [10],
+        EXP_GRID_BATCH_SIZE: [1, 5, 10, 25, 50],
+        EXP_GRID_LEARNER_MODEL: [RF, MNB, MLP, LBFGS_MLP],
+        EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
     }

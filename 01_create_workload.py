@@ -16,7 +16,7 @@ def _determine_exp_grid_parameters(config: Config) -> List[str]:
     result_list: List[str] = []
 
     for k, v in Config.__annotations__.items():
-        if k.startswith("EXP_") and str(v).startswith("typing.Union[typing.List["):
+        if k.startswith("EXP_GRID_") and str(v).startswith("typing.List["):
             result_list.append(k)
     return result_list
 
@@ -25,14 +25,22 @@ def create_workload(config: Config) -> None:
     exp_grid_params_names = _determine_exp_grid_parameters(config)
 
     # check results
-    if os.path.isfile(config.RESULTS_FILE_PATH):
-        result_df = pd.read_csv(
-            config.RESULTS_FILE_PATH,
-            index_col=None,
-            usecols=exp_grid_params_names,
+    result_dfs: List[pd.DataFrame] = []
+    if not isinstance(config.RESULTS_FILE_PATH_OR_PATHES, list):
+        raise RuntimeError(
+            "Config error parsing - RESUTLS_FILE_PATH_OR_PATHES is not a list"
         )
-    else:
-        result_df = pd.DataFrame(data=None, columns=exp_grid_params_names)
+    for result_file in config.RESULTS_FILE_PATH_OR_PATHES:
+        if os.path.isfile(result_file):
+            result_df = pd.read_feather(
+                result_file,
+            )
+        else:
+            result_df = pd.DataFrame(data=None, columns=exp_grid_params_names)
+
+        result_dfs.append(result_df)
+
+    result_df = pd.concat(result_dfs)
 
     missing_ids = []
 
@@ -57,9 +65,8 @@ def create_workload(config: Config) -> None:
 
     random_seed_df = pd.DataFrame(data=missing_ids, columns=exp_grid_params_names)
 
-    random_seed_df.to_csv(
+    random_seed_df.to_feather(
         config.WORKLOAD_FILE_PATH,
-        header=True,
     )
     config.save_to_file()
 
