@@ -39,7 +39,7 @@ class Config:
     EXP_GRID_STRATEGY: List[AL_STRATEGY]
     EXP_RANDOM_SEEDS_START: int = 0
     EXP_RANDOM_SEEDS_END: int = 10
-    EXP_RANDOM_SEED: List[int]
+    EXP_RANDOM_SEEDS: List[int]
     EXP_NUM_QUERIES: int
     EXP_GRID_NUM_QUERIES: List[int] = [0]
     EXP_BATCH_SIZE: int
@@ -72,8 +72,9 @@ class Config:
     EXPERIMENT_SLURM_FILE_PATH: Path = "02_slurm.slurm"  # type: ignore
     EXPERIMENT_BASH_FILE_PATH: Path = "02_bash.sh"  # type: ignore
     EXPERIMENT_SYNC_AND_RUN_FILE_PATH: Path = "03_sync_and_run.sh"  # type: ignore
-    RESULTS_PATH_APPENDIX: str = "_metric_results.csv"
-    RESULTS_FILE_PATH_OR_PATHES: Path | List[Path]  # one per each dataset!
+    DONE_WORKLOAD_PATH: Path = "04_sync_and_run.sh"  # type: ignore
+    METRIC_RESULTS_PATH_APPENDIX: str = "_metric_results.csv"
+    METRIC_RESULTS_FILE_PATHES: List[Path]
 
     def __init__(self) -> None:
         self._parse_cli_arguments()
@@ -86,7 +87,7 @@ class Config:
             # yes, we have -> overwrite everything, except for the stuff which was explicitly defined
             self._load_exp_yaml()
 
-        self.EXP_RANDOM_SEED = list(
+        self.EXP_RANDOM_SEEDS = list(
             range(self.EXP_RANDOM_SEEDS_START, self.EXP_RANDOM_SEEDS_END)
         )
 
@@ -96,16 +97,14 @@ class Config:
 
         if self.WORKER_INDEX is not None:
             self.load_workload()
-            # magically create the output path
-            output_file_name = str(self.RANDOM_SEED) + self.RESULTS_PATH_APPENDIX
-            self.RESULTS_FILE_PATH_OR_PATHES = (
-                self.OUTPUT_PATH / self.EXP_DATASET.name / output_file_name
-            )
-        else:
-            self.RESULTS_FILE_PATH_OR_PATHES = []
 
-            for dataset in self.EXP_GRID_DATASET:
-                self.RESULTS_FILE_PATH_OR_PATHES.append(self.OUTPUT_PATH / dataset.name)
+            # magically create the output path
+            self.METRIC_RESULTS_FILE_PATHES = [
+                self.OUTPUT_PATH
+                / self.EXP_DATASET.name
+                / str(str(ers) + self.METRIC_RESULTS_PATH_APPENDIX)
+                for ers in self.EXP_RANDOM_SEEDS
+            ]
 
     def _pathes_magic(self) -> None:
         if self.RUNNING_ENVIRONMENT == "local":
@@ -140,6 +139,8 @@ class Config:
         self.RAW_DATASETS_PATH = self.DATASETS_PATH / self.RAW_DATASETS_PATH
 
         self.KAGGLE_DATASETS_PATH = Path(self.KAGGLE_DATASETS_PATH)
+
+        self.DONE_WORKLOAD_PATH = self.OUTPUT_PATH / self.DONE_WORKLOAD_PATH
 
         self.OUTPUT_PATH.mkdir(parents=True, exist_ok=True)
 
@@ -200,7 +201,7 @@ class Config:
 
     def load_workload(self) -> None:
         # FIXME
-        workload_df = pd.read_feather(
+        workload_df = pd.read_csv(
             self.WORKLOAD_FILE_PATH,
             header=0,
             index_col=0,

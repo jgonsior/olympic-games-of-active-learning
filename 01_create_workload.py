@@ -24,23 +24,14 @@ def _determine_exp_grid_parameters(config: Config) -> List[str]:
 def create_workload(config: Config) -> None:
     exp_grid_params_names = _determine_exp_grid_parameters(config)
 
-    # check results
-    result_dfs: List[pd.DataFrame] = []
-    if not isinstance(config.RESULTS_FILE_PATH_OR_PATHES, list):
-        raise RuntimeError(
-            "Config error parsing - RESUTLS_FILE_PATH_OR_PATHES is not a list"
+    if os.path.isfile(result_file):
+        result_df = pd.read_csv(
+            result_file,
         )
-    for result_file in config.RESULTS_FILE_PATH_OR_PATHES:
-        if os.path.isfile(result_file):
-            result_df = pd.read_feather(
-                result_file,
-            )
-        else:
-            result_df = pd.DataFrame(data=None, columns=exp_grid_params_names)
+    else:
+        result_df = pd.DataFrame(data=None, columns=exp_grid_params_names)
 
-        result_dfs.append(result_df)
-
-    result_df = pd.concat(result_dfs)
+    result_dfs.append(result_df)
 
     missing_ids = []
 
@@ -65,9 +56,7 @@ def create_workload(config: Config) -> None:
 
     random_seed_df = pd.DataFrame(data=missing_ids, columns=exp_grid_params_names)
 
-    random_seed_df.to_feather(
-        config.WORKLOAD_FILE_PATH,
-    )
+    random_seed_df.to_csv(config.WORKLOAD_FILE_PATH, index=None)
     config.save_to_file()
 
 
@@ -98,8 +87,8 @@ def create_AL_experiment_slurm_files(config: Config) -> None:
         config.EXPERIMENT_SLURM_FILE_PATH,
         array=True,
         PYTHON_FILE="02_run_experiment.py",
-        START=config.EXP_RANDOM_SEED[0],
-        END=int(config.EXP_RANDOM_SEED[-1] / config.SLURM_ITERATIONS_PER_BATCH),
+        START=config.EXP_RANDOM_SEEDS[0],
+        END=int(config.EXP_RANDOM_SEEDS[-1] / config.SLURM_ITERATIONS_PER_BATCH),
         CLI_ARGS="",
         APPEND_OUTPUT_PATH=False,
     )
@@ -111,8 +100,8 @@ def create_AL_experiment_bash_files(config: Config) -> None:
         Path("slurm_templates/bash_parallel_runner.sh"),
         config.EXPERIMENT_BASH_FILE_PATH,
         PYTHON_FILE="02_run_experiment.py",
-        START=config.EXP_RANDOM_SEED[0],
-        END=int(config.EXP_RANDOM_SEED[-1] / config.SLURM_ITERATIONS_PER_BATCH),
+        START=config.EXP_RANDOM_SEEDS[0],
+        END=int(config.EXP_RANDOM_SEEDS[-1] / config.SLURM_ITERATIONS_PER_BATCH),
     )
     _chmod_u_plus_x(config.EXPERIMENT_BASH_FILE_PATH)
 

@@ -48,7 +48,6 @@ def load_dataset(dataset: DATASET, config: Config) -> pd.DataFrame:
 def split_dataset(
     df: pd.DataFrame,
     config: Config,
-    al_framework: AL_FRAMEWORK = AL_FRAMEWORK.ALIPY,
 ) -> Tuple[
     FeatureVectors,
     LabelList,
