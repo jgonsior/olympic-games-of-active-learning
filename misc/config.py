@@ -39,7 +39,8 @@ class Config:
     EXP_GRID_STRATEGY: List[AL_STRATEGY]
     EXP_RANDOM_SEEDS_START: int = 0
     EXP_RANDOM_SEEDS_END: int = 10
-    EXP_RANDOM_SEEDS: List[int]
+    EXP_GRID_RANDOM_SEED: List[int]
+    EXP_RANDOM_SEED: int
     EXP_NUM_QUERIES: int
     EXP_GRID_NUM_QUERIES: List[int] = [0]
     EXP_BATCH_SIZE: int
@@ -87,7 +88,7 @@ class Config:
             # yes, we have -> overwrite everything, except for the stuff which was explicitly defined
             self._load_exp_yaml()
 
-        self.EXP_RANDOM_SEEDS = list(
+        self.EXP_GRID_RANDOM_SEED = list(
             range(self.EXP_RANDOM_SEEDS_START, self.EXP_RANDOM_SEEDS_END)
         )
 
@@ -103,7 +104,7 @@ class Config:
                 self.OUTPUT_PATH
                 / self.EXP_DATASET.name
                 / str(str(ers) + self.METRIC_RESULTS_PATH_APPENDIX)
-                for ers in self.EXP_RANDOM_SEEDS
+                for ers in self.EXP_GRID_RANDOM_SEED
             ]
 
     def _pathes_magic(self) -> None:
@@ -200,16 +201,14 @@ class Config:
             self.__setattr__(k, v)
 
     def load_workload(self) -> None:
-        # FIXME
         workload_df = pd.read_csv(
             self.WORKLOAD_FILE_PATH,
             header=0,
             index_col=0,
-            nrows=self.WORKER_INDEX + 1,
+            skiprows=lambda x: x not in [0, self.WORKER_INDEX + 1],
         )
-        workload = workload_df.loc[self.WORKER_INDEX]  # type: ignore
+        workload = workload_df.iloc[0].to_dict()
         for k, v in workload.items():
-
             # convert str/ints to enum data types first
             if k == "EXP_STRATEGY":
                 v = AL_STRATEGY(int(v))

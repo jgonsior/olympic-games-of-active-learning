@@ -18,7 +18,6 @@ def _determine_exp_grid_parameters(config: Config) -> List[str]:
     for k, v in Config.__annotations__.items():
         if k.startswith("EXP_GRID_") and str(v).startswith("typing.List["):
             result_list.append(k)
-    result_list.append("EXP_RANDOM_SEEDS")
     return result_list
 
 
@@ -59,7 +58,7 @@ def create_workload(config: Config) -> None:
     )
 
     random_seed_df.rename(
-        columns=lambda s: s.replace("EXP_GRID_", "EXP_"), inplace=True
+        columns=lambda s: s.replace("EXP_GRID_", "EXP_"), inplace=True  # type: ignore
     )
 
     random_seed_df.to_csv(config.WORKLOAD_FILE_PATH, index=None)
@@ -86,6 +85,7 @@ def _chmod_u_plus_x(path: Path) -> None:
     )
 
 
+# TODO wrapper schreiben, der mehrere random seeds aus der workload datei von einem worker ausführt
 def create_AL_experiment_slurm_files(config: Config) -> None:
     _write_template_file(
         config,
@@ -93,8 +93,8 @@ def create_AL_experiment_slurm_files(config: Config) -> None:
         config.EXPERIMENT_SLURM_FILE_PATH,
         array=True,
         PYTHON_FILE="02_run_experiment.py",
-        START=config.EXP_RANDOM_SEEDS[0],
-        END=int(config.EXP_RANDOM_SEEDS[-1] / config.SLURM_ITERATIONS_PER_BATCH),
+        START=config.EXP_GRID_RANDOM_SEED[0],
+        END=int(config.EXP_GRID_RANDOM_SEED[-1] / config.SLURM_ITERATIONS_PER_BATCH),
         CLI_ARGS="",
         APPEND_OUTPUT_PATH=False,
     )
@@ -106,8 +106,8 @@ def create_AL_experiment_bash_files(config: Config) -> None:
         Path("slurm_templates/bash_parallel_runner.sh"),
         config.EXPERIMENT_BASH_FILE_PATH,
         PYTHON_FILE="02_run_experiment.py",
-        START=config.EXP_RANDOM_SEEDS[0],
-        END=int(config.EXP_RANDOM_SEEDS[-1] / config.SLURM_ITERATIONS_PER_BATCH),
+        START=config.EXP_GRID_RANDOM_SEED[0],
+        END=int(config.EXP_GRID_RANDOM_SEED[-1] / config.SLURM_ITERATIONS_PER_BATCH),
     )
     _chmod_u_plus_x(config.EXPERIMENT_BASH_FILE_PATH)
 
