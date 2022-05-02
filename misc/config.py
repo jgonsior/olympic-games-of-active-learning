@@ -72,7 +72,7 @@ class Config:
     EXPERIMENT_SLURM_FILE_PATH: Path = "02_slurm.slurm"  # type: ignore
     EXPERIMENT_BASH_FILE_PATH: Path = "02_bash.sh"  # type: ignore
     EXPERIMENT_SYNC_AND_RUN_FILE_PATH: Path = "03_sync_and_run.sh"  # type: ignore
-    DONE_WORKLOAD_PATH: Path = "04_sync_and_run.sh"  # type: ignore
+    DONE_WORKLOAD_PATH: Path = "04_done_workload.csv"  # type: ignore
     METRIC_RESULTS_PATH_APPENDIX: str = "_metric_results.csv"
     METRIC_RESULTS_FILE_PATHES: List[Path]
 

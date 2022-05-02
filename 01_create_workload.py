@@ -18,22 +18,21 @@ def _determine_exp_grid_parameters(config: Config) -> List[str]:
     for k, v in Config.__annotations__.items():
         if k.startswith("EXP_GRID_") and str(v).startswith("typing.List["):
             result_list.append(k)
+    result_list.append("EXP_RANDOM_SEEDS")
     return result_list
 
 
 def create_workload(config: Config) -> None:
     exp_grid_params_names = _determine_exp_grid_parameters(config)
 
-    if os.path.isfile(result_file):
+    if os.path.isfile(config.DONE_WORKLOAD_PATH):
         result_df = pd.read_csv(
-            result_file,
+            config.DONE_WORKLOAD_PATH,
         )
     else:
         result_df = pd.DataFrame(data=None, columns=exp_grid_params_names)
 
-    result_dfs.append(result_df)
-
-    missing_ids = []
+    missing_workloads = []
 
     exp_param_grid = {
         exp_parameter: config.__getattribute__(exp_parameter)
@@ -49,12 +48,19 @@ def create_workload(config: Config) -> None:
         if len(possible_existing_results_row) == 0:
             return single_workload
 
-    missing_ids = Parallel(n_jobs=multiprocessing.cpu_count())(
+    missing_workloads = Parallel(n_jobs=multiprocessing.cpu_count())(
         delayed(_check_if_workload_has_already_been_run)(single_workload)
         for single_workload in ParameterGrid(exp_param_grid)
     )
 
-    random_seed_df = pd.DataFrame(data=missing_ids, columns=exp_grid_params_names)
+    random_seed_df = pd.DataFrame(
+        data=missing_workloads,
+        columns=exp_grid_params_names,
+    )
+
+    random_seed_df.rename(
+        columns=lambda s: s.replace("EXP_GRID_", "EXP_"), inplace=True
+    )
 
     random_seed_df.to_csv(config.WORKLOAD_FILE_PATH, index=None)
     config.save_to_file()

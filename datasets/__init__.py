@@ -42,7 +42,7 @@ for dataset_name in datasets_yaml_parameter_dict:
 def load_dataset(dataset: DATASET, config: Config) -> pd.DataFrame:
     dataset_file = dataset.name + ".csv"
     dataset_path: Path = config.DATASETS_PATH / dataset_file
-    return pd.read_feather(dataset_path)
+    return pd.read_csv(dataset_path)
 
 
 def split_dataset(

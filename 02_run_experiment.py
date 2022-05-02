@@ -22,8 +22,6 @@ class AL_Experiment(ABC):
     def __init__(self) -> None:
         self.config = Config()
 
-        # TODO: in order to run >1.000.000 jobs on taurus -> specify a random seeds range for this file to work through!
-
         log_it(
             f"Executing Job # {self.config.WORKER_INDEX} of workload {self.config.WORKLOAD_FILE_PATH}"
         )
@@ -41,14 +39,14 @@ class AL_Experiment(ABC):
         pass
 
     def run_experiments(self) -> None:
+        dataset = DATASET(self.config.EXP_DATASET)
+        df = load_dataset(dataset, self.config)
+
         for RANDOM_SEED in self.config.EXP_RANDOM_SEEDS:
             np.random.seed(RANDOM_SEED)
             random.seed(RANDOM_SEED)
 
-            dataset = DATASET(self.config.EXP_DATASET)
-
             # load dataset
-            df = load_dataset(dataset, self.config)
             (
                 self.X,
                 self.Y,
