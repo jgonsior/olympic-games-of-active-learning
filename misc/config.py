@@ -47,7 +47,7 @@ class Config:
     EXP_GRID_BATCH_SIZE: List[int] = [5]
     EXP_LEARNER_MODEL: LEARNER_MODEL
     EXP_GRID_LEARNER_MODEL: List[LEARNER_MODEL] = [LEARNER_MODEL.RF]
-    EXP_TRAIN_TEST_BUCKET: int
+    EXP_TRAIN_TEST_BUCKET_SIZE: int
     EXP_GRID_TRAIN_TEST_BUCKET_SIZE: List[int] = list(range(0, 10))
 
     WORKER_INDEX: int
@@ -204,11 +204,12 @@ class Config:
         workload_df = pd.read_csv(
             self.WORKLOAD_FILE_PATH,
             header=0,
-            index_col=0,
+            index_col=None,
             skiprows=lambda x: x not in [0, self.WORKER_INDEX + 1],
         )
         workload = workload_df.iloc[0].to_dict()
         for k, v in workload.items():
+            print(f"{k}\t\t\t{v}")
             # convert str/ints to enum data types first
             if k == "EXP_STRATEGY":
                 v = AL_STRATEGY(int(v))
