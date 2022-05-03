@@ -1,11 +1,16 @@
+from distutils.command.config import config
 from pathlib import Path
-from typing import Any, Dict
-
+from typing import Any, Dict, List, Tuple
+import numpy as np
 import pandas as pd
 import yaml
+from datasets import DATASET
 from misc.config import Config
 import kaggle
 from misc.logging import log_it
+from sklearn.model_selection import StratifiedKFold
+
+from ressources.data_types import SampleIndiceList
 
 
 class Kaggle:
@@ -40,6 +45,35 @@ class Kaggle:
                 path=destination_path.parent,
             )
 
+    """
+    Creates a train_test_split.csv file, which contains for each specified split (0-9 or 0-4) the indices for the train, and the indices for the test split
+    """
+
+    def save_train_test_splits(self, df: pd.DataFrame, destination: Path) -> None:
+        X = df.loc[:, df.columns != "LABEL_TARGET"].to_numpy()  # type: ignore
+        Y = df["LABEL_TARGET"].to_numpy()  # type: ignore
+        classes = np.unique(Y)
+
+        no_good_split_found = 0
+        splits: Dict[int, Tuple[SampleIndiceList, SampleIndiceList]] = {}
+
+        while no_good_split_found < self.config.DATASETS_AMOUNT_OF_SPLITS:
+            for split_number, (train_index, test_index) in enumerate(
+                StratifiedKFold(
+                    n_splits=self.config.DATASETS_AMOUNT_OF_SPLITS, shuffle=True
+                ).split(X, Y)
+            ):
+                # quick test that all classes are present in all test_index sets
+                if np.setdiff1d(np.unique(Y[test_index]), classes) == 0:  # type: ignore
+                    no_good_split_found = 0
+                    splits = {}
+                no_good_split_found += 1
+                splits[split_number] = (train_index.tolist(), test_index.tolist())  # type: ignore
+
+        splits_df = pd.DataFrame(splits).T
+        splits_df.columns = ["train", "test"]
+        splits_df.to_csv(destination, index=None)
+
     def preprocess_dataset(self, dataset_name: str) -> None:
         datasets_raw_path = self.config.RAW_DATASETS_PATH
         datasets_cleaned_path = self.config.DATASETS_PATH
@@ -70,7 +104,13 @@ class Kaggle:
             label_column = parsing_args["target"]
             df.rename(columns={label_column: "LABEL_TARGET"}, inplace=True)
 
-            df.to_csv()(
+            self.save_train_test_splits(
+                df,
+                self.config.DATASETS_PATH
+                / str(dataset_name + self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX),
+            )
+
+            df.to_csv(
                 datasets_cleaned_path,
                 index=False,
             )

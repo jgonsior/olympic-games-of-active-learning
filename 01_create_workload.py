@@ -63,6 +63,7 @@ def create_workload(config: Config) -> None:
 
     random_seed_df.to_csv(config.WORKLOAD_FILE_PATH, index=None)
     config.save_to_file()
+    log_it(f"Created workload of {len(random_seed_df)}")
 
 
 def _write_template_file(

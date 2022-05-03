@@ -48,7 +48,7 @@ class Config:
     EXP_LEARNER_MODEL: LEARNER_MODEL
     EXP_GRID_LEARNER_MODEL: List[LEARNER_MODEL] = [LEARNER_MODEL.RF]
     EXP_TRAIN_TEST_BUCKET_SIZE: int
-    EXP_GRID_TRAIN_TEST_BUCKET_SIZE: List[int] = list(range(0, 10))
+    EXP_GRID_TRAIN_TEST_BUCKET_SIZE: List[int] = list(range(0, 5))
 
     WORKER_INDEX: int
 
@@ -63,7 +63,9 @@ class Config:
     BASH_PARALLEL_RUNNERS: int = 10
 
     DATASETS_PATH: Path
+    DATASETS_TRAIN_TEST_SPLIT_APPENDIX: str = "_train_test_split.csv"
     RAW_DATASETS_PATH: Path = "_raw"  # type: ignore
+    DATASETS_AMOUNT_OF_SPLITS: int = 5
 
     KAGGLE_DATASETS_PATH: Path = "ressources/datasets.yaml"  # type: ignore
     LOCAL_CONFIG_FILE_PATH: Path = ".server_access_credentials.cfg"  # type: ignore
