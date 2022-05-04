@@ -77,7 +77,7 @@ class Config:
     EXPERIMENT_SYNC_AND_RUN_FILE_PATH: Path = "03_sync_and_run.sh"  # type: ignore
     DONE_WORKLOAD_PATH: Path = "04_done_workload.csv"  # type: ignore
     METRIC_RESULTS_PATH_APPENDIX: str = "_metric_results.csv"
-    METRIC_RESULTS_FILE_PATHES: List[Path]
+    METRIC_RESULTS_FILE_PATH: Path
 
     def __init__(self) -> None:
         self._parse_cli_arguments()
@@ -101,13 +101,16 @@ class Config:
         if self.WORKER_INDEX is not None:
             self.load_workload()
 
+            # BUG worker_index ist bei wiederholten runs nicht eindeutig um das ergebnis abzuspeichern! --> write a new field called "original workload id into workload.csv" -> and if that file gets recreated -> use the old workload id for that workload!
+            # BUG workload wird einmal generiert -> und enthält die orgiinal ids
+            # wenn das jetzt nochmal gemacht werden soll -> wir lesen zuerst das originale mit den original ids ein, und entfernen dann alle die, wo es die ids bereits gibt, und speichern es dann erneut ab --> dann sparen wir uns auch das param_grid nochmal neu zu berechnen!
             # magically create the output path
-            self.METRIC_RESULTS_FILE_PATHES = [
+            self.METRIC_RESULTS_FILE_PATH = (
                 self.OUTPUT_PATH
                 / self.EXP_DATASET.name
-                / str(str(ers) + self.METRIC_RESULTS_PATH_APPENDIX)
-                for ers in self.EXP_GRID_RANDOM_SEED
-            ]
+                / str(str(self.WORKER_INDEX) + self.METRIC_RESULTS_PATH_APPENDIX)
+            )
+            self.METRIC_RESULTS_FILE_PATH.parent.mkdir(exist_ok=True)
 
     def _pathes_magic(self) -> None:
         if self.RUNNING_ENVIRONMENT == "local":

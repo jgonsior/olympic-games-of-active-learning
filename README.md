@@ -1,4 +1,16 @@
 # AL Survey
+
+
+# Installation tips
+We use git submodules to install our forked ALiPy framework. To install that use the following commands:
+```bash
+git submodule update --init --recursive
+cd ALiPy
+python setup.py install
+```
+
+# Usage
+
 ```bash
 python 00_dowload_datasets.py
 python 01_create_workload.py --EXP_TITLE test_experiment --IGNORE_CONFIG_FILE --EXP_DATASETS 1 2 3 --EXP_STRATEGIES 5 2 --EXP_RANDOM_SEEDS_END 100

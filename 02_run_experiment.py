@@ -13,6 +13,7 @@ from ressources.data_types import (
     learner_models_to_classes_mapping,
 )
 from sklearn.metrics import classification_report
+from alipy.query_strategy import QueryInstanceRandom
 import numpy as np
 
 
@@ -39,11 +40,11 @@ class AL_Experiment(ABC):
         pass
 
     def run_experiment(self) -> None:
-        dataset = DATASET(self.config.EXP_DATASET)
-        df = load_dataset(dataset, self.config)
-
         np.random.seed(self.config.EXP_RANDOM_SEED)
         random.seed(self.config.EXP_RANDOM_SEED)
+
+        dataset = DATASET(self.config.EXP_DATASET)
+        dataset_tuple = load_dataset(dataset, self.config)
 
         # load dataset
         (
@@ -53,7 +54,7 @@ class AL_Experiment(ABC):
             self.test_idx,
             self.label_idx,
             self.unlabel_idx,
-        ) = split_dataset(df, self.config)
+        ) = split_dataset(dataset_tuple, self.config)
 
         self.prepare_dataset()
 
@@ -113,8 +114,8 @@ class AL_Experiment(ABC):
         output_df = pd.json_normalize(confusion_matrices, sep="_")  # type: ignore
         output_df["selected_indices"] = selected_indices
 
-        log_it(f"saving to {self.config.METRIC_RESULTS_FILE_PATHES}")
-        output_df.to_csv(self.config.METRIC_RESULTS_FILE_PATHES, index=None)
+        log_it(f"saving to {self.config.METRIC_RESULTS_FILE_PATH}")
+        output_df.to_csv(self.config.METRIC_RESULTS_FILE_PATH, index=None)
 
         # save workload parameters in the workload_done_file
         workload = {}
@@ -155,11 +156,11 @@ class ALIPY_AL_Experiment(AL_Experiment):
 
     def query_AL_strategy(self) -> List[int]:
         return self.al_strategy.select(
-            self.label_idx,
-            self.unlabel_idx,
+            label_index=self.label_idx,
+            unlabel_index=self.unlabel_idx,
             model=self.model,
             batch_size=self.config.EXP_BATCH_SIZE,
-        ).tolist()
+        )
 
     # dataset in numpy format and indice lists are fine as it is
     def prepare_dataset(self):

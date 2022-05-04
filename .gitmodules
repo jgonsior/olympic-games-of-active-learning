@@ -1,0 +1,3 @@
+[submodule "ALiPy"]
+	path = ALiPy
+	url = git@github.com:jgonsior/ALiPy.git

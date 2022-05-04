@@ -1,4 +1,5 @@
 from __future__ import annotations
+import ast
 
 from enum import unique
 from enum import IntEnum
@@ -39,14 +40,22 @@ for dataset_name in datasets_yaml_parameter_dict:
     extend_enum(DATASET, dataset_name)
 
 
-def load_dataset(dataset: DATASET, config: Config) -> pd.DataFrame:
+def load_dataset(dataset: DATASET, config: Config) -> Tuple[pd.DataFrame, pd.DataFrame]:
     dataset_file = dataset.name + ".csv"
     dataset_path: Path = config.DATASETS_PATH / dataset_file
-    return pd.read_csv(dataset_path)
+
+    # load train_test_split
+
+    train_test_split = pd.read_csv(
+        config.DATASETS_PATH
+        / str(dataset.name + config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX)
+    )
+
+    return pd.read_csv(dataset_path), train_test_split
 
 
 def split_dataset(
-    df: pd.DataFrame,
+    dataset: Tuple[pd.DataFrame, pd.DataFrame],
     config: Config,
 ) -> Tuple[
     FeatureVectors,
@@ -56,12 +65,9 @@ def split_dataset(
     SampleIndiceList,
     SampleIndiceList,
 ]:
+    df, train_test_split = dataset
     X = df.loc[:, df.columns != "LABEL_TARGET"].to_numpy()  # type: ignore
     Y = df["LABEL_TARGET"].to_numpy()  # type: ignore
-
-    shuffling = np.random.permutation(len(Y))
-    X = X[shuffling]
-    Y = Y[shuffling]
 
     scaler = RobustScaler()
     X = scaler.fit_transform(X)
@@ -71,11 +77,12 @@ def split_dataset(
     X = scaler.fit_transform(X)
 
     # fancy ALiPy train/test split
-    # TODO train-test splits schon vorab berechnen
-    test_ratio = config.EXP_TRAIN_TEST_SPLIT
-    indices: SampleIndiceList = [i for i in range(0, len(Y))]
-    train_idx: SampleIndiceList = indices[: math.floor(len(Y) * (1 - test_ratio))]
-    test_idx: SampleIndiceList = indices[math.floor(len(Y) * (1 - test_ratio)) :]
+    train_idx: SampleIndiceList = ast.literal_eval(
+        train_test_split.iloc[config.EXP_TRAIN_TEST_BUCKET_SIZE]["train"]
+    )
+    test_idx: SampleIndiceList = ast.literal_eval(
+        train_test_split.iloc[config.EXP_TRAIN_TEST_BUCKET_SIZE]["test"]
+    )
     unlabel_idx: SampleIndiceList = train_idx.copy()
     label_idx: SampleIndiceList = []
 
