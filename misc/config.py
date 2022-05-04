@@ -102,10 +102,6 @@ class Config:
         if self.WORKER_INDEX is not None:
             self.load_workload()
 
-            # BUG worker_index ist bei wiederholten runs nicht eindeutig um das ergebnis abzuspeichern! --> write a new field called "original workload id into workload.csv" -> and if that file gets recreated -> use the old workload id for that workload!
-            # BUG workload wird einmal generiert -> und enthält die orgiinal ids
-            # wenn das jetzt nochmal gemacht werden soll -> wir lesen zuerst das originale mit den original ids ein, und entfernen dann alle die, wo es die ids bereits gibt, und speichern es dann erneut ab --> dann sparen wir uns auch das param_grid nochmal neu zu berechnen!
-            # magically create the output path
             self.METRIC_RESULTS_FILE_PATH = (
                 self.OUTPUT_PATH
                 / self.EXP_DATASET.name
