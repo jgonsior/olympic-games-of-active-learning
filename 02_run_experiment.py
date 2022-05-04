@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import csv
 import random
+import time
 from typing import Any, List
 import pandas as pd
 from datasets import DATASET, load_dataset, split_dataset
@@ -84,6 +85,8 @@ class AL_Experiment(ABC):
 
         log_it(f"Running for a total of {total_amount_of_iterations} iterations")
 
+        start_time = time.process_time()
+
         for iteration in range(0, total_amount_of_iterations):
             log_it(f"#{iteration}")
 
@@ -110,6 +113,8 @@ class AL_Experiment(ABC):
 
             confusion_matrices.append(current_confusion_matrix)
 
+        end_time = time.process_time()
+
         # save metric results into a single file
         output_df = pd.json_normalize(confusion_matrices, sep="_")  # type: ignore
         output_df["selected_indices"] = selected_indices
@@ -127,7 +132,7 @@ class AL_Experiment(ABC):
                 and not k.startswith("EXP_GRID_")
             ):
                 workload[k] = self.config.__getattribute__(k)
-
+        workload["duration"] = end_time - start_time
         print(workload)
 
         with open(self.config.DONE_WORKLOAD_PATH, "a") as f:

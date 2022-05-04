@@ -21,7 +21,7 @@ def _determine_exp_grid_parameters(config: Config) -> List[str]:
     return result_list
 
 
-def create_workload(config: Config) -> None:
+def create_workload(config: Config) -> List[int]:
     exp_grid_params_names = _determine_exp_grid_parameters(config)
 
     if os.path.isfile(config.DONE_WORKLOAD_PATH):
@@ -56,6 +56,7 @@ def create_workload(config: Config) -> None:
     open_workload_df.to_csv(config.WORKLOAD_FILE_PATH, index=None)
     config.save_to_file()
     log_it(f"Created workload of {len(open_workload_df)}")
+    return open_workload_df.EXP_UNIQUE_ID.to_list()
 
 
 def _write_template_file(
@@ -93,14 +94,14 @@ def create_AL_experiment_slurm_files(config: Config) -> None:
     )
 
 
-def create_AL_experiment_bash_files(config: Config) -> None:
+def create_AL_experiment_bash_files(config: Config, unique_ids: List[int]) -> None:
     _write_template_file(
         config,
         Path("slurm_templates/bash_parallel_runner.sh"),
         config.EXPERIMENT_BASH_FILE_PATH,
         PYTHON_FILE="02_run_experiment.py",
-        START=config.EXP_GRID_RANDOM_SEED[0],
-        END=int(config.EXP_GRID_RANDOM_SEED[-1] / config.SLURM_ITERATIONS_PER_BATCH),
+        START=0,
+        END=int(len(unique_ids) / config.SLURM_ITERATIONS_PER_BATCH),
     )
     _chmod_u_plus_x(config.EXPERIMENT_BASH_FILE_PATH)
 
@@ -116,7 +117,7 @@ def create_run_files(config: Config) -> None:
 
 config = Config()
 
-create_workload(config)
+unique_ids = create_workload(config)
 create_AL_experiment_slurm_files(config)
-create_AL_experiment_bash_files(config)
+create_AL_experiment_bash_files(config, unique_ids)
 create_run_files(config)
