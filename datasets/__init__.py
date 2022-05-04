@@ -85,11 +85,8 @@ def split_dataset(
     )
     unlabel_idx: SampleIndiceList = train_idx.copy()
     label_idx: SampleIndiceList = []
-
     for label in np.unique(Y):  # type: ignore
-        if label not in Y[train_idx]:  # type: ignore
-            print(np.where(Y[test_idx] == label))
-        init_labeled_index = np.where(Y[train_idx] == label)[0][0]  # type: ignore
+        init_labeled_index = unlabel_idx[np.where(Y[unlabel_idx] == label)[0][0]]  # type: ignore
         label_idx.append(init_labeled_index)
         unlabel_idx.remove(init_labeled_index)
 

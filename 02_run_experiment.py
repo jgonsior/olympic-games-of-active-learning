@@ -24,7 +24,7 @@ class AL_Experiment(ABC):
         self.config = Config()
 
         log_it(
-            f"Executing Job # {self.config.WORKER_INDEX} of workload {self.config.WORKLOAD_FILE_PATH}"
+            f"Executing Job # {self.config.WORKER_INDEX} of workload {self.config.WORKLOAD_FILE_PATH}: {self.config.EXP_DATASET.name} {self.config.EXP_STRATEGY.name}"
         )
 
     @abstractmethod
@@ -155,12 +155,15 @@ class ALIPY_AL_Experiment(AL_Experiment):
         self.al_strategy = al_strategy
 
     def query_AL_strategy(self) -> List[int]:
-        return self.al_strategy.select(
+        select_ind = self.al_strategy.select(
             label_index=self.label_idx,
             unlabel_index=self.unlabel_idx,
             model=self.model,
             batch_size=self.config.EXP_BATCH_SIZE,
         )
+        if not isinstance(select_ind, list):
+            select_ind = select_ind.tolist()
+        return select_ind
 
     # dataset in numpy format and indice lists are fine as it is
     def prepare_dataset(self):

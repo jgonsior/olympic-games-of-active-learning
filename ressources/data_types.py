@@ -91,16 +91,14 @@ learner_models_to_classes_mapping: Dict[
             "hidden_layer_sizes": (100,),
             "activation": "relu",
             "solver": "adam",
-            "n_jobs": multiprocessing.cpu_count(),
         },
     ),  # default values
-    LEARNER_MODEL.MLP: (
+    LEARNER_MODEL.LBFGS_MLP: (
         MLPClassifier,
         {
             "hidden_layer_sizes": (100,),
             "activation": "relu",
             "solver": "lbfgs",
-            "n_jobs": multiprocessing.cpu_count(),
         },
     ),
 }
