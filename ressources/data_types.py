@@ -2,7 +2,7 @@ import multiprocessing
 from typing import Any, Callable, Dict, List, Tuple
 import numpy as np
 from enum import IntEnum, unique
-from alipy.query_strategy import (
+from ALiPy.alipy.query_strategy import (
     QueryInstanceUncertainty,
     QueryInstanceRandom,
     QueryInstanceQUIRE,
