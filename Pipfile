@@ -35,6 +35,7 @@ requests = "*"
 pyyaml = "*"
 aenum = "*"
 kaggle = "*"
+alipy = {editable = true, ref = "058c3a025c77964422a5417cfb2285f893a62295", git = "https://github.com/jgonsior/ALiPy.git"}
 
 [requires]
 python_version = "3.10"

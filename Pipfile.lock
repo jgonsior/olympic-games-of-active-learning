@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "804037ae2e407014aa4b548e98a22e31074c25f21781a2ba99c7ceb5eb7bbeff"
+            "sha256": "93fcc03677f6a2e7c2eb912cda51b2632be92af6d50d68e0a76c228bb7709ba0"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -24,6 +24,11 @@
             ],
             "index": "pypi",
             "version": "==3.1.11"
+        },
+        "alipy": {
+            "editable": true,
+            "git": "https://github.com/jgonsior/ALiPy.git",
+            "ref": "058c3a025c77964422a5417cfb2285f893a62295"
         },
         "anyio": {
             "hashes": [
@@ -1579,7 +1584,7 @@
                 "sha256:6f62d78e2f89b4500b080fe3a81690850cd254227f27f75c3a0c491a1f351ba7",
                 "sha256:e8443a5e7a020e9d7f97f1d7d9cd17c88bcb3bc7e218bf9cf5095fe550be2951"
             ],
-            "markers": "python_version < '4.0' and python_full_version >= '3.6.1'",
+            "markers": "python_version < '4' and python_full_version >= '3.6.1'",
             "version": "==5.10.1"
         },
         "lazy-object-proxy": {
