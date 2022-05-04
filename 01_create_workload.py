@@ -25,45 +25,37 @@ def create_workload(config: Config) -> None:
     exp_grid_params_names = _determine_exp_grid_parameters(config)
 
     if os.path.isfile(config.DONE_WORKLOAD_PATH):
-        result_df = pd.read_csv(
+        # experiment has already been run, check which worsloads are still missing
+        done_workload_df = pd.read_csv(
             config.DONE_WORKLOAD_PATH,
         )
+
+        open_workload_df = pd.read_csv(config.WORKLOAD_FILE_PATH)
+
+        open_workload_df = open_workload_df.loc[
+            ~open_workload_df.EXP_UNIQUE_ID.isin(done_workload_df.EXP_UNIQUE_ID)
+        ]
     else:
-        result_df = pd.DataFrame(data=None, columns=exp_grid_params_names)
+        exp_param_grid = {
+            exp_parameter: config.__getattribute__(exp_parameter)
+            for exp_parameter in exp_grid_params_names
+        }
 
-    missing_workloads = []
+        all_workloads = ParameterGrid(exp_param_grid)
+        open_workload_df = pd.DataFrame(
+            data=all_workloads,  # type: ignore
+            columns=exp_grid_params_names,
+        )
 
-    exp_param_grid = {
-        exp_parameter: config.__getattribute__(exp_parameter)
-        for exp_parameter in exp_grid_params_names
-    }
+        open_workload_df.rename(
+            columns=lambda s: s.replace("EXP_GRID_", "EXP_"), inplace=True  # type: ignore
+        )
 
-    def _check_if_workload_has_already_been_run(single_workload: Dict[str, Any]):
-        selection_key = ()
-        for k, v in single_workload.items():
-            selection_key &= result_df[k] == v
-        possible_existing_results_row = result_df.loc[selection_key]
+        open_workload_df["EXP_UNIQUE_ID"] = open_workload_df.index
 
-        if len(possible_existing_results_row) == 0:
-            return single_workload
-
-    missing_workloads = Parallel(n_jobs=multiprocessing.cpu_count())(
-        delayed(_check_if_workload_has_already_been_run)(single_workload)
-        for single_workload in ParameterGrid(exp_param_grid)
-    )
-
-    random_seed_df = pd.DataFrame(
-        data=missing_workloads,
-        columns=exp_grid_params_names,
-    )
-
-    random_seed_df.rename(
-        columns=lambda s: s.replace("EXP_GRID_", "EXP_"), inplace=True  # type: ignore
-    )
-
-    random_seed_df.to_csv(config.WORKLOAD_FILE_PATH, index=None)
+    open_workload_df.to_csv(config.WORKLOAD_FILE_PATH, index=None)
     config.save_to_file()
-    log_it(f"Created workload of {len(random_seed_df)}")
+    log_it(f"Created workload of {len(open_workload_df)}")
 
 
 def _write_template_file(

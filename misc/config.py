@@ -49,6 +49,7 @@ class Config:
     EXP_GRID_LEARNER_MODEL: List[LEARNER_MODEL] = [LEARNER_MODEL.RF]
     EXP_TRAIN_TEST_BUCKET_SIZE: int
     EXP_GRID_TRAIN_TEST_BUCKET_SIZE: List[int] = list(range(0, 5))
+    EXP_UNIQUE_ID: int
 
     WORKER_INDEX: int
 
@@ -108,7 +109,7 @@ class Config:
             self.METRIC_RESULTS_FILE_PATH = (
                 self.OUTPUT_PATH
                 / self.EXP_DATASET.name
-                / str(str(self.WORKER_INDEX) + self.METRIC_RESULTS_PATH_APPENDIX)
+                / str(str(self.EXP_UNIQUE_ID) + self.METRIC_RESULTS_PATH_APPENDIX)
             )
             self.METRIC_RESULTS_FILE_PATH.parent.mkdir(exist_ok=True)
 
