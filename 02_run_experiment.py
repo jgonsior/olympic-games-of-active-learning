@@ -126,7 +126,7 @@ class AL_Experiment(ABC):
                 and not str(v).startswith("typing.List[")
                 and not k.startswith("EXP_GRID_")
             ):
-                workload[k] = v
+                workload[k] = str(self.config.__getattribute__(k))
 
         print(workload)
 
