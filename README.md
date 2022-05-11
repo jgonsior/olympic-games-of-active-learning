@@ -1,4 +1,4 @@
-# AL Survey
+# OGAL - Olympic Games of Active Learning
 
 
 ## Usage
