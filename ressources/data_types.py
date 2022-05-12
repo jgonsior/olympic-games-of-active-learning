@@ -1,5 +1,6 @@
+from __future__ import annotations
 import multiprocessing
-from typing import Any, Callable, Dict, List, Tuple
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Tuple
 import numpy as np
 from enum import IntEnum, unique
 from alipy.query_strategy import (
@@ -13,6 +14,15 @@ from sklearn.svm import SVC
 from sklearn.naive_bayes import MultinomialNB, GaussianNB
 from sklearn.neural_network import MLPClassifier
 
+from framework_runners.alipy import ALIPY_AL_Experiment
+from framework_runners.optimal import OPTIMAL_AL_Experiment
+
+from optimal_query_strategies.greedy_optimal import (
+    FuturePeakEvalMetric,
+    GreedyHeuristic,
+    Greedy_Optimal,
+)
+
 SampleIndiceList = List[int]
 FeatureVectors = np.ndarray
 LabelList = np.ndarray
@@ -25,6 +35,15 @@ class AL_STRATEGY(IntEnum):
     ALIPY_UNCERTAINTY_ENT = 3
     ALIPY_UNCERTAINTY_MM = 4
     ALIPY_UNCERTAINTY_QUIRE = 5
+    OPTIMAL_BSO = 6
+    OPTIMAL_TRUE = 7
+    OPTIMAL_SUBSETS = 8
+    OPTIMAL_GREEDY_F1 = 9
+    OPTIMAL_GREEDY_F1_COS = 10
+    OPTIMAL_GREEDY_F1_UNC = 11
+    OPTIMAL_GREEDY_ACC = 12
+    OPTIMAL_GREEDY_ACC_COS = 13
+    OPTIMAL_GREEDY_ACC_UNC = 14
 
 
 al_strategy_to_python_classes_mapping: Dict[
@@ -50,6 +69,51 @@ al_strategy_to_python_classes_mapping: Dict[
         QueryInstanceRandom,
         {},
     ),
+    AL_STRATEGY.OPTIMAL_GREEDY_F1: (
+        Greedy_Optimal,
+        {
+            "heuristic": GreedyHeuristic.RANDOM,
+            "future_peak_eval_metric": FuturePeakEvalMetric.F1,
+        },
+    ),
+    AL_STRATEGY.OPTIMAL_GREEDY_F1_COS: (
+        Greedy_Optimal,
+        {
+            "heuristic": GreedyHeuristic.COSINE,
+            "future_peak_eval_metric": FuturePeakEvalMetric.F1,
+        },
+    ),
+    AL_STRATEGY.OPTIMAL_GREEDY_F1_UNC: (
+        Greedy_Optimal,
+        {
+            "heuristic": GreedyHeuristic.UNCERTAINTY,
+            "future_peak_eval_metric": FuturePeakEvalMetric.F1,
+        },
+    ),
+    AL_STRATEGY.OPTIMAL_GREEDY_ACC: (
+        Greedy_Optimal,
+        {
+            "heuristic": GreedyHeuristic.RANDOM,
+            "future_peak_eval_metric": FuturePeakEvalMetric.ACC,
+        },
+    ),
+    AL_STRATEGY.OPTIMAL_GREEDY_ACC_COS: (
+        Greedy_Optimal,
+        {
+            "heuristic": GreedyHeuristic.COSINE,
+            "future_peak_eval_metric": FuturePeakEvalMetric.ACC,
+        },
+    ),
+    AL_STRATEGY.OPTIMAL_GREEDY_ACC_UNC: (
+        Greedy_Optimal,
+        {
+            "heuristic": GreedyHeuristic.UNCERTAINTY,
+            "future_peak_eval_metric": FuturePeakEvalMetric.ACC,
+        },
+    ),
+    # AL_STRATEGY.OPTIMAL_BSO: (, {}),
+    # AL_STRATEGY.OPTIMAL_TRUE: (, {}),
+    # AL_STRATEGY.OPTIMAL_SUBSETS: (, {}),
 }
 
 
@@ -107,3 +171,10 @@ learner_models_to_classes_mapping: Dict[
 @unique
 class AL_FRAMEWORK(IntEnum):
     ALIPY = 1
+    OPTIMAL = 2
+
+
+AL_framework_to_classes_mapping: Dict[AL_FRAMEWORK, Tuple[Callable, Dict[Any, Any]]] = {
+    AL_FRAMEWORK.ALIPY: (ALIPY_AL_Experiment, {}),
+    AL_FRAMEWORK.OPTIMAL: (OPTIMAL_AL_Experiment, {}),
+}

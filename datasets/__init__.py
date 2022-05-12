@@ -19,12 +19,12 @@ if TYPE_CHECKING:
         Config,
     )
 
-from ressources.data_types import (
-    SampleIndiceList,
-    FeatureVectors,
-    LabelList,
-    AL_FRAMEWORK,
-)
+    from ressources.data_types import (
+        SampleIndiceList,
+        FeatureVectors,
+        LabelList,
+        AL_FRAMEWORK,
+    )
 
 
 @unique

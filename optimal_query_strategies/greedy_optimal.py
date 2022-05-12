@@ -1,19 +1,24 @@
+from __future__ import annotations
+
 # optimized future peak -> only peak into the future for the n most "promising" (or random) samples?
 import copy
 from enum import unique
-from typing import Literal
+from typing import TYPE_CHECKING, List, Literal
 
 from enum import IntEnum
 
 import numpy as np
 from sklearn.metrics import accuracy_score, f1_score
-from base_class import Base_AL_Strategy
-from ressources.data_types import (
-    LEARNER_MODEL,
-    FeatureVectors,
-    LabelList,
-    SampleIndiceList,
-)
+from optimal_query_strategies.base_class import Base_AL_Strategy
+
+
+if TYPE_CHECKING:
+    from ressources.data_types import (
+        LEARNER_MODEL,
+        FeatureVectors,
+        LabelList,
+        SampleIndiceList,
+    )
 
 
 @unique
@@ -27,7 +32,7 @@ class GreedyHeuristic(IntEnum):
 @unique
 class FuturePeakEvalMetric(IntEnum):
     ACC = 1
-    F1 = 1
+    F1 = 2
 
 
 class Greedy_Optimal(Base_AL_Strategy):
@@ -42,7 +47,8 @@ class Greedy_Optimal(Base_AL_Strategy):
         self.heuristic = heuristic
         self.max_peaks = max_peaks
         self.future_peak_eval_metric = future_peak_eval_metric
-        self.__
+        self.X = X
+        self.Y = Y
 
     def _future_peak(
         self,
@@ -50,24 +56,26 @@ class Greedy_Optimal(Base_AL_Strategy):
         labeled_index: SampleIndiceList,
         unlabeled_sample_indices: SampleIndiceList,
     ) -> float:
-        copy_of_classifier = copy.deepcopy(model)
+        copy_of_classifier: LEARNER_MODEL = copy.deepcopy(model)
 
         copy_of_labeled_mask = np.append(
             labeled_index, unlabeled_sample_indices, axis=0
         )
 
-        copy_of_classifier.fit(
+        copy_of_classifier.fit(  # type: ignore
             self.X[copy_of_labeled_mask],
             self.Y[copy_of_labeled_mask],
         )
 
-        Y_pred_test = copy_of_classifier.predict(self.X)
+        Y_pred_test = copy_of_classifier.predict(self.X)  # type: ignore
         Y_true = self.Y
 
         if self.future_peak_eval_metric == FuturePeakEvalMetric.ACC:
             future_metric_value_with_that_label = accuracy_score(Y_pred_test, Y_true)
         elif self.future_peak_eval_metric == FuturePeakEvalMetric.F1:
-            future_metric_value_with_that_label = f1_score(Y_pred_test, Y_true)
+            future_metric_value_with_that_label = f1_score(
+                Y_pred_test, Y_true, average="macro", zero_division=0  # type: ignore
+            )
         else:
             raise ValueError("No enum defined, error!")
 
@@ -86,17 +94,17 @@ class Greedy_Optimal(Base_AL_Strategy):
             replace = False
 
         if self.heuristic == GreedyHeuristic.RANDOM:
-            pre_sampled_X_querie_indices: SampleIndiceList = list(
-                np.random.choice(
-                    np.array(unlabeled_index),
-                    size=self.max_peaks,
-                    replace=replace,
-                ).tolist()
-            )
+            pre_sampled_X_querie_indices: List[SampleIndiceList] = np.random.choice(
+                np.array(unlabeled_index),
+                size=self.max_peaks,
+                replace=replace,
+            ).tolist()  # type: ignore
+
         else:
             raise ValueError(f"{self.heuristic} is not yet implemented")
 
         future_peak_acc = []
+
         # single thread
         for unlabeled_sample_indices in pre_sampled_X_querie_indices:
             future_peak_acc.append(

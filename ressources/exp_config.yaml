@@ -2,7 +2,17 @@ test_exp_1:
     {
         EXP_GRID_DATASET: [1, 2, 3],
         EXP_GRID_STRATEGY:
-            [ALIPY_UNCERTAINTY_LC, ALIPY_RANDOM, ALIPY_UNCERTAINTY_MM],
+            [
+                ALIPY_UNCERTAINTY_LC,
+                ALIPY_RANDOM,
+                ALIPY_UNCERTAINTY_MM,
+                OPTIMAL_GREEDY_F1,
+                OPTIMAL_GREEDY_F1_COS,
+                OPTIMAL_GREEDY_F1_UNC,
+                OPTIMAL_GREEDY_ACC,
+                OPTIMAL_GREEDY_ACC_COS,
+                OPTIMAL_GREEDY_ACC_UNC,
+            ],
         EXP_GRID_RANDOM_SEEDS_END: 2,
         EXP_GRID_NUM_QUERIES: [10],
         EXP_GRID_BATCH_SIZE: [1, 5, 50],
