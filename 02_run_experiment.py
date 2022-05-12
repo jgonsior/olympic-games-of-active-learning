@@ -8,9 +8,9 @@ from ressources.data_types import AL_FRAMEWORK
 config = Config()
 
 al_experiment: AL_Experiment
-if str(config.EXP_STRATEGY).startswith(str(AL_FRAMEWORK.ALIPY)):
+if str(config.EXP_STRATEGY)[12:].startswith(str(AL_FRAMEWORK.ALIPY.name)):
     al_experiment = ALIPY_AL_Experiment(config)
-elif str(config.EXP_STRATEGY).startswith(str(AL_FRAMEWORK.OPTIMAL)):
+elif str(config.EXP_STRATEGY)[12:].startswith(str(AL_FRAMEWORK.OPTIMAL.name)):
     al_experiment = OPTIMAL_AL_Experiment(config)
 else:
     raise ValueError(

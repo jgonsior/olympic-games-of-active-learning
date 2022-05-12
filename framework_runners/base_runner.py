@@ -11,9 +11,7 @@ from misc.logging import log_it
 
 if TYPE_CHECKING:
     from misc.config import Config
-    from ressources.data_types import (
-        learner_models_to_classes_mapping,
-    )
+
 from sklearn.metrics import classification_report
 import numpy as np
 
@@ -58,6 +56,10 @@ class AL_Experiment(ABC):
         ) = split_dataset(dataset_tuple, self.config)
 
         self.prepare_dataset()
+
+        from ressources.data_types import (
+            learner_models_to_classes_mapping,
+        )
 
         # load ml model
         model_instantiation_tuple = learner_models_to_classes_mapping[
