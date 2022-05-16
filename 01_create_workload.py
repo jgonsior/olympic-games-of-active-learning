@@ -109,15 +109,15 @@ def _chmod_u_plus_x(path: Path) -> None:
 
 
 # TODO wrapper schreiben, der mehrere random seeds aus der workload datei von einem worker ausführt
-def create_AL_experiment_slurm_files(config: Config) -> None:
+def create_AL_experiment_slurm_files(config: Config, workload_amount: int) -> None:
     _write_template_file(
         config,
         Path("slurm_templates/slurm_parallel.sh"),
         config.EXPERIMENT_SLURM_FILE_PATH,
         array=True,
         PYTHON_FILE="02_run_experiment.py",
-        START=config.EXP_GRID_RANDOM_SEED[0],
-        END=int(config.EXP_GRID_RANDOM_SEED[-1] / config.SLURM_ITERATIONS_PER_BATCH),
+        START=0,
+        END=int(workload_amount / config.SLURM_ITERATIONS_PER_BATCH),
         CLI_ARGS="",
         APPEND_OUTPUT_PATH=False,
     )
@@ -147,6 +147,6 @@ def create_run_files(config: Config) -> None:
 config = Config()
 
 unique_ids = create_workload(config)
-create_AL_experiment_slurm_files(config)
+create_AL_experiment_slurm_files(config, len(unique_ids))
 create_AL_experiment_bash_files(config, unique_ids)
 create_run_files(config)

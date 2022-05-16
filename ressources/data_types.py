@@ -36,7 +36,6 @@ class AL_STRATEGY(IntEnum):
     ALIPY_QUIRE = 5
     OPTIMAL_BSO = 6
     OPTIMAL_TRUE = 7
-    OPTIMAL_SUBSETS = 8
     OPTIMAL_GREEDY = 9
 
 

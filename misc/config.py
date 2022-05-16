@@ -38,8 +38,8 @@ class Config:
     EXP_STRATEGY: AL_STRATEGY
     EXP_STRATEGY_PARAMS: Dict[str, Any]
     EXP_GRID_STRATEGY: List[AL_STRATEGY]
-    EXP_RANDOM_SEEDS_START: int = 0
-    EXP_RANDOM_SEEDS_END: int = 10
+    EXP_GRID_RANDOM_SEEDS_START: int = 0
+    EXP_GRID_RANDOM_SEEDS_END: int
     EXP_GRID_RANDOM_SEED: List[int]
     EXP_RANDOM_SEED: int
     EXP_NUM_QUERIES: int
@@ -57,10 +57,11 @@ class Config:
     SLURM_TIME_LIMIT: str = "1:59:59"
     SLURM_NR_THREADS: int = 1
     SLURM_MEMORY: int = 1875
+    SLURM_JOBS_PR_THREAD = 10
     HPC_SLURM_MAIL: str
     HPC_SLURM_PROJECT: str
     SLURM_OFFSET: int = 0
-    SLURM_ITERATIONS_PER_BATCH: int = 10
+    SLURM_ITERATIONS_PER_BATCH: int = 100
 
     BASH_PARALLEL_RUNNERS: int = 10
 
@@ -97,7 +98,7 @@ class Config:
             self._load_exp_yaml()
 
         self.EXP_GRID_RANDOM_SEED = list(
-            range(self.EXP_RANDOM_SEEDS_START, self.EXP_RANDOM_SEEDS_END)
+            range(self.EXP_GRID_RANDOM_SEEDS_START, self.EXP_GRID_RANDOM_SEEDS_END)
         )
 
         if self.RANDOM_SEED != -1 and self.RANDOM_SEED != -2:
