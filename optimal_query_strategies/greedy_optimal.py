@@ -41,11 +41,11 @@ class Greedy_Optimal(Base_AL_Strategy):
         X: FeatureVectors,
         Y: LabelList,
         heuristic: GreedyHeuristic = GreedyHeuristic.NONE,
-        max_peaks: int = -1,
+        amount_of_pre_selections: int = -1,
         future_peak_eval_metric: FuturePeakEvalMetric = FuturePeakEvalMetric.ACC,
     ) -> None:
         self.heuristic = heuristic
-        self.max_peaks = max_peaks
+        self.amount_of_pre_selections = amount_of_pre_selections
         self.future_peak_eval_metric = future_peak_eval_metric
         self.X = X
         self.Y = Y
@@ -88,7 +88,7 @@ class Greedy_Optimal(Base_AL_Strategy):
         model: LEARNER_MODEL,
         batch_size=int,
     ) -> SampleIndiceList:
-        if self.max_peaks > len(unlabeled_index):
+        if self.amount_of_pre_selections > len(unlabeled_index):
             replace = True
         else:
             replace = False
@@ -96,7 +96,7 @@ class Greedy_Optimal(Base_AL_Strategy):
         if self.heuristic == GreedyHeuristic.RANDOM:
             pre_sampled_X_querie_indices: List[SampleIndiceList] = np.random.choice(
                 np.array(unlabeled_index),
-                size=self.max_peaks,
+                size=self.amount_of_pre_selections,
                 replace=replace,
             ).tolist()  # type: ignore
 
@@ -105,7 +105,6 @@ class Greedy_Optimal(Base_AL_Strategy):
 
         future_peak_acc = []
 
-        # single thread
         for unlabeled_sample_indices in pre_sampled_X_querie_indices:
             future_peak_acc.append(
                 self._future_peak(

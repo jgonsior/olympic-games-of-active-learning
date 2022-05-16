@@ -31,92 +31,26 @@ LabelList = np.ndarray
 @unique
 class AL_STRATEGY(IntEnum):
     ALIPY_RANDOM = 1
-    ALIPY_UNCERTAINTY_LC = 2
-    ALIPY_UNCERTAINTY_ENT = 3
-    ALIPY_UNCERTAINTY_MM = 4
+    ALIPY_UNCERTAINTY = 2
     ALIPY_UNCERTAINTY_QUIRE = 5
     OPTIMAL_BSO = 6
     OPTIMAL_TRUE = 7
     OPTIMAL_SUBSETS = 8
-    OPTIMAL_GREEDY_F1 = 9
-    OPTIMAL_GREEDY_F1_COS = 10
-    OPTIMAL_GREEDY_F1_UNC = 11
-    OPTIMAL_GREEDY_ACC = 12
-    OPTIMAL_GREEDY_ACC_COS = 13
-    OPTIMAL_GREEDY_ACC_UNC = 14
+    OPTIMAL_GREEDY = 9
 
 
-al_strategy_to_python_classes_mapping: Dict[
-    AL_STRATEGY, Tuple[Callable, Dict[Any, Any]]
-] = {
-    AL_STRATEGY.ALIPY_UNCERTAINTY_LC: (
-        QueryInstanceUncertainty,
-        {"measure": "least_confident"},
-    ),
-    AL_STRATEGY.ALIPY_UNCERTAINTY_ENT: (
-        QueryInstanceUncertainty,
-        {"measure": "entropy"},
-    ),
-    AL_STRATEGY.ALIPY_UNCERTAINTY_MM: (
-        QueryInstanceUncertainty,
-        {"measure": "margin"},
-    ),
-    AL_STRATEGY.ALIPY_UNCERTAINTY_QUIRE: (
-        QueryInstanceQUIRE,
-        {},
-    ),
-    AL_STRATEGY.ALIPY_RANDOM: (
-        QueryInstanceRandom,
-        {},
-    ),
-    AL_STRATEGY.OPTIMAL_GREEDY_F1: (
-        Greedy_Optimal,
-        {
-            "heuristic": GreedyHeuristic.RANDOM,
-            "future_peak_eval_metric": FuturePeakEvalMetric.F1,
-        },
-    ),
-    AL_STRATEGY.OPTIMAL_GREEDY_F1_COS: (
-        Greedy_Optimal,
-        {
-            "heuristic": GreedyHeuristic.COSINE,
-            "future_peak_eval_metric": FuturePeakEvalMetric.F1,
-        },
-    ),
-    AL_STRATEGY.OPTIMAL_GREEDY_F1_UNC: (
-        Greedy_Optimal,
-        {
-            "heuristic": GreedyHeuristic.UNCERTAINTY,
-            "future_peak_eval_metric": FuturePeakEvalMetric.F1,
-        },
-    ),
-    AL_STRATEGY.OPTIMAL_GREEDY_ACC: (
-        Greedy_Optimal,
-        {
-            "heuristic": GreedyHeuristic.RANDOM,
-            "future_peak_eval_metric": FuturePeakEvalMetric.ACC,
-        },
-    ),
-    AL_STRATEGY.OPTIMAL_GREEDY_ACC_COS: (
-        Greedy_Optimal,
-        {
-            "heuristic": GreedyHeuristic.COSINE,
-            "future_peak_eval_metric": FuturePeakEvalMetric.ACC,
-        },
-    ),
-    AL_STRATEGY.OPTIMAL_GREEDY_ACC_UNC: (
-        Greedy_Optimal,
-        {
-            "heuristic": GreedyHeuristic.UNCERTAINTY,
-            "future_peak_eval_metric": FuturePeakEvalMetric.ACC,
-        },
-    ),
+al_strategy_to_python_classes_mapping: Dict[AL_STRATEGY, Callable] = {
+    AL_STRATEGY.ALIPY_UNCERTAINTY: QueryInstanceUncertainty,
+    AL_STRATEGY.ALIPY_UNCERTAINTY_QUIRE: QueryInstanceQUIRE,
+    AL_STRATEGY.ALIPY_RANDOM: QueryInstanceRandom,
+    AL_STRATEGY.OPTIMAL_GREEDY: Greedy_Optimal,
     # AL_STRATEGY.OPTIMAL_BSO: (, {}),
     # AL_STRATEGY.OPTIMAL_TRUE: (, {}),
     # AL_STRATEGY.OPTIMAL_SUBSETS: (, {}),
 }
 
 
+# TODO parameter wie für AL strats in exp_config.yaml
 @unique
 class LEARNER_MODEL(IntEnum):
     RF = 1

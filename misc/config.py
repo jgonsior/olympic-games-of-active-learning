@@ -185,10 +185,11 @@ class Config:
 
             # convert str/ints to enum data types first
             if k == "EXP_GRID_STRATEGY":
-                if type(v[0]) == int:
-                    v = [AL_STRATEGY(x) for x in v]
-                else:
-                    v = [AL_STRATEGY[x] for x in v]
+                # parse args
+                # if type(v[0]) == int:
+                #    v = [AL_STRATEGY(x) for x in v]
+                # else:
+                v = [{AL_STRATEGY[list(x.keys())[0]]: list(x.values())[0]} for x in v]
             elif k == "EXP_GRID_DATASET":
                 if type(v[0]) == int:
                     v = [DATASET(x) for x in v]
