@@ -95,6 +95,7 @@ class AL_Experiment(ABC):
             # select some samples by indice to label
             select_ind = self.query_AL_strategy()
             self.label_idx = self.label_idx + select_ind
+
             self.unlabel_idx = self._list_difference(self.unlabel_idx, select_ind)
 
             # save indices for later

@@ -3,11 +3,13 @@ from __future__ import annotations
 # optimized future peak -> only peak into the future for the n most "promising" (or random) samples?
 import copy
 from enum import unique
+import random
 from typing import TYPE_CHECKING, List, Literal
 
 from enum import IntEnum
 
 import numpy as np
+from pyrsistent import b
 from sklearn.metrics import accuracy_score, f1_score
 from optimal_query_strategies.base_class import Base_AL_Strategy
 
@@ -57,10 +59,7 @@ class Greedy_Optimal(Base_AL_Strategy):
         unlabeled_sample_indices: SampleIndiceList,
     ) -> float:
         copy_of_classifier: LEARNER_MODEL = copy.deepcopy(model)
-
-        copy_of_labeled_mask = np.append(
-            labeled_index, unlabeled_sample_indices, axis=0
-        )
+        copy_of_labeled_mask = [*labeled_index, *unlabeled_sample_indices]
 
         copy_of_classifier.fit(  # type: ignore
             self.X[copy_of_labeled_mask],
@@ -89,19 +88,16 @@ class Greedy_Optimal(Base_AL_Strategy):
         batch_size=int,
     ) -> SampleIndiceList:
         if self.amount_of_pre_selections > len(unlabeled_index):
-            replace = True
+            random_func = random.choices  # with replacement
         else:
-            replace = False
-
+            random_func = random.sample  # without replacement
         if self.heuristic == GreedyHeuristic.RANDOM:
-            pre_sampled_X_querie_indices: List[SampleIndiceList] = np.random.choice(
-                np.array(unlabeled_index),
-                size=self.amount_of_pre_selections,
-                replace=replace,
-            ).tolist()  # type: ignore
-
+            pre_sampled_X_querie_indices: List[SampleIndiceList] = [
+                random_func(unlabeled_index, batch_size)
+                for _ in range(0, self.amount_of_pre_selections)
+            ]
         else:
-            raise ValueError(f"{self.heuristic} is not yet implemented")
+            raise ValueError(f"{self.heuristic.name} is not yet implemented")
 
         future_peak_acc = []
 
@@ -113,13 +109,13 @@ class Greedy_Optimal(Base_AL_Strategy):
                     unlabeled_sample_indices,
                 )
             )
-
-        zero_to_one_values_and_index = set(
+        zero_to_one_values_and_index = list(
             zip(future_peak_acc, pre_sampled_X_querie_indices)
         )
 
         ordered_list_of_possible_sample_indices = sorted(
             zero_to_one_values_and_index, key=lambda tup: tup[0], reverse=True
         )
-
-        return [v for _, v in ordered_list_of_possible_sample_indices[:batch_size]]
+        return ordered_list_of_possible_sample_indices[0][
+            1
+        ]  # [v for _, v in ordered_list_of_possible_sample_indices[:batch_size]] -> this here is for BSO ???
