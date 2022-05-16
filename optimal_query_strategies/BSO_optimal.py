@@ -29,7 +29,6 @@ class Beeam_Search_Optimal(Greedy_Optimal):
         self,
         X: FeatureVectors,
         Y: LabelList,
-        train_idx: SampleIndiceList,
         num_queries: int,
         future_peak_eval_metric: FuturePeakEvalMetric = FuturePeakEvalMetric.ACC,
     ) -> None:
@@ -37,7 +36,6 @@ class Beeam_Search_Optimal(Greedy_Optimal):
         super().__init__(
             X,
             Y,
-            train_idx,
             future_peak_eval_metric=future_peak_eval_metric,
             amount_of_pre_selections=-1,
         )

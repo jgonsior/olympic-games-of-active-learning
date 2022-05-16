@@ -19,7 +19,6 @@ class OPTIMAL_AL_Experiment(AL_Experiment):
         al_strategy = al_strategy_to_python_classes_mapping[al_strategy](
             X=self.X,
             Y=self.Y,
-            train_idx=self.train_idx,
             **self.config.EXP_STRATEGY_PARAMS,
         )
         self.al_strategy = al_strategy

@@ -34,11 +34,10 @@ class Greedy_Optimal(Base_AL_Strategy):
         self,
         X: FeatureVectors,
         Y: LabelList,
-        train_idx: SampleIndiceList,
         amount_of_pre_selections: int = -1,
         future_peak_eval_metric: FuturePeakEvalMetric = FuturePeakEvalMetric.ACC,
     ) -> None:
-        super().__init__(X, Y, train_idx)
+        super().__init__(X, Y)
         self.amount_of_pre_selections = int(amount_of_pre_selections)
         self.future_peak_eval_metric = FuturePeakEvalMetric[future_peak_eval_metric]  # type: ignore
 
@@ -57,8 +56,8 @@ class Greedy_Optimal(Base_AL_Strategy):
             self.Y[copy_of_labeled_mask],
         )
 
-        Y_pred_test = copy_of_classifier.predict(self.X[self.train_idx])  # type: ignore
-        Y_true = self.Y[self.train_idx]
+        Y_pred_test = copy_of_classifier.predict(self.X)  # type: ignore
+        Y_true = self.Y
 
         if self.future_peak_eval_metric == FuturePeakEvalMetric.ACC:
             future_metric_value_with_that_label = accuracy_score(Y_pred_test, Y_true)

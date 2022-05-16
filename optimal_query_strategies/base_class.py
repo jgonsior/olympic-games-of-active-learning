@@ -16,11 +16,9 @@ class Base_AL_Strategy(ABC):
         self,
         X: FeatureVectors,
         Y: LabelList,
-        train_idx: SampleIndiceList,
     ) -> None:
         self.X = X
         self.Y = Y
-        self.train_idx = train_idx
 
     @abstractmethod
     def select(
