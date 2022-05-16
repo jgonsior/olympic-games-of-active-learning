@@ -56,6 +56,7 @@ def create_workload(config: Config) -> List[int]:
         open_workload_df = open_workload_df.loc[
             ~open_workload_df.EXP_UNIQUE_ID.isin(done_workload_df.EXP_UNIQUE_ID)
         ]
+
     else:
         exp_param_grid = {
             exp_parameter: config.__getattribute__(exp_parameter)
@@ -75,6 +76,9 @@ def create_workload(config: Config) -> List[int]:
         open_workload_df.rename(
             columns=lambda s: s.replace("EXP_GRID_", "EXP_"), inplace=True  # type: ignore
         )
+
+        # shuffle workload to ensure that really long jobs are not all running on the same node
+        open_workload_df = open_workload_df.sample(frac=1).reset_index(drop=True)
 
         open_workload_df["EXP_UNIQUE_ID"] = open_workload_df.index
 

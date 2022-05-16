@@ -1,6 +1,6 @@
-from framework_runners.alipy import ALIPY_AL_Experiment
+from framework_runners.alipy_runner import ALIPY_AL_Experiment
 from framework_runners.base_runner import AL_Experiment
-from framework_runners.optimal import OPTIMAL_AL_Experiment
+from framework_runners.optimal_runner import OPTIMAL_AL_Experiment
 from misc.config import Config
 from ressources.data_types import AL_FRAMEWORK
 

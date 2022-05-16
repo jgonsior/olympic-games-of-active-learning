@@ -32,9 +32,10 @@ class True_Optimal(Greedy_Optimal):
         self,
         X: FeatureVectors,
         Y: LabelList,
+        train_idx: SampleIndiceList,
         future_peak_eval_metric: FuturePeakEvalMetric = FuturePeakEvalMetric.ACC,
     ) -> None:
-        super().__init__(X, Y, -1, future_peak_eval_metric)
+        super().__init__(X, Y, train_idx, -1, future_peak_eval_metric)
 
     def select(
         self,

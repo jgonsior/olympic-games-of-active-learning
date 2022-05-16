@@ -29,11 +29,15 @@ class Beeam_Search_Optimal(Greedy_Optimal):
         self,
         X: FeatureVectors,
         Y: LabelList,
+        train_idx: SampleIndiceList,
+        num_queries: int,
         future_peak_eval_metric: FuturePeakEvalMetric = FuturePeakEvalMetric.ACC,
     ) -> None:
+        self.num_queries = num_queries
         super().__init__(
             X,
             Y,
+            train_idx,
             future_peak_eval_metric=future_peak_eval_metric,
             amount_of_pre_selections=-1,
         )
@@ -46,6 +50,7 @@ class Beeam_Search_Optimal(Greedy_Optimal):
         batch_size: int,
     ) -> SampleIndiceList:
         if len(self.optimal_order) == 0:
+            amount_of_samples_needed = batch_size * self.num_queries
 
             def _beam_search(d_0):
                 d_1 = []
@@ -58,7 +63,9 @@ class Beeam_Search_Optimal(Greedy_Optimal):
                     d_1 += all_future_metrics
                 d_1 = sorted(d_1, key=lambda tup: tup[0], reverse=True)
 
-                if len(d_1[0][1]) == len(unlabeled_index):
+                if len(d_1[0][1]) >= amount_of_samples_needed or len(d_1[0][1]) == len(
+                    unlabeled_index
+                ):
                     return d_1[0][1]
                 else:
                     d_1 = [_x[1] for _x in d_1[0:5]]

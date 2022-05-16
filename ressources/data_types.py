@@ -14,8 +14,8 @@ from sklearn.svm import SVC
 from sklearn.naive_bayes import MultinomialNB, GaussianNB
 from sklearn.neural_network import MLPClassifier
 
-from framework_runners.alipy import ALIPY_AL_Experiment
-from framework_runners.optimal import OPTIMAL_AL_Experiment
+from framework_runners.alipy_runner import ALIPY_AL_Experiment
+from framework_runners.optimal_runner import OPTIMAL_AL_Experiment
 from optimal_query_strategies.BSO_optimal import Beeam_Search_Optimal
 
 from optimal_query_strategies.greedy_optimal import (
