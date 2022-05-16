@@ -11,6 +11,8 @@ from sklearn.model_selection import ParameterGrid
 import os
 from joblib import Parallel, delayed
 
+from ressources.data_types import AL_STRATEGY
+
 # determine config parameters which are to be used -> they all start with EXP_ and have a typing hint of [List[XXX]]
 def _determine_exp_grid_parameters(config: Config) -> List[str]:
     result_list: List[str] = []
@@ -19,6 +21,20 @@ def _determine_exp_grid_parameters(config: Config) -> List[str]:
         if k.startswith("EXP_GRID_") and str(v).startswith("typing.List["):
             result_list.append(k)
     return result_list
+
+
+def _create_exp_grid(
+    exp_strat_grid: List[Dict[AL_STRATEGY, Dict[str, List[Any]]]]
+) -> List[str]:
+    result: List[str] = []
+    for a in exp_strat_grid:
+        for b, c in a.items():
+            kwargs = []
+            for d, e in c.items():
+                kwargs.append([f"{d}-{_x}" for _x in e])
+            for f in ["_".join(_x) for _x in itertools.product(*kwargs)]:
+                result.append(f"{b.name}#{f}")
+    return result
 
 
 def create_workload(config: Config) -> List[int]:
@@ -40,8 +56,12 @@ def create_workload(config: Config) -> List[int]:
             exp_parameter: config.__getattribute__(exp_parameter)
             for exp_parameter in exp_grid_params_names
         }
-
+        # convert EXP_GRID_STRATEGY with params into list of param objects
+        exp_param_grid["EXP_GRID_STRATEGY"] = _create_exp_grid(
+            exp_param_grid["EXP_GRID_STRATEGY"]
+        )
         all_workloads = ParameterGrid(exp_param_grid)
+
         open_workload_df = pd.DataFrame(
             data=all_workloads,  # type: ignore
             columns=exp_grid_params_names,
