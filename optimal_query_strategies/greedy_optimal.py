@@ -41,12 +41,14 @@ class Greedy_Optimal(Base_AL_Strategy):
         self.amount_of_pre_selections = int(amount_of_pre_selections)
         self.future_peak_eval_metric = FuturePeakEvalMetric[future_peak_eval_metric]  # type: ignore
 
+    # TODO use test set for future metrics!
     def _future_peak(
         self,
         model: LEARNER_MODEL,
         labeled_index: SampleIndiceList,
         unlabeled_sample_indices: SampleIndiceList,
     ) -> float:
+        # return random.random()
         copy_of_classifier: LEARNER_MODEL = copy.deepcopy(model)
         copy_of_labeled_mask = [*labeled_index, *unlabeled_sample_indices]
 
@@ -69,6 +71,30 @@ class Greedy_Optimal(Base_AL_Strategy):
 
         return future_metric_value_with_that_label
 
+    def _compute_future_metrics_for_batches(
+        self,
+        batches: List[SampleIndiceList],
+        labeled_index: SampleIndiceList,
+        model: LEARNER_MODEL,
+    ) -> List[Tuple[float, SampleIndiceList]]:
+        future_peak_acc = []
+
+        for unlabeled_sample_indices in batches:
+            future_peak_acc.append(
+                self._future_peak(
+                    model,
+                    labeled_index,
+                    unlabeled_sample_indices,
+                )
+            )
+        zero_to_one_values_and_index = list(zip(future_peak_acc, batches))
+
+        ordered_list_of_possible_sample_indices = sorted(
+            zero_to_one_values_and_index, key=lambda tup: tup[0], reverse=True
+        )
+
+        return ordered_list_of_possible_sample_indices
+
     def _compute_sorted_future_batches(
         self,
         labeled_index: SampleIndiceList,
@@ -82,34 +108,17 @@ class Greedy_Optimal(Base_AL_Strategy):
             random_func = random.sample  # without replacement
 
         # fancy conversion to tuples and set to avoid costly duplicate elements
-        if self.amount_of_pre_selections >= len(unlabeled_index) and batch_size == 1:
-            pre_sampled_X_querie_indices = [[_x] for _x in unlabeled_index]
-        else:
-            pre_sampled_X_querie_indices: List[SampleIndiceList] = [
-                list(_x)
-                for _x in set(
-                    tuple(random_func(unlabeled_index, batch_size))
-                    for _ in range(0, self.amount_of_pre_selections)
-                )
-            ]
-        future_peak_acc = []
-
-        for unlabeled_sample_indices in pre_sampled_X_querie_indices:
-            future_peak_acc.append(
-                self._future_peak(
-                    model,
-                    labeled_index,
-                    unlabeled_sample_indices,
-                )
+        pre_sampled_X_querie_indices: List[SampleIndiceList] = [
+            list(_x)
+            for _x in set(
+                tuple(random_func(unlabeled_index, batch_size))
+                for _ in range(0, self.amount_of_pre_selections)
             )
-        zero_to_one_values_and_index = list(
-            zip(future_peak_acc, pre_sampled_X_querie_indices)
-        )
+        ]
 
-        ordered_list_of_possible_sample_indices = sorted(
-            zero_to_one_values_and_index, key=lambda tup: tup[0], reverse=True
+        return self._compute_future_metrics_for_batches(
+            pre_sampled_X_querie_indices, labeled_index, model
         )
-        return ordered_list_of_possible_sample_indices
 
     def select(
         self,

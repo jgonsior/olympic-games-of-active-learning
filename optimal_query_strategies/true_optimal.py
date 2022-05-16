@@ -43,10 +43,10 @@ class True_Optimal(Greedy_Optimal):
         model: LEARNER_MODEL,
         batch_size: int,
     ) -> SampleIndiceList:
-        self.amount_of_pre_selections = len(unlabeled_index)
-
-        ordered_list_of_possible_sample_indices = self._compute_sorted_future_batches(
-            labeled_index, unlabeled_index, model, batch_size=1
+        ordered_list_of_possible_sample_indices = (
+            self._compute_future_metrics_for_batches(
+                [[_x] for _x in unlabeled_index], labeled_index, model
+            )
         )
 
         batch = [

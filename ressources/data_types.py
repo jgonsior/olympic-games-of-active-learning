@@ -16,6 +16,7 @@ from sklearn.neural_network import MLPClassifier
 
 from framework_runners.alipy import ALIPY_AL_Experiment
 from framework_runners.optimal import OPTIMAL_AL_Experiment
+from optimal_query_strategies.BSO_optimal import Beeam_Search_Optimal
 
 from optimal_query_strategies.greedy_optimal import (
     FuturePeakEvalMetric,
@@ -44,7 +45,7 @@ al_strategy_to_python_classes_mapping: Dict[AL_STRATEGY, Callable] = {
     AL_STRATEGY.ALIPY_QUIRE: QueryInstanceQUIRE,
     AL_STRATEGY.ALIPY_RANDOM: QueryInstanceRandom,
     AL_STRATEGY.OPTIMAL_GREEDY: Greedy_Optimal,
-    # AL_STRATEGY.OPTIMAL_BSO: (, {}),
+    AL_STRATEGY.OPTIMAL_BSO: Beeam_Search_Optimal,
     AL_STRATEGY.OPTIMAL_TRUE: True_Optimal,
     # AL_STRATEGY.OPTIMAL_SUBSETS: (, {}),
 }

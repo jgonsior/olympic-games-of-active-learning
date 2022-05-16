@@ -11,6 +11,7 @@ test_exp_1:
                         },
                 },
                 { OPTIMAL_TRUE: { future_peak_eval_metric: [ACC, F1] } },
+                { OPTIMAL_BSO: { future_peak_eval_metric: [ACC, F1] } },
                 {
                     ALIPY_UNCERTAINTY:
                         { measure: [least_confident, margin, entropy] },

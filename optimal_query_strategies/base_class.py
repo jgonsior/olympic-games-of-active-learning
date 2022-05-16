@@ -28,6 +28,6 @@ class Base_AL_Strategy(ABC):
         labeled_index: SampleIndiceList,
         unlabeled_index: SampleIndiceList,
         model: LEARNER_MODEL,
-        batch_size=int,
+        batch_size: int,
     ) -> SampleIndiceList:
         ...
