@@ -44,9 +44,9 @@ class Greedy_Optimal(Base_AL_Strategy):
         amount_of_pre_selections: int = -1,
         future_peak_eval_metric: FuturePeakEvalMetric = FuturePeakEvalMetric.ACC,
     ) -> None:
-        self.heuristic = heuristic
-        self.amount_of_pre_selections = amount_of_pre_selections
-        self.future_peak_eval_metric = future_peak_eval_metric
+        self.heuristic = GreedyHeuristic[heuristic]  # type: ignore
+        self.amount_of_pre_selections = int(amount_of_pre_selections)
+        self.future_peak_eval_metric = FuturePeakEvalMetric[future_peak_eval_metric]  # type: ignore
         self.X = X
         self.Y = Y
 

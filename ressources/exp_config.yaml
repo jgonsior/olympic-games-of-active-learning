@@ -11,7 +11,11 @@ test_exp_1:
                             future_peak_eval_metric: [ACC, F1],
                         },
                 },
-                { ALIPY_UNCERTAINTY: { measure: [LC, MM, Ent] } },
+                {
+                    ALIPY_UNCERTAINTY:
+                        { measure: [least_confident, margin, entropy] },
+                },
+
                 { ALIPY_RANDOM: {} },
             ],
         EXP_GRID_RANDOM_SEEDS_END: 2,

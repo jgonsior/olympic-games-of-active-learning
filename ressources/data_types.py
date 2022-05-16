@@ -32,7 +32,7 @@ LabelList = np.ndarray
 class AL_STRATEGY(IntEnum):
     ALIPY_RANDOM = 1
     ALIPY_UNCERTAINTY = 2
-    ALIPY_UNCERTAINTY_QUIRE = 5
+    ALIPY_QUIRE = 5
     OPTIMAL_BSO = 6
     OPTIMAL_TRUE = 7
     OPTIMAL_SUBSETS = 8
@@ -41,7 +41,7 @@ class AL_STRATEGY(IntEnum):
 
 al_strategy_to_python_classes_mapping: Dict[AL_STRATEGY, Callable] = {
     AL_STRATEGY.ALIPY_UNCERTAINTY: QueryInstanceUncertainty,
-    AL_STRATEGY.ALIPY_UNCERTAINTY_QUIRE: QueryInstanceQUIRE,
+    AL_STRATEGY.ALIPY_QUIRE: QueryInstanceQUIRE,
     AL_STRATEGY.ALIPY_RANDOM: QueryInstanceRandom,
     AL_STRATEGY.OPTIMAL_GREEDY: Greedy_Optimal,
     # AL_STRATEGY.OPTIMAL_BSO: (, {}),

@@ -3,7 +3,7 @@ import random
 import sys
 from configparser import RawConfigParser
 from pathlib import Path
-from typing import List, Literal, Union, get_args
+from typing import Any, Dict, List, Literal, Union, get_args
 
 import git
 import numpy as np
@@ -36,6 +36,7 @@ class Config:
     EXP_DATASET: DATASET
     EXP_GRID_DATASET: List[DATASET]
     EXP_STRATEGY: AL_STRATEGY
+    EXP_STRATEGY_PARAMS: Dict[str, Any]
     EXP_GRID_STRATEGY: List[AL_STRATEGY]
     EXP_RANDOM_SEEDS_START: int = 0
     EXP_RANDOM_SEEDS_END: int = 10
@@ -79,6 +80,10 @@ class Config:
     DONE_WORKLOAD_PATH: Path = "04_done_workload.csv"  # type: ignore
     METRIC_RESULTS_PATH_APPENDIX: str = "_metric_results.csv"
     METRIC_RESULTS_FILE_PATH: Path
+
+    _EXP_STRATEGY_STRAT_PARAMS_DELIM = "#"
+    _EXP_STRATEGY_PARAM_PARAM_DELIM = "-"
+    _EXP_STRATEGY_PARAM_VALUE_DELIM = ":"
 
     def __init__(self) -> None:
         self._parse_cli_arguments()
@@ -215,7 +220,21 @@ class Config:
             print(f"{k}\t\t\t{v}")
             # convert str/ints to enum data types first
             if k == "EXP_STRATEGY":
-                v = AL_STRATEGY(int(v))
+                # super complex EXP_STRATEGY parsing
+                _strat_params_split = v.split(self._EXP_STRATEGY_STRAT_PARAMS_DELIM)
+                if _strat_params_split[1] == "":
+                    params = {}
+                else:
+                    _params_params_split = _strat_params_split[1].split(
+                        self._EXP_STRATEGY_PARAM_PARAM_DELIM
+                    )
+                    _params_params_split = [
+                        _x.split(self._EXP_STRATEGY_PARAM_VALUE_DELIM)
+                        for _x in _params_params_split
+                    ]
+                    params = {_x[0]: _x[1] for _x in _params_params_split}
+                v = AL_STRATEGY(int(_strat_params_split[0]))
+                self.EXP_STRATEGY_PARAMS = params
             elif k == "EXP_DATASET":
                 v = DATASET(int(v))
             elif k == "EXP_LEARNER_MODEL":

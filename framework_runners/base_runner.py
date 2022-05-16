@@ -127,6 +127,8 @@ class AL_Experiment(ABC):
         # save workload parameters in the workload_done_file
         workload = {}
 
+        from misc.config import Config
+
         for k, v in Config.__annotations__.items():
             if (
                 k.startswith("EXP_")

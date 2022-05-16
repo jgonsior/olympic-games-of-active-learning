@@ -3,18 +3,21 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, List
 from framework_runners.base_runner import AL_Experiment
 
-if TYPE_CHECKING:
-    from ressources.data_types import (
-        AL_STRATEGY,
-        al_strategy_to_python_classes_mapping,
-    )
-
 
 class ALIPY_AL_Experiment(AL_Experiment):
     def get_AL_strategy(self):
+
+        from ressources.data_types import AL_STRATEGY
+        from ressources.data_types import (
+            al_strategy_to_python_classes_mapping,
+        )
+
         al_strategy = AL_STRATEGY(self.config.EXP_STRATEGY)
-        al_strategy = al_strategy_to_python_classes_mapping[al_strategy][0](
-            X=self.X, y=self.Y, **al_strategy_to_python_classes_mapping[al_strategy][1]
+
+        al_strategy = al_strategy_to_python_classes_mapping[al_strategy](
+            X=self.X,
+            y=self.Y,
+            **self.config.EXP_STRATEGY_PARAMS,
         )
         self.al_strategy = al_strategy
 
