@@ -4,7 +4,7 @@ from __future__ import annotations
 import copy
 from enum import unique
 import random
-from typing import TYPE_CHECKING, List, Literal
+from typing import TYPE_CHECKING, List, Literal, Tuple
 
 from enum import IntEnum
 
@@ -24,14 +24,6 @@ if TYPE_CHECKING:
 
 
 @unique
-class GreedyHeuristic(IntEnum):
-    NONE = 0
-    RANDOM = 1
-    COSINE = 2
-    UNCERTAINTY = 3
-
-
-@unique
 class FuturePeakEvalMetric(IntEnum):
     ACC = 1
     F1 = 2
@@ -42,15 +34,12 @@ class Greedy_Optimal(Base_AL_Strategy):
         self,
         X: FeatureVectors,
         Y: LabelList,
-        heuristic: GreedyHeuristic = GreedyHeuristic.NONE,
         amount_of_pre_selections: int = -1,
         future_peak_eval_metric: FuturePeakEvalMetric = FuturePeakEvalMetric.ACC,
     ) -> None:
-        self.heuristic = GreedyHeuristic[heuristic]  # type: ignore
+        super().__init__(X, Y)
         self.amount_of_pre_selections = int(amount_of_pre_selections)
         self.future_peak_eval_metric = FuturePeakEvalMetric[future_peak_eval_metric]  # type: ignore
-        self.X = X
-        self.Y = Y
 
     def _future_peak(
         self,
@@ -80,25 +69,29 @@ class Greedy_Optimal(Base_AL_Strategy):
 
         return future_metric_value_with_that_label
 
-    def select(
+    def _compute_sorted_future_batches(
         self,
         labeled_index: SampleIndiceList,
         unlabeled_index: SampleIndiceList,
         model: LEARNER_MODEL,
-        batch_size=int,
-    ) -> SampleIndiceList:
+        batch_size: int,
+    ) -> List[Tuple[float, SampleIndiceList]]:
         if self.amount_of_pre_selections > len(unlabeled_index):
             random_func = random.choices  # with replacement
         else:
             random_func = random.sample  # without replacement
-        if self.heuristic == GreedyHeuristic.RANDOM:
-            pre_sampled_X_querie_indices: List[SampleIndiceList] = [
-                random_func(unlabeled_index, batch_size)
-                for _ in range(0, self.amount_of_pre_selections)
-            ]
-        else:
-            raise ValueError(f"{self.heuristic.name} is not yet implemented")
 
+        # fancy conversion to tuples and set to avoid costly duplicate elements
+        if self.amount_of_pre_selections >= len(unlabeled_index) and batch_size == 1:
+            pre_sampled_X_querie_indices = [[_x] for _x in unlabeled_index]
+        else:
+            pre_sampled_X_querie_indices: List[SampleIndiceList] = [
+                list(_x)
+                for _x in set(
+                    tuple(random_func(unlabeled_index, batch_size))
+                    for _ in range(0, self.amount_of_pre_selections)
+                )
+            ]
         future_peak_acc = []
 
         for unlabeled_sample_indices in pre_sampled_X_querie_indices:
@@ -115,6 +108,18 @@ class Greedy_Optimal(Base_AL_Strategy):
 
         ordered_list_of_possible_sample_indices = sorted(
             zero_to_one_values_and_index, key=lambda tup: tup[0], reverse=True
+        )
+        return ordered_list_of_possible_sample_indices
+
+    def select(
+        self,
+        labeled_index: SampleIndiceList,
+        unlabeled_index: SampleIndiceList,
+        model: LEARNER_MODEL,
+        batch_size: int,
+    ) -> SampleIndiceList:
+        ordered_list_of_possible_sample_indices = self._compute_sorted_future_batches(
+            labeled_index, unlabeled_index, model, batch_size
         )
         return ordered_list_of_possible_sample_indices[0][
             1

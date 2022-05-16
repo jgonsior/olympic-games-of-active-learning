@@ -19,9 +19,9 @@ from framework_runners.optimal import OPTIMAL_AL_Experiment
 
 from optimal_query_strategies.greedy_optimal import (
     FuturePeakEvalMetric,
-    GreedyHeuristic,
     Greedy_Optimal,
 )
+from optimal_query_strategies.true_optimal import True_Optimal
 
 SampleIndiceList = List[int]
 FeatureVectors = np.ndarray
@@ -45,7 +45,7 @@ al_strategy_to_python_classes_mapping: Dict[AL_STRATEGY, Callable] = {
     AL_STRATEGY.ALIPY_RANDOM: QueryInstanceRandom,
     AL_STRATEGY.OPTIMAL_GREEDY: Greedy_Optimal,
     # AL_STRATEGY.OPTIMAL_BSO: (, {}),
-    # AL_STRATEGY.OPTIMAL_TRUE: (, {}),
+    AL_STRATEGY.OPTIMAL_TRUE: True_Optimal,
     # AL_STRATEGY.OPTIMAL_SUBSETS: (, {}),
 }
 
