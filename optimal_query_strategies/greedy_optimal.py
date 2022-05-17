@@ -110,7 +110,7 @@ class Greedy_Optimal(Base_AL_Strategy):
         pre_sampled_X_querie_indices: List[SampleIndiceList] = [
             list(_x)
             for _x in set(
-                tuple(random_func(unlabeled_index, batch_size))
+                tuple(random_func(unlabeled_index, k=batch_size))
                 for _ in range(0, self.amount_of_pre_selections)
             )
         ]

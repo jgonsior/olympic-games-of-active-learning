@@ -68,20 +68,29 @@ learner_models_to_classes_mapping: Dict[
     LEARNER_MODEL, Tuple[Callable, Dict[Any, Any]]
 ] = {
     LEARNER_MODEL.RF: (RandomForestClassifier, {"n_jobs": multiprocessing.cpu_count()}),
-    LEARNER_MODEL.DT: (DecisionTreeClassifier, {"n_jobs": multiprocessing.cpu_count()}),
+    LEARNER_MODEL.DT: (DecisionTreeClassifier, {}),
     LEARNER_MODEL.MNB: (MultinomialNB, {}),
     LEARNER_MODEL.GNB: (GaussianNB, {}),
     LEARNER_MODEL.RBF_SVM: (
         SVC,
-        {"kernel": "rbf", "n_jobs": multiprocessing.cpu_count()},
+        {
+            "kernel": "rbf",
+            "probability": True,
+        },
     ),
     LEARNER_MODEL.LINEAR_SVM: (
         SVC,
-        {"kernel": "linear", "n_jobs": multiprocessing.cpu_count()},
+        {
+            "kernel": "linear",
+            "probability": True,
+        },
     ),
     LEARNER_MODEL.POLY_SVM: (
         SVC,
-        {"kernel": "poly", "n_jobs": multiprocessing.cpu_count()},
+        {
+            "kernel": "poly",
+            "probability": True,
+        },
     ),
     LEARNER_MODEL.MLP: (
         MLPClassifier,

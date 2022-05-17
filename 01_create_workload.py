@@ -108,7 +108,6 @@ def _chmod_u_plus_x(path: Path) -> None:
     )
 
 
-# TODO wrapper schreiben, der mehrere random seeds aus der workload datei von einem worker ausführt
 def create_AL_experiment_slurm_files(config: Config, workload_amount: int) -> None:
     _write_template_file(
         config,

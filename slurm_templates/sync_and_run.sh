@@ -1,10 +1,10 @@
 #!/bin/bash
-rsync -avz -P {{ LOCAL_CODE_PATH }} {{ HPC_SSH_LOGIN }}:{{ HPC_WS_PATH }}/code --exclude '.git/' --exclude '.mypy_cache/'
-rsync -avz -P {{ LOCAL_OUTPUT_PATH }} {{ HPC_SSH_LOGIN }}:{{ HPC_WS_PATH }}/exp_results
+rsync -avz -P {{ LOCAL_CODE_PATH }}/ {{ HPC_SSH_LOGIN }}:{{ HPC_CODE_PATH }} --exclude '.git/' --exclude '.mypy_cache/'
+rsync -avz -P {{ LOCAL_OUTPUT_PATH }}/ {{ HPC_SSH_LOGIN }}:{{ HPC_OUTPUT_PATH }}
 ssh {{ HPC_SSH_LOGIN }} << EOF
-    cd {{ HPC_WS_PATH }}/exp_results
+    cd {{ HPC_CODE_PATH }}
     export LC_ALL=en_US.utf-8
     export LANG=en_US.utf-8
-    module load Python/3.8.6;
-    sbatch {{ EXP_TITLE }}/02_slurm.slurm
+    sbatch {{ HPC_OUTPUT_PATH}}/{{ EXP_TITLE }}/02_slurm.slurm
 EOF
+#    module load Python/3.8.6;

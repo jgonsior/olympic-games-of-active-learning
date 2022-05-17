@@ -29,12 +29,23 @@ test_exp_1:
     }
 test_exp_2:
     {
-        EXP_GRID_DATASET: [1, 2, 3],
+        EXP_GRID_DATASET: [1],
         EXP_GRID_STRATEGY:
-            [ALIPY_UNCERTAINTY_LC, ALIPY_RANDOM, ALIPY_UNCERTAINTY_MM],
-        EXP_GRID_RANDOM_SEEDS_END: 100,
+            [
+                {
+                    OPTIMAL_GREEDY:
+                        {
+                            amount_of_pre_selections: [10],
+                            future_peak_eval_metric: [ACC],
+                        },
+                },
+                { ALIPY_UNCERTAINTY: { measure: [least_confident] } },
+
+                { ALIPY_RANDOM: {} },
+            ],
+        EXP_GRID_RANDOM_SEEDS_END: 1,
         EXP_GRID_NUM_QUERIES: [10],
-        EXP_GRID_BATCH_SIZE: [1, 5, 10, 25, 50],
-        EXP_GRID_LEARNER_MODEL: [RF, MNB, MLP, LBFGS_MLP],
+        EXP_GRID_BATCH_SIZE: [1, 5],
+        EXP_GRID_LEARNER_MODEL: [RF, MLP],
         EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0, 1, 2, 3, 4],
     }
