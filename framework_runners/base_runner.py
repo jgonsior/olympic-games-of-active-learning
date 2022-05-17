@@ -15,6 +15,9 @@ if TYPE_CHECKING:
 from sklearn.metrics import classification_report
 import numpy as np
 
+import warnings
+from sklearn.exceptions import ConvergenceWarning, DataConversionWarning
+
 
 class AL_Experiment(ABC):
     config: Config
@@ -39,6 +42,7 @@ class AL_Experiment(ABC):
         pass
 
     def run_experiment(self) -> None:
+        warnings.filterwarnings("ignore", category=ConvergenceWarning)
         np.random.seed(self.config.EXP_RANDOM_SEED)
         random.seed(self.config.EXP_RANDOM_SEED)
 
