@@ -15,7 +15,7 @@ class OPTIMAL_AL_Experiment(AL_Experiment):
             self.config.EXP_STRATEGY_PARAMS["num_queries"] = self.config.EXP_NUM_QUERIES
 
         al_strategy = AL_STRATEGY(self.config.EXP_STRATEGY)
-        print(al_strategy)
+
         al_strategy = al_strategy_to_python_classes_mapping[al_strategy](
             X=self.X,
             Y=self.Y,

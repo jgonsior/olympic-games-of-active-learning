@@ -11,7 +11,7 @@ import pandas as pd
 import yaml
 
 from datasets import DATASET
-from misc.logging import init_logger
+from misc.logging import init_logger, log_it
 from ressources.data_types import AL_STRATEGY, LEARNER_MODEL
 
 
@@ -218,7 +218,7 @@ class Config:
         )
         workload = workload_df.iloc[0].to_dict()
         for k, v in workload.items():
-            print(f"{k}\t\t\t{v}")
+            log_it(f"{k}\t\t\t{v}")
             # convert str/ints to enum data types first
             if k == "EXP_STRATEGY":
                 # super complex EXP_STRATEGY parsing

@@ -6,8 +6,6 @@
 #SBATCH --tasks-per-node=1
 #SBATCH --cpus-per-task={{ SLURM_NR_THREADS }}
 #SBATCH --mem-per-cpu={{ SLURM_MEMORY }}M   # memory per CPU core
-#SBATCH --mail-user={{ HPC_SLURM_MAIL }}
-#SBATCH --mail-type=BEGIN,END,FAIL,REQUEUE,TIME_LIMIT
 #SBATCH -A {{ HPC_SLURM_PROJECT }}
 #SBATCH --output {{HPC_WS_PATH}}/slurm_{{EXP_TITLE}}_{{PYTHON_FILE}}_out.txt
 #SBATCH --error {{HPC_WS_PATH}}/slurm_{{EXP_TITLE}}_{{PYTHON_FILE}}_error.txt

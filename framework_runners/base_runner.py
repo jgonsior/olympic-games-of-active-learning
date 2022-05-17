@@ -142,13 +142,13 @@ class AL_Experiment(ABC):
             ):
                 workload[k] = self.config.__getattribute__(k)
         workload["duration"] = end_time - start_time
-        print(workload)
+        log_it(str(workload))
 
         with open(self.config.DONE_WORKLOAD_PATH, "a") as f:
             w = csv.DictWriter(f, fieldnames=workload.keys())
 
             if self.config.DONE_WORKLOAD_PATH.stat().st_size == 0:
-                print("write headers first")
+                log_it("write headers first")
                 w.writeheader()
             w.writerow(workload)
 
