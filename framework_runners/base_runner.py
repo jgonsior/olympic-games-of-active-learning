@@ -94,10 +94,18 @@ class AL_Experiment(ABC):
         start_time = time.process_time()
 
         for iteration in range(0, total_amount_of_iterations):
+            if len(self.unlabel_idx) == 0:
+                log_it("early stopping")
+                break
+
             log_it(f"#{iteration}")
 
-            # select some samples by indice to label
-            select_ind = self.query_AL_strategy()
+            # only use the query strategy if there are actualy samples left to label
+            if len(self.unlabel_idx) > self.config.EXP_BATCH_SIZE:
+                select_ind = self.query_AL_strategy()
+            else:
+                # if we have labeled everything except for a small batch -> return that
+                select_ind = self.unlabel_idx
             self.label_idx = self.label_idx + select_ind
 
             self.unlabel_idx = self._list_difference(self.unlabel_idx, select_ind)
