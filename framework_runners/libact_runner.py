@@ -19,8 +19,17 @@ class LIBACT_Experiment(AL_Experiment):
 
 
     def query_AL_strategy(self) -> List[int]:
+        ret =[]
         select_id,scores = self.al_strategy.make_query(return_score=True)
-        return select_id
+        ret.append(select_id)
+        batch_size = self.config.EXP_BATCH_SIZE
+        ids, scores = zip(*scores)
+        i=0
+        while i<batch_size:
+            maximum = max(scores)
+            max_ind = scores.index(maximum)
+            ret.append(ids[max_ind])
+        return ret
 
     def prepare_dataset(self):
         self.fully_labeled = Dataset(self.X,self.Y)
