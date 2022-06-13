@@ -14,6 +14,13 @@ class ALIPY_AL_Experiment(AL_Experiment):
 
         al_strategy = AL_STRATEGY(self.config.EXP_STRATEGY)
 
+        if al_strategy in [
+            AL_STRATEGY.ALIPY_QUIRE,
+            AL_STRATEGY.ALIPY_GRAPH_DENSITY,
+            AL_STRATEGY.ALIPY_CORESET_GREEDY,
+        ]:
+            self.config.EXP_STRATEGY_PARAMS["train_idx"] = self.train_idx
+
         al_strategy = al_strategy_to_python_classes_mapping[al_strategy](
             X=self.X,
             y=self.Y,

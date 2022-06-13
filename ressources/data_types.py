@@ -36,6 +36,8 @@ LabelList = np.ndarray
 class AL_STRATEGY(IntEnum):
     ALIPY_RANDOM = 1
     ALIPY_UNCERTAINTY = 2
+    ALIPY_GRAPH_DENSITY = 3
+    ALIPY_CORESET_GREEDY = 4
     ALIPY_QUIRE = 5
     OPTIMAL_BSO = 6
     OPTIMAL_TRUE = 7
