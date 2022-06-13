@@ -36,6 +36,7 @@ pyyaml = "*"
 aenum = "*"
 kaggle = "*"
 alipy = {editable = true, ref = "058c3a025c77964422a5417cfb2285f893a62295", git = "https://github.com/jgonsior/ALiPy.git"}
+playground = {editable = true, ref = "efedd8f1c45421ee13af2b9ff593ad31f3835942", git = "https://github.com/google/active-learning"}
 
 [requires]
 python_version = "3.10"
