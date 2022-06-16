@@ -8,6 +8,8 @@ from alipy.query_strategy import (
     QueryInstanceRandom,
     QueryInstanceQUIRE,
 )
+from libact.query_strategies import UncertaintySampling, QueryByCommittee, DWUS, QUIRE
+from libact.models import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
@@ -16,6 +18,7 @@ from sklearn.neural_network import MLPClassifier
 
 from framework_runners.alipy_runner import ALIPY_AL_Experiment
 from framework_runners.optimal_runner import OPTIMAL_AL_Experiment
+from framework_runners.libact_runner import LIBACT_Experiment
 from optimal_query_strategies.BSO_optimal import Beeam_Search_Optimal
 
 from optimal_query_strategies.greedy_optimal import (
@@ -39,6 +42,10 @@ class AL_STRATEGY(IntEnum):
     OPTIMAL_BSO = 6
     OPTIMAL_TRUE = 7
     OPTIMAL_GREEDY = 9
+    LIBACT_UNCERTAINTY = 10
+    LIBACT_QUEY_BY_COMMITTEE = 11
+    LIBACT_DWUS = 12
+    LIBACT_QUIRE = 13
 
 
 al_strategy_to_python_classes_mapping: Dict[AL_STRATEGY, Callable] = {
@@ -49,6 +56,11 @@ al_strategy_to_python_classes_mapping: Dict[AL_STRATEGY, Callable] = {
     AL_STRATEGY.OPTIMAL_BSO: Beeam_Search_Optimal,
     AL_STRATEGY.OPTIMAL_TRUE: True_Optimal,
     # AL_STRATEGY.OPTIMAL_SUBSETS: (, {}),
+    AL_STRATEGY.LIBACT_UNCERTAINTY: UncertaintySampling,
+    AL_STRATEGY.LIBACT_QUEY_BY_COMMITTEE: QueryByCommittee,
+    AL_STRATEGY.LIBACT_DWUS: DWUS,
+    AL_STRATEGY.LIBACT_QUIRE: QUIRE
+
 }
 
 
@@ -64,6 +76,7 @@ class LEARNER_MODEL(IntEnum):
     POLY_SVM = 7
     MLP = 8
     LBFGS_MLP = 9
+    LOG_REG = 10
 
 
 learner_models_to_classes_mapping: Dict[
@@ -110,6 +123,7 @@ learner_models_to_classes_mapping: Dict[
             "solver": "lbfgs",
         },
     ),
+    LEARNER_MODEL.LOG_REG: (LogisticRegression, {})
 }
 
 
@@ -117,9 +131,11 @@ learner_models_to_classes_mapping: Dict[
 class AL_FRAMEWORK(IntEnum):
     ALIPY = 1
     OPTIMAL = 2
+    LIBACT = 3
 
 
 AL_framework_to_classes_mapping: Dict[AL_FRAMEWORK, Tuple[Callable, Dict[Any, Any]]] = {
     AL_FRAMEWORK.ALIPY: (ALIPY_AL_Experiment, {}),
     AL_FRAMEWORK.OPTIMAL: (OPTIMAL_AL_Experiment, {}),
+    AL_FRAMEWORK.LIBACT: (LIBACT_Experiment, {})
 }
