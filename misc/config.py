@@ -76,6 +76,7 @@ class Config:
     CONFIG_FILE_PATH: Path = "00_config.yaml"  # type: ignore
     WORKLOAD_FILE_PATH: Path = "01_workload.csv"  # type: ignore
     EXPERIMENT_SLURM_FILE_PATH: Path = "02_slurm.slurm"  # type: ignore
+    EXPERIMENT_SLURM_TAR_PATH: Path = "02b_tar.slurm"  # type: ignore
     EXPERIMENT_BASH_FILE_PATH: Path = "02_bash.sh"  # type: ignore
     EXPERIMENT_SYNC_AND_RUN_FILE_PATH: Path = "03_sync_and_run.sh"  # type: ignore
     DONE_WORKLOAD_PATH: Path = "04_done_workload.csv"  # type: ignore
@@ -136,6 +137,9 @@ class Config:
         self.WORKLOAD_FILE_PATH = self.OUTPUT_PATH / self.WORKLOAD_FILE_PATH
         self.EXPERIMENT_SLURM_FILE_PATH = (
             self.OUTPUT_PATH / self.EXPERIMENT_SLURM_FILE_PATH
+        )
+        self.EXPERIMENT_SLURM_TAR_PATH = (
+            self.OUTPUT_PATH / self.EXPERIMENT_SLURM_TAR_PATH
         )
         self.EXPERIMENT_BASH_FILE_PATH = (
             self.OUTPUT_PATH / self.EXPERIMENT_BASH_FILE_PATH

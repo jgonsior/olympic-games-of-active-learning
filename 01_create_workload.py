@@ -62,6 +62,7 @@ def create_workload(config: Config) -> List[int]:
             exp_parameter: config.__getattribute__(exp_parameter)
             for exp_parameter in exp_grid_params_names
         }
+
         # convert EXP_GRID_STRATEGY with params into list of param objects
         exp_param_grid["EXP_GRID_STRATEGY"] = _create_exp_grid(
             exp_param_grid["EXP_GRID_STRATEGY"], config
@@ -119,6 +120,13 @@ def create_AL_experiment_slurm_files(config: Config, workload_amount: int) -> No
         END=int(workload_amount / config.SLURM_ITERATIONS_PER_BATCH),
         CLI_ARGS="",
         APPEND_OUTPUT_PATH=False,
+    )
+
+    _write_template_file(
+        config,
+        Path("slurm_templates/tar_slurm.sh"),
+        config.EXPERIMENT_SLURM_TAR_PATH,
+        array=False,
     )
 
 
