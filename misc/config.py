@@ -81,6 +81,7 @@ class Config:
     EXPERIMENT_SYNC_AND_RUN_FILE_PATH: Path = "03_sync_and_run.sh"  # type: ignore
     DONE_WORKLOAD_PATH: Path = "04_done_workload.csv"  # type: ignore
     METRIC_RESULTS_PATH_APPENDIX: str = "_metric_results.csv"
+    EXP_RESULT_TAR_GZ_PATH: Path = ".tar.gz"  # type: ignore
     METRIC_RESULTS_FILE_PATH: Path
 
     _EXP_STRATEGY_STRAT_PARAMS_DELIM = "#"
@@ -154,6 +155,10 @@ class Config:
         self.KAGGLE_DATASETS_PATH = Path(self.KAGGLE_DATASETS_PATH)
 
         self.DONE_WORKLOAD_PATH = self.OUTPUT_PATH / self.DONE_WORKLOAD_PATH
+
+        self.EXP_RESULT_TAR_GZ_PATH = Path(
+            str(self.OUTPUT_PATH) + str(self.EXP_RESULT_TAR_GZ_PATH)
+        )
 
         self.OUTPUT_PATH.mkdir(parents=True, exist_ok=True)
 
