@@ -1,3 +1,5 @@
+import ast
+from itertools import chain
 import timeit
 import pandas as pd
 import csv
@@ -22,8 +24,6 @@ config = Config()
 
 METRIC_OF_INTEREST = "acc_auc"
 
-df = pd.DataFrame()
-
 zip = zipfile.ZipFile(str(config.OUTPUT_PATH) + ".zip")
 
 done_workload = pd.read_csv(
@@ -43,6 +43,10 @@ batch_sizes = done_workload["EXP_BATCH_SIZE"].unique()
 learner_models = done_workload["EXP_LEARNER_MODEL"].unique()
 train_test_buckets = done_workload["EXP_TRAIN_TEST_BUCKET_SIZE"].unique()
 print(done_workload)
+
+counter = 0
+
+results = []
 
 for batch_size in batch_sizes:
     for learner_model in learner_models:
@@ -64,16 +68,80 @@ for batch_size in batch_sizes:
                     dataset = dataset.replace("DATASET.", "")
 
                     if len(ids_of_interest) > 1:
-                        print(ids_of_interest)
+                        counter += 1
+                        print(counter)
+                        """if counter == 10:
+
+                            results_df = pd.DataFrame(
+                                results,
+                            )
+
+                            results_df.to_csv("test.csv", index=None)
+                            print(results_df)
+                            exit(-1)
+                            break
+                        """
                         for interesting_id in ids_of_interest:
                             f = zip.open(
                                 f"{config.EXP_RESULT_ZIP_PATH_PREFIX}/{dataset}/{interesting_id}_metric_results.csv"
                             )
-                            # print(pd.read_csv(f))
+                            metric_df = pd.read_csv(f)
+
+                            acc_auc = metric_df["accuracy"].sum() / len(metric_df)
+                            macro_f1_auc = metric_df["macro avg_f1-score"].sum() / len(
+                                metric_df
+                            )
+                            macro_prec_auc = metric_df[
+                                "macro avg_precision"
+                            ].sum() / len(metric_df)
+                            macro_recall_auc = metric_df[
+                                "macro avg_recall"
+                            ].sum() / len(metric_df)
+                            weighted_f1_auc = metric_df[
+                                "weighted avg_f1-score"
+                            ].sum() / len(metric_df)
+                            weighted_prec_auc = metric_df[
+                                "weighted avg_precision"
+                            ].sum() / len(metric_df)
+                            weighted_recall_auc = metric_df[
+                                "weighted avg_recall"
+                            ].sum() / len(metric_df)
+                            metric_df["selected_indices"] = metric_df[
+                                "selected_indices"
+                            ].apply(ast.literal_eval)
+                            selected_indices = list(
+                                chain.from_iterable(
+                                    metric_df["selected_indices"].to_list()
+                                )
+                            )
+
+                            results.append(
+                                {
+                                    "dataset": dataset,
+                                    "al_strategy": al_strategy,
+                                    "batch_size": batch_size,
+                                    "learner_model": learner_model,
+                                    "train_test_bucket": train_test_bucket,
+                                    "acc_auc": acc_auc,
+                                    "macro_f1_auc": macro_f1_auc,
+                                    "macro_prec_auc": macro_prec_auc,
+                                    "macro_recall_auc": macro_recall_auc,
+                                    "weighted_f1_auc": weighted_f1_auc,
+                                    "weighted_prec_auc": weighted_prec_auc,
+                                    "weighted_recall_auc": weighted_recall_auc,
+                                    "selected_indices": selected_indices,
+                                },
+                            )
 
             # create table and save/display it
 
+results_df = pd.DataFrame(
+    results,
+)
+results_df.to_csv("test.csv", index=None)
 
+# -> weg von zip -> ist das so schneller?!
+# -> außerdem -> multithreading nutzen!
 # read data into dataframe
 
 # aggregration as config
