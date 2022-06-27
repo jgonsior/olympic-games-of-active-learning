@@ -83,6 +83,7 @@ class Config:
     METRIC_RESULTS_PATH_APPENDIX: str = "_metric_results.csv"
     EXP_RESULT_ZIP_PATH_PREFIX: Path
     EXP_RESULT_ZIP_PATH: Path = ".tar.gz"  # type: ignore
+    EXP_RESULT_EXTRACTED_ZIP_PATH: Path
     METRIC_RESULTS_FILE_PATH: Path
 
     _EXP_STRATEGY_STRAT_PARAMS_DELIM = "#"
@@ -162,6 +163,10 @@ class Config:
         )
         self.EXP_RESULT_ZIP_PATH = Path(
             str(self.OUTPUT_PATH) + str(self.EXP_RESULT_ZIP_PATH)
+        )
+
+        self.EXP_RESULT_EXTRACTED_ZIP_PATH = (
+            self.OUTPUT_PATH / self.EXP_RESULT_ZIP_PATH_PREFIX
         )
 
         self.OUTPUT_PATH.mkdir(parents=True, exist_ok=True)
