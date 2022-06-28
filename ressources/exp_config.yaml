@@ -1,4 +1,4 @@
-test_exp_1:
+test_exp_3:
     {
         EXP_GRID_DATASET: [1, 2, 3],
         EXP_GRID_STRATEGY:

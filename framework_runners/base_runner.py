@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 import csv
+from itertools import chain
 import random
 import time
 from typing import TYPE_CHECKING, Any, List
@@ -131,11 +132,11 @@ class AL_Experiment(ABC):
         end_time = time.process_time()
 
         # save metric results into a single file
-        output_df = pd.json_normalize(confusion_matrices, sep="_")  # type: ignore
-        output_df["selected_indices"] = selected_indices
+        metric_df = pd.json_normalize(confusion_matrices, sep="_")  # type: ignore
+        metric_df["selected_indices"] = selected_indices
 
         log_it(f"saving to {self.config.METRIC_RESULTS_FILE_PATH}")
-        output_df.to_csv(self.config.METRIC_RESULTS_FILE_PATH, index=None)
+        metric_df.to_csv(self.config.METRIC_RESULTS_FILE_PATH, index=None)
 
         # save workload parameters in the workload_done_file
         workload = {}
@@ -150,6 +151,33 @@ class AL_Experiment(ABC):
             ):
                 workload[k] = self.config.__getattribute__(k)
         workload["duration"] = end_time - start_time
+
+        # calculate metrics
+        acc_auc = metric_df["accuracy"].sum() / len(metric_df)
+        macro_f1_auc = metric_df["macro avg_f1-score"].sum() / len(metric_df)
+        macro_prec_auc = metric_df["macro avg_precision"].sum() / len(metric_df)
+        macro_recall_auc = metric_df["macro avg_recall"].sum() / len(metric_df)
+        weighted_f1_auc = metric_df["weighted avg_f1-score"].sum() / len(metric_df)
+        weighted_prec_auc = metric_df["weighted avg_precision"].sum() / len(metric_df)
+        weighted_recall_auc = metric_df["weighted avg_recall"].sum() / len(metric_df)
+        metric_df["selected_indices"] = selected_indices
+        selected_indices = list(
+            chain.from_iterable(metric_df["selected_indices"].to_list())
+        )
+
+        workload.update(
+            {
+                "acc_auc": acc_auc,
+                "macro_f1_auc": macro_f1_auc,
+                "macro_prec_auc": macro_prec_auc,
+                "macro_recall_auc": macro_recall_auc,
+                "weighted_f1_auc": weighted_f1_auc,
+                "weighted_prec_auc": weighted_prec_auc,
+                "weighted_recall_auc": weighted_recall_auc,
+                "selected_indices": selected_indices,
+            }
+        )
+
         log_it(str(workload))
 
         with open(self.config.DONE_WORKLOAD_PATH, "a") as f:
