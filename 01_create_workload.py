@@ -115,11 +115,17 @@ def create_AL_experiment_slurm_files(config: Config, workload_amount: int) -> No
         Path("slurm_templates/slurm_parallel.sh"),
         config.EXPERIMENT_SLURM_FILE_PATH,
         array=True,
-        PYTHON_FILE="02_run_experiment.py",
+        PYTHON_FILE="/02_run_experiment.py",
         START=0,
         END=int(workload_amount / config.SLURM_ITERATIONS_PER_BATCH),
         CLI_ARGS="",
         APPEND_OUTPUT_PATH=False,
+    )
+
+    _write_template_file(
+        config,
+        Path("slurm_templates/chain_job.sh"),
+        config.EXPERIMENT_SLURM_CHAIN_JOB,
     )
 
     _write_template_file(
