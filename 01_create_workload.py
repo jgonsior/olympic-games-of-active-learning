@@ -127,6 +127,7 @@ def create_AL_experiment_slurm_files(config: Config, workload_amount: int) -> No
         Path("slurm_templates/chain_job.sh"),
         config.EXPERIMENT_SLURM_CHAIN_JOB,
     )
+    _chmod_u_plus_x(config.EXPERIMENT_SLURM_CHAIN_JOB)
 
     _write_template_file(
         config,

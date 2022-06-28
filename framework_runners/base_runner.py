@@ -148,6 +148,8 @@ class AL_Experiment(ABC):
                 k.startswith("EXP_")
                 and not str(v).startswith("typing.List[")
                 and not k.startswith("EXP_GRID_")
+                and not k.startswith("EXP_RESULT_ZIP_")
+                and not k.startswith("EXP_RESULT_EXTRACTED_ZIP_PATH")
             ):
                 workload[k] = self.config.__getattribute__(k)
         workload["duration"] = end_time - start_time
