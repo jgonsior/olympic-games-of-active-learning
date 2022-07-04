@@ -1,6 +1,9 @@
 from framework_runners.base_runner import AL_Experiment
+from typing import List
+from misc.config import Config
 from libact.base.dataset import Dataset
 from libact.models import LogisticRegression
+
 
 class LIBACT_Experiment(AL_Experiment):
     def __init__(self, config: Config):
@@ -16,7 +19,6 @@ class LIBACT_Experiment(AL_Experiment):
         )
         strategy = AL_STRATEGY(self.config.EXP_STRATEGY)
         self.al_strategy = al_strategy_to_python_classes_mapping[strategy](self.trn_ds,method='lc', model=LogisticRegression()) #TODO
-
 
     def query_AL_strategy(self) -> List[int]:
         ret =[]

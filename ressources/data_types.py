@@ -10,6 +10,16 @@ from alipy.query_strategy import (
 )
 from libact.query_strategies import UncertaintySampling, QueryByCommittee, DWUS, QUIRE
 from libact.models import LogisticRegression
+from playground.sampling_methods.bandit_discrete import BanditDiscreteSampler #wrapper
+from playground.sampling_methods.simulate_batch import SimulateBatchSampler #wrapper
+from playground.sampling_methods.graph_density import GraphDensitySampler
+from playground.sampling_methods.hierarchical_clustering_AL import HierarchicalClusterAL
+from playground.sampling_methods.informative_diverse import InformativeClusterDiverseSampler
+from playground.sampling_methods.kcenter_greedy import kCenterGreedy
+from playground.sampling_methods.margin_AL import MarginAL
+from playground.sampling_methods.mixture_of_samplers import MixtureOfSamplers
+from playground.sampling_methods.represent_cluster_centers import RepresentativeClusterMeanSampling
+from playground.sampling_methods.uniform_sampling import UniformSampling
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
@@ -46,6 +56,14 @@ class AL_STRATEGY(IntEnum):
     LIBACT_QUEY_BY_COMMITTEE = 11
     LIBACT_DWUS = 12
     LIBACT_QUIRE = 13
+    PLAYGROUND_GRAPH_DENSITY = 14
+    PLAYGROUND_HIERARCHICAL_CLUSTER = 15
+    PLAYGROUND_INFORMATIVE_DIVERSE = 16
+    PLAYGROUND_KCENTER_GREEDY = 17
+    PLAYGROUND_MARGIN = 18
+    PLAYGROUND_MIXTURE = 19
+    PLAYGROUND_REPRESENTATIVE_CLUSTER = 20
+    PLAYGROUND_UNIFORM = 21
 
 
 al_strategy_to_python_classes_mapping: Dict[AL_STRATEGY, Callable] = {
@@ -59,7 +77,15 @@ al_strategy_to_python_classes_mapping: Dict[AL_STRATEGY, Callable] = {
     AL_STRATEGY.LIBACT_UNCERTAINTY: UncertaintySampling,
     AL_STRATEGY.LIBACT_QUEY_BY_COMMITTEE: QueryByCommittee,
     AL_STRATEGY.LIBACT_DWUS: DWUS,
-    AL_STRATEGY.LIBACT_QUIRE: QUIRE
+    AL_STRATEGY.LIBACT_QUIRE: QUIRE,
+    AL_STRATEGY.PLAYGROUND_UNIFORM: UniformSampling,
+    AL_STRATEGY.PLAYGROUND_MARGIN: MarginAL,
+    AL_STRATEGY.PLAYGROUND_MIXTURE: MixtureOfSamplers,
+    AL_STRATEGY.PLAYGROUND_KCENTER_GREEDY: kCenterGreedy,
+    AL_STRATEGY.PLAYGROUND_REPRESENTATIVE_CLUSTER: RepresentativeClusterMeanSampling,
+    AL_STRATEGY.PLAYGROUND_GRAPH_DENSITY: GraphDensitySampler,
+    AL_STRATEGY.PLAYGROUND_HIERARCHICAL_CLUSTER: HierarchicalClusterAL,
+    AL_STRATEGY.PLAYGROUND_INFORMATIVE_DIVERSE: InformativeClusterDiverseSampler
 
 }
 
