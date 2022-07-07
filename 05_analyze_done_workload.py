@@ -28,12 +28,9 @@ config = Config()
 
 METRIC_OF_INTEREST = "acc_auc"
 
-# zip = zipfile.ZipFile(str(config.OUTPUT_PATH) + ".zip")
-
 done_workload = pd.read_csv(
     str(config.EXP_RESULT_EXTRACTED_ZIP_PATH / config.DONE_WORKLOAD_PATH.name)
 )
-print(len(done_workload))
 
 
 done_workload["EXP_FULL_STRATEGY"] = (
@@ -41,20 +38,48 @@ done_workload["EXP_FULL_STRATEGY"] = (
 )
 
 datasets = done_workload["EXP_DATASET"].unique()
-
 al_strategies = done_workload["EXP_FULL_STRATEGY"].unique()
 batch_sizes = done_workload["EXP_BATCH_SIZE"].unique()
 learner_models = done_workload["EXP_LEARNER_MODEL"].unique()
 train_test_buckets = done_workload["EXP_TRAIN_TEST_BUCKET_SIZE"].unique()
+
 print(done_workload)
 
+metrics = [
+    "duration",
+    "acc_auc",
+    "macro_f1_auc",
+    "macro_prec_auc",
+    "macro_recall_auc",
+    "weighted_f1_auc",
+    "weighted_prec_auc",
+    "weighted_recall_auc",
+]
 
-# -> weg von zip -> ist das so schneller?!
-# -> außerdem -> multithreading nutzen!
-# read data into dataframe
+for batch_size in batch_sizes:
+    for learner_model in learner_models:
+        for train_test_bucket in train_test_buckets:
+            # print(f"{batch_size} - {learner_model} - {train_test_bucket}")
+            for al_strategy in al_strategies:
+                for dataset in datasets:
+                    ids_of_interest = done_workload.loc[
+                        (done_workload["EXP_DATASET"] == dataset)
+                        & (done_workload["EXP_FULL_STRATEGY"] == al_strategy)
+                        & (done_workload["EXP_BATCH_SIZE"] == batch_size)
+                        & (done_workload["EXP_LEARNER_MODEL"] == learner_model)
+                        & (
+                            done_workload["EXP_TRAIN_TEST_BUCKET_SIZE"]
+                            == train_test_bucket
+                        )
+                    ]["EXP_UNIQUE_ID"]
+                    rows = done_workload.iloc[ids_of_interest]
+                    print("\n" * 2)
+                    print(rows.iloc[0].to_dict())
+                    for metric in metrics:
+                        print(f"{metric}: {rows[metric].mean()}")
 
-# aggregration as config
-# for all metrics
+# x aggregration as config
+# x for all metrics
 # table with the amount of repeated runs
 # if wanted -> only keep results where we have all repetitions from all strategies
 # table with signifcance tests

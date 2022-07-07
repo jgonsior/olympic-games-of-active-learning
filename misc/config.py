@@ -132,6 +132,17 @@ class Config:
         if self.USE_EXP_YAML != "NOOOOO":
             self.EXP_TITLE = self.USE_EXP_YAML
 
+        self.EXP_RESULT_ZIP_PATH_PREFIX = Path(
+            str(self.HPC_WS_PATH)[1:] + "exp_results/" + self.EXP_TITLE
+        )
+        self.EXP_RESULT_ZIP_PATH = Path(
+            str(self.OUTPUT_PATH) + str(self.EXP_RESULT_ZIP_PATH)
+        )
+
+        self.EXP_RESULT_EXTRACTED_ZIP_PATH = (
+            self.OUTPUT_PATH / self.EXP_RESULT_ZIP_PATH_PREFIX
+        )
+
         self.OUTPUT_PATH = self.OUTPUT_PATH / self.EXP_TITLE
 
         # check if a config file exists which could be read in
@@ -162,17 +173,6 @@ class Config:
         self.KAGGLE_DATASETS_PATH = Path(self.KAGGLE_DATASETS_PATH)
 
         self.DONE_WORKLOAD_PATH = self.OUTPUT_PATH / self.DONE_WORKLOAD_PATH
-
-        self.EXP_RESULT_ZIP_PATH_PREFIX = Path(
-            str(self.HPC_WS_PATH)[1:] + "exp_results/" + self.EXP_TITLE
-        )
-        self.EXP_RESULT_ZIP_PATH = Path(
-            str(self.OUTPUT_PATH) + str(self.EXP_RESULT_ZIP_PATH)
-        )
-
-        self.EXP_RESULT_EXTRACTED_ZIP_PATH = (
-            self.OUTPUT_PATH / self.EXP_RESULT_ZIP_PATH_PREFIX
-        )
 
         self.OUTPUT_PATH.mkdir(parents=True, exist_ok=True)
 
