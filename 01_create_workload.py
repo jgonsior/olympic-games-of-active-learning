@@ -1,3 +1,5 @@
+from collections import Counter
+import enum
 import itertools
 import multiprocessing
 from pathlib import Path
@@ -5,13 +7,14 @@ import stat
 from typing import Any, Dict, List
 from jinja2 import Template
 import pandas as pd
+from datasets import DATASET
 from misc.config import Config
 from misc.logging import log_it
 from sklearn.model_selection import ParameterGrid
 import os
 from joblib import Parallel, delayed
 
-from ressources.data_types import AL_STRATEGY
+from ressources.data_types import AL_STRATEGY, LEARNER_MODEL
 
 # determine config parameters which are to be used -> they all start with EXP_ and have a typing hint of [List[XXX]]
 def _determine_exp_grid_parameters(config: Config) -> List[str]:
@@ -82,6 +85,71 @@ def create_workload(config: Config) -> List[int]:
         open_workload_df = open_workload_df.sample(frac=1).reset_index(drop=True)
 
         open_workload_df["EXP_UNIQUE_ID"] = open_workload_df.index
+
+    if len(config.INCLUDE_RESULTS_FROM) > 0:
+        others_done_workload_df = pd.DataFrame(columns=open_workload_df.columns)
+
+        for other_exp_results_name in config.INCLUDE_RESULTS_FROM:
+            # load done_workload_df from other results
+            other_done_workload = pd.read_csv(Path(other_exp_results_name))
+            others_done_workload_df = pd.concat(
+                [others_done_workload_df, other_done_workload], ignore_index=True
+            )
+
+        hyperparameters = [
+            h for h in open_workload_df.columns.to_list() if h not in ["EXP_UNIQUE_ID"]
+        ]
+
+        # convert strings to enums
+        others_done_workload_df["EXP_DATASET"] = others_done_workload_df[
+            "EXP_DATASET"
+        ].apply(lambda x: DATASET[x.split(".")[1]])
+        others_done_workload_df["EXP_LEARNER_MODEL"] = others_done_workload_df[
+            "EXP_LEARNER_MODEL"
+        ].apply(lambda x: LEARNER_MODEL[x.split(".")[1]])
+
+        others_done_workload_df["EXP_STRATEGY_PARAMS"] = others_done_workload_df[
+            "EXP_STRATEGY_PARAMS"
+        ].apply(
+            lambda x: x.replace("'", "")
+            .replace(": ", config._EXP_STRATEGY_PARAM_VALUE_DELIM)
+            .replace("{", "")
+            .replace("}", "")
+            .replace(", ", config._EXP_STRATEGY_PARAM_PARAM_DELIM)
+        )
+
+        # fancily encode exp_strategy
+        others_done_workload_df["EXP_STRATEGY"] = others_done_workload_df[
+            "EXP_STRATEGY"
+        ].apply(lambda x: AL_STRATEGY[x.split(".")[1]])
+
+        others_done_workload_df["EXP_STRATEGY"] = others_done_workload_df[
+            "EXP_LEARNER_MODEL"
+        ].apply(lambda x: f"{x}{config._EXP_STRATEGY_STRAT_PARAMS_DELIM}")
+
+        others_done_workload_df["EXP_STRATEGY"] = (
+            others_done_workload_df["EXP_STRATEGY"]
+            + "_"
+            + others_done_workload_df["EXP_STRATEGY_PARAMS"]
+        )
+
+        # convert wrong 1#_ back to 1
+        others_done_workload_df["EXP_STRATEGY"] = others_done_workload_df[
+            "EXP_STRATEGY"
+        ].apply(lambda x: x.replace("#_", "#") if x.endswith("#_") else x)
+
+        length_before_removal_of_already_run_experiments = len(open_workload_df)
+        for _, row in others_done_workload_df.iterrows():
+            mask = True
+            for hyper_parameter in hyperparameters:
+                value = row[hyper_parameter]
+                mask &= open_workload_df[hyper_parameter] == value
+
+            open_workload_df = open_workload_df.loc[~mask]
+
+        print(
+            f"Reduced from {length_before_removal_of_already_run_experiments} to {len(open_workload_df)}"
+        )
 
     open_workload_df.to_csv(config.WORKLOAD_FILE_PATH, index=None)
     config.save_to_file()

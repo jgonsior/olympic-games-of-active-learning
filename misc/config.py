@@ -31,6 +31,7 @@ class Config:
     LOCAL_OUTPUT_PATH: Path
 
     USE_EXP_YAML: str = "NOOOOO"
+    INCLUDE_RESULTS_FROM: List[str]
 
     EXP_TITLE: str = "tmp"
     EXP_DATASET: DATASET
@@ -291,6 +292,9 @@ class Config:
             ):
                 nargs = "*"
                 arg_type = int
+            elif str(v) == "typing.List[str]":
+                nargs = "*"
+                arg_type = str
             # enum classes:
             elif (
                 str(v).startswith("typing.List[misc")
