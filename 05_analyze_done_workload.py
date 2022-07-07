@@ -28,9 +28,8 @@ config = Config()
 
 METRIC_OF_INTEREST = "acc_auc"
 
-done_workload = pd.read_csv(
-    str(config.EXP_RESULT_EXTRACTED_ZIP_PATH / config.DONE_WORKLOAD_PATH.name)
-)
+# done_workload = pd.read_csv(    str(config.EXP_RESULT_EXTRACTED_ZIP_PATH / config.DONE_WORKLOAD_PATH.name))
+done_workload = pd.read_csv(config.DONE_WORKLOAD_FILE)
 
 
 done_workload["EXP_FULL_STRATEGY"] = (
@@ -71,12 +70,16 @@ for batch_size in batch_sizes:
                             done_workload["EXP_TRAIN_TEST_BUCKET_SIZE"]
                             == train_test_bucket
                         )
-                    ]["EXP_UNIQUE_ID"]
+                    ].index
+
+                    if len(ids_of_interest) == 0:
+                        continue
+
                     rows = done_workload.iloc[ids_of_interest]
-                    print("\n" * 2)
-                    print(rows.iloc[0].to_dict())
-                    for metric in metrics:
-                        print(f"{metric}: {rows[metric].mean()}")
+                    # print("\n" * 2)
+                    # print(rows.iloc[0].to_dict())
+                    # for metric in metrics:
+                    #    print(f"{metric}: {rows[metric].mean()}")
 
 # x aggregration as config
 # x for all metrics

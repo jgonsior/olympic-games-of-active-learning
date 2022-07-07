@@ -33,7 +33,7 @@ class Config:
     USE_EXP_YAML: str = "NOOOOO"
     INCLUDE_RESULTS_FROM: List[str]
 
-    EXP_TITLE: str = "tmp"
+    EXP_TITLE: str = "test_exp_2"
     EXP_DATASET: DATASET
     EXP_GRID_DATASET: List[DATASET]
     EXP_STRATEGY: AL_STRATEGY
@@ -91,6 +91,8 @@ class Config:
     _EXP_STRATEGY_STRAT_PARAMS_DELIM = "#"
     _EXP_STRATEGY_PARAM_PARAM_DELIM = "-"
     _EXP_STRATEGY_PARAM_VALUE_DELIM = ":"
+
+    DONE_WORKLOAD_FILE: Path
 
     def __init__(self) -> None:
         self._parse_cli_arguments()
