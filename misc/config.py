@@ -80,6 +80,7 @@ class Config:
     EXPERIMENT_SLURM_CHAIN_JOB: Path = "02b_chain_job.sh"  # type: ignore
     EXPERIMENT_SLURM_TAR_PATH: Path = "03_tar.slurm"  # type: ignore
     EXPERIMENT_BASH_FILE_PATH: Path = "02_bash.sh"  # type: ignore
+    EXPERIMENT_PYTHON_PARALLEL_BASH_FILE_PATH: Path = "02b_run_bash_parallel.py"  # type: ignore
     EXPERIMENT_SYNC_AND_RUN_FILE_PATH: Path = "04_sync_and_run.sh"  # type: ignore
     DONE_WORKLOAD_PATH: Path = "05_done_workload.csv"  # type: ignore
     METRIC_RESULTS_PATH_APPENDIX: str = "_metric_results.csv"
@@ -164,6 +165,9 @@ class Config:
         )
         self.EXPERIMENT_BASH_FILE_PATH = (
             self.OUTPUT_PATH / self.EXPERIMENT_BASH_FILE_PATH
+        )
+        self.EXPERIMENT_PYTHON_PARALLEL_BASH_FILE_PATH = (
+            self.OUTPUT_PATH / self.EXPERIMENT_PYTHON_PARALLEL_BASH_FILE_PATH
         )
 
         self.EXPERIMENT_SYNC_AND_RUN_FILE_PATH = (

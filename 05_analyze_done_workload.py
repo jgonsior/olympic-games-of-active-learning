@@ -36,12 +36,13 @@ done_workload["EXP_FULL_STRATEGY"] = (
     done_workload["EXP_STRATEGY"] + "#" + done_workload["EXP_STRATEGY_PARAMS"]
 )
 
-datasets = done_workload["EXP_DATASET"].unique()
-al_strategies = done_workload["EXP_FULL_STRATEGY"].unique()
-batch_sizes = done_workload["EXP_BATCH_SIZE"].unique()
-learner_models = done_workload["EXP_LEARNER_MODEL"].unique()
-train_test_buckets = done_workload["EXP_TRAIN_TEST_BUCKET_SIZE"].unique()
-
+hyper_parameters = {
+    "datasets": done_workload["EXP_DATASET"].unique(),
+    "al_strategies": done_workload["EXP_FULL_STRATEGY"].unique(),
+    "batch_sizes": done_workload["EXP_BATCH_SIZE"].unique(),
+    "learner_models": done_workload["EXP_LEARNER_MODEL"].unique(),
+    "train_test_buckets": done_workload["EXP_TRAIN_TEST_BUCKET_SIZE"].unique(),
+}
 print(done_workload)
 
 metrics = [
@@ -55,12 +56,16 @@ metrics = [
     "weighted_recall_auc",
 ]
 
-for batch_size in batch_sizes:
-    for learner_model in learner_models:
-        for train_test_bucket in train_test_buckets:
+
+print(f"Possible values: {hyper_parameters}")
+
+
+for batch_size in hyper_parameters["batch_sizes"]:
+    for learner_model in hyper_parameters["learner_models"]:
+        for train_test_bucket in hyper_parameters["train_test_buckets"]:
             # print(f"{batch_size} - {learner_model} - {train_test_bucket}")
-            for al_strategy in al_strategies:
-                for dataset in datasets:
+            for al_strategy in hyper_parameters["al_strategies"]:
+                for dataset in hyper_parameters["datasets"]:
                     ids_of_interest = done_workload.loc[
                         (done_workload["EXP_DATASET"] == dataset)
                         & (done_workload["EXP_FULL_STRATEGY"] == al_strategy)

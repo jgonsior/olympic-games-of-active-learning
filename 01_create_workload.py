@@ -86,7 +86,7 @@ def create_workload(config: Config) -> List[int]:
 
         open_workload_df["EXP_UNIQUE_ID"] = open_workload_df.index
 
-    if len(config.INCLUDE_RESULTS_FROM) > 0:
+    if config.INCLUDE_RESULTS_FROM is not None:
         others_done_workload_df = pd.DataFrame(columns=open_workload_df.columns)
 
         for other_exp_results_name in config.INCLUDE_RESULTS_FROM:
@@ -208,13 +208,13 @@ def create_AL_experiment_slurm_files(config: Config, workload_amount: int) -> No
 def create_AL_experiment_bash_files(config: Config, unique_ids: List[int]) -> None:
     _write_template_file(
         config,
-        Path("slurm_templates/bash_parallel_runner.sh"),
-        config.EXPERIMENT_BASH_FILE_PATH,
+        Path("slurm_templates/02b_run_bash_parallel.py.jinja"),
+        config.EXPERIMENT_PYTHON_PARALLEL_BASH_FILE_PATH,
         PYTHON_FILE="02_run_experiment.py",
         START=0,
-        END=int(len(unique_ids) / config.SLURM_ITERATIONS_PER_BATCH),
+        END=len(unique_ids),
     )
-    _chmod_u_plus_x(config.EXPERIMENT_BASH_FILE_PATH)
+    _chmod_u_plus_x(config.EXPERIMENT_PYTHON_PARALLEL_BASH_FILE_PATH)
 
 
 def create_run_files(config: Config) -> None:

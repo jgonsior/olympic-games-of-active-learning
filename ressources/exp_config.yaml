@@ -42,6 +42,7 @@ test_exp_2:
                 { ALIPY_UNCERTAINTY: { measure: [least_confident] } },
 
                 { ALIPY_RANDOM: {} },
+                { ALIPY_QUIRE: {} },
             ],
         EXP_GRID_RANDOM_SEEDS_END: 1,
         EXP_GRID_NUM_QUERIES: [10],
