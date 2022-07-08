@@ -45,6 +45,18 @@ if remove_quire:
 
 else:
     quire_workload = pd.read_csv(
-        str(config.DONE_WORKLOAD_FILE) + "_quire.csv", nrows=100
+        str(config.DONE_WORKLOAD_FILE) + "_quire.csv",
     )
-    print(quire_workload["EXP_UNIQUE_ID"])
+    for _, row in quire_workload.iterrows():
+        dataset = row["EXP_DATASET"]
+        unique_id = row["EXP_UNIQUE_ID"]
+        dataset = dataset.replace("DATASET.", "")
+        metric_results = Path(
+            f"{config.RESULTS_PATH}/{dataset}/{unique_id}_metric_results.csv"
+        )
+        #  print(f"delete {metric_results}")
+        if metric_results.exists():
+            metric_results.unlink()
+            print(f"delete {metric_results}")
+        else:
+            print(f"not found {metric_results}")

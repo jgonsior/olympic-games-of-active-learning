@@ -94,6 +94,7 @@ class Config:
     _EXP_STRATEGY_PARAM_VALUE_DELIM = ":"
 
     DONE_WORKLOAD_FILE: Path
+    RESULTS_PATH: Path
 
     def __init__(self) -> None:
         self._parse_cli_arguments()
