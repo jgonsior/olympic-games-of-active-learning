@@ -37,11 +37,6 @@ done_workload["EXP_FULL_STRATEGY"] = (
 )
 
 
-# remove quire
-print(done_workload)
-exit(-1)
-
-
 hyper_parameters = {
     "datasets": done_workload["EXP_DATASET"].unique(),
     "al_strategies": done_workload["EXP_FULL_STRATEGY"].unique(),
