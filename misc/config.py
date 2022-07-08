@@ -264,6 +264,7 @@ class Config:
                     ]
                     params = {_x[0]: _x[1] for _x in _params_params_split}
                 v = AL_STRATEGY(int(_strat_params_split[0]))
+
                 self.EXP_STRATEGY_PARAMS = params
             elif k == "EXP_DATASET":
                 v = DATASET(int(v))

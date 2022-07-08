@@ -94,6 +94,8 @@ class AL_Experiment(ABC):
 
         start_time = time.process_time()
 
+        total_amount_of_iterations = 3
+
         for iteration in range(0, total_amount_of_iterations):
             if len(self.unlabel_idx) == 0:
                 log_it("early stopping")
@@ -140,8 +142,10 @@ class AL_Experiment(ABC):
 
         # save workload parameters in the workload_done_file
         workload = {}
-
         from misc.config import Config
+
+        if "train_idx" in self.config.EXP_STRATEGY_PARAMS.keys():
+            del self.config.EXP_STRATEGY_PARAMS["train_idx"]
 
         for k, v in Config.__annotations__.items():
             if (
