@@ -9,7 +9,7 @@ from alipy.query_strategy import (
     QueryInstanceQUIRE,
 )
 from libact.query_strategies import UncertaintySampling, QueryByCommittee, DWUS, QUIRE
-from libact.models import LogisticRegression
+from libact.models import LogisticRegression, SVM
 from playground.sampling_methods.bandit_discrete import BanditDiscreteSampler #wrapper
 from playground.sampling_methods.simulate_batch import SimulateBatchSampler #wrapper
 from playground.sampling_methods.graph_density import GraphDensitySampler
@@ -103,6 +103,7 @@ class LEARNER_MODEL(IntEnum):
     MLP = 8
     LBFGS_MLP = 9
     LOG_REG = 10
+    SVM_LIBACT = 11
 
 
 learner_models_to_classes_mapping: Dict[
@@ -149,7 +150,8 @@ learner_models_to_classes_mapping: Dict[
             "solver": "lbfgs",
         },
     ),
-    LEARNER_MODEL.LOG_REG: (LogisticRegression, {})
+    LEARNER_MODEL.LOG_REG: (LogisticRegression, {}),
+    LEARNER_MODEL.SVM_LIBACT: (SVM, {})
 }
 
 
