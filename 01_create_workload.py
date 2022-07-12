@@ -6,7 +6,7 @@ from pathlib import Path
 import stat
 from typing import Any, Dict, List
 from jinja2 import Template
-import pandas as pd
+import modin.pandas as pd
 from datasets import DATASET
 from misc.config import Config
 from misc.logging import log_it
@@ -139,7 +139,8 @@ def create_workload(config: Config) -> List[int]:
         ].apply(lambda x: x.replace("#_", "#") if x.endswith("#_") else x)
 
         length_before_removal_of_already_run_experiments = len(open_workload_df)
-        for _, row in others_done_workload_df.iterrows():
+
+        def _delete_already_run_row(row, open_workload_df):
             mask = True
             for hyper_parameter in hyperparameters:
                 value = row[hyper_parameter]
@@ -147,6 +148,20 @@ def create_workload(config: Config) -> List[int]:
 
             open_workload_df = open_workload_df.loc[~mask]
 
+        others_done_workload_df.apply(
+            lambda x: _delete_already_run_row(x, open_workload_df)
+        )
+
+        KANN NICHT MODIN PER PIPENV INSTALLIEREN -> KANN ICH DAS AUF DEM SERVER STATTDESSEN PER CONDA INSTALLIEREN??
+
+        """for _, row in others_done_workload_df.iterrows():
+            mask = True
+            for hyper_parameter in hyperparameters:
+                value = row[hyper_parameter]
+                mask &= open_workload_df[hyper_parameter] == value
+
+            open_workload_df = open_workload_df.loc[~mask]
+        """
         print(
             f"Reduced from {length_before_removal_of_already_run_experiments} to {len(open_workload_df)}"
         )

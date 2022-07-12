@@ -1,5 +1,23 @@
 # OGAL - Olympic Games of Active Learning
 
+## Installation
+Requierements:
+
+[anaconda](https://docs.anaconda.com/anaconda/install/index.html) installed.
+
+```bash
+# to be run in the root directory of this project
+conda init
+conda create --name al_olympics_conda python=3.10
+conda activateal_olympics_conda
+conda install -c conda-forge cvxpy pipenv modin-ray
+#conda install -c conda-forge pipenv
+#conda install -c conda-forge ray
+#conda install -c conda-forge modin-ray
+conda env export
+pipenv --python=$(conda run which python) --site-packages install --dev
+```
+
 
 ## Usage
 

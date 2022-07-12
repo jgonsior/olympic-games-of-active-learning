@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Literal, Union, get_args
 
 import git
 import numpy as np
-import pandas as pd
+import modin.pandas as pd
 import yaml
 
 from datasets import DATASET
