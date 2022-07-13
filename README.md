@@ -15,6 +15,8 @@ conda install -c conda-forge cvxpy pipenv
 pip install modin[ray] # not part of pipenv, not working!
 conda env export
 pipenv --python=$(conda run which python) --site-packages install --dev
+# OR
+python -m pipenv --python=$(conda run which python) --site-packages install --dev
 ```
 
 
