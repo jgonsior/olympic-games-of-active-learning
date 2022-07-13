@@ -1,3 +1,4 @@
+import ray
 import argparse
 import random
 import sys
@@ -97,6 +98,7 @@ class Config:
     RESULTS_PATH: Path
 
     def __init__(self) -> None:
+        ray.init()
         self._parse_cli_arguments()
         self._load_server_setup_from_file(Path(self.LOCAL_CONFIG_FILE_PATH))
 

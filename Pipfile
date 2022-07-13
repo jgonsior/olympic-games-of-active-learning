@@ -39,6 +39,7 @@ alipy = {editable = true, ref = "058c3a025c77964422a5417cfb2285f893a62295", git 
 libact = {editable = true, ref = "49540d4bc4fbb434a6a2a22d8469a5309dfbb0f7", git = "https://github.com/jgonsior/libact.git"}
 playground = {editable = true, ref = "1012d0f00b9ee9face5b06b0c13dacd07c8c0eb5", git = "https://github.com/triess/active-learning.git"}
 ray = "*"
+modin = "*"
 
 [requires]
 python_version = "3.10"

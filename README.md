@@ -9,11 +9,10 @@ Requierements:
 # to be run in the root directory of this project
 conda init
 conda create --name al_olympics_conda python=3.10
-conda activateal_olympics_conda
-conda install -c conda-forge cvxpy pipenv modin-ray
-#conda install -c conda-forge pipenv
-#conda install -c conda-forge ray
+conda activate al_olympics_conda
+conda install -c conda-forge cvxpy pipenv
 #conda install -c conda-forge modin-ray
+pip install modin[ray] # not part of pipenv, not working!
 conda env export
 pipenv --python=$(conda run which python) --site-packages install --dev
 ```

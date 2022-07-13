@@ -152,8 +152,6 @@ def create_workload(config: Config) -> List[int]:
             lambda x: _delete_already_run_row(x, open_workload_df)
         )
 
-        KANN NICHT MODIN PER PIPENV INSTALLIEREN -> KANN ICH DAS AUF DEM SERVER STATTDESSEN PER CONDA INSTALLIEREN??
-
         """for _, row in others_done_workload_df.iterrows():
             mask = True
             for hyper_parameter in hyperparameters:
