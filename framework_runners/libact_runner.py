@@ -30,7 +30,8 @@ class LIBACT_Experiment(AL_Experiment):
 
     def query_AL_strategy(self) -> List[int]:
         if self.al_strategy is None:
-            raise RuntimeError("get_AL_strategy() has to be called before querying")
+            from misc.Errors import NoStrategyError
+            raise NoStrategyError("get_AL_strategy() has to be called before querying")
         ret = []
         select_id, scores = self.al_strategy.make_query(return_score=True)
         ret.append(select_id)

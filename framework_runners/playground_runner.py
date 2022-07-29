@@ -16,7 +16,8 @@ class PLAYGROUND_AL_Experiment(AL_Experiment):
 
     def query_AL_strategy(self) -> List[int]:
         if self.al_strategy is None:
-            raise RuntimeError("get_AL_strategy() has to be called before querying")
+            from misc.Errors import NoStrategyError
+            raise NoStrategyError("get_AL_strategy() has to be called before querying")
         return self.al_strategy.select_batch_(self.model, self.label_idx, self.config.EXP_BATCH_SIZE)
 
     def prepare_dataset(self):
