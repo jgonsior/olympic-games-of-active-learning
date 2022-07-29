@@ -22,3 +22,237 @@ glass: {
     drop_columns: null,
     id: null,
 }
+
+parkinsons: {
+    kaggle_name: "imkrkannan/parkinsons",
+    kaggle_file: "datasets_410614_786211_parkinsons.csv",
+    target: "status",
+    drop_columns: null,
+    id: null
+}
+
+sonar: {
+    kaggle_name: "mattcarter865/mines-vs-rocks",
+    kaggle_file: "sonar.all-data.csv",
+    target: "R",
+    drop_columns: null,
+    id: null
+}
+
+seeds: {
+    kaggle_name: "jmcaro/wheat-seedsuci",
+    kaggle_file: "seeds.csv",
+    target: "Type",
+    drop_columns: null,
+    id: null
+}
+
+thyroid: {
+    kaggle_name: "emmanuelfwerr/thyroid-disease-data",
+    kaggle_file: "thyroidDF.csv",
+    target: "target",
+    drop_columns: null,
+    id: "patient_id"
+}
+
+heart: {
+    kaggle_name: "johnsmith88/heart-disease-dataset",
+    kaggle_file: "heart.csv",
+    target: "target",
+    drop_columns: null,
+    id: null
+}
+
+haberman: {
+    kaggle_name: "saguneshgrover/haberman",
+    kaggle_file: "haberman.csv",
+    target: "survival_status",
+    drop_columns: null,
+    id: null
+}
+
+ionosphere: {
+    kaggle_name: "prashant111/ionosphere",
+    kaggle_file: "ionosphere_data.csv",
+    target: "column_ai",
+    drop_columns: null,
+    id: null
+}
+
+musk1: {
+    kaggle_name: "timrie/musk-version-1",
+    kaggle_file: "musk1.csv",
+    target: "Class",
+    drop_columns: ["molecule_name"],
+    id: null
+}
+
+# not in the paper
+musk2: {
+    kaggle_name: "hashbanger/musk-dataset",
+    kaggle_file: "musk_csv.csv",
+    target: "class",
+    drop_columns: ["molecule_name","conformation_name"],
+    id: "ID"
+}
+
+#many different versions
+breast_cancer: {
+    kaggle_name: "roustekbio/breast-cancer-csv",
+    kaggle_file: "breastCancer.csv",
+    target: "class",
+    drop_columns: null,
+    id: "id"
+}
+
+wdbc: {
+    kaggle_name: "uciml/breast-cancer-wisconsin-data",
+    kaggle_file: "data.csv",
+    target: "diagnosis",
+    drop_columns: null,
+    id: "id"
+}
+
+australian_credit: {
+    kaggle_name: "aayushkandpal/credit-card-details-australian-bank",
+    kaggle_file: "Credit_Card_Applications.csv",
+    target: "A15",
+    drop_columns: null,
+    id: "CustomerID"
+}
+
+diabetes: {
+    kaggle_name: "mathchi/diabetes-data-set",
+    kaggle_file: "diabetes.csv",
+    target: "Outcome",
+    drop_columns: null,
+    id: null
+}
+
+mammographic: {
+    kaggle_name: "overratedgman/mammographic-mass-data-set",
+    kaggle_file: "Cleaned_data.csv",
+    target: "Severity",
+    drop_columns: null,
+    id: null
+}
+
+vehicle_silhouettes: {
+    kaggle_name: "pritech/vehicle-silhouettes",
+    kaggle_file: "vehicle.csv",
+    target: "class",
+    drop_columns: null,
+    id: null
+}
+
+tic_tac_toe: {
+    kaggle_name: "aungpyaeap/tictactoe-endgame-dataset-uci",
+    kaggle_file: "tic-tac-toe-endgame.csv",
+    target: "V10",
+    drop_columns: null,
+    id: null
+}
+
+german_credit: {
+    kaggle_name: "varunchawla30/german-credit-data",
+    kaggle_file: "german_credit_data.csv",
+    target: "kredit",
+    drop_columns: null,
+    id: null
+}
+
+splice_junction: {
+    kaggle_name: "muhammetvarl/splicejunction-gene-sequences-dataset",
+    kaggle_file: "dna.csv",
+    target: "class",
+    drop_columns: null,
+    id: null
+}
+
+phishing: {
+    kaggle_name: "akashkr/phishing-website-dataset",
+    kaggle_file: "dataset.csv",
+    target: "Result",
+    drop_columns: null,
+    id: "index"
+}
+
+spambase: {
+    kaggle_name: "colormap/spambase",
+    kaggle_file: "spambase.csv",
+    target: "spam",
+    drop_columns: null,
+    id: null
+}
+
+banana: {
+    kaggle_name: "timrie/banana",
+    kaggle_file: "banana.csv",
+    target: "Class",
+    drop_columns: null,
+    id: null
+}
+
+phoneme: {
+    kaggle_name: "timrie/phoneme",
+    kaggle_file: "phoneme.csv",
+    target: "Class",
+    drop_columns: null,
+    id: null
+}
+
+appendicitis: {
+    kaggle_name: "timrie/appendicitis",
+    kaggle_file: "appendicitis.csv",
+    target: "Class",
+    drop_columns: null,
+    id: null
+}
+texture: {
+    kaggle_name: "timrie/texture",
+    kaggle_file: "texture.csv",
+    target: "Class",
+    drop_columns: null,
+    id: null
+}
+ringnorm: {
+    kaggle_name: "timrie/ringnorm",
+    kaggle_file: "ring.csv",
+    target: "Class",
+    drop_columns: null,
+    id: null
+}
+
+ex8a: {
+    kaggle_name: "timrie/exercise8a",
+    kaggle_file: "ex8a.csv",
+    target: "class",
+    drop_columns: null,
+    id: null
+}
+
+ex8b: {
+    kaggle_name: "timrie/exercise8b",
+    kaggle_file: "ex8b.csv",
+    target: "class",
+    drop_columns: null,
+    id: null
+}
+
+#50 attributes??
+twonorm: {
+    kaggle_name: "timrie/twonorm",
+    kaggle_file: "twonorm.csv",
+    target: "Class",
+    drop_columns: null,
+    id: null
+}
+
+#TODO r15, Gaussian cloud balance/unbalance,xor,d31
+name: {
+    kaggle_name: "",
+    kaggle_file: "",
+    target: "",
+    drop_columns: null,
+    id: null
+}
