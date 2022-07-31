@@ -248,7 +248,23 @@ twonorm: {
     id: null
 }
 
-#TODO r15, Gaussian cloud balance/unbalance,xor,d31
+
+r15: {
+    kaggle_name: "timrie/ring15",
+    kaggle_file: "R15.csv",
+    target: "class",
+    drop_columns: null,
+    id: null
+}
+
+d31: {
+    kaggle_name: "timrie/d31-dataset",
+    kaggle_file: "D31.csv",
+    target: "class",
+    drop_columns: null,
+    id: null
+}
+#TODO Gaussian cloud balance/unbalance,xor
 name: {
     kaggle_name: "",
     kaggle_file: "",
