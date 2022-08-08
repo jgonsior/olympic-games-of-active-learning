@@ -18,15 +18,12 @@ class LIBACT_Experiment(AL_Experiment):
             al_strategy_to_python_classes_mapping,
         )
         strategy = AL_STRATEGY(self.config.EXP_STRATEGY)
-        if self.config.EXP_LEARNER_MODEL == "LOG_REG":
-            self.al_strategy = al_strategy_to_python_classes_mapping[strategy](self.trn_ds, method='lc',
-                                                                               model=LogisticRegression())
-        elif self.config.EXP_LEARNER_MODEL == "SVM_LIBACT":
-            self.al_strategy = al_strategy_to_python_classes_mapping[strategy](self.trn_ds, method='lc',
-                                                                               model=SVM())
+        params = self.config.EXP_STRATEGY_PARAMS
+        if self.config.EXP_LEARNER_MODEL == "LOG_REG" or self.config.EXP_LEARNER_MODEL == "SVM_LIBACT":
+            params['model'] = self.model
         else:
-            self.al_strategy = al_strategy_to_python_classes_mapping[strategy](self.trn_ds, method='lc',
-                                                                               model=SklearnProbaAdapter(self.model))
+            params['model'] = SklearnProbaAdapter(self.model)
+        self.al_strategy = al_strategy_to_python_classes_mapping[strategy](self.trn_ds, **params)
 
     def query_AL_strategy(self) -> List[int]:
         if self.al_strategy is None:
