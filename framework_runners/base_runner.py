@@ -6,7 +6,7 @@ from itertools import chain
 import random
 import time
 from typing import TYPE_CHECKING, Any, List
-import pandas as pd
+from aenum import enum
 from datasets import DATASET, load_dataset, split_dataset
 from misc.logging import log_it
 
@@ -134,6 +134,9 @@ class AL_Experiment(ABC):
         end_time = time.process_time()
 
         # save metric results into a single file
+
+        import pandas as pd
+
         metric_df = pd.json_normalize(confusion_matrices, sep="_")  # type: ignore
         metric_df["selected_indices"] = selected_indices
 
@@ -142,20 +145,8 @@ class AL_Experiment(ABC):
 
         # save workload parameters in the workload_done_file
         workload = {}
-        from misc.config import Config
 
-        if "train_idx" in self.config.EXP_STRATEGY_PARAMS.keys():
-            del self.config.EXP_STRATEGY_PARAMS["train_idx"]
-
-        for k, v in Config.__annotations__.items():
-            if (
-                k.startswith("EXP_")
-                and not str(v).startswith("typing.List[")
-                and not k.startswith("EXP_GRID_")
-                and not k.startswith("EXP_RESULT_ZIP_")
-                and not k.startswith("EXP_RESULT_EXTRACTED_ZIP_PATH")
-            ):
-                workload[k] = self.config.__getattribute__(k)
+        workload = self.config._original_workload
         workload["duration"] = end_time - start_time
 
         # calculate metrics

@@ -1,20 +1,20 @@
-from collections import Counter
-import enum
 import itertools
-import multiprocessing
 from pathlib import Path
 import stat
 from typing import Any, Dict, List
 import ray
 from jinja2 import Template
+
 import modin.pandas as pd
-from datasets import DATASET
+
+# import pandas as pd
+
 from misc.config import Config
 from misc.logging import log_it
 from sklearn.model_selection import ParameterGrid
 import os
 
-from ressources.data_types import AL_STRATEGY, LEARNER_MODEL
+from ressources.data_types import AL_STRATEGY
 
 ray.init()
 
@@ -49,7 +49,6 @@ def _create_exp_grid(
 
 def create_workload(config: Config) -> List[int]:
     exp_grid_params_names = _determine_exp_grid_parameters(config)
-
     if os.path.isfile(config.DONE_WORKLOAD_PATH):
         # experiment has already been run, check which worsloads are still missing
         done_workload_df = pd.read_csv(
@@ -67,7 +66,6 @@ def create_workload(config: Config) -> List[int]:
             exp_parameter: config.__getattribute__(exp_parameter)
             for exp_parameter in exp_grid_params_names
         }
-
         # convert EXP_GRID_STRATEGY with params into list of param objects
         exp_param_grid["EXP_GRID_STRATEGY"] = _create_exp_grid(
             exp_param_grid["EXP_GRID_STRATEGY"], config
@@ -84,100 +82,39 @@ def create_workload(config: Config) -> List[int]:
         )
 
         if config.INCLUDE_RESULTS_FROM is not None:
-            others_done_workload_df = pd.DataFrame(columns=open_workload_df.columns)
+            others_done_workload_df = None
 
             for other_exp_results_name in config.INCLUDE_RESULTS_FROM:
                 # load done_workload_df from other results
                 other_done_workload = pd.read_csv(Path(other_exp_results_name))
-                others_done_workload_df = pd.concat(
-                    [others_done_workload_df, other_done_workload], ignore_index=True
-                )
-
+                if others_done_workload_df is None:
+                    others_done_workload_df = other_done_workload
+                else:
+                    others_done_workload_df = pd.concat(
+                        [others_done_workload_df, other_done_workload],
+                        ignore_index=True,
+                    )
+            length_before_removal_of_already_run_experiments = len(open_workload_df)
             hyperparameters = [
                 h
                 for h in open_workload_df.columns.to_list()
                 if h not in ["EXP_UNIQUE_ID"]
             ]
 
-            # convert strings to enums
-            others_done_workload_df["EXP_DATASET"] = others_done_workload_df[
-                "EXP_DATASET"
-            ].apply(lambda x: DATASET[x.split(".")[1]])
-            others_done_workload_df["EXP_LEARNER_MODEL"] = others_done_workload_df[
-                "EXP_LEARNER_MODEL"
-            ].apply(lambda x: LEARNER_MODEL[x.split(".")[1]])
-
-            others_done_workload_df["EXP_STRATEGY_PARAMS"] = others_done_workload_df[
-                "EXP_STRATEGY_PARAMS"
-            ].apply(
-                lambda x: x.replace("'", "")
-                .replace(": ", config._EXP_STRATEGY_PARAM_VALUE_DELIM)
-                .replace("{", "")
-                .replace("}", "")
-                .replace(", ", config._EXP_STRATEGY_PARAM_PARAM_DELIM)
-            )
-
-            # fancily encode exp_strategy
-            others_done_workload_df["EXP_STRATEGY"] = others_done_workload_df[
-                "EXP_STRATEGY"
-            ].apply(lambda x: AL_STRATEGY[x.split(".")[1]])
-
-            others_done_workload_df["EXP_STRATEGY"] = others_done_workload_df[
-                "EXP_LEARNER_MODEL"
-            ].apply(lambda x: f"{x}{config._EXP_STRATEGY_STRAT_PARAMS_DELIM}")
-
-            others_done_workload_df["EXP_STRATEGY"] = (
-                others_done_workload_df["EXP_STRATEGY"]
-                + "_"
-                + others_done_workload_df["EXP_STRATEGY_PARAMS"]
-            )
-
-            # convert wrong 1#_ back to 1
-            others_done_workload_df["EXP_STRATEGY"] = others_done_workload_df[
-                "EXP_STRATEGY"
-            ].apply(lambda x: x.replace("#_", "#") if x.endswith("#_") else x)
-
             open_workload_df["ORIGINAL_INDEX"] = open_workload_df.index
 
-            length_before_removal_of_already_run_experiments = len(open_workload_df)
-            print(open_workload_df.columns.tolist())
-            # print(open_workload_df.iloc[0].to_numpy())
-            print(others_done_workload_df.columns.tolist())
-            # print(others_done_workload_df.iloc[0].to_numpy())
-            # print(length_before_removal_of_already_run_experiments)
-            # print(len(open_workload_df))
-
-            # print(open_workload_df.EXP_STRATEGY.unique().to_numpy())
-            # print(others_done_workload_df.EXP_STRATEGY.unique().to_numpy())
-
-            print(hyperparameters)
             # merge dataframes
             merged_df = open_workload_df.merge(
                 others_done_workload_df, how="inner", on=hyperparameters
             )
-            print(merged_df.columns)
-            print(open_workload_df.columns)
-            print(others_done_workload_df.columns)
-
-            print(len(merged_df))
-            print(merged_df["EXP_UNIQUE_ID"])
-            print(merged_df["ORIGINAL_INDEX"])
-            print(len(open_workload_df))
-
-            print(merged_df["ORIGINAL_INDEX"].to_numpy())
-            print(open_workload_df["ORIGINAL_INDEX"].to_numpy())
 
             open_workload_df = open_workload_df.loc[
                 ~open_workload_df.index.isin(merged_df["ORIGINAL_INDEX"])
             ]
-            print(len(open_workload_df))
-
-            merged_df.to_csv("merged.csv", index=False)
-
+            del open_workload_df["ORIGINAL_INDEX"]
             print(
                 f"Reduced from {length_before_removal_of_already_run_experiments} to {len(open_workload_df)}"
             )
-            exit(-1)
 
         # shuffle workload to ensure that really long jobs are not all running on the same node
         open_workload_df = open_workload_df.sample(frac=1).reset_index(drop=True)
@@ -187,7 +124,7 @@ def create_workload(config: Config) -> List[int]:
     open_workload_df.to_csv(config.WORKLOAD_FILE_PATH, index=None)
     config.save_to_file()
     log_it(f"Created workload of {len(open_workload_df)}")
-    return open_workload_df.EXP_UNIQUE_ID.to_list()
+    return open_workload_df.EXP_UNIQUE_ID.to_numpy()
 
 
 def _write_template_file(

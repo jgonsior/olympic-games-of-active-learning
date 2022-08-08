@@ -6,12 +6,13 @@ from enum import IntEnum
 from pathlib import Path
 from aenum import extend_enum
 from typing import Any, Dict, Tuple
-import pandas as pd
+
 import yaml
 import math
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler, RobustScaler
 from typing import TYPE_CHECKING
+import pandas as pd
 
 if TYPE_CHECKING:
     from misc.config import (

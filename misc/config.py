@@ -7,7 +7,6 @@ from typing import Any, Dict, List, Literal, Union, get_args
 
 import git
 import numpy as np
-import pandas as pd
 import yaml
 
 from datasets import DATASET
@@ -240,6 +239,8 @@ class Config:
             self.__setattr__(k, v)
 
     def load_workload(self) -> None:
+        import pandas as pd
+
         workload_df = pd.read_csv(
             self.WORKLOAD_FILE_PATH,
             header=0,
@@ -275,6 +276,8 @@ class Config:
             if str(self.__annotations__[k]).endswith("int]"):
                 v = int(v)
             self.__setattr__(k, v)
+
+        self._original_workload = workload
 
     """
         Magically convert the type hints from the class attributes of this class into argparse config values
