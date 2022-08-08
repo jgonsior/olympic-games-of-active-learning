@@ -5,6 +5,7 @@ import multiprocessing
 from pathlib import Path
 import stat
 from typing import Any, Dict, List
+import ray
 from jinja2 import Template
 import modin.pandas as pd
 from datasets import DATASET
@@ -12,9 +13,10 @@ from misc.config import Config
 from misc.logging import log_it
 from sklearn.model_selection import ParameterGrid
 import os
-from joblib import Parallel, delayed
 
 from ressources.data_types import AL_STRATEGY, LEARNER_MODEL
+
+ray.init()
 
 # determine config parameters which are to be used -> they all start with EXP_ and have a typing hint of [List[XXX]]
 def _determine_exp_grid_parameters(config: Config) -> List[str]:
@@ -81,88 +83,106 @@ def create_workload(config: Config) -> List[int]:
             columns=lambda s: s.replace("EXP_GRID_", "EXP_"), inplace=True  # type: ignore
         )
 
+        if config.INCLUDE_RESULTS_FROM is not None:
+            others_done_workload_df = pd.DataFrame(columns=open_workload_df.columns)
+
+            for other_exp_results_name in config.INCLUDE_RESULTS_FROM:
+                # load done_workload_df from other results
+                other_done_workload = pd.read_csv(Path(other_exp_results_name))
+                others_done_workload_df = pd.concat(
+                    [others_done_workload_df, other_done_workload], ignore_index=True
+                )
+
+            hyperparameters = [
+                h
+                for h in open_workload_df.columns.to_list()
+                if h not in ["EXP_UNIQUE_ID"]
+            ]
+
+            # convert strings to enums
+            others_done_workload_df["EXP_DATASET"] = others_done_workload_df[
+                "EXP_DATASET"
+            ].apply(lambda x: DATASET[x.split(".")[1]])
+            others_done_workload_df["EXP_LEARNER_MODEL"] = others_done_workload_df[
+                "EXP_LEARNER_MODEL"
+            ].apply(lambda x: LEARNER_MODEL[x.split(".")[1]])
+
+            others_done_workload_df["EXP_STRATEGY_PARAMS"] = others_done_workload_df[
+                "EXP_STRATEGY_PARAMS"
+            ].apply(
+                lambda x: x.replace("'", "")
+                .replace(": ", config._EXP_STRATEGY_PARAM_VALUE_DELIM)
+                .replace("{", "")
+                .replace("}", "")
+                .replace(", ", config._EXP_STRATEGY_PARAM_PARAM_DELIM)
+            )
+
+            # fancily encode exp_strategy
+            others_done_workload_df["EXP_STRATEGY"] = others_done_workload_df[
+                "EXP_STRATEGY"
+            ].apply(lambda x: AL_STRATEGY[x.split(".")[1]])
+
+            others_done_workload_df["EXP_STRATEGY"] = others_done_workload_df[
+                "EXP_LEARNER_MODEL"
+            ].apply(lambda x: f"{x}{config._EXP_STRATEGY_STRAT_PARAMS_DELIM}")
+
+            others_done_workload_df["EXP_STRATEGY"] = (
+                others_done_workload_df["EXP_STRATEGY"]
+                + "_"
+                + others_done_workload_df["EXP_STRATEGY_PARAMS"]
+            )
+
+            # convert wrong 1#_ back to 1
+            others_done_workload_df["EXP_STRATEGY"] = others_done_workload_df[
+                "EXP_STRATEGY"
+            ].apply(lambda x: x.replace("#_", "#") if x.endswith("#_") else x)
+
+            open_workload_df["ORIGINAL_INDEX"] = open_workload_df.index
+
+            length_before_removal_of_already_run_experiments = len(open_workload_df)
+            print(open_workload_df.columns.tolist())
+            # print(open_workload_df.iloc[0].to_numpy())
+            print(others_done_workload_df.columns.tolist())
+            # print(others_done_workload_df.iloc[0].to_numpy())
+            # print(length_before_removal_of_already_run_experiments)
+            # print(len(open_workload_df))
+
+            # print(open_workload_df.EXP_STRATEGY.unique().to_numpy())
+            # print(others_done_workload_df.EXP_STRATEGY.unique().to_numpy())
+
+            print(hyperparameters)
+            # merge dataframes
+            merged_df = open_workload_df.merge(
+                others_done_workload_df, how="inner", on=hyperparameters
+            )
+            print(merged_df.columns)
+            print(open_workload_df.columns)
+            print(others_done_workload_df.columns)
+
+            print(len(merged_df))
+            print(merged_df["EXP_UNIQUE_ID"])
+            print(merged_df["ORIGINAL_INDEX"])
+            print(len(open_workload_df))
+
+            print(merged_df["ORIGINAL_INDEX"].to_numpy())
+            print(open_workload_df["ORIGINAL_INDEX"].to_numpy())
+
+            open_workload_df = open_workload_df.loc[
+                ~open_workload_df.index.isin(merged_df["ORIGINAL_INDEX"])
+            ]
+            print(len(open_workload_df))
+
+            merged_df.to_csv("merged.csv", index=False)
+
+            print(
+                f"Reduced from {length_before_removal_of_already_run_experiments} to {len(open_workload_df)}"
+            )
+            exit(-1)
+
         # shuffle workload to ensure that really long jobs are not all running on the same node
         open_workload_df = open_workload_df.sample(frac=1).reset_index(drop=True)
 
         open_workload_df["EXP_UNIQUE_ID"] = open_workload_df.index
-
-    if config.INCLUDE_RESULTS_FROM is not None:
-        others_done_workload_df = pd.DataFrame(columns=open_workload_df.columns)
-
-        for other_exp_results_name in config.INCLUDE_RESULTS_FROM:
-            # load done_workload_df from other results
-            other_done_workload = pd.read_csv(Path(other_exp_results_name))
-            others_done_workload_df = pd.concat(
-                [others_done_workload_df, other_done_workload], ignore_index=True
-            )
-
-        hyperparameters = [
-            h for h in open_workload_df.columns.to_list() if h not in ["EXP_UNIQUE_ID"]
-        ]
-
-        # convert strings to enums
-        others_done_workload_df["EXP_DATASET"] = others_done_workload_df[
-            "EXP_DATASET"
-        ].apply(lambda x: DATASET[x.split(".")[1]])
-        others_done_workload_df["EXP_LEARNER_MODEL"] = others_done_workload_df[
-            "EXP_LEARNER_MODEL"
-        ].apply(lambda x: LEARNER_MODEL[x.split(".")[1]])
-
-        others_done_workload_df["EXP_STRATEGY_PARAMS"] = others_done_workload_df[
-            "EXP_STRATEGY_PARAMS"
-        ].apply(
-            lambda x: x.replace("'", "")
-            .replace(": ", config._EXP_STRATEGY_PARAM_VALUE_DELIM)
-            .replace("{", "")
-            .replace("}", "")
-            .replace(", ", config._EXP_STRATEGY_PARAM_PARAM_DELIM)
-        )
-
-        # fancily encode exp_strategy
-        others_done_workload_df["EXP_STRATEGY"] = others_done_workload_df[
-            "EXP_STRATEGY"
-        ].apply(lambda x: AL_STRATEGY[x.split(".")[1]])
-
-        others_done_workload_df["EXP_STRATEGY"] = others_done_workload_df[
-            "EXP_LEARNER_MODEL"
-        ].apply(lambda x: f"{x}{config._EXP_STRATEGY_STRAT_PARAMS_DELIM}")
-
-        others_done_workload_df["EXP_STRATEGY"] = (
-            others_done_workload_df["EXP_STRATEGY"]
-            + "_"
-            + others_done_workload_df["EXP_STRATEGY_PARAMS"]
-        )
-
-        # convert wrong 1#_ back to 1
-        others_done_workload_df["EXP_STRATEGY"] = others_done_workload_df[
-            "EXP_STRATEGY"
-        ].apply(lambda x: x.replace("#_", "#") if x.endswith("#_") else x)
-
-        length_before_removal_of_already_run_experiments = len(open_workload_df)
-
-        def _delete_already_run_row(row, open_workload_df):
-            mask = True
-            for hyper_parameter in hyperparameters:
-                value = row[hyper_parameter]
-                mask &= open_workload_df[hyper_parameter] == value
-
-            open_workload_df = open_workload_df.loc[~mask]
-
-        others_done_workload_df.apply(
-            lambda x: _delete_already_run_row(x, open_workload_df)
-        )
-
-        """for _, row in others_done_workload_df.iterrows():
-            mask = True
-            for hyper_parameter in hyperparameters:
-                value = row[hyper_parameter]
-                mask &= open_workload_df[hyper_parameter] == value
-
-            open_workload_df = open_workload_df.loc[~mask]
-        """
-        print(
-            f"Reduced from {length_before_removal_of_already_run_experiments} to {len(open_workload_df)}"
-        )
 
     open_workload_df.to_csv(config.WORKLOAD_FILE_PATH, index=None)
     config.save_to_file()

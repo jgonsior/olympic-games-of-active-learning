@@ -6,7 +6,7 @@ from itertools import chain
 import random
 import time
 from typing import TYPE_CHECKING, Any, List
-import modin.pandas as pd
+import pandas as pd
 from datasets import DATASET, load_dataset, split_dataset
 from misc.logging import log_it
 

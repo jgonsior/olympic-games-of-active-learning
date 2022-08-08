@@ -1,4 +1,3 @@
-import ray
 import argparse
 import random
 import sys
@@ -8,7 +7,7 @@ from typing import Any, Dict, List, Literal, Union, get_args
 
 import git
 import numpy as np
-import modin.pandas as pd
+import pandas as pd
 import yaml
 
 from datasets import DATASET
@@ -98,7 +97,6 @@ class Config:
     RESULTS_PATH: Path
 
     def __init__(self) -> None:
-        ray.init()
         self._parse_cli_arguments()
         self._load_server_setup_from_file(Path(self.LOCAL_CONFIG_FILE_PATH))
 
