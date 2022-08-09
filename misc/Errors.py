@@ -1,0 +1,2 @@
+class NoStrategyError(Exception):
+    pass
