@@ -13,13 +13,10 @@
 export OMP_NUM_THREADS=$SLURM_CPUS_ON_NODE
 
 #module load Python/3.8.6
-
-cd irgendwo?
-conda init
-conda create --name al_olympics_conda python=3.10
-conda activate al_olympics_conda
-conda install -y -c anaconda cython
-conda install -y -c conda-forge cvxpy pipenv liblapacke
+#conda create --name al_olympics_conda python=3.10
+conda activate /scratch/ws/1/s5968580-al_olympics/conda-env
+#conda install -y -c anaconda cython
+#conda install -y -c conda-forge cvxpy pipenv liblapacke
 python -m pipenv --python=$(conda run which python) --site-packages install --dev
 python -m pipenv shell
 pip install modin[ray]
