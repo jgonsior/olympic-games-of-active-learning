@@ -8,7 +8,7 @@ from timeit import timeit
 from tkinter.ttk import Separator
 from sklearn.metrics import classification_report
 import numpy as np
-import modin.pandas as pd
+import pandas as pd
 
 amount = 10
 
