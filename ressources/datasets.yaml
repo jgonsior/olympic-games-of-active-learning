@@ -230,7 +230,7 @@ musk1:
     {
         kaggle_name: "timrie/musk-version-1",
         kaggle_file: "musk1.csv",
-        target: "Class",
+        target: " Class",
         drop_columns: ["Molecule_name"],
         id: null,
     }
@@ -239,7 +239,7 @@ phoneme:
     {
         kaggle_name: "timrie/phoneme",
         kaggle_file: "phoneme.csv",
-        target: "Class",
+        target: " Class",
         drop_columns: null,
         id: null,
     }
@@ -248,7 +248,7 @@ appendicitis:
     {
         kaggle_name: "timrie/appendicitis",
         kaggle_file: "appendicitis.csv",
-        target: "Class",
+        target: " Class",
         drop_columns: null,
         id: null,
     }
@@ -257,7 +257,7 @@ texture:
     {
         kaggle_name: "timrie/texture",
         kaggle_file: "texture.csv",
-        target: "Class",
+        target: " Class",
         drop_columns: null,
         id: null,
     }
@@ -266,7 +266,7 @@ ringnorm:
     {
         kaggle_name: "timrie/ringnorm",
         kaggle_file: "ring.csv",
-        target: "Class",
+        target: " Class",
         drop_columns: null,
         id: null,
     }
@@ -276,7 +276,7 @@ twonorm:
     {
         kaggle_name: "timrie/twonorm",
         kaggle_file: "twonorm.csv",
-        target: "Class",
+        target: " Class",
         drop_columns: null,
         id: null,
     }
@@ -285,7 +285,7 @@ r15:
     {
         kaggle_name: "timrie/ring15",
         kaggle_file: "R15.csv",
-        target: "class",
+        target: " class",
         drop_columns: null,
         id: null,
     }
@@ -294,7 +294,7 @@ d31:
     {
         kaggle_name: "timrie/d31-dataset",
         kaggle_file: "D31.csv",
-        target: "class",
+        target: " class",
         drop_columns: null,
         id: null,
     }
