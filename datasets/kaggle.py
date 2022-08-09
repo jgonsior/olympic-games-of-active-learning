@@ -40,8 +40,6 @@ class Kaggle:
                     destination_path,
                 )
             )
-            print(destination_path)
-            # exit(-1)
             kaggle.api.dataset_download_file(
                 dataset=self.parameter_dict[dataset_name]["kaggle_name"],
                 file_name=self.parameter_dict[dataset_name]["kaggle_file"],
