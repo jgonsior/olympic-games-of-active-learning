@@ -2,7 +2,7 @@ from distutils.command.config import config
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 import numpy as np
-
+import zipfile
 import pandas as pd
 import yaml
 from datasets import DATASET
@@ -23,6 +23,7 @@ class Kaggle:
 
     def download_all_datasets(self) -> None:
         for dataset_name in self.parameter_dict.keys():
+            print(f"Downloading {dataset_name}")
             self.download_single_dataset(dataset_name)
             self.preprocess_dataset(dataset_name)
 
@@ -34,17 +35,23 @@ class Kaggle:
 
         if not destination_path.exists():
             log_it(
-                "Dowloading {} to {}/{}".format(
+                "Dowloading {} to {}".format(
                     dataset_name,
                     destination_path,
-                    self.parameter_dict[dataset_name]["kaggle_file"],
                 )
             )
+            print(destination_path)
+            # exit(-1)
             kaggle.api.dataset_download_file(
                 dataset=self.parameter_dict[dataset_name]["kaggle_name"],
                 file_name=self.parameter_dict[dataset_name]["kaggle_file"],
-                path=destination_path.parent,
+                path=self.config.RAW_DATASETS_PATH,
             )
+
+            potential_zip_file = Path(str(destination_path) + ".zip")
+            if potential_zip_file.exists():
+                with zipfile.ZipFile(potential_zip_file, "r") as zip_ref:
+                    zip_ref.extractall(self.config.RAW_DATASETS_PATH)
 
     """
     Creates a train_test_split.csv file, which contains for each specified split (0-9 or 0-4) the indices for the train, and the indices for the test split
