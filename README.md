@@ -10,14 +10,16 @@ Requierements:
 conda init
 conda create --name al_olympics_conda python=3.10
 conda activate al_olympics_conda
-conda install -c conda-forge cvxpy pipenv
+conda install -c anaconda cython
+conda install -c conda-forge cvxpy pipenv liblapacke
 #conda install -c conda-forge modin-ray
 conda env export
 pipenv --python=$(conda run which python) --site-packages install --dev
 # OR
 python -m pipenv --python=$(conda run which python) --site-packages install --dev
 python -m pipenv shell
-pip install modin[ray] # not part of pipenv, not working!
+pip install modin[ray] # has to be run everytime anything is being changed by pipenv
+pip install git+https://github.com/ntucllab/libact.git
 ```
 
 
