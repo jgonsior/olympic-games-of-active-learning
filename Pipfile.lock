@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "663d0e672928622b4231ce54b305831313951db57789d09dee4037c4e374704d"
+            "sha256": "8f4f174f1f287b2b2e98be26f17a5b7bad3b96bdb91c8680b9fe693ab604d842"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -759,13 +759,6 @@
             "markers": "python_version >= '3.7'",
             "version": "==1.4.4"
         },
-        "libsvm": {
-            "hashes": [
-                "sha256:ea61c748b7baa75d7de8d8d3278614a0f66f32830e6828dd307fc69d20210463"
-            ],
-            "index": "pypi",
-            "version": "==3.23.0.4"
-        },
         "lxml": {
             "hashes": [
                 "sha256:04da965dfebb5dac2619cb90fcf93efdb35b3c6994fea58a157a834f2f94b318",
@@ -1268,8 +1261,8 @@
         },
         "playground": {
             "editable": true,
-            "git": "https://github.com/triess/active-learning.git",
-            "ref": "279489dd1ec297158dda2a25589dd7fec5e2ee77"
+            "git": "https://github.com/jgonsior/active-learning.git",
+            "ref": "8c239f83727baacc9c2dfd2f72a34f54a5bec7e2"
         },
         "prettytable": {
             "hashes": [
@@ -1766,7 +1759,7 @@
                 "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc",
                 "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"
             ],
-            "markers": "python_version < '3.11'",
+            "markers": "python_full_version < '3.11.0a7'",
             "version": "==2.0.1"
         },
         "tornado": {
@@ -2206,7 +2199,7 @@
                 "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc",
                 "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"
             ],
-            "markers": "python_version < '3.11'",
+            "markers": "python_full_version < '3.11.0a7'",
             "version": "==2.0.1"
         },
         "tomlkit": {

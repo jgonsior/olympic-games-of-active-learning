@@ -1,7 +1,10 @@
 from __future__ import annotations
-from typing import List
-from misc.config import Config
 from framework_runners.base_runner import AL_Experiment
+
+from typing import TYPE_CHECKING, List
+
+if TYPE_CHECKING:
+    from misc.config import Config
 
 
 class PLAYGROUND_AL_Experiment(AL_Experiment):
