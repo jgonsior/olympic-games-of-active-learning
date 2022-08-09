@@ -8,17 +8,28 @@ from alipy.query_strategy import (
     QueryInstanceRandom,
     QueryInstanceQUIRE,
 )
-from libact.query_strategies import UncertaintySampling, QueryByCommittee, DWUS, QUIRE, HintSVM, VarianceReduction
+from libact.query_strategies import (
+    UncertaintySampling,
+    QueryByCommittee,
+    DWUS,
+    QUIRE,
+    HintSVM,
+    VarianceReduction,
+)
 from libact.models import LogisticRegression, SVM
-from playground.sampling_methods.bandit_discrete import BanditDiscreteSampler #wrapper
-from playground.sampling_methods.simulate_batch import SimulateBatchSampler #wrapper
+from playground.sampling_methods.bandit_discrete import BanditDiscreteSampler  # wrapper
+from playground.sampling_methods.simulate_batch import SimulateBatchSampler  # wrapper
 from playground.sampling_methods.graph_density import GraphDensitySampler
 from playground.sampling_methods.hierarchical_clustering_AL import HierarchicalClusterAL
-from playground.sampling_methods.informative_diverse import InformativeClusterDiverseSampler
+from playground.sampling_methods.informative_diverse import (
+    InformativeClusterDiverseSampler,
+)
 from playground.sampling_methods.kcenter_greedy import kCenterGreedy
 from playground.sampling_methods.margin_AL import MarginAL
 from playground.sampling_methods.mixture_of_samplers import MixtureOfSamplers
-from playground.sampling_methods.represent_cluster_centers import RepresentativeClusterMeanSampling
+from playground.sampling_methods.represent_cluster_centers import (
+    RepresentativeClusterMeanSampling,
+)
 from playground.sampling_methods.uniform_sampling import UniformSampling
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
@@ -90,8 +101,7 @@ al_strategy_to_python_classes_mapping: Dict[AL_STRATEGY, Callable] = {
     AL_STRATEGY.PLAYGROUND_REPRESENTATIVE_CLUSTER: RepresentativeClusterMeanSampling,
     AL_STRATEGY.PLAYGROUND_GRAPH_DENSITY: GraphDensitySampler,
     AL_STRATEGY.PLAYGROUND_HIERARCHICAL_CLUSTER: HierarchicalClusterAL,
-    AL_STRATEGY.PLAYGROUND_INFORMATIVE_DIVERSE: InformativeClusterDiverseSampler
-
+    AL_STRATEGY.PLAYGROUND_INFORMATIVE_DIVERSE: InformativeClusterDiverseSampler,
 }
 
 
@@ -156,10 +166,10 @@ learner_models_to_classes_mapping: Dict[
         },
     ),
     LEARNER_MODEL.LOG_REG: (LogisticRegression, {}),
-    LEARNER_MODEL.SVM_LIBACT: (SVM, {
-        "kernal": "linear",
-        "decision_function_shape": "ovr"
-    })
+    LEARNER_MODEL.SVM_LIBACT: (
+        SVM,
+        {"kernal": "linear", "decision_function_shape": "ovr"},
+    ),
 }
 
 
@@ -175,5 +185,5 @@ AL_framework_to_classes_mapping: Dict[AL_FRAMEWORK, Tuple[Callable, Dict[Any, An
     AL_FRAMEWORK.ALIPY: (ALIPY_AL_Experiment, {}),
     AL_FRAMEWORK.OPTIMAL: (OPTIMAL_AL_Experiment, {}),
     AL_FRAMEWORK.LIBACT: (LIBACT_Experiment, {}),
-    AL_FRAMEWORK.PLAYGROUND: (PLAYGROUND_AL_Experiment, {})
+    AL_FRAMEWORK.PLAYGROUND: (PLAYGROUND_AL_Experiment, {}),
 }
