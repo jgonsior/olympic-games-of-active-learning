@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Tuple
 import numpy as np
 
-import modin.pandas as pd
+import pandas as pd
 import yaml
 from datasets import DATASET
 from misc.config import Config
