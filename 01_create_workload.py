@@ -1,17 +1,22 @@
 import itertools
-import multiprocessing
 from pathlib import Path
 import stat
 from typing import Any, Dict, List
+import ray
 from jinja2 import Template
-import pandas as pd
+
+import modin.pandas as pd
+
+# import pandas as pd
+
 from misc.config import Config
 from misc.logging import log_it
 from sklearn.model_selection import ParameterGrid
 import os
-from joblib import Parallel, delayed
 
 from ressources.data_types import AL_STRATEGY
+
+ray.init()
 
 # determine config parameters which are to be used -> they all start with EXP_ and have a typing hint of [List[XXX]]
 def _determine_exp_grid_parameters(config: Config) -> List[str]:
@@ -44,7 +49,6 @@ def _create_exp_grid(
 
 def create_workload(config: Config) -> List[int]:
     exp_grid_params_names = _determine_exp_grid_parameters(config)
-
     if os.path.isfile(config.DONE_WORKLOAD_PATH):
         # experiment has already been run, check which worsloads are still missing
         done_workload_df = pd.read_csv(
@@ -77,6 +81,41 @@ def create_workload(config: Config) -> List[int]:
             columns=lambda s: s.replace("EXP_GRID_", "EXP_"), inplace=True  # type: ignore
         )
 
+        if config.INCLUDE_RESULTS_FROM is not None:
+            others_done_workload_df = None
+
+            for other_exp_results_name in config.INCLUDE_RESULTS_FROM:
+                # load done_workload_df from other results
+                other_done_workload = pd.read_csv(Path(other_exp_results_name))
+                if others_done_workload_df is None:
+                    others_done_workload_df = other_done_workload
+                else:
+                    others_done_workload_df = pd.concat(
+                        [others_done_workload_df, other_done_workload],
+                        ignore_index=True,
+                    )
+            length_before_removal_of_already_run_experiments = len(open_workload_df)
+            hyperparameters = [
+                h
+                for h in open_workload_df.columns.to_list()
+                if h not in ["EXP_UNIQUE_ID"]
+            ]
+
+            open_workload_df["ORIGINAL_INDEX"] = open_workload_df.index
+
+            # merge dataframes
+            merged_df = open_workload_df.merge(
+                others_done_workload_df, how="inner", on=hyperparameters
+            )
+
+            open_workload_df = open_workload_df.loc[
+                ~open_workload_df.index.isin(merged_df["ORIGINAL_INDEX"])
+            ]
+            del open_workload_df["ORIGINAL_INDEX"]
+            print(
+                f"Reduced from {length_before_removal_of_already_run_experiments} to {len(open_workload_df)}"
+            )
+
         # shuffle workload to ensure that really long jobs are not all running on the same node
         open_workload_df = open_workload_df.sample(frac=1).reset_index(drop=True)
 
@@ -85,7 +124,7 @@ def create_workload(config: Config) -> List[int]:
     open_workload_df.to_csv(config.WORKLOAD_FILE_PATH, index=None)
     config.save_to_file()
     log_it(f"Created workload of {len(open_workload_df)}")
-    return open_workload_df.EXP_UNIQUE_ID.to_list()
+    return open_workload_df.EXP_UNIQUE_ID.to_numpy()
 
 
 def _write_template_file(
@@ -114,24 +153,38 @@ def create_AL_experiment_slurm_files(config: Config, workload_amount: int) -> No
         Path("slurm_templates/slurm_parallel.sh"),
         config.EXPERIMENT_SLURM_FILE_PATH,
         array=True,
-        PYTHON_FILE="02_run_experiment.py",
+        PYTHON_FILE="/02_run_experiment.py",
         START=0,
         END=int(workload_amount / config.SLURM_ITERATIONS_PER_BATCH),
         CLI_ARGS="",
         APPEND_OUTPUT_PATH=False,
     )
 
+    _write_template_file(
+        config,
+        Path("slurm_templates/chain_job.sh"),
+        config.EXPERIMENT_SLURM_CHAIN_JOB,
+    )
+    _chmod_u_plus_x(config.EXPERIMENT_SLURM_CHAIN_JOB)
+
+    _write_template_file(
+        config,
+        Path("slurm_templates/tar_slurm.sh"),
+        config.EXPERIMENT_SLURM_TAR_PATH,
+        array=False,
+    )
+
 
 def create_AL_experiment_bash_files(config: Config, unique_ids: List[int]) -> None:
     _write_template_file(
         config,
-        Path("slurm_templates/bash_parallel_runner.sh"),
-        config.EXPERIMENT_BASH_FILE_PATH,
+        Path("slurm_templates/02b_run_bash_parallel.py.jinja"),
+        config.EXPERIMENT_PYTHON_PARALLEL_BASH_FILE_PATH,
         PYTHON_FILE="02_run_experiment.py",
         START=0,
-        END=int(len(unique_ids) / config.SLURM_ITERATIONS_PER_BATCH),
+        END=len(unique_ids),
     )
-    _chmod_u_plus_x(config.EXPERIMENT_BASH_FILE_PATH)
+    _chmod_u_plus_x(config.EXPERIMENT_PYTHON_PARALLEL_BASH_FILE_PATH)
 
 
 def create_run_files(config: Config) -> None:

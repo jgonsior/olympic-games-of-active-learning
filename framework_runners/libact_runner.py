@@ -5,8 +5,15 @@ from libact.base.dataset import Dataset
 from libact.models import LogisticRegression, SklearnProbaAdapter, SVM
 
 
+
+from typing import TYPE_CHECKING, List
+
+if TYPE_CHECKING:
+    from misc.config import Config
+
+
 class LIBACT_Experiment(AL_Experiment):
-    def __init__(self, config: Config):
+    def __init__(self, config: "Config"):
         super().__init__(config)
         self.fully_labeled = None
         self.trn_ds = None
@@ -45,5 +52,3 @@ class LIBACT_Experiment(AL_Experiment):
         self.fully_labeled = Dataset(self.X, self.Y)
         self.trn_ds = Dataset((self.X[self.unlabel_idx].tolist() + self.X[self.label_idx].tolist()),
                          ([None] * len(self.unlabel_idx) + self.Y[self.label_idx].tolist()))
-
-
