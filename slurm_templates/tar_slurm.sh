@@ -13,5 +13,5 @@
 export OMP_NUM_THREADS=$SLURM_CPUS_ON_NODE
 
 #module load Python/3.8.6
-tar -czf {{HPC_WS_PATH}}exp_results/{{EXP_TITLE}}.tar.gz {{HPC_WS_PATH}}exp_results/{{EXP_TITLE}}
+zip -r {{HPC_WS_PATH}}exp_results/{{EXP_TITLE}}.zip {{HPC_WS_PATH}}exp_results/{{EXP_TITLE}}
 exit 0

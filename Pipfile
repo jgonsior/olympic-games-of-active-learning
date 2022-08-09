@@ -36,7 +36,12 @@ pyyaml = "*"
 aenum = "*"
 kaggle = "*"
 alipy = {editable = true, ref = "058c3a025c77964422a5417cfb2285f893a62295", git = "https://github.com/jgonsior/ALiPy.git"}
-libact = {editable = true, ref = "49540d4bc4fbb434a6a2a22d8469a5309dfbb0f7", git = "https://github.com/jgonsior/libact.git"}
+#libact = {editable = true, ref = "c0d17b877944f4551430e54fcbc5faf1c6417210", git = "https://github.com/jgonsior/libact.git"}
+playground = {editable = true, ref = "279489dd1ec297158dda2a25589dd7fec5e2ee77", git = "https://github.com/triess/active-learning.git"}
+#libact = {editable = true, ref = "1079085b27bcb5d929ab3d9d0bbc2a132ec8cbdc", git = "git+https://github.com/jgonsior/libact.git"}
+ray = "*"
+modin = "*"
+libsvm = "*"
 
 [requires]
 python_version = "3.10"

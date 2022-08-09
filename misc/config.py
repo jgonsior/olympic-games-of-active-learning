@@ -7,7 +7,6 @@ from typing import Any, Dict, List, Literal, Union, get_args
 
 import git
 import numpy as np
-import pandas as pd
 import yaml
 
 from datasets import DATASET
@@ -31,8 +30,9 @@ class Config:
     LOCAL_OUTPUT_PATH: Path
 
     USE_EXP_YAML: str = "NOOOOO"
+    INCLUDE_RESULTS_FROM: List[str]
 
-    EXP_TITLE: str = "tmp"
+    EXP_TITLE: str = "test_exp_2"
     EXP_DATASET: DATASET
     EXP_GRID_DATASET: List[DATASET]
     EXP_STRATEGY: AL_STRATEGY
@@ -76,16 +76,24 @@ class Config:
     CONFIG_FILE_PATH: Path = "00_config.yaml"  # type: ignore
     WORKLOAD_FILE_PATH: Path = "01_workload.csv"  # type: ignore
     EXPERIMENT_SLURM_FILE_PATH: Path = "02_slurm.slurm"  # type: ignore
-    EXPERIMENT_SLURM_TAR_PATH: Path = "02b_tar.slurm"  # type: ignore
+    EXPERIMENT_SLURM_CHAIN_JOB: Path = "02b_chain_job.sh"  # type: ignore
+    EXPERIMENT_SLURM_TAR_PATH: Path = "03_tar.slurm"  # type: ignore
     EXPERIMENT_BASH_FILE_PATH: Path = "02_bash.sh"  # type: ignore
-    EXPERIMENT_SYNC_AND_RUN_FILE_PATH: Path = "03_sync_and_run.sh"  # type: ignore
-    DONE_WORKLOAD_PATH: Path = "04_done_workload.csv"  # type: ignore
+    EXPERIMENT_PYTHON_PARALLEL_BASH_FILE_PATH: Path = "02b_run_bash_parallel.py"  # type: ignore
+    EXPERIMENT_SYNC_AND_RUN_FILE_PATH: Path = "04_sync_and_run.sh"  # type: ignore
+    DONE_WORKLOAD_PATH: Path = "05_done_workload.csv"  # type: ignore
     METRIC_RESULTS_PATH_APPENDIX: str = "_metric_results.csv"
+    EXP_RESULT_ZIP_PATH_PREFIX: Path
+    EXP_RESULT_ZIP_PATH: Path = ".tar.gz"  # type: ignore
+    EXP_RESULT_EXTRACTED_ZIP_PATH: Path
     METRIC_RESULTS_FILE_PATH: Path
 
     _EXP_STRATEGY_STRAT_PARAMS_DELIM = "#"
     _EXP_STRATEGY_PARAM_PARAM_DELIM = "-"
     _EXP_STRATEGY_PARAM_VALUE_DELIM = ":"
+
+    DONE_WORKLOAD_FILE: Path
+    RESULTS_PATH: Path
 
     def __init__(self) -> None:
         self._parse_cli_arguments()
@@ -127,6 +135,17 @@ class Config:
         if self.USE_EXP_YAML != "NOOOOO":
             self.EXP_TITLE = self.USE_EXP_YAML
 
+        self.EXP_RESULT_ZIP_PATH_PREFIX = Path(
+            str(self.HPC_WS_PATH)[1:] + "exp_results/" + self.EXP_TITLE
+        )
+        self.EXP_RESULT_ZIP_PATH = Path(
+            str(self.OUTPUT_PATH) + str(self.EXP_RESULT_ZIP_PATH)
+        )
+
+        self.EXP_RESULT_EXTRACTED_ZIP_PATH = (
+            self.OUTPUT_PATH / self.EXP_RESULT_ZIP_PATH_PREFIX
+        )
+
         self.OUTPUT_PATH = self.OUTPUT_PATH / self.EXP_TITLE
 
         # check if a config file exists which could be read in
@@ -138,11 +157,17 @@ class Config:
         self.EXPERIMENT_SLURM_FILE_PATH = (
             self.OUTPUT_PATH / self.EXPERIMENT_SLURM_FILE_PATH
         )
+        self.EXPERIMENT_SLURM_CHAIN_JOB = (
+            self.OUTPUT_PATH / self.EXPERIMENT_SLURM_CHAIN_JOB
+        )
         self.EXPERIMENT_SLURM_TAR_PATH = (
             self.OUTPUT_PATH / self.EXPERIMENT_SLURM_TAR_PATH
         )
         self.EXPERIMENT_BASH_FILE_PATH = (
             self.OUTPUT_PATH / self.EXPERIMENT_BASH_FILE_PATH
+        )
+        self.EXPERIMENT_PYTHON_PARALLEL_BASH_FILE_PATH = (
+            self.OUTPUT_PATH / self.EXPERIMENT_PYTHON_PARALLEL_BASH_FILE_PATH
         )
 
         self.EXPERIMENT_SYNC_AND_RUN_FILE_PATH = (
@@ -214,6 +239,8 @@ class Config:
             self.__setattr__(k, v)
 
     def load_workload(self) -> None:
+        import pandas as pd
+
         workload_df = pd.read_csv(
             self.WORKLOAD_FILE_PATH,
             header=0,
@@ -239,6 +266,7 @@ class Config:
                     ]
                     params = {_x[0]: _x[1] for _x in _params_params_split}
                 v = AL_STRATEGY(int(_strat_params_split[0]))
+
                 self.EXP_STRATEGY_PARAMS = params
             elif k == "EXP_DATASET":
                 v = DATASET(int(v))
@@ -248,6 +276,8 @@ class Config:
             if str(self.__annotations__[k]).endswith("int]"):
                 v = int(v)
             self.__setattr__(k, v)
+
+        self._original_workload = workload
 
     """
         Magically convert the type hints from the class attributes of this class into argparse config values
@@ -273,6 +303,9 @@ class Config:
             ):
                 nargs = "*"
                 arg_type = int
+            elif str(v) == "typing.List[str]":
+                nargs = "*"
+                arg_type = str
             # enum classes:
             elif (
                 str(v).startswith("typing.List[misc")

@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 import csv
+from itertools import chain
 import random
 import time
 from typing import TYPE_CHECKING, Any, List
-import pandas as pd
+from aenum import enum
 from datasets import DATASET, load_dataset, split_dataset
 from misc.logging import log_it
 
@@ -93,6 +94,8 @@ class AL_Experiment(ABC):
 
         start_time = time.process_time()
 
+        total_amount_of_iterations = 3
+
         for iteration in range(0, total_amount_of_iterations):
             if len(self.unlabel_idx) == 0:
                 log_it("early stopping")
@@ -131,25 +134,47 @@ class AL_Experiment(ABC):
         end_time = time.process_time()
 
         # save metric results into a single file
-        output_df = pd.json_normalize(confusion_matrices, sep="_")  # type: ignore
-        output_df["selected_indices"] = selected_indices
+
+        import pandas as pd
+
+        metric_df = pd.json_normalize(confusion_matrices, sep="_")  # type: ignore
+        metric_df["selected_indices"] = selected_indices
 
         log_it(f"saving to {self.config.METRIC_RESULTS_FILE_PATH}")
-        output_df.to_csv(self.config.METRIC_RESULTS_FILE_PATH, index=None)
+        metric_df.to_csv(self.config.METRIC_RESULTS_FILE_PATH, index=None)
 
         # save workload parameters in the workload_done_file
         workload = {}
 
-        from misc.config import Config
-
-        for k, v in Config.__annotations__.items():
-            if (
-                k.startswith("EXP_")
-                and not str(v).startswith("typing.List[")
-                and not k.startswith("EXP_GRID_")
-            ):
-                workload[k] = self.config.__getattribute__(k)
+        workload = self.config._original_workload
         workload["duration"] = end_time - start_time
+
+        # calculate metrics
+        acc_auc = metric_df["accuracy"].sum() / len(metric_df)
+        macro_f1_auc = metric_df["macro avg_f1-score"].sum() / len(metric_df)
+        macro_prec_auc = metric_df["macro avg_precision"].sum() / len(metric_df)
+        macro_recall_auc = metric_df["macro avg_recall"].sum() / len(metric_df)
+        weighted_f1_auc = metric_df["weighted avg_f1-score"].sum() / len(metric_df)
+        weighted_prec_auc = metric_df["weighted avg_precision"].sum() / len(metric_df)
+        weighted_recall_auc = metric_df["weighted avg_recall"].sum() / len(metric_df)
+        metric_df["selected_indices"] = selected_indices
+        selected_indices = list(
+            chain.from_iterable(metric_df["selected_indices"].to_list())
+        )
+
+        workload.update(
+            {
+                "acc_auc": acc_auc,
+                "macro_f1_auc": macro_f1_auc,
+                "macro_prec_auc": macro_prec_auc,
+                "macro_recall_auc": macro_recall_auc,
+                "weighted_f1_auc": weighted_f1_auc,
+                "weighted_prec_auc": weighted_prec_auc,
+                "weighted_recall_auc": weighted_recall_auc,
+                "selected_indices": selected_indices,
+            }
+        )
+
         log_it(str(workload))
 
         with open(self.config.DONE_WORKLOAD_PATH, "a") as f:
