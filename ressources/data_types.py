@@ -87,9 +87,9 @@ class AL_STRATEGY(IntEnum):
     ALIPY_QBC = 23  # method='query_by_bagging' or 'vote_entropy'
     ALIPY_EXPECTED_ERROR_REDUCTION = 24
     ALIPY_BMDR = 25  # kernel
-    ALIPY_SPAL = 26
-    ALIPY_LAL = 27
-    ALIPY_DENSITY_WEIGHTED = 28
+    ALIPY_SPAL = 26  # kernel
+    ALIPY_LAL = 27  # mode: 'LAL_iterative', 'LAL_independent'
+    ALIPY_DENSITY_WEIGHTED = 28  # uncertainty_meansure=['least_confident', 'margin', 'entropy'], distance=['cityblock', 'cosine', 'euclidean', 'l1', 'l2', 'manhattan']
 
 
 al_strategy_to_python_classes_mapping: Dict[AL_STRATEGY, Callable] = {

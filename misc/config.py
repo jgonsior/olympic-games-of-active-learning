@@ -105,11 +105,11 @@ class Config:
         self._parse_cli_arguments()
         self._load_server_setup_from_file(Path(self.LOCAL_CONFIG_FILE_PATH))
 
-        self._pathes_magic()
-
-        if self.HPC_CODE_PATH.exists():
+        if Path(self.HPC_CODE_PATH).exists():
             self.RUNNING_ENVIRONMENT = "hpc"
             _import_compiled_libact_strategies()
+
+        self._pathes_magic()
 
         # check if we have a yaml defined experiment
         if self.USE_EXP_YAML != "NOOOOO":
@@ -192,7 +192,6 @@ class Config:
         self.DONE_WORKLOAD_PATH = self.OUTPUT_PATH / self.DONE_WORKLOAD_PATH
 
         self.OUTPUT_PATH.mkdir(parents=True, exist_ok=True)
-        self.HPC_CODE_PATH = Path(self.HPC_CODE_PATH)
 
     def _return_list_of_explicitly_defined_cli_args(self) -> List[str]:
         explicitly_defined_arguments: List[str] = []
