@@ -8,6 +8,14 @@ from alipy.query_strategy import (
     QueryInstanceUncertainty,
     QueryInstanceRandom,
     QueryInstanceQUIRE,
+    QueryExpectedErrorReduction,
+    QueryInstanceBMDR,
+    QueryInstanceCoresetGreedy,
+    QueryInstanceDensityWeighted,
+    QueryInstanceGraphDensity,
+    QueryInstanceLAL,
+    QueryInstanceQBC,
+    QueryInstanceSPAL,
 )
 from libact.query_strategies import (
     UncertaintySampling,
@@ -93,9 +101,17 @@ class AL_STRATEGY(IntEnum):
 
 
 al_strategy_to_python_classes_mapping: Dict[AL_STRATEGY, Callable] = {
-    AL_STRATEGY.ALIPY_UNCERTAINTY: QueryInstanceUncertainty,
-    AL_STRATEGY.ALIPY_QUIRE: QueryInstanceQUIRE,
     AL_STRATEGY.ALIPY_RANDOM: QueryInstanceRandom,
+    AL_STRATEGY.ALIPY_UNCERTAINTY: QueryInstanceUncertainty,
+    AL_STRATEGY.ALIPY_GRAPH_DENSITY: QueryInstanceGraphDensity,
+    AL_STRATEGY.ALIPY_CORESET_GREEDY: QueryInstanceCoresetGreedy,
+    AL_STRATEGY.ALIPY_QUIRE: QueryInstanceQUIRE,
+    AL_STRATEGY.ALIPY_QBC: QueryInstanceQBC,
+    AL_STRATEGY.ALIPY_EXPECTED_ERROR_REDUCTION: QueryExpectedErrorReduction,
+    AL_STRATEGY.ALIPY_BMDR: QueryInstanceBMDR,
+    AL_STRATEGY.ALIPY_SPAL: QueryInstanceSPAL,
+    AL_STRATEGY.ALIPY_LAL: QueryInstanceLAL,
+    AL_STRATEGY.ALIPY_DENSITY_WEIGHTED: QueryInstanceDensityWeighted,
     AL_STRATEGY.OPTIMAL_GREEDY: Greedy_Optimal,
     AL_STRATEGY.OPTIMAL_BSO: Beeam_Search_Optimal,
     AL_STRATEGY.OPTIMAL_TRUE: True_Optimal,
