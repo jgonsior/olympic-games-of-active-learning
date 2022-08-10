@@ -109,7 +109,7 @@ class Config:
             self.RUNNING_ENVIRONMENT = "local"
             _import_compiled_libact_strategies()
         else:
-            self.RUNNING_ENVIRONMENT == "hpc"
+            self.RUNNING_ENVIRONMENT = "hpc"
 
         self._pathes_magic()
 
