@@ -262,7 +262,7 @@ class Config:
         )
         workload = workload_df.iloc[0].to_dict()
         for k, v in workload.items():
-            log_it(f"{k}\t\t\t{v}")
+            # log_it(f"{k}\t\t\t{str(v)}")
             # convert str/ints to enum data types first
             if k == "EXP_STRATEGY":
                 # super complex EXP_STRATEGY parsing
@@ -290,6 +290,8 @@ class Config:
                 v = int(v)
             self.__setattr__(k, v)
 
+        for k in workload.keys():
+            log_it(f"{k}\t\t\t{str(self.__getattribute__(k))}")
         self._original_workload = workload
 
     """
