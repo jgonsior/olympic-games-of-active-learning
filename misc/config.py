@@ -105,7 +105,7 @@ class Config:
         self._parse_cli_arguments()
         self._load_server_setup_from_file(Path(self.LOCAL_CONFIG_FILE_PATH))
 
-        if Path(self.HPC_CODE_PATH).exists():
+        if not Path(self.HPC_CODE_PATH).exists():
             self.RUNNING_ENVIRONMENT = "hpc"
             _import_compiled_libact_strategies()
 
