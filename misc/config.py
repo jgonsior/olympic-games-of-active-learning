@@ -1,4 +1,5 @@
 import argparse
+import os
 import random
 import sys
 from configparser import RawConfigParser
@@ -28,6 +29,7 @@ class Config:
     HPC_WS_PATH: Path
     HPC_DATASETS_PATH: Path
     HPC_OUTPUT_PATH: Path
+    HPC_CODE_PATH: Path
 
     LOCAL_DATASETS_PATH: Path
     LOCAL_CODE_PATH: Path
@@ -212,6 +214,9 @@ class Config:
                     # we do not overwrite our config with arguments which have been specified as CLI arguments
                     continue
                 self.__setattr__(section + "_" + k.upper(), v)
+
+        if self.HPC_CODE_PATH == os.path.realpath(__file__):
+            self.RUNNING_ENVIRONMENT = "hpc"
 
     def _load_exp_yaml(self) -> None:
         yaml_config_params = yaml.safe_load(self.LOCAL_YAML_EXP_PATH.read_bytes())

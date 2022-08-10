@@ -59,10 +59,14 @@ LabelList = np.ndarray
 @unique
 class AL_STRATEGY(IntEnum):
     ALIPY_RANDOM = 1
-    ALIPY_UNCERTAINTY = 2
-    ALIPY_GRAPH_DENSITY = 3
-    ALIPY_CORESET_GREEDY = 4
-    ALIPY_QUIRE = 5
+    ALIPY_UNCERTAINTY = (
+        2  # ['least_confident', 'margin', 'entropy', 'distance_to_boundary']:
+    )
+    ALIPY_GRAPH_DENSITY = 3  # metric in ['euclidean', 'l2', 'l1', 'manhattan', 'cityblock',                      'braycurtis', 'canberra', 'chebyshev', 'correlation',                      'cosine', 'dice', 'hamming', 'jaccard', 'kulsinski',                      'mahalanobis', 'matching', 'minkowski', 'rogerstanimoto',                      'russellrao', 'seuclidean', 'sokalmichener',                      'sokalsneath', 'sqeuclidean', 'yule', "wminkowski"]
+    ALIPY_CORESET_GREEDY = (
+        4  # distance in ['cityblock', 'cosine', 'euclidean', 'l1', 'l2', 'manhattan'].
+    )
+    ALIPY_QUIRE = 5  # kernel=linear, poly, rbf
     OPTIMAL_BSO = 6
     OPTIMAL_TRUE = 7
     OPTIMAL_GREEDY = 8
@@ -80,6 +84,12 @@ class AL_STRATEGY(IntEnum):
     PLAYGROUND_MIXTURE = 20
     PLAYGROUND_REPRESENTATIVE_CLUSTER = 21
     PLAYGROUND_UNIFORM = 22
+    ALIPY_QBC = 23  # method='query_by_bagging' or 'vote_entropy'
+    ALIPY_EXPECTED_ERROR_REDUCTION = 24
+    ALIPY_BMDR = 25  # kernel
+    ALIPY_SPAL = 26
+    ALIPY_LAL = 27
+    ALIPY_DENSITY_WEIGHTED = 28
 
 
 al_strategy_to_python_classes_mapping: Dict[AL_STRATEGY, Callable] = {
