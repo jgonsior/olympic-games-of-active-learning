@@ -214,9 +214,7 @@ class Config:
                     # we do not overwrite our config with arguments which have been specified as CLI arguments
                     continue
                 self.__setattr__(section + "_" + k.upper(), v)
-        print(self.HPC_CODE_PATH)
-        print(Path(os.path.realpath(__file__)).parent)
-        if self.HPC_CODE_PATH == Path(os.path.realpath(__file__)).parent:
+        if self.HPC_CODE_PATH.exists():
             self.RUNNING_ENVIRONMENT = "hpc"
 
     def _load_exp_yaml(self) -> None:
