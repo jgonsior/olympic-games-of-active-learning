@@ -20,6 +20,6 @@ conda activate /scratch/ws/1/s5968580-al_olympics/conda-env
 python -m pipenv --python=$(conda run which python) --site-packages install --dev
 python -m pipenv shell
 pip install modin[ray]
-pip install git+https://github.com/ntucllab/libact.git
+pip install git+https://github.com/ntucllab/libact.git -> klappt nicht auf taurus!
 
 exit 0

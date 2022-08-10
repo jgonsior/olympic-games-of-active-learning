@@ -11,7 +11,11 @@ import yaml
 
 from datasets import DATASET
 from misc.logging import init_logger, log_it
-from ressources.data_types import AL_STRATEGY, LEARNER_MODEL
+from ressources.data_types import (
+    AL_STRATEGY,
+    LEARNER_MODEL,
+    _import_compiled_libact_strategies,
+)
 
 
 class Config:
@@ -99,6 +103,9 @@ class Config:
         self._parse_cli_arguments()
         self._load_server_setup_from_file(Path(self.LOCAL_CONFIG_FILE_PATH))
 
+        if self.RUNNING_ENVIRONMENT == "local":
+            _import_compiled_libact_strategies()
+
         self._pathes_magic()
 
         # check if we have a yaml defined experiment
@@ -128,6 +135,7 @@ class Config:
         if self.RUNNING_ENVIRONMENT == "local":
             self.OUTPUT_PATH = Path(self.LOCAL_OUTPUT_PATH)
             self.DATASETS_PATH = Path(self.LOCAL_DATASETS_PATH)
+
         elif self.RUNNING_ENVIRONMENT == "hpc":
             self.OUTPUT_PATH = Path(self.HPC_OUTPUT_PATH)
             self.DATASETS_PATH = Path(self.HPC_DATASETS_PATH)

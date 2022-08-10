@@ -1,4 +1,5 @@
 from __future__ import annotations
+from distutils.command.config import config
 import multiprocessing
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Tuple
 import numpy as np
@@ -13,8 +14,6 @@ from libact.query_strategies import (
     QueryByCommittee,
     DWUS,
     QUIRE,
-    HintSVM,
-    VarianceReduction,
 )
 from libact.models import LogisticRegression, SVM
 from playground.sampling_methods.bandit_discrete import BanditDiscreteSampler  # wrapper
@@ -50,6 +49,7 @@ from optimal_query_strategies.greedy_optimal import (
     Greedy_Optimal,
 )
 from optimal_query_strategies.true_optimal import True_Optimal
+
 
 SampleIndiceList = List[int]
 FeatureVectors = np.ndarray
@@ -94,8 +94,6 @@ al_strategy_to_python_classes_mapping: Dict[AL_STRATEGY, Callable] = {
     AL_STRATEGY.LIBACT_QUEY_BY_COMMITTEE: QueryByCommittee,
     AL_STRATEGY.LIBACT_DWUS: DWUS,
     AL_STRATEGY.LIBACT_QUIRE: QUIRE,
-    AL_STRATEGY.LIBACT_VR: VarianceReduction,
-    AL_STRATEGY.LIBACT_HINTSVM: HintSVM,
     AL_STRATEGY.PLAYGROUND_UNIFORM: UniformSampling,
     AL_STRATEGY.PLAYGROUND_MARGIN: MarginAL,
     AL_STRATEGY.PLAYGROUND_MIXTURE: MixtureOfSamplers,
@@ -105,6 +103,16 @@ al_strategy_to_python_classes_mapping: Dict[AL_STRATEGY, Callable] = {
     AL_STRATEGY.PLAYGROUND_HIERARCHICAL_CLUSTER: HierarchicalClusterAL,
     AL_STRATEGY.PLAYGROUND_INFORMATIVE_DIVERSE: InformativeClusterDiverseSampler,
 }
+
+
+def _import_compiled_libact_strategies():
+    from libact.query_strategies import (
+        HintSVM,
+        VarianceReduction,
+    )
+
+    al_strategy_to_python_classes_mapping[AL_STRATEGY.LIBACT_VR] = VarianceReduction
+    al_strategy_to_python_classes_mapping[AL_STRATEGY.LIBACT_HINTSVM] = HintSVM
 
 
 # TODO parameter wie für AL strats in exp_config.yaml
