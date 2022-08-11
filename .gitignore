@@ -181,3 +181,4 @@ typings/
 _*/
 
 .server_access_credentials.cfg
+*.npz

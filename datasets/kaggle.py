@@ -9,7 +9,11 @@ from datasets import DATASET
 from misc.config import Config
 import kaggle
 from misc.logging import log_it
-from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import (
+    StratifiedKFold,
+    StratifiedShuffleSplit,
+    train_test_split,
+)
 
 from resources.data_types import SampleIndiceList
 
@@ -56,6 +60,14 @@ class Kaggle:
     """
 
     def save_train_test_splits(self, df: pd.DataFrame, destination: Path) -> None:
+
+        # remove all classes, where we have less than 2 samples
+        value_counts = df["LABEL_TARGET"].value_counts()
+
+        for label, count in value_counts.iteritems():
+            if count <= 2:
+                df = df[df.LABEL_TARGET != label]
+
         X = df.loc[:, df.columns != "LABEL_TARGET"].to_numpy()  # type: ignore
         Y = df["LABEL_TARGET"].to_numpy()  # type: ignore
         classes = np.unique(Y)
@@ -65,8 +77,9 @@ class Kaggle:
 
         while no_good_split_found < self.config.DATASETS_AMOUNT_OF_SPLITS:
             for split_number, (train_index, test_index) in enumerate(
-                StratifiedKFold(
-                    n_splits=self.config.DATASETS_AMOUNT_OF_SPLITS, shuffle=True
+                StratifiedShuffleSplit(
+                    n_splits=self.config.DATASETS_AMOUNT_OF_SPLITS,
+                    test_size=self.config.DATASETS_TEST_SIZE_PERCENTAGE,
                 ).split(X, Y)
             ):
                 # quick test that all classes are present in all test_index sets
@@ -75,9 +88,17 @@ class Kaggle:
                     splits = {}
                 no_good_split_found += 1
                 splits[split_number] = (train_index.tolist(), test_index.tolist())  # type: ignore
-
         splits_df = pd.DataFrame(splits).T
         splits_df.columns = ["train", "test"]
+
+        # quick check that everything wored as intented
+        for split in range(0, 5):
+            print(len(splits_df.iloc[split]["train"]) / len(X))
+            print(len(splits_df.iloc[split]["test"]) / len(X))
+
+            print(np.unique(Y[splits_df.iloc[split]["train"]], return_counts=True))
+            print(np.unique(Y[splits_df.iloc[split]["test"]], return_counts=True))
+
         splits_df.to_csv(destination, index=None)
 
     def preprocess_dataset(self, dataset_name: str) -> None:
