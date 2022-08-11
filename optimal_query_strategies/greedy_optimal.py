@@ -15,7 +15,7 @@ from optimal_query_strategies.base_class import Base_AL_Strategy
 
 
 if TYPE_CHECKING:
-    from ressources.data_types import (
+    from resources.data_types import (
         LEARNER_MODEL,
         FeatureVectors,
         LabelList,

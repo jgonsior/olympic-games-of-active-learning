@@ -18,8 +18,8 @@ class LIBACT_Experiment(AL_Experiment):
         self.al_strategy = None
 
     def get_AL_strategy(self):
-        from ressources.data_types import AL_STRATEGY
-        from ressources.data_types import (
+        from resources.data_types import AL_STRATEGY
+        from resources.data_types import (
             al_strategy_to_python_classes_mapping,
         )
 

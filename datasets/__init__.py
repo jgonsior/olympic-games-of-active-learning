@@ -19,7 +19,7 @@ if TYPE_CHECKING:
         Config,
     )
 
-    from ressources.data_types import (
+    from resources.data_types import (
         SampleIndiceList,
         FeatureVectors,
         LabelList,
@@ -33,7 +33,7 @@ class DATASET(IntEnum):
 
 
 # load dataset names from yaml files
-with open("ressources/datasets.yaml", "r") as params_file:
+with open("resources/datasets.yaml", "r") as params_file:
     datasets_yaml_parameter_dict: Dict[str, Any] = yaml.safe_load(params_file)
 
 for dataset_name in datasets_yaml_parameter_dict:

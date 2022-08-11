@@ -12,7 +12,7 @@ import yaml
 
 from datasets import DATASET
 from misc.logging import init_logger, log_it
-from ressources.data_types import (
+from resources.data_types import (
     AL_STRATEGY,
     LEARNER_MODEL,
     _import_compiled_libact_strategies,
@@ -76,9 +76,9 @@ class Config:
     RAW_DATASETS_PATH: Path = "_raw"  # type: ignore
     DATASETS_AMOUNT_OF_SPLITS: int = 5
 
-    KAGGLE_DATASETS_PATH: Path = "ressources/datasets.yaml"  # type: ignore
+    KAGGLE_DATASETS_PATH: Path = "resources/datasets.yaml"  # type: ignore
     LOCAL_CONFIG_FILE_PATH: Path = ".server_access_credentials.cfg"  # type: ignore
-    LOCAL_YAML_EXP_PATH: Path = "ressources/exp_config.yaml"  # type: ignore
+    LOCAL_YAML_EXP_PATH: Path = "resources/exp_config.yaml"  # type: ignore
     CONFIG_FILE_PATH: Path = "00_config.yaml"  # type: ignore
     WORKLOAD_FILE_PATH: Path = "01_workload.csv"  # type: ignore
     EXPERIMENT_SLURM_FILE_PATH: Path = "02_slurm.slurm"  # type: ignore

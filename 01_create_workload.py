@@ -14,7 +14,7 @@ from misc.logging import log_it
 from sklearn.model_selection import ParameterGrid
 import os
 
-from ressources.data_types import AL_STRATEGY
+from resources.data_types import AL_STRATEGY
 
 ray.init()
 
@@ -150,7 +150,7 @@ def _chmod_u_plus_x(path: Path) -> None:
 def create_AL_experiment_slurm_files(config: Config, workload_amount: int) -> None:
     _write_template_file(
         config,
-        Path("slurm_templates/slurm_parallel.sh"),
+        Path("resources/slurm_templates/slurm_parallel.sh"),
         config.EXPERIMENT_SLURM_FILE_PATH,
         array=True,
         PYTHON_FILE="/02_run_experiment.py",
@@ -162,14 +162,14 @@ def create_AL_experiment_slurm_files(config: Config, workload_amount: int) -> No
 
     _write_template_file(
         config,
-        Path("slurm_templates/chain_job.sh"),
+        Path("resources/slurm_templates/chain_job.sh"),
         config.EXPERIMENT_SLURM_CHAIN_JOB,
     )
     _chmod_u_plus_x(config.EXPERIMENT_SLURM_CHAIN_JOB)
 
     _write_template_file(
         config,
-        Path("slurm_templates/tar_slurm.sh"),
+        Path("resources/slurm_templates/tar_slurm.sh"),
         config.EXPERIMENT_SLURM_TAR_PATH,
         array=False,
     )
@@ -178,7 +178,7 @@ def create_AL_experiment_slurm_files(config: Config, workload_amount: int) -> No
 def create_AL_experiment_bash_files(config: Config, unique_ids: List[int]) -> None:
     _write_template_file(
         config,
-        Path("slurm_templates/02b_run_bash_parallel.py.jinja"),
+        Path("resources/slurm_templates/02b_run_bash_parallel.py.jinja"),
         config.EXPERIMENT_PYTHON_PARALLEL_BASH_FILE_PATH,
         PYTHON_FILE="02_run_experiment.py",
         START=0,
@@ -190,7 +190,7 @@ def create_AL_experiment_bash_files(config: Config, unique_ids: List[int]) -> No
 def create_run_files(config: Config) -> None:
     _write_template_file(
         config,
-        Path("slurm_templates/sync_and_run.sh"),
+        Path("resources/slurm_templates/sync_and_run.sh"),
         config.EXPERIMENT_SYNC_AND_RUN_FILE_PATH,
     )
     _chmod_u_plus_x(config.EXPERIMENT_SYNC_AND_RUN_FILE_PATH)

@@ -14,7 +14,7 @@ from optimal_query_strategies.greedy_optimal import FuturePeakEvalMetric, Greedy
 
 
 if TYPE_CHECKING:
-    from ressources.data_types import (
+    from resources.data_types import (
         LEARNER_MODEL,
         FeatureVectors,
         LabelList,

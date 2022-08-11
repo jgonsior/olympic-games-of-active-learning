@@ -11,7 +11,7 @@ import kaggle
 from misc.logging import log_it
 from sklearn.model_selection import StratifiedKFold
 
-from ressources.data_types import SampleIndiceList
+from resources.data_types import SampleIndiceList
 
 
 class Kaggle:
