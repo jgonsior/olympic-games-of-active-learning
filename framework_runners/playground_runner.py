@@ -2,6 +2,7 @@ from __future__ import annotations
 from framework_runners.base_runner import AL_Experiment
 
 from typing import TYPE_CHECKING, List
+import warnings
 
 if TYPE_CHECKING:
     from misc.config import Config
@@ -26,9 +27,17 @@ class PLAYGROUND_AL_Experiment(AL_Experiment):
             from misc.Errors import NoStrategyError
 
             raise NoStrategyError("get_AL_strategy() has to be called before querying")
-        return self.al_strategy.select_batch_(
-            self.model, self.label_idx, self.config.EXP_BATCH_SIZE
-        )
+
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                "ignore",
+                message="SparseEfficiencyWarning",
+            )
+
+            result = self.al_strategy.select_batch_(
+                self.model, self.label_idx, self.config.EXP_BATCH_SIZE
+            )
+        return result
 
     def prepare_dataset(self):
         pass
