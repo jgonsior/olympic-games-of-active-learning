@@ -293,6 +293,10 @@ class Config:
 
         for k in workload.keys():
             log_it(f"{k}\t\t\t{str(self.__getattribute__(k))}")
+
+        np.random.seed(self.EXP_RANDOM_SEED)
+        random.seed(self.EXP_RANDOM_SEED)
+
         self._original_workload = workload
 
     """

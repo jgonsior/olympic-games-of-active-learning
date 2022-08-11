@@ -1,8 +1,11 @@
+from distutils.command.config import config
+
+import numpy as np
 from framework_runners.base_runner import AL_Experiment
 from typing import List
 from libact.base.dataset import Dataset
 from libact.models import LogisticRegression, SklearnProbaAdapter, SVM
-
+from libact.query_strategies import UncertaintySampling, HintSVM
 
 from typing import TYPE_CHECKING, List
 
@@ -32,6 +35,19 @@ class LIBACT_Experiment(AL_Experiment):
             params["model"] = self.model
         else:
             params["model"] = SklearnProbaAdapter(self.model)
+
+        params["random_state"] = self.config.EXP_RANDOM_SEED
+
+        if self.config.EXP_STRATEGY == AL_STRATEGY.LIBACT_ALBL:
+            params["T"] = 100
+            params["query_strategies"] = [
+                UncertaintySampling(self.trn_ds, model=LogisticRegression(C=1.0)),
+                UncertaintySampling(self.trn_ds, model=LogisticRegression(C=0.01)),
+                HintSVM(self.trn_ds),
+            ]
+        elif self.config.EXP_STRATEGY == AL_STRATEGY.LIBACT_HIERARCHICAL_SAMPLING:
+            del params["model"]
+            params["classes"] = np.unique(self.Y[self.train_idx]).tolist()
         self.al_strategy = al_strategy_to_python_classes_mapping[strategy](
             self.trn_ds, **params
         )

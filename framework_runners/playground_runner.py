@@ -18,7 +18,7 @@ class PLAYGROUND_AL_Experiment(AL_Experiment):
 
         strategy = AL_STRATEGY(self.config.EXP_STRATEGY)
         self.al_strategy = al_strategy_to_python_classes_mapping[strategy](
-            self.X, self.Y, self.config.RANDOM_SEED
+            self.X, self.Y, self.config.EXP_RANDOM_SEED
         )
 
     def query_AL_strategy(self) -> List[int]:
