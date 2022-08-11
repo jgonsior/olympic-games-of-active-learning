@@ -22,7 +22,7 @@ from libact.query_strategies import (
     QueryByCommittee,
     DWUS,
     QUIRE,
-    VarianceReduction,
+    ActiveLearningByLearning,
 )
 from libact.query_strategies.multiclass import EER, HierarchicalSampling
 
@@ -82,7 +82,7 @@ class AL_STRATEGY(IntEnum):
     OPTIMAL_TRUE = 7
     OPTIMAL_GREEDY = 8
     LIBACT_UNCERTAINTY = 9
-    LIBACT_QUEY_BY_COMMITTEE = 10
+    LIBACT_QBC = 10
     LIBACT_DWUS = 11
     LIBACT_QUIRE = 12
     LIBACT_VR = 13
@@ -93,7 +93,7 @@ class AL_STRATEGY(IntEnum):
     PLAYGROUND_KCENTER_GREEDY = 18
     PLAYGROUND_MARGIN = 19
     PLAYGROUND_MIXTURE = 20
-    PLAYGROUND_REPRESENTATIVE_CLUSTER = 21
+    PLAYGROUND_MCM = 21
     PLAYGROUND_UNIFORM = 22
     ALIPY_QBC = 23  # method='query_by_bagging' or 'vote_entropy'
     ALIPY_EXPECTED_ERROR_REDUCTION = 24
@@ -103,6 +103,8 @@ class AL_STRATEGY(IntEnum):
     ALIPY_DENSITY_WEIGHTED = 28  # uncertainty_meansure=['least_confident', 'margin', 'entropy'], distance=['cityblock', 'cosine', 'euclidean', 'l1', 'l2', 'manhattan']
     LIBACT_EER = 29
     LIBACT_HIERARCHICAL_SAMPLING = 30
+    LIBACT_ALBL = 31
+    PLAYGROUND_BANDIT = 32
 
 
 al_strategy_to_python_classes_mapping: Dict[AL_STRATEGY, Callable] = {
@@ -122,20 +124,21 @@ al_strategy_to_python_classes_mapping: Dict[AL_STRATEGY, Callable] = {
     AL_STRATEGY.OPTIMAL_TRUE: True_Optimal,
     # AL_STRATEGY.OPTIMAL_SUBSETS: (, {}),
     AL_STRATEGY.LIBACT_UNCERTAINTY: UncertaintySampling,
-    AL_STRATEGY.LIBACT_QUEY_BY_COMMITTEE: QueryByCommittee,
+    AL_STRATEGY.LIBACT_QBC: QueryByCommittee,
     AL_STRATEGY.LIBACT_DWUS: DWUS,
     AL_STRATEGY.LIBACT_QUIRE: QUIRE,
-    AL_STRATEGY.LIBACT_VR: VarianceReduction,
     AL_STRATEGY.LIBACT_EER: EER,
     AL_STRATEGY.LIBACT_HIERARCHICAL_SAMPLING: HierarchicalSampling,
+    AL_STRATEGY.LIBACT_ALBL: ActiveLearningByLearning,
     AL_STRATEGY.PLAYGROUND_UNIFORM: UniformSampling,
     AL_STRATEGY.PLAYGROUND_MARGIN: MarginAL,
     AL_STRATEGY.PLAYGROUND_MIXTURE: MixtureOfSamplers,
     AL_STRATEGY.PLAYGROUND_KCENTER_GREEDY: kCenterGreedy,
-    AL_STRATEGY.PLAYGROUND_REPRESENTATIVE_CLUSTER: RepresentativeClusterMeanSampling,
+    AL_STRATEGY.PLAYGROUND_MCM: RepresentativeClusterMeanSampling,
     AL_STRATEGY.PLAYGROUND_GRAPH_DENSITY: GraphDensitySampler,
     AL_STRATEGY.PLAYGROUND_HIERARCHICAL_CLUSTER: HierarchicalClusterAL,
     AL_STRATEGY.PLAYGROUND_INFORMATIVE_DIVERSE: InformativeClusterDiverseSampler,
+    AL_STRATEGY.PLAYGROUND_BANDIT: BanditDiscreteSampler,
 }
 
 
@@ -163,6 +166,7 @@ class LEARNER_MODEL(IntEnum):
     LBFGS_MLP = 9
     LOG_REG = 10
     SVM_LIBACT = 11
+    LR = 12
 
 
 learner_models_to_classes_mapping: Dict[
@@ -214,6 +218,7 @@ learner_models_to_classes_mapping: Dict[
         SVM,
         {"kernal": "linear", "decision_function_shape": "ovr"},
     ),
+    LEARNER_MODEL.LR: (LogisticRegression, {}),
 }
 
 
