@@ -1,6 +1,5 @@
 from framework_runners.base_runner import AL_Experiment
 from typing import List
-from misc.config import Config
 from libact.base.dataset import Dataset
 from libact.models import LogisticRegression, SklearnProbaAdapter, SVM
 
@@ -19,8 +18,8 @@ class LIBACT_Experiment(AL_Experiment):
         self.al_strategy = None
 
     def get_AL_strategy(self):
-        from ressources.data_types import AL_STRATEGY
-        from ressources.data_types import (
+        from resources.data_types import AL_STRATEGY
+        from resources.data_types import (
             al_strategy_to_python_classes_mapping,
         )
 

@@ -14,7 +14,7 @@ from misc.logging import log_it
 from sklearn.model_selection import ParameterGrid
 import os
 from joblib import Parallel, delayed
-from ressources.data_types import AL_STRATEGY
+from resources.data_types import AL_STRATEGY
 from joblib import Parallel, delayed
 
 # easy example: extract a single metric from all random_seed_runs of all datasets and strategies to compare

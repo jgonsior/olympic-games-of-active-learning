@@ -50,30 +50,91 @@ test_exp_2:
         EXP_GRID_LEARNER_MODEL: [RF, MLP],
         EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0, 1, 2, 3, 4],
     }
-first_exps: { EXP_GRID_DATASET: [1, 2, 3], EXP_GRID_STRATEGY: [
-                {
-                    OPTIMAL_GREEDY:
-                        {
-                            amount_of_pre_selections: [10, 50, 100],
-                            future_peak_eval_metric: [ACC, F1],
-                        },
-                },
-                { OPTIMAL_TRUE: { future_peak_eval_metric: [ACC, F1] } },
-                { OPTIMAL_BSO: { future_peak_eval_metric: [ACC, F1] } },
+all_strategies_all_datasets_single_random_seed:
+    {
+        EXP_GRID_DATASET:
+            [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21,
+                22,
+                23,
+                24,
+                25,
+                26,
+                27,
+                28,
+                29,
+                30,
+                31,
+                32,
+                33,
+                34,
+            ],
+        EXP_GRID_STRATEGY:
+            [
+                { ALIPY_RANDOM: {} },
                 {
                     ALIPY_UNCERTAINTY:
                         { measure: [least_confident, margin, entropy] },
                 },
-
-                { ALIPY_RANDOM: {} },
-                #{ ALIPY_GRAPH_DENSITY: {} },
-                #{ ALIPY_CORESET_GREEDY: {} },
-                #{ LIBACT_UNCERTAINTY: {} },
-                #{ LIBACT_QUEY_BY_COMMITTEE: {} },
-                #{ LIBACT_DWUS: {} },
-                #{ LIBACT_QUIRE: {} },
+                { ALIPY_GRAPH_DENSITY: {} },
+                { ALIPY_CORESET_GREEDY: {} },
                 { ALIPY_QUIRE: {} },
-            ], EXP_GRID_RANDOM_SEEDS_END: 1000, EXP_GRID_NUM_QUERIES: [100], EXP_GRID_BATCH_SIZE: [1, 5, 10], EXP_GRID_LEARNER_MODEL: [RF, DT, MNB, GNB, RBF_SVM, LINEAR_SVM, POLY_SVM, MLP, LBFGS_MLP], EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0, 1, 2, 3, 4] }
+                { OPTIMAL_BSO: { future_peak_eval_metric: [ACC] } },
+                { OPTIMAL_TRUE: { future_peak_eval_metric: [ACC] } },
+                {
+                    OPTIMAL_GREEDY:
+                        {
+                            amount_of_pre_selections: [10],
+                            future_peak_eval_metric: [ACC],
+                        },
+                },
+                { LIBACT_UNCERTAINTY: {} },
+                { LIBACT_QUEY_BY_COMMITTEE: {} },
+                { LIBACT_DWUS: {} },
+                { LIBACT_QUIRE: {} },
+                { LIBACT_VR: {} },
+                { LIBACT_HINTSVM: {} },
+                { PLAYGROUND_GRAPH_DENSITY: {} },
+                { PLAYGROUND_HIERARCHICAL_CLUSTER: {} },
+                { PLAYGROUND_INFORMATIVE_DIVERSE: {} },
+                { PLAYGROUND_KCENTER_GREEDY: {} },
+                { PLAYGROUND_MARGIN: {} },
+                { PLAYGROUND_MIXTURE: {} },
+                { PLAYGROUND_REPRESENTATIVE_CLUSTER: {} },
+                { PLAYGROUND_UNIFORM: {} },
+                { ALIPY_QBC: { method: [query_by_bagging, vote_entropy] } },
+                { ALIPY_EXPECTED_ERROR_REDUCTION: {} },
+                { ALIPY_BMDR: {} },
+                { ALIPY_SPAL: {} },
+                { ALIPY_LAL: {mode:[LAL_iterative, LAL_independent]} },
+                { ALIPY_DENSITY_WEIGHTED: {uncertainty_meansure: [least_confident, margin, entropy]} },
+            ],
+        EXP_GRID_RANDOM_SEEDS_END: 1,
+        EXP_GRID_NUM_QUERIES: [3],
+        EXP_GRID_BATCH_SIZE: [5],
+        EXP_GRID_LEARNER_MODEL: [RF], #, DT, MNB, GNB, RBF_SVM, LINEAR_SVM, POLY_SVM, MLP, LBFGS_MLP],
+        EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0, 1],
+    }
 # datasets 1,2,3 results are included in first_exps
 optimal_runs:
     {

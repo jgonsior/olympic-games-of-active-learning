@@ -11,15 +11,29 @@ conda init
 conda create --name al_olympics_conda python=3.10
 conda activate al_olympics_conda
 conda install -c anaconda cython
-conda install -c conda-forge cvxpy pipenv liblapacke
+conda install -c conda-forge cvxpy pipenv liblapacke libsvm
 #conda install -c conda-forge modin-ray
 conda env export
 pipenv --python=$(conda run which python) --site-packages install --dev
 # OR
 python -m pipenv --python=$(conda run which python) --site-packages install --dev
 python -m pipenv shell
-pip install modin[ray] # has to be run everytime anything is being changed by pipenv
-pip install git+https://github.com/ntucllab/libact.git
+#pip install modin[ray] # has to be run everytime anything is being changed by pipenv
+pip install git+https://github.com/ntucllab/libact.git modin[ray]
+```
+
+
+HPC:
+```bash
+module load Anaconda3
+sh $EBROOTANACONDA3/etc/profile.d/conda.sh
+conda create --prefix $WS_URL/al_olympics/conda-env python=3.10
+conda activate $WS_URL/-al_olympics/conda-env
+conda install -c anaconda cython -y
+conda install -y -c conda-forge cvxpy pipenv liblapacke
+python -m pipenv --python=$(conda run which python) --site-packages install --dev
+python -m pipenv --python=$(conda run which python) --site-packages install --dev
+pip install git+https://github.com/jgonsior/libact.git
 ```
 
 

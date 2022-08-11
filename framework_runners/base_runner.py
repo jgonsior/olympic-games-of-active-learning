@@ -62,7 +62,7 @@ class AL_Experiment(ABC):
 
         self.prepare_dataset()
 
-        from ressources.data_types import (
+        from resources.data_types import (
             learner_models_to_classes_mapping,
         )
 

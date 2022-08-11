@@ -1,4 +1,5 @@
 from __future__ import annotations
+from distutils.command.config import config
 import multiprocessing
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Tuple
 import numpy as np
@@ -7,15 +8,24 @@ from alipy.query_strategy import (
     QueryInstanceUncertainty,
     QueryInstanceRandom,
     QueryInstanceQUIRE,
+    QueryExpectedErrorReduction,
+    QueryInstanceBMDR,
+    QueryInstanceCoresetGreedy,
+    QueryInstanceDensityWeighted,
+    QueryInstanceGraphDensity,
+    QueryInstanceLAL,
+    QueryInstanceQBC,
+    QueryInstanceSPAL,
 )
 from libact.query_strategies import (
     UncertaintySampling,
     QueryByCommittee,
     DWUS,
     QUIRE,
-    HintSVM,
     VarianceReduction,
 )
+from libact.query_strategies.multiclass import EER, HierarchicalSampling
+
 from libact.models import LogisticRegression, SVM
 from playground.sampling_methods.bandit_discrete import BanditDiscreteSampler  # wrapper
 from playground.sampling_methods.simulate_batch import SimulateBatchSampler  # wrapper
@@ -24,6 +34,8 @@ from playground.sampling_methods.hierarchical_clustering_AL import HierarchicalC
 from playground.sampling_methods.informative_diverse import (
     InformativeClusterDiverseSampler,
 )
+
+
 from playground.sampling_methods.kcenter_greedy import kCenterGreedy
 from playground.sampling_methods.margin_AL import MarginAL
 from playground.sampling_methods.mixture_of_samplers import MixtureOfSamplers
@@ -49,6 +61,7 @@ from optimal_query_strategies.greedy_optimal import (
 )
 from optimal_query_strategies.true_optimal import True_Optimal
 
+
 SampleIndiceList = List[int]
 FeatureVectors = np.ndarray
 LabelList = np.ndarray
@@ -57,10 +70,14 @@ LabelList = np.ndarray
 @unique
 class AL_STRATEGY(IntEnum):
     ALIPY_RANDOM = 1
-    ALIPY_UNCERTAINTY = 2
-    ALIPY_GRAPH_DENSITY = 3
-    ALIPY_CORESET_GREEDY = 4
-    ALIPY_QUIRE = 5
+    ALIPY_UNCERTAINTY = (
+        2  # ['least_confident', 'margin', 'entropy', 'distance_to_boundary']:
+    )
+    ALIPY_GRAPH_DENSITY = 3  # metric in ['euclidean', 'l2', 'l1', 'manhattan', 'cityblock',                      'braycurtis', 'canberra', 'chebyshev', 'correlation',                      'cosine', 'dice', 'hamming', 'jaccard', 'kulsinski',                      'mahalanobis', 'matching', 'minkowski', 'rogerstanimoto',                      'russellrao', 'seuclidean', 'sokalmichener',                      'sokalsneath', 'sqeuclidean', 'yule', "wminkowski"]
+    ALIPY_CORESET_GREEDY = (
+        4  # distance in ['cityblock', 'cosine', 'euclidean', 'l1', 'l2', 'manhattan'].
+    )
+    ALIPY_QUIRE = 5  # kernel=linear, poly, rbf
     OPTIMAL_BSO = 6
     OPTIMAL_TRUE = 7
     OPTIMAL_GREEDY = 8
@@ -78,12 +95,28 @@ class AL_STRATEGY(IntEnum):
     PLAYGROUND_MIXTURE = 20
     PLAYGROUND_REPRESENTATIVE_CLUSTER = 21
     PLAYGROUND_UNIFORM = 22
+    ALIPY_QBC = 23  # method='query_by_bagging' or 'vote_entropy'
+    ALIPY_EXPECTED_ERROR_REDUCTION = 24
+    ALIPY_BMDR = 25  # kernel
+    ALIPY_SPAL = 26  # kernel
+    ALIPY_LAL = 27  # mode: 'LAL_iterative', 'LAL_independent'
+    ALIPY_DENSITY_WEIGHTED = 28  # uncertainty_meansure=['least_confident', 'margin', 'entropy'], distance=['cityblock', 'cosine', 'euclidean', 'l1', 'l2', 'manhattan']
+    LIBACT_EER = 29
+    LIBACT_HIERARCHICAL_SAMPLING = 30
 
 
 al_strategy_to_python_classes_mapping: Dict[AL_STRATEGY, Callable] = {
-    AL_STRATEGY.ALIPY_UNCERTAINTY: QueryInstanceUncertainty,
-    AL_STRATEGY.ALIPY_QUIRE: QueryInstanceQUIRE,
     AL_STRATEGY.ALIPY_RANDOM: QueryInstanceRandom,
+    AL_STRATEGY.ALIPY_UNCERTAINTY: QueryInstanceUncertainty,
+    AL_STRATEGY.ALIPY_GRAPH_DENSITY: QueryInstanceGraphDensity,
+    AL_STRATEGY.ALIPY_CORESET_GREEDY: QueryInstanceCoresetGreedy,
+    AL_STRATEGY.ALIPY_QUIRE: QueryInstanceQUIRE,
+    AL_STRATEGY.ALIPY_QBC: QueryInstanceQBC,
+    AL_STRATEGY.ALIPY_EXPECTED_ERROR_REDUCTION: QueryExpectedErrorReduction,
+    AL_STRATEGY.ALIPY_BMDR: QueryInstanceBMDR,
+    AL_STRATEGY.ALIPY_SPAL: QueryInstanceSPAL,
+    AL_STRATEGY.ALIPY_LAL: QueryInstanceLAL,
+    AL_STRATEGY.ALIPY_DENSITY_WEIGHTED: QueryInstanceDensityWeighted,
     AL_STRATEGY.OPTIMAL_GREEDY: Greedy_Optimal,
     AL_STRATEGY.OPTIMAL_BSO: Beeam_Search_Optimal,
     AL_STRATEGY.OPTIMAL_TRUE: True_Optimal,
@@ -93,7 +126,8 @@ al_strategy_to_python_classes_mapping: Dict[AL_STRATEGY, Callable] = {
     AL_STRATEGY.LIBACT_DWUS: DWUS,
     AL_STRATEGY.LIBACT_QUIRE: QUIRE,
     AL_STRATEGY.LIBACT_VR: VarianceReduction,
-    AL_STRATEGY.LIBACT_HINTSVM: HintSVM,
+    AL_STRATEGY.LIBACT_EER: EER,
+    AL_STRATEGY.LIBACT_HIERARCHICAL_SAMPLING: HierarchicalSampling,
     AL_STRATEGY.PLAYGROUND_UNIFORM: UniformSampling,
     AL_STRATEGY.PLAYGROUND_MARGIN: MarginAL,
     AL_STRATEGY.PLAYGROUND_MIXTURE: MixtureOfSamplers,
@@ -103,6 +137,16 @@ al_strategy_to_python_classes_mapping: Dict[AL_STRATEGY, Callable] = {
     AL_STRATEGY.PLAYGROUND_HIERARCHICAL_CLUSTER: HierarchicalClusterAL,
     AL_STRATEGY.PLAYGROUND_INFORMATIVE_DIVERSE: InformativeClusterDiverseSampler,
 }
+
+
+def _import_compiled_libact_strategies():
+    from libact.query_strategies import (
+        HintSVM,
+        VarianceReduction,
+    )
+
+    al_strategy_to_python_classes_mapping[AL_STRATEGY.LIBACT_VR] = VarianceReduction
+    al_strategy_to_python_classes_mapping[AL_STRATEGY.LIBACT_HINTSVM] = HintSVM
 
 
 # TODO parameter wie für AL strats in exp_config.yaml
