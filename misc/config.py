@@ -75,6 +75,7 @@ class Config:
     DATASETS_TRAIN_TEST_SPLIT_APPENDIX: str = "_train_test_split.csv"
     RAW_DATASETS_PATH: Path = "_raw"  # type: ignore
     DATASETS_AMOUNT_OF_SPLITS: int = 5
+    DATASETS_TEST_SIZE_PERCENTAGE: float = 0.4
 
     KAGGLE_DATASETS_PATH: Path = "resources/datasets.yaml"  # type: ignore
     LOCAL_CONFIG_FILE_PATH: Path = ".server_access_credentials.cfg"  # type: ignore
@@ -292,6 +293,10 @@ class Config:
 
         for k in workload.keys():
             log_it(f"{k}\t\t\t{str(self.__getattribute__(k))}")
+
+        np.random.seed(self.EXP_RANDOM_SEED)
+        random.seed(self.EXP_RANDOM_SEED)
+
         self._original_workload = workload
 
     """

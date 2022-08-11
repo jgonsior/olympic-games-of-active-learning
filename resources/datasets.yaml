@@ -113,7 +113,7 @@ wdbc:
         kaggle_name: "uciml/breast-cancer-wisconsin-data",
         kaggle_file: "data.csv",
         target: "diagnosis",
-        drop_columns: null,
+        drop_columns: ["Unnamed: 32"],
         id: "id",
     }
 
