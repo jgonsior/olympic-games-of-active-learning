@@ -22,7 +22,10 @@ from libact.query_strategies import (
     QueryByCommittee,
     DWUS,
     QUIRE,
+    VarianceReduction,
 )
+from libact.query_strategies.multiclass import EER, HierarchicalSampling
+
 from libact.models import LogisticRegression, SVM
 from playground.sampling_methods.bandit_discrete import BanditDiscreteSampler  # wrapper
 from playground.sampling_methods.simulate_batch import SimulateBatchSampler  # wrapper
@@ -98,6 +101,8 @@ class AL_STRATEGY(IntEnum):
     ALIPY_SPAL = 26  # kernel
     ALIPY_LAL = 27  # mode: 'LAL_iterative', 'LAL_independent'
     ALIPY_DENSITY_WEIGHTED = 28  # uncertainty_meansure=['least_confident', 'margin', 'entropy'], distance=['cityblock', 'cosine', 'euclidean', 'l1', 'l2', 'manhattan']
+    LIBACT_EER = 29
+    LIBACT_HIERARCHICAL_SAMPLING = 30
 
 
 al_strategy_to_python_classes_mapping: Dict[AL_STRATEGY, Callable] = {
@@ -120,6 +125,9 @@ al_strategy_to_python_classes_mapping: Dict[AL_STRATEGY, Callable] = {
     AL_STRATEGY.LIBACT_QUEY_BY_COMMITTEE: QueryByCommittee,
     AL_STRATEGY.LIBACT_DWUS: DWUS,
     AL_STRATEGY.LIBACT_QUIRE: QUIRE,
+    AL_STRATEGY.LIBACT_VR: VarianceReduction,
+    AL_STRATEGY.LIBACT_EER: EER,
+    AL_STRATEGY.LIBACT_HIERARCHICAL_SAMPLING: HierarchicalSampling,
     AL_STRATEGY.PLAYGROUND_UNIFORM: UniformSampling,
     AL_STRATEGY.PLAYGROUND_MARGIN: MarginAL,
     AL_STRATEGY.PLAYGROUND_MIXTURE: MixtureOfSamplers,
