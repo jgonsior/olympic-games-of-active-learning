@@ -298,6 +298,16 @@ d31:
         drop_columns: null,
         id: null,
     }
+
+dwtc:
+    {
+        kaggle_name: "juliusgonsior/dwtc-dataset",
+        kaggle_file: "dwtc.csv",
+        target: "LABEL",
+        drop_columns: null,
+        id: null,
+    }
+
 #TODO Gaussian cloud balance/unbalance,xor
 name:
     {

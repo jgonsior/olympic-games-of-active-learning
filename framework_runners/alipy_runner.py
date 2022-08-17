@@ -49,6 +49,7 @@ class ALIPY_AL_Experiment(AL_Experiment):
                 from joblib import load
 
                 al_strategy._selector = load(al_strategy._iter_path + "_model")
+                print("end loaded")
 
         self.al_strategy = al_strategy
 
