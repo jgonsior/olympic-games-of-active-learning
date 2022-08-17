@@ -130,7 +130,7 @@ all_strategies_all_datasets_single_random_seed:
                 { ALIPY_EXPECTED_ERROR_REDUCTION: {} },
                 { ALIPY_BMDR: {} },
                 { ALIPY_SPAL: {} },
-                { ALIPY_LAL: { train_slt: [False] } },
+                { ALIPY_LAL: {} },
                 { ALIPY_DENSITY_WEIGHTED: {} },
             ],
         EXP_GRID_RANDOM_SEEDS_END: 1,

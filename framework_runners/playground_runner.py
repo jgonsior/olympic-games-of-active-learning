@@ -1,4 +1,9 @@
 from __future__ import annotations
+import contextlib
+from distutils.log import warn
+import io
+
+import numpy as np
 from framework_runners.base_runner import AL_Experiment
 
 from typing import TYPE_CHECKING, List
@@ -28,15 +33,14 @@ class PLAYGROUND_AL_Experiment(AL_Experiment):
 
             raise NoStrategyError("get_AL_strategy() has to be called before querying")
 
-        with warnings.catch_warnings():
-            warnings.filterwarnings(
-                "ignore",
-                message="SparseEfficiencyWarning",
-            )
+        warnings.filterwarnings("error")
+        with contextlib.redirect_stdout(io.StringIO()) as f:
 
             result = self.al_strategy.select_batch_(
                 self.model, self.label_idx, self.config.EXP_BATCH_SIZE
             )
+            s = f.getvalue()
+            print(s)
         return result
 
     def prepare_dataset(self):
