@@ -39,7 +39,11 @@ class ALIPY_AL_Experiment(AL_Experiment):
 
                 from joblib import dump
 
-                dump(al_strategy._selector, al_strategy._iter_path + "_model")
+                dump(
+                    al_strategy._selector,
+                    al_strategy._iter_path + "_model",
+                    compress=True,
+                )
             else:
                 print("Loading LAL model from file")
                 from joblib import load
