@@ -101,6 +101,7 @@ class Config:
 
     DONE_WORKLOAD_FILE: Path
     RESULTS_PATH: Path
+    HTML_STATUS_PATH: Path = "06_status.html"  # type:ignore
 
     def __init__(self, no_cli=False) -> None:
         if no_cli:
@@ -189,6 +190,8 @@ class Config:
         self.EXPERIMENT_SYNC_AND_RUN_FILE_PATH = (
             self.OUTPUT_PATH / self.EXPERIMENT_SYNC_AND_RUN_FILE_PATH
         )
+
+        self.HTML_STATUS_PATH = self.OUTPUT_PATH / self.HTML_STATUS_PATH
 
         self.RAW_DATASETS_PATH = self.DATASETS_PATH / self.RAW_DATASETS_PATH
 
