@@ -72,6 +72,9 @@ table_data_df.set_index("", inplace=True)
 table_data_df.sort_index(axis=0, inplace=True)
 table_data_df.sort_index(axis=1, inplace=True)
 print(table_data_df)
-html = tabulate(table_data_df, headers="keys", tablefmt="html")
+
+html = '<link rel="stylesheet" href="https://cdn.simplecss.org/simple.css"><style type="css">table{overflow: none;}</style>'
+
+html += tabulate(table_data_df, headers="keys", tablefmt="html")
 with open(config.HTML_STATUS_PATH, "w") as f:
     f.write(html)
