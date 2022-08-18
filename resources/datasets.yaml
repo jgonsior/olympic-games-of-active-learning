@@ -54,11 +54,11 @@ seeds:
 
 thyroid:
     {
-        kaggle_name: "emmanuelfwerr/thyroid-disease-data",
-        kaggle_file: "thyroidDF.csv",
-        target: "target",
+        kaggle_name: "juliusgonsior/uci-new-thyroid",
+        kaggle_file: "new-thyroid.csv",
+        target: "class",
         drop_columns: null,
-        id: "patient_id",
+        id: null,
     }
 
 heart:
