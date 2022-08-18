@@ -16,19 +16,19 @@ config = Config()
 
 done_workload: pd.DataFrame = pd.read_csv(config.DONE_WORKLOAD_PATH)  # type: ignore
 open_workload: pd.DataFrame = pd.read_csv(config.WORKLOAD_FILE_PATH)  # type: ignore
+full_workload = pd.concat([done_workload, open_workload])
+full_workload.drop_duplicates(subset="EXP_UNIQUE_ID", inplace=True)
 
 
-open_jobs = open_workload.loc[
-    ~open_workload["EXP_UNIQUE_ID"].isin(done_workload["EXP_UNIQUE_ID"])
+open_jobs = full_workload.loc[
+    full_workload["EXP_UNIQUE_ID"].isin(open_workload["EXP_UNIQUE_ID"])
 ]
-done_jobs = done_workload.loc[
-    done_workload["EXP_UNIQUE_ID"].isin(open_workload["EXP_UNIQUE_ID"])
+done_jobs = full_workload.loc[
+    full_workload["EXP_UNIQUE_ID"].isin(done_workload["EXP_UNIQUE_ID"])
 ]
-
-
 dataset_strat_counts = {}
-datasets = open_workload["EXP_DATASET"].unique().tolist()
-strategies = open_workload["EXP_STRATEGY"].unique().tolist()
+datasets = full_workload["EXP_DATASET"].unique().tolist()
+strategies = full_workload["EXP_STRATEGY"].unique().tolist()
 
 for dataset, strat in itertools.product(datasets, strategies):
     dataset_strat_counts[(dataset, strat)] = 0
@@ -38,15 +38,16 @@ for dataset, strat in zip(done_jobs.EXP_DATASET, done_jobs.EXP_STRATEGY):
 
 for dataset, strat in itertools.product(datasets, strategies):
     open_count = int(
-        open_workload.loc[
-            (open_workload["EXP_STRATEGY"] == strat)
-            & (open_workload["EXP_DATASET"] == dataset)
+        full_workload.loc[
+            (full_workload["EXP_STRATEGY"] == strat)
+            & (full_workload["EXP_DATASET"] == dataset)
         ].count()[0]
     )
 
     dataset_strat_counts[
         (dataset, strat)
     ] = f"{dataset_strat_counts[(dataset, strat)]}/{open_count}"
+
 
 table_data = [
     [""]

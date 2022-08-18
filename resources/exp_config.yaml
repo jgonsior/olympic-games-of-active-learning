@@ -88,7 +88,6 @@ all_strategies_all_datasets_single_random_seed:
                 32,
                 33,
                 34,
-                35,
             ],
         EXP_GRID_STRATEGY: [
                 { ALIPY_RANDOM: {} },
@@ -178,7 +177,14 @@ only_random:
                 33,
                 34,
             ],
-        EXP_GRID_STRATEGY: [{ ALIPY_RANDOM: {} }],
+        EXP_GRID_STRATEGY:
+            [
+                { ALIPY_RANDOM: {} },
+                {
+                    ALIPY_UNCERTAINTY:
+                        { measure: [least_confident, margin, entropy] },
+                },
+            ],
         EXP_GRID_RANDOM_SEEDS_END: 1,
         EXP_GRID_NUM_QUERIES: [3],
         EXP_GRID_BATCH_SIZE: [1, 5],
