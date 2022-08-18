@@ -307,4 +307,31 @@ dwtc:
         drop_columns: null,
         id: null,
     }
+
+xor_2x2:
+    {
+        kaggle_name: "juliusgonsior/checkerboard-2x2",
+        kaggle_file: "checkerboard2x2_.csv",
+        target: "Y",
+        drop_columns: null,
+        id: null,
+    }
+
+xor_4x4:
+    {
+        kaggle_name: "juliusgonsior/checkerboard-4x4",
+        kaggle_file: "checkerboard4x4_.csv",
+        target: "Y",
+        drop_columns: null,
+        id: null,
+    }
+
+xor_2x2_rotated:
+    {
+        kaggle_name: "juliusgonsior/rotated-checkerboard-2x2",
+        kaggle_file: "rotated_checkerboard2x2_.csv",
+        target: "Y",
+        drop_columns: null,
+        id: null,
+    }
 #TODO Gaussian cloud balance/unbalance,xor
