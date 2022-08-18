@@ -334,4 +334,22 @@ xor_2x2_rotated:
         drop_columns: null,
         id: null,
     }
-#TODO Gaussian cloud balance/unbalance,xor
+
+gaussian_balanced:
+    {
+        kaggle_name: "juliusgonsior/gaussian-balanced",
+        kaggle_file: "gaussian_balanced.csv",
+        target: "Y",
+        drop_columns: "Unnamed: 0",
+        id: null,
+    }
+
+gaussian_unbalanced:
+    {
+        kaggle_name: "juliusgonsior/gaussian-unbalanced",
+        kaggle_file: "gaussian_unbalanced.csv",
+        target: "Y",
+        drop_columns: "Unnamed: 0",
+        id: 0,
+    }
+#TODO Gaussian cloud balance/unbalance
