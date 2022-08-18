@@ -75,7 +75,6 @@ def split_dataset(
     # scale back to [0,1]
     scaler = MinMaxScaler()
     X = scaler.fit_transform(X)
-
     # fancy ALiPy train/test split
     train_idx: SampleIndiceList = ast.literal_eval(
         train_test_split.iloc[config.EXP_TRAIN_TEST_BUCKET_SIZE]["train"]
