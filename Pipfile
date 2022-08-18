@@ -35,7 +35,7 @@ requests = "*"
 pyyaml = "*"
 aenum = "*"
 kaggle = "*"
-alipy = {editable = true, ref = "058c3a025c77964422a5417cfb2285f893a62295", git = "https://github.com/jgonsior/ALiPy.git"}
+alipy = {editable = true, ref = "e104b69f3953df13cd5b32f72b7255cece3a5379", git = "https://github.com/jgonsior/ALiPy.git"}
 playground = {editable = true, ref = "8c239f83727baacc9c2dfd2f72a34f54a5bec7e2", git = "https://github.com/jgonsior/active-learning.git"}
 ray = "*"
 modin = "*"

@@ -181,4 +181,6 @@ typings/
 _*/
 
 .server_access_credentials.cfg
-*.npz
+LAL-iterativetree-simulatedunbalanced-big.npz
+LAL-randomtree-simulatedunbalanced-big.npz
+LAL-iterativetree-simulatedunbalanced-big.npz_model

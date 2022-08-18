@@ -2,6 +2,7 @@ from __future__ import annotations
 from distutils.command.config import config
 import multiprocessing
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Tuple
+from aenum import Enum
 import numpy as np
 from enum import IntEnum, unique
 from alipy.query_strategy import (
@@ -61,6 +62,8 @@ from optimal_query_strategies.greedy_optimal import (
 )
 from optimal_query_strategies.true_optimal import True_Optimal
 
+if TYPE_CHECKING:
+    from misc.config import Config
 
 SampleIndiceList = List[int]
 FeatureVectors = np.ndarray
@@ -236,3 +239,17 @@ AL_framework_to_classes_mapping: Dict[AL_FRAMEWORK, Tuple[Callable, Dict[Any, An
     AL_FRAMEWORK.LIBACT: (LIBACT_Experiment, {}),
     AL_FRAMEWORK.PLAYGROUND: (PLAYGROUND_AL_Experiment, {}),
 }
+
+
+def _convert_encrypted_strat_enum_to_readable_string(
+    encrypted_string: str, config: Config
+) -> str:
+    splits = encrypted_string.split(config._EXP_STRATEGY_STRAT_PARAMS_DELIM)
+    strat = AL_STRATEGY(int(splits[0]))
+
+    if splits[1] is not "":
+        appendix = f" ({splits[1]})"
+    else:
+        appendix = ""
+
+    return f"{strat.__str__()[12:]}{appendix}"

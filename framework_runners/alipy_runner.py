@@ -1,4 +1,5 @@
 from __future__ import annotations
+import os
 
 from typing import TYPE_CHECKING, List
 from framework_runners.base_runner import AL_Experiment
@@ -13,6 +14,8 @@ class ALIPY_AL_Experiment(AL_Experiment):
         )
 
         al_strategy = AL_STRATEGY(self.config.EXP_STRATEGY)
+        if al_strategy == AL_STRATEGY.ALIPY_LAL:
+            self.config.EXP_STRATEGY_PARAMS["train_slt"] = False
 
         if al_strategy in [
             AL_STRATEGY.ALIPY_QUIRE,
@@ -26,6 +29,28 @@ class ALIPY_AL_Experiment(AL_Experiment):
             y=self.Y,
             **self.config.EXP_STRATEGY_PARAMS,
         )
+
+        if self.config.EXP_STRATEGY == AL_STRATEGY.ALIPY_LAL:
+            # check if model has been already trained
+            if not os.path.exists(al_strategy._iter_path + "_model"):
+                print("Calculating LAL model")
+                al_strategy.download_data()
+                al_strategy.train_selector_from_file()
+
+                from joblib import dump
+
+                dump(
+                    al_strategy._selector,
+                    al_strategy._iter_path + "_model",
+                    compress=True,
+                )
+            else:
+                print("Loading LAL model from file")
+                from joblib import load
+
+                al_strategy._selector = load(al_strategy._iter_path + "_model")
+                print("end loaded")
+
         self.al_strategy = al_strategy
 
     def query_AL_strategy(self) -> List[int]:

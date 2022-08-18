@@ -94,8 +94,6 @@ class AL_Experiment(ABC):
 
         start_time = time.process_time()
 
-        total_amount_of_iterations = 3
-
         for iteration in range(0, total_amount_of_iterations):
             if len(self.unlabel_idx) == 0:
                 log_it("early stopping")

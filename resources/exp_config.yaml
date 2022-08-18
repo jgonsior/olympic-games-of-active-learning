@@ -88,9 +88,9 @@ all_strategies_all_datasets_single_random_seed:
                 32,
                 33,
                 34,
+                35,
             ],
-        EXP_GRID_STRATEGY:
-            [
+        EXP_GRID_STRATEGY: [
                 { ALIPY_RANDOM: {} },
                 {
                     ALIPY_UNCERTAINTY:
@@ -128,9 +128,9 @@ all_strategies_all_datasets_single_random_seed:
                 { PLAYGROUND_BANDIT: {} },
                 { ALIPY_QBC: {} },
                 { ALIPY_EXPECTED_ERROR_REDUCTION: {} },
-                { ALIPY_BMDR: {} },
-                { ALIPY_SPAL: {} },
-                { ALIPY_LAL: { train_slt: [False] } },
+                #{ ALIPY_BMDR: {} },
+                #{ ALIPY_SPAL: {} },
+                { ALIPY_LAL: {} },
                 { ALIPY_DENSITY_WEIGHTED: {} },
             ],
         EXP_GRID_RANDOM_SEEDS_END: 1,
