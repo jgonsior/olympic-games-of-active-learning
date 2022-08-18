@@ -7,11 +7,11 @@ Iris:
         id: "id",
     }
 
-wine_quality:
+wine_origin:
     {
-        kaggle_name: "uciml/red-wine-quality-cortez-et-al-2009",
-        kaggle_file: "winequality-red.csv",
-        target: "quality",
+        kaggle_name: "juliusgonsior/uci-wine-origin",
+        kaggle_file: "wine.csv",
+        target: "class",
         drop_columns: null,
         id: null,
     }
@@ -61,11 +61,11 @@ thyroid:
         id: null,
     }
 
-heart:
+statlog_heart:
     {
-        kaggle_name: "johnsmith88/heart-disease-dataset",
-        kaggle_file: "heart.csv",
-        target: "target",
+        kaggle_name: "shubamsumbria/statlog-heart-data-set",
+        kaggle_file: "statlog.csv",
+        target: "presence",
         drop_columns: null,
         id: null,
     }
@@ -99,7 +99,7 @@ musk2:
     }
 
 #many different versions
-breast_cancer:
+breast_cancer_wisconsin_original:
     {
         kaggle_name: "roustekbio/breast-cancer-csv",
         kaggle_file: "breastCancer.csv",
@@ -117,7 +117,7 @@ wdbc:
         id: "id",
     }
 
-australian_credit:
+statlog_australian:
     {
         kaggle_name: "aayushkandpal/credit-card-details-australian-bank",
         kaggle_file: "Credit_Card_Applications.csv",
@@ -144,7 +144,7 @@ mammographic:
         id: null,
     }
 
-vehicle_silhouettes:
+statlog_vehicle:
     {
         kaggle_name: "pritech/vehicle-silhouettes",
         kaggle_file: "vehicle.csv",
@@ -162,7 +162,7 @@ tic_tac_toe:
         id: null,
     }
 
-german_credit:
+statlog_germany:
     {
         kaggle_name: "varunchawla30/german-credit-data",
         kaggle_file: "german_credit_data.csv",
@@ -307,13 +307,4 @@ dwtc:
         drop_columns: null,
         id: null,
     }
-
 #TODO Gaussian cloud balance/unbalance,xor
-name:
-    {
-        kaggle_name: "",
-        kaggle_file: "",
-        target: "",
-        drop_columns: null,
-        id: null,
-    }
