@@ -1,6 +1,10 @@
 from flask import Flask, render_template
 from flask import request
-from interactive_results_browser.csv_helper_functions import get_exp_config_names
+from interactive_results_browser.csv_helper_functions import (
+    create_open_done_workload_table,
+    get_exp_config_names,
+    load_workload_csv_files,
+)
 from livereload import Server
 from misc.config import Config
 
@@ -11,11 +15,11 @@ app = Flask(
 )
 app.debug = True
 
-config = Config(no_cli_args={"WORKER_INDEX": None})
-
 
 @app.route("/")
 def show_available_experiments():
+
+    config = Config(no_cli_args={"WORKER_INDEX": None})
     # parse exp_config.yaml
     # display links for each of the available workloads
     # all of them go into
@@ -25,7 +29,20 @@ def show_available_experiments():
 
 @app.route("/workload/<string:experiment_name>", methods=["GET"])
 def show_open_done_workload(experiment_name: str):
-    return render_template("open_done_workload.html.j2")
+    config = Config(no_cli_args={"WORKER_INDEX": None, "EXP_TITLE": experiment_name})
+
+    full_workload, open_jobs, done_jobs = load_workload_csv_files(config)
+    open_done_df = create_open_done_workload_table(
+        full_workload,
+        open_jobs,
+        done_jobs,
+        config,
+    )
+    return render_template(
+        "open_done_workload.html.j2",
+        experiment_name=experiment_name,
+        open_done_df=open_done_df,
+    )
 
 
 @app.route("/dataset/<int:dataset_id>", methods=["GET"])
