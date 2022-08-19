@@ -131,6 +131,9 @@ class Kaggle:
             label_column = parsing_args["target"]
             df.rename(columns={label_column: "LABEL_TARGET"}, inplace=True)
 
+            # remove rows having NaN values
+            df.dropna(inplace=True)
+
             self.save_train_test_splits(
                 df,
                 self.config.DATASETS_PATH

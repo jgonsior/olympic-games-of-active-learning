@@ -88,7 +88,6 @@ all_strategies_all_datasets_single_random_seed:
                 32,
                 33,
                 34,
-                35,
             ],
         EXP_GRID_STRATEGY: [
                 { ALIPY_RANDOM: {} },
@@ -139,47 +138,61 @@ all_strategies_all_datasets_single_random_seed:
         EXP_GRID_LEARNER_MODEL: [RBF_SVM], #, DT, MNB, GNB, RBF_SVM, LINEAR_SVM, POLY_SVM, MLP, LBFGS_MLP, LR],
         EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0],
     }
-# datasets 1,2,3 results are included in first_exps
-optimal_runs:
+only_random:
     {
-        EXP_GRID_DATASET: [1, 2, 3],
-        EXP_GRID_STRATEGY:
+        EXP_GRID_DATASET:
             [
-                {
-                    OPTIMAL_GREEDY:
-                        {
-                            amount_of_pre_selections: [10, 50, 100],
-                            future_peak_eval_metric: [ACC, F1],
-                        },
-                },
-                { OPTIMAL_TRUE: { future_peak_eval_metric: [ACC, F1] } },
-                { OPTIMAL_BSO: { future_peak_eval_metric: [ACC, F1] } },
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21,
+                22,
+                23,
+                24,
+                25,
+                26,
+                27,
+                28,
+                29,
+                30,
+                31,
+                32,
+                33,
+                34,
+                35,
+                36,
+                37,
+                38,
+                39,
             ],
-        EXP_GRID_RANDOM_SEEDS_END: 1000,
-        EXP_GRID_NUM_QUERIES: [100],
-        EXP_GRID_BATCH_SIZE: [1, 5, 10],
-        EXP_GRID_LEARNER_MODEL:
-            [RF, DT, MNB, GNB, RBF_SVM, LINEAR_SVM, POLY_SVM, MLP, LBFGS_MLP],
-        EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0, 1, 2, 3, 4],
-    }
-
-first_exps_no_optimal:
-    {
-        EXP_GRID_DATASET: [1, 2, 3],
         EXP_GRID_STRATEGY:
             [
+                { ALIPY_RANDOM: {} },
                 {
                     ALIPY_UNCERTAINTY:
                         { measure: [least_confident, margin, entropy] },
                 },
-
-                { ALIPY_RANDOM: {} },
-                { ALIPY_QUIRE: {} },
             ],
-        EXP_GRID_RANDOM_SEEDS_END: 1000,
-        EXP_GRID_NUM_QUERIES: [100],
-        EXP_GRID_BATCH_SIZE: [1, 5, 10],
-        EXP_GRID_LEARNER_MODEL:
-            [RF, DT, MNB, GNB, RBF_SVM, LINEAR_SVM, POLY_SVM, MLP, LBFGS_MLP],
-        EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0, 1, 2, 3, 4],
+        EXP_GRID_RANDOM_SEEDS_END: 1,
+        EXP_GRID_NUM_QUERIES: [3],
+        EXP_GRID_BATCH_SIZE: [1, 5],
+        EXP_GRID_LEARNER_MODEL: [RBF_SVM], #, DT, MNB, GNB, RBF_SVM, LINEAR_SVM, POLY_SVM, MLP, LBFGS_MLP, LR],
+        EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0],
     }

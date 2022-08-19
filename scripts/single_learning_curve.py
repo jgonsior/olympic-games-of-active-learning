@@ -94,7 +94,7 @@ plt.ylim(0, 1)
 plt.savefig("dwtc.pdf")
 
 
-2confusion_matrices = [
+confusion_matrices = [
     0.40631761142362616,
     0.5534400692340978,
     0.4707918649935093,
