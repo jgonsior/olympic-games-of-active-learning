@@ -4,7 +4,7 @@ import random
 import sys
 from configparser import RawConfigParser
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Union, get_args
+from typing import Any, Dict, List, Literal, Optional, Union, get_args
 
 import git
 import numpy as np
@@ -103,10 +103,18 @@ class Config:
     RESULTS_PATH: Path
     HTML_STATUS_PATH: Path = "06_status.html"  # type:ignore
 
-    def __init__(self, no_cli=False) -> None:
-        if no_cli:
-            return
-        self._parse_cli_arguments()
+    def __init__(self, no_cli_args: Optional[Dict[str, Any]] = None) -> None:
+        if no_cli_args is not None:
+            self._parse_non_cli_arguments(no_cli_args)
+        else:
+            self._parse_cli_arguments()
+        self._setup_everything()
+
+    def _parse_non_cli_arguments(self, no_cli_args: Dict[str, Any]) -> None:
+        for k, v in no_cli_args.items():
+            self.__setattr__(k, v)
+
+    def _setup_everything(self):
         self._load_server_setup_from_file(Path(self.LOCAL_CONFIG_FILE_PATH))
 
         if not Path(self.HPC_CODE_PATH).exists():
