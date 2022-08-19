@@ -4,11 +4,13 @@ from pathlib import Path
 from typing import List, Tuple
 
 from typing import TYPE_CHECKING, Any, List
+from matplotlib.pyplot import table
+import numpy as np
 import pandas as pd
 from datasets import DATASET
 from resources.data_types import (
     AL_STRATEGY,
-    _convert_encrypted_strat_enum_to_readable_string,
+    _convert_encrypted_strat_to_enum_param_tuple,
 )
 
 import yaml
@@ -64,20 +66,18 @@ def create_open_done_workload_table(
             ].count()[0]
         )
 
-        dataset_strat_counts[
-            (dataset, strat)
-        ] = f"{dataset_strat_counts[(dataset, strat)]}/{open_count}"
+        dataset_strat_counts[(dataset, strat)] = (
+            dataset_strat_counts[(dataset, strat)],
+            open_count,
+        )
 
     table_data = [
         [""]
         + [
-            _convert_encrypted_strat_enum_to_readable_string(strat, config)
+            _convert_encrypted_strat_to_enum_param_tuple(strat, config)
             for strat in strategies
         ]
-    ] + [
-        ([str(DATASET(dataset))[8:]] + [0 for strat in strategies])
-        for dataset in datasets
-    ]
+    ] + [([DATASET(dataset)] + [0 for strat in strategies]) for dataset in datasets]
 
     for (dataset, strat), count in dataset_strat_counts.items():
         # convert dataset and strat to indices
@@ -87,9 +87,32 @@ def create_open_done_workload_table(
 
     # sort columns, rows -> using pandas
     table_data_df = pd.DataFrame(table_data)
-    table_data_df.columns = table_data_df.iloc[0]
-    table_data_df.drop(0, inplace=True)
-    table_data_df.set_index("", inplace=True)
-    table_data_df.sort_index(axis=0, inplace=True)
-    table_data_df.sort_index(axis=1, inplace=True)
+
+    print(table_data_df)
+
+    # sort after dataset NAME
+    dataset_names = table_data_df[1:][0].values.tolist()
+    print(dataset_names)
+    print(sorted(range(len(dataset_names)), key=lambda x: x.name.lower()))
+    custom_sorting = {
+        idx: value + 1
+        for idx, value in zip(
+            dataset_names, np.argsort(dataset_names, key=lambda x: x.name.lower())
+        )
+    }
+    custom_sorting[""] = 0
+
+    print(custom_sorting)
+    table_data_df.sort_values(
+        by=[table_data_df.columns[0]],
+        key=lambda x: x.map(lambda col: custom_sorting[col]),
+        inplace=True,
+    )
+    """table_data_df[1:].sort_values(
+        by=[table_data_df.columns[0]],
+        key=lambda col: col.map(lambda x: x.name.lower()),
+        inplace=True,
+    )"""
+
+    # same for header columns hehe
     return table_data_df

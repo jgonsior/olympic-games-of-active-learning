@@ -38,10 +38,17 @@ def show_open_done_workload(experiment_name: str):
         done_jobs,
         config,
     )
+
+    rows = list(open_done_df.values.tolist())
+    rows[0][0] = "Dataset"
     return render_template(
         "open_done_workload.html.j2",
         experiment_name=experiment_name,
-        open_done_df=open_done_df,
+        column_names=rows[0],
+        row_data=rows[1:],
+        link_column="Dataset",
+        zip=zip,
+        str=str,
     )
 
 

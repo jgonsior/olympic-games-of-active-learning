@@ -253,3 +253,19 @@ def _convert_encrypted_strat_enum_to_readable_string(
         appendix = ""
 
     return f"{strat.__str__()[12:]}{appendix}"
+
+
+def _convert_encrypted_strat_to_enum_param_tuple(
+    encrypted_string: str, config: Config
+) -> Tuple[AL_STRATEGY, Dict[str, Any]]:
+    splits = encrypted_string.split(config._EXP_STRATEGY_STRAT_PARAMS_DELIM)
+    strat = AL_STRATEGY(int(splits[0]))
+
+    params = {}
+    if splits[1] != "":
+        param_value_split = splits[1].split(config._EXP_STRATEGY_PARAM_PARAM_DELIM)
+
+        for param_value in param_value_split:
+            param_value = param_value.split(config._EXP_STRATEGY_PARAM_VALUE_DELIM)
+        params[param_value[0]] = param_value[1]
+    return (strat, params)
