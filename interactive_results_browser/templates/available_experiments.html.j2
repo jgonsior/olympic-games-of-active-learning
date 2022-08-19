@@ -1,0 +1,10 @@
+{% extends "base.html.j2" %}
+{% block title %}Home{% endblock %}
+{% block body %}
+    <h1>Available experiments</h1>
+    <ul>
+        {% for exp_name in config_names %}
+            <li>{{ exp_name }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

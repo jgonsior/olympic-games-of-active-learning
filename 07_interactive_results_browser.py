@@ -20,29 +20,27 @@ def show_available_experiments():
     # display links for each of the available workloads
     # all of them go into
     config_names = get_exp_config_names(config)
-    return render_template("index.html")
-    return "<br>".join(config_names)
+    return render_template("available_experiments.html.j2", config_names=config_names)
 
 
 @app.route("/workload/<string:experiment_name>", methods=["GET"])
 def show_open_done_workload(experiment_name: str):
-    return "<p>Hello, Worldl!</p>"
+    return render_template("open_done_workload.html.j2")
 
 
 @app.route("/dataset/<int:dataset_id>", methods=["GET"])
 def show_dataset_overview(dataset_id: int):
-    return f"{dataset_id}"
+    return render_template("dataset_overview.html.j2")
 
 
 @app.route("/strategy/<int:strategy_id>", methods=["GET"])
 def show_strategy_overview(strategy_id: int):
-    return f"{strategy_id}"
+    return render_template("strategy_overview.html.j2")
 
 
 @app.route("/compare_learning_curves", methods=["GET"])
 def show_learning_curve_comparison():
-
-    return f"not implemented yet"
+    return render_template("learning_curve.html.j2")
 
 
 if __name__ == "__main__":
