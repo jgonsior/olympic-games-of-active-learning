@@ -40,6 +40,7 @@ playground = {editable = true, ref = "8c239f83727baacc9c2dfd2f72a34f54a5bec7e2",
 ray = "*"
 modin = "*"
 cvxpy = "*"
+flask = "*"
 
 [requires]
 python_version = "3.10"
