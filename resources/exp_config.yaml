@@ -138,7 +138,8 @@ all_strategies_all_datasets_single_random_seed:
         EXP_GRID_LEARNER_MODEL: [RBF_SVM], #, DT, MNB, GNB, RBF_SVM, LINEAR_SVM, POLY_SVM, MLP, LBFGS_MLP, LR],
         EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0],
     }
-only_random: {
+only_random:
+    {
         EXP_GRID_DATASET:
             [
                 1,
@@ -181,11 +182,14 @@ only_random: {
                 38,
                 39,
             ],
-        EXP_GRID_STRATEGY: [{ ALIPY_RANDOM: {} }],
-        #{
-        #    ALIPY_UNCERTAINTY:
-        #        { measure: [least_confident, margin, entropy] },
-        #},
+        EXP_GRID_STRATEGY:
+            [
+                { ALIPY_RANDOM: {} },
+                {
+                    ALIPY_UNCERTAINTY:
+                        { measure: [least_confident, margin, entropy] },
+                },
+            ],
         EXP_GRID_RANDOM_SEEDS_END: 1,
         EXP_GRID_NUM_QUERIES: [3],
         EXP_GRID_BATCH_SIZE: [1, 5],
