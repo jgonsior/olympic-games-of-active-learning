@@ -101,17 +101,19 @@ def create_open_done_workload_table(
     custom_sorting = {idx: value + 1 for idx, value in zip(dataset_names, new_sorting)}
     custom_sorting[""] = 0
 
-    print(custom_sorting)
     table_data_df.sort_values(
         by=[table_data_df.columns[0]],
         key=lambda x: x.map(lambda col: custom_sorting[col]),
         inplace=True,
     )
-    """table_data_df[1:].sort_values(
-        by=[table_data_df.columns[0]],
-        key=lambda col: col.map(lambda x: x.name.lower()),
-        inplace=True,
-    )"""
 
-    # same for header columns hehe
+    # same for header columns
+    column_names = table_data_df.columns.values.tolist()[1:]
+    strategy_names = [str(x).lower() for x in table_data_df.loc[0][1:]]
+    yx = list(zip(strategy_names, column_names))
+    yx_sort = sorted(yx)
+    sorted_column_titles = [0] + [x[1] for x in yx_sort]
+
+    table_data_df = table_data_df[sorted_column_titles]
+
     return table_data_df
