@@ -92,14 +92,13 @@ def create_open_done_workload_table(
 
     # sort after dataset NAME
     dataset_names = table_data_df[1:][0].values.tolist()
-    print(dataset_names)
-    print(sorted(range(len(dataset_names)), key=lambda x: x.name.lower()))
-    custom_sorting = {
-        idx: value + 1
-        for idx, value in zip(
-            dataset_names, np.argsort(dataset_names, key=lambda x: x.name.lower())
-        )
-    }
+    dataset_names_str = [str(x.name).lower() for x in dataset_names]
+    sorted_range = sorted(
+        range(len(dataset_names_str)), key=dataset_names_str.__getitem__
+    )
+    dataset_names_ints = list(range(len(dataset_names_str)))
+    new_sorting = [sorted_range.index(x) for x in dataset_names_ints]
+    custom_sorting = {idx: value + 1 for idx, value in zip(dataset_names, new_sorting)}
     custom_sorting[""] = 0
 
     print(custom_sorting)

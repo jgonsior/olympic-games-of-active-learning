@@ -67,6 +67,11 @@ def show_learning_curve_comparison():
     return render_template("learning_curve.html.j2")
 
 
+@app.route("/runtimes", methods=["GET"])
+def show_runtimes():
+    return render_template("runtimes.html.j2")
+
+
 if __name__ == "__main__":
     server = Server(app.wsgi_app)
     server.serve()
