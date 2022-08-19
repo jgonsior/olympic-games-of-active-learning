@@ -41,6 +41,7 @@ ray = "*"
 modin = "*"
 cvxpy = "*"
 flask = "*"
+livereload = "==2.5.1"
 
 [requires]
 python_version = "3.10"
