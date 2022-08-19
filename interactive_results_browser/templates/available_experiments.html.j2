@@ -4,7 +4,9 @@
     <h1>Available experiments</h1>
     <ul>
         {% for exp_name in config_names %}
-            <li>{{ exp_name }}</li>
+            <li>
+                <a href="{{ url_for('show_open_done_workload', experiment_name=exp_name) }} ">{{ exp_name }}</a>
+            </li>
         {% endfor %}
     </ul>
 {% endblock %}
