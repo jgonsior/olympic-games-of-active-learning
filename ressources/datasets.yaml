@@ -27,7 +27,7 @@ parkinsons: {
     kaggle_name: "imkrkannan/parkinsons",
     kaggle_file: "datasets_410614_786211_parkinsons.csv",
     target: "status",
-    drop_columns: null,
+    drop_columns: ["name"],
     id: null
 }
 
@@ -133,7 +133,7 @@ mammographic: {
     kaggle_name: "overratedgman/mammographic-mass-data-set",
     kaggle_file: "Cleaned_data.csv",
     target: "Severity",
-    drop_columns: null,
+    drop_columns: ["BI-RADS"],
     id: null
 }
 
