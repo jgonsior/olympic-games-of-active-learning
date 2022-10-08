@@ -1,12 +1,15 @@
 from flask import Flask, render_template
 from flask import request
+from matplotlib import collections
 from interactive_results_browser.csv_helper_functions import (
     create_open_done_workload_table,
     get_exp_config_names,
+    get_exp_grid,
     load_workload_csv_files,
 )
 from livereload import Server
 from misc.config import Config
+from collections.abc import Iterable
 
 app = Flask(
     __name__,
@@ -20,9 +23,6 @@ app.debug = True
 def show_available_experiments():
 
     config = Config(no_cli_args={"WORKER_INDEX": None})
-    # parse exp_config.yaml
-    # display links for each of the available workloads
-    # all of them go into
     config_names = get_exp_config_names(config)
     return render_template("available_experiments.html.j2", config_names=config_names)
 
@@ -41,6 +41,10 @@ def show_open_done_workload(experiment_name: str):
 
     rows = list(open_done_df.values.tolist())
     rows[0][0] = "Dataset"
+
+    # filter by batch_size, learner model, …
+    exp_grid = get_exp_grid(experiment_name, config)
+
     return render_template(
         "open_done_workload.html.j2",
         experiment_name=experiment_name,
@@ -49,11 +53,17 @@ def show_open_done_workload(experiment_name: str):
         link_column="Dataset",
         zip=zip,
         str=str,
+        isinstance=isinstance,
+        Iterable=Iterable,
+        exp_grid=exp_grid,
     )
 
 
 @app.route("/dataset/<int:dataset_id>", methods=["GET"])
 def show_dataset_overview(dataset_id: int):
+
+    # dataset_name = dataset_id_to_name(dataset_id)
+    # random_ids = random_ids_for_dataset(dataset_id)
     return render_template("dataset_overview.html.j2")
 
 

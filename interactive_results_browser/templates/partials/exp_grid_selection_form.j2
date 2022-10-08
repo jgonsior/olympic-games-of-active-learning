@@ -1,0 +1,17 @@
+<form id="params">
+    {% for k,v in exp_grid.items() %}
+    <p style="display: inline">
+        {% if isinstance(v, Iterable) %}
+        <span>{{k[9:]}}</span>
+        <select>
+            {% for v2 in v %}
+            <option value="{{v2}}">{{v2}}</option>
+            {% endfor %}
+        </select>
+        {% endif %}
+
+    </p>
+    {% endfor %}
+
+    <button>Update</button>
+</form>

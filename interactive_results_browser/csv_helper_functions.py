@@ -88,8 +88,6 @@ def create_open_done_workload_table(
     # sort columns, rows -> using pandas
     table_data_df = pd.DataFrame(table_data)
 
-    print(table_data_df)
-
     # sort after dataset NAME
     dataset_names = table_data_df[1:][0].values.tolist()
     dataset_names_str = [str(x.name).lower() for x in dataset_names]
@@ -114,6 +112,9 @@ def create_open_done_workload_table(
     yx_sort = sorted(yx)
     sorted_column_titles = [0] + [x[1] for x in yx_sort]
 
-    table_data_df = table_data_df[sorted_column_titles]
-
     return table_data_df
+
+
+def get_exp_grid(experiment_name: str, config: Config):
+    exp_configs = yaml.safe_load(Path(config.LOCAL_YAML_EXP_PATH).read_bytes())
+    return exp_configs[experiment_name]
