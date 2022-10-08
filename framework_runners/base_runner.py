@@ -92,7 +92,8 @@ class AL_Experiment(ABC):
 
         log_it(f"Running for a total of {total_amount_of_iterations} iterations")
 
-        start_time = time.process_time()
+        query_selection_time = 0
+        learner_training_time = 0
 
         for iteration in range(0, total_amount_of_iterations):
             if len(self.unlabel_idx) == 0:
@@ -101,12 +102,17 @@ class AL_Experiment(ABC):
 
             log_it(f"#{iteration}")
 
+            start_time = time.process_time()
+
             # only use the query strategy if there are actualy samples left to label
             if len(self.unlabel_idx) > self.config.EXP_BATCH_SIZE:
                 select_ind = self.query_AL_strategy()
             else:
                 # if we have labeled everything except for a small batch -> return that
                 select_ind = self.unlabel_idx
+            end_time = time.process_time()
+            query_selection_time += end_time - start_time
+
             self.label_idx = self.label_idx + select_ind
 
             self.unlabel_idx = self._list_difference(self.unlabel_idx, select_ind)
@@ -115,7 +121,10 @@ class AL_Experiment(ABC):
             selected_indices.append(select_ind)
 
             # update our learner model
+            start_time = time.process_time()
             self.model.fit(X=self.X[self.label_idx, :], y=self.Y[self.label_idx])  # type: ignore
+            end_time = time.process_time()
+            learner_training_time += end_time - start_time
 
             # prediction on test set for metrics
             pred = self.model.predict(self.X[self.test_idx, :])  # type: ignore
@@ -128,8 +137,6 @@ class AL_Experiment(ABC):
             )
 
             confusion_matrices.append(current_confusion_matrix)
-
-        end_time = time.process_time()
 
         # save metric results into a single file
 
@@ -145,7 +152,8 @@ class AL_Experiment(ABC):
         workload = {}
 
         workload = self.config._original_workload
-        workload["duration"] = end_time - start_time
+        workload["learner_training_time"] = learner_training_time
+        workload["query_selection_time"] = query_selection_time
 
         # calculate metrics
         acc_auc = metric_df["accuracy"].sum() / len(metric_df)
