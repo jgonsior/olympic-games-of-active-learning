@@ -10,6 +10,7 @@ import modin.pandas as pd
 # import pandas as pd
 
 from misc.config import Config
+from misc.helpers import _create_exp_grid
 from misc.logging import log_it
 from sklearn.model_selection import ParameterGrid
 import os
@@ -26,25 +27,6 @@ def _determine_exp_grid_parameters(config: Config) -> List[str]:
         if k.startswith("EXP_GRID_") and str(v).startswith("typing.List["):
             result_list.append(k)
     return result_list
-
-
-def _create_exp_grid(
-    exp_strat_grid: List[Dict[AL_STRATEGY, Dict[str, List[Any]]]], config: Config
-) -> List[str]:
-    result: List[str] = []
-    for a in exp_strat_grid:
-        for b, c in a.items():
-            kwargs = []
-            for d, e in c.items():
-                kwargs.append(
-                    [f"{d}{config._EXP_STRATEGY_PARAM_VALUE_DELIM}{_x}" for _x in e]
-                )
-            for f in [
-                config._EXP_STRATEGY_PARAM_PARAM_DELIM.join(_x)
-                for _x in itertools.product(*kwargs)
-            ]:
-                result.append(f"{b}{config._EXP_STRATEGY_STRAT_PARAMS_DELIM}{f}")
-    return result
 
 
 def create_workload(config: Config) -> List[int]:

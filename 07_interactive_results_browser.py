@@ -14,6 +14,8 @@ from livereload import Server
 from misc.config import Config
 from collections.abc import Iterable
 
+from resources.data_types import _encrypt_tuple, _format_tuple
+
 app = Flask(
     __name__,
     template_folder="interactive_results_browser/templates",
@@ -34,11 +36,7 @@ def show_available_experiments():
 def show_open_done_workload(experiment_name: str):
     config = Config(no_cli_args={"WORKER_INDEX": None, "EXP_TITLE": experiment_name})
 
-    # filter by batch_size, learner model, …
     exp_grid = get_exp_grid(experiment_name, config)
-
-    print(exp_grid)
-
     get_data_exp_grid = {}
 
     for k in exp_grid.keys():
@@ -52,9 +50,6 @@ def show_open_done_workload(experiment_name: str):
         ]
 
     full_workload, open_jobs, done_jobs = load_workload_csv_files(config)
-
-    # print(full_workload)
-    # print(open_jobs)
 
     open_done_df = create_open_done_workload_table(
         full_workload,
@@ -80,8 +75,12 @@ def show_open_done_workload(experiment_name: str):
         exp_grid=exp_grid,
         get_data_exp_grid=get_data_exp_grid,
         type=type,
+        tuple=tuple,
         enum=enum.Enum,
         int=int,
+        _encrypt_tuple=_encrypt_tuple,
+        _format_tuple=_format_tuple,
+        config=config,
     )
 
 
