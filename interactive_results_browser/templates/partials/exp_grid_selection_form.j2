@@ -5,12 +5,20 @@
         <label for="[[k}}">{{k[9:]}}</label>
         <select id="{{k}}" multiple autocomplete="off" name="{{k}}">
             {% for v2 in v %}
-            {% if k in get_data_exp_grid.keys() and str(v2) in get_data_exp_grid[k] %}
-            <option value="{{v2}}" selected>{{v2}}</option>
-            {% elif k not in get_data_exp_grid.keys() %}
-            <option value="{{v2}}" selected>{{v2}}</option>
+            {% if isinstance(v2, enum) %}
+            {% set v2_str = v2.name %}
+            {% set v2_id = int(v2) %}
             {% else %}
-            <option value="{{v2}}">{{v2}}</option>
+            {% set v2_str = str(v2) %}
+            {% set v2_id = v2 %}
+            {% endif %}
+
+            {% if k in get_data_exp_grid.keys() and v2_id in get_data_exp_grid[k] %}
+            <option value="{{v2_id}}" selected>{{v2_str}}</option>
+            {% elif k not in get_data_exp_grid.keys() %}
+            <option value="{{v2_id}}" selected>{{v2_str}}</option>
+            {% else %}
+            <option value="{{v2_id}}">{{v2_str}}</option>
             {% endif %}
             {% endfor %}
         </select>
