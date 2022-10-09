@@ -1,9 +1,9 @@
 <form id="params" method="GET" action="">
     {% for k,v in exp_grid.items() %}
-    <p style="display: inline">
+    <p style="display: inline-block">
         {% if isinstance(v, Iterable) %}
         <label for="[[k}}">{{k[9:]}}</label>
-        <select id="{{k}}" multiple="multiple" name="{{k}}">
+        <select id="{{k}}" multiple autocomplete="off" name="{{k}}">
             {% for v2 in v %}
             {% if k in get_data_exp_grid.keys() and str(v2) in get_data_exp_grid[k] %}
             <option value="{{v2}}" selected>{{v2}}</option>
@@ -16,9 +16,16 @@
         </select>
 
         <script type="text/javascript">
-            var settings = {};
-            new TomSelect('#{{k}}', settings)
+            new TomSelect('#{{k}}', {
+                plugins: {
+                    'remove_button': {
+                        title: 'Remove this item',
+                    }, 'input_autogrow': {},
+                },
+                persist: false,
+                create: true,
 
+            });
         </script>
         {% endif %}
 
