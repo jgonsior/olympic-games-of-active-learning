@@ -68,6 +68,7 @@ if TYPE_CHECKING:
 SampleIndiceList = List[int]
 FeatureVectors = np.ndarray
 LabelList = np.ndarray
+from datasets import DATASET
 
 
 @unique
@@ -241,13 +242,11 @@ AL_framework_to_classes_mapping: Dict[AL_FRAMEWORK, Tuple[Callable, Dict[Any, An
 }
 
 
-def _convert_encrypted_strat_enum_to_readable_string(
-    encrypted_string: str, config: Config
-) -> str:
+def _format_strategy(encrypted_string: str, config: Config) -> str:
     splits = encrypted_string.split(config._EXP_STRATEGY_STRAT_PARAMS_DELIM)
     strat = AL_STRATEGY(int(splits[0]))
 
-    if splits[1] is not "":
+    if splits[1] != "":
         appendix = f" ({splits[1]})"
     else:
         appendix = ""
@@ -269,3 +268,7 @@ def _convert_encrypted_strat_to_enum_param_tuple(
             param_value = param_value.split(config._EXP_STRATEGY_PARAM_VALUE_DELIM)
         params[param_value[0]] = param_value[1]
     return (strat, params)
+
+
+def _format_dataset(dataset_id: int) -> str:
+    return DATASET(dataset_id).name

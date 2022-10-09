@@ -120,4 +120,9 @@ def create_open_done_workload_table(
 
 def get_exp_grid(experiment_name: str, config: Config):
     exp_configs = yaml.safe_load(Path(config.LOCAL_YAML_EXP_PATH).read_bytes())
+    exp_config = exp_configs[experiment_name]
+    print(exp_config)
+    exp_config["EXP_GRID_DATASET"] = [
+        DATASET(dataset_id) for dataset_id in exp_config["EXP_GRID_DATASET"]
+    ]
     return exp_configs[experiment_name]

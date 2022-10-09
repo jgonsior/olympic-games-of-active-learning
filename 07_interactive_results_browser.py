@@ -1,7 +1,9 @@
+import enum
 from pathlib import Path
 from flask import Flask, render_template
 from flask import request
 import requests
+from datasets import DATASET
 from interactive_results_browser.csv_helper_functions import (
     create_open_done_workload_table,
     get_exp_config_names,
@@ -42,9 +44,18 @@ def show_open_done_workload(experiment_name: str):
     for k in exp_grid.keys():
         if k in request.args.keys():
             get_data_exp_grid[k] = request.args.getlist(k)
-    print(get_data_exp_grid)
+
+    if "EXP_GRID_DATASET" in get_data_exp_grid:
+        get_data_exp_grid["EXP_GRID_DATASET"] = [
+            DATASET(int(dataset_id))
+            for dataset_id in get_data_exp_grid["EXP_GRID_DATASET"]
+        ]
 
     full_workload, open_jobs, done_jobs = load_workload_csv_files(config)
+
+    # print(full_workload)
+    # print(open_jobs)
+
     open_done_df = create_open_done_workload_table(
         full_workload,
         open_jobs,
@@ -68,6 +79,9 @@ def show_open_done_workload(experiment_name: str):
         Iterable=Iterable,
         exp_grid=exp_grid,
         get_data_exp_grid=get_data_exp_grid,
+        type=type,
+        enum=enum.Enum,
+        int=int,
     )
 
 
