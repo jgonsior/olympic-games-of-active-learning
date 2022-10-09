@@ -1,6 +1,7 @@
+from pathlib import Path
 from flask import Flask, render_template
 from flask import request
-from matplotlib import collections
+import requests
 from interactive_results_browser.csv_helper_functions import (
     create_open_done_workload_table,
     get_exp_config_names,
@@ -31,6 +32,14 @@ def show_available_experiments():
 def show_open_done_workload(experiment_name: str):
     config = Config(no_cli_args={"WORKER_INDEX": None, "EXP_TITLE": experiment_name})
 
+    # filter by batch_size, learner model, …
+    exp_grid = get_exp_grid(experiment_name, config)
+    get_data_exp_grid = {}
+
+    for k in exp_grid.keys():
+        if k in request.args.keys():
+            get_data_exp_grid[k] = request.args.getlist(k)
+    print(get_data_exp_grid)
     full_workload, open_jobs, done_jobs = load_workload_csv_files(config)
     open_done_df = create_open_done_workload_table(
         full_workload,
@@ -41,9 +50,6 @@ def show_open_done_workload(experiment_name: str):
 
     rows = list(open_done_df.values.tolist())
     rows[0][0] = "Dataset"
-
-    # filter by batch_size, learner model, …
-    exp_grid = get_exp_grid(experiment_name, config)
 
     return render_template(
         "open_done_workload.html.j2",
@@ -56,6 +62,7 @@ def show_open_done_workload(experiment_name: str):
         isinstance=isinstance,
         Iterable=Iterable,
         exp_grid=exp_grid,
+        get_data_exp_grid=get_data_exp_grid,
     )
 
 
@@ -83,5 +90,17 @@ def show_runtimes():
 
 
 if __name__ == "__main__":
+    # check if static ressources exist
+    # if not: download them
+    static_ressources = {
+        "https://raw.githubusercontent.com/kevquirk/simple.css/main/simple.min.css": "_simple.min.css",
+        "https://code.jquery.com/jquery-3.6.1.min.js": "_jquery.min.js",
+        "https://raw.githubusercontent.com/eugenegantz/MSelectDialogBox/master/dist/m-select-d-box.min.js": "_m-select-d-box.min.js",
+    }
+
+    for sr_url, sr_local_path in static_ressources.items():
+        sr_local_path = Path(f"interactive_results_browser/static/{sr_local_path}")
+        if not sr_local_path.exists():
+            sr_local_path.write_bytes(requests.get(sr_url).content)
     server = Server(app.wsgi_app)
     server.serve()
