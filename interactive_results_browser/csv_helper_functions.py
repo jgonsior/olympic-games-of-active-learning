@@ -1,7 +1,7 @@
 from __future__ import annotations
 import itertools
 from pathlib import Path
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 from typing import TYPE_CHECKING, Any, List
 from matplotlib.pyplot import table
@@ -47,7 +47,10 @@ def create_open_done_workload_table(
     open_jobs: pd.DataFrame,
     done_jobs: pd.DataFrame,
     config: Config,
+    get_data_exp_frame: Dict[str, List[str]],
 ) -> pd.DataFrame:
+    # @todo: limit results of full_workload by get_data_exp_frame
+
     dataset_strat_counts = {}
     datasets = full_workload["EXP_DATASET"].unique().tolist()
     strategies = full_workload["EXP_STRATEGY"].unique().tolist()

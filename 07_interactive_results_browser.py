@@ -34,18 +34,23 @@ def show_open_done_workload(experiment_name: str):
 
     # filter by batch_size, learner model, …
     exp_grid = get_exp_grid(experiment_name, config)
+
+    print(exp_grid)
+
     get_data_exp_grid = {}
 
     for k in exp_grid.keys():
         if k in request.args.keys():
             get_data_exp_grid[k] = request.args.getlist(k)
     print(get_data_exp_grid)
+
     full_workload, open_jobs, done_jobs = load_workload_csv_files(config)
     open_done_df = create_open_done_workload_table(
         full_workload,
         open_jobs,
         done_jobs,
         config,
+        get_data_exp_grid,
     )
 
     rows = list(open_done_df.values.tolist())
