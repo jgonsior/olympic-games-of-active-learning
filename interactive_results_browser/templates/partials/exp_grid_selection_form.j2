@@ -8,6 +8,9 @@
             {% if isinstance(v2, enum) %}
             {% set v2_str = v2.name %}
             {% set v2_id = int(v2) %}
+            {% elif isinstance(v2, tuple) %}
+            {% set v2_str = _format_tuple(v2, config) %}
+            {% set v2_id = _encrypt_tuple(v2, config) %}
             {% else %}
             {% set v2_str = str(v2) %}
             {% set v2_id = v2 %}

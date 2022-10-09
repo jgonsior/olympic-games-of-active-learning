@@ -7,7 +7,9 @@ from typing import TYPE_CHECKING, Any, List
 from matplotlib.pyplot import table
 import numpy as np
 import pandas as pd
+from sklearn.model_selection import ParameterGrid
 from datasets import DATASET
+from misc.helpers import _create_exp_grid
 from resources.data_types import (
     AL_STRATEGY,
     _convert_encrypted_strat_to_enum_param_tuple,
@@ -121,7 +123,28 @@ def create_open_done_workload_table(
 def get_exp_grid(experiment_name: str, config: Config):
     exp_configs = yaml.safe_load(Path(config.LOCAL_YAML_EXP_PATH).read_bytes())
     exp_config = exp_configs[experiment_name]
-    print(exp_config)
+    # print(exp_config)
+
+    # strategy -> strategy enum and params
+
+    exp_config["EXP_GRID_STRATEGY"] = _create_exp_grid(
+        exp_config["EXP_GRID_STRATEGY"], config
+    )
+
+    def _al_strat_string_to_enum(encrtpyet_al_strat: str) -> str:
+        splits = encrtpyet_al_strat.split(config._EXP_STRATEGY_STRAT_PARAMS_DELIM)
+        splits[0] = str(int(AL_STRATEGY[splits[0]]))
+        return config._EXP_STRATEGY_STRAT_PARAMS_DELIM.join(splits)
+
+    exp_config["EXP_GRID_STRATEGY"] = [
+        _al_strat_string_to_enum(k) for k in exp_config["EXP_GRID_STRATEGY"]
+    ]
+
+    exp_config["EXP_GRID_STRATEGY"] = [
+        _convert_encrypted_strat_to_enum_param_tuple(param["x"], config)
+        for param in ParameterGrid({"x": exp_config["EXP_GRID_STRATEGY"]})
+    ]
+
     exp_config["EXP_GRID_DATASET"] = [
         DATASET(dataset_id) for dataset_id in exp_config["EXP_GRID_DATASET"]
     ]

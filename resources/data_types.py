@@ -28,6 +28,7 @@ from libact.query_strategies import (
 from libact.query_strategies.multiclass import EER, HierarchicalSampling
 
 from libact.models import LogisticRegression, SVM
+from numpy import result_type
 from playground.sampling_methods.bandit_discrete import BanditDiscreteSampler  # wrapper
 from playground.sampling_methods.simulate_batch import SimulateBatchSampler  # wrapper
 from playground.sampling_methods.graph_density import GraphDensitySampler
@@ -254,6 +255,29 @@ def _format_strategy(encrypted_string: str, config: Config) -> str:
     return f"{strat.__str__()[12:]}{appendix}"
 
 
+def _encrypt_tuple(strat_tuple, config: Config) -> str:
+    result_string = str(int(strat_tuple[0])) + config._EXP_STRATEGY_STRAT_PARAMS_DELIM
+
+    for k, v in strat_tuple[1].items():
+        result_string += f"{k}{config._EXP_STRATEGY_PARAM_VALUE_DELIM}{v}{config._EXP_STRATEGY_PARAM_PARAM_DELIM}"
+
+    if len(strat_tuple[1]) > 0:
+        result_string = result_string[:-1]
+    return result_string
+
+
+def _format_tuple(strat_tuple, config: Config) -> str:
+    result_string = f"{strat_tuple[0].name} ("
+
+    for k, v in strat_tuple[1].items():
+        result_string += f"{k}: {v}, "
+    result_string = result_string[:-2]
+
+    if len(strat_tuple[1]) > 0:
+        result_string += ")"
+    return result_string
+
+
 def _convert_encrypted_strat_to_enum_param_tuple(
     encrypted_string: str, config: Config
 ) -> Tuple[AL_STRATEGY, Dict[str, Any]]:
@@ -266,7 +290,7 @@ def _convert_encrypted_strat_to_enum_param_tuple(
 
         for param_value in param_value_split:
             param_value = param_value.split(config._EXP_STRATEGY_PARAM_VALUE_DELIM)
-        params[param_value[0]] = param_value[1]
+            params[param_value[0]] = param_value[1]
     return (strat, params)
 
 
