@@ -146,7 +146,9 @@ class AL_Experiment(ABC):
         metric_df["selected_indices"] = selected_indices
 
         log_it(f"saving to {self.config.METRIC_RESULTS_FILE_PATH}")
-        metric_df.to_csv(self.config.METRIC_RESULTS_FILE_PATH, index=None)
+        metric_df.to_csv(
+            self.config.METRIC_RESULTS_FILE_PATH, index=None, compression="infer"
+        )
 
         # save workload parameters in the workload_done_file
         workload = {}

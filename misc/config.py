@@ -89,7 +89,7 @@ class Config:
     EXPERIMENT_PYTHON_PARALLEL_BASH_FILE_PATH: Path = "02b_run_bash_parallel.py"  # type: ignore
     EXPERIMENT_SYNC_AND_RUN_FILE_PATH: Path = "04_sync_and_run.sh"  # type: ignore
     DONE_WORKLOAD_PATH: Path = "05_done_workload.csv"  # type: ignore
-    METRIC_RESULTS_PATH_APPENDIX: str = "_metric_results.csv"
+    METRIC_RESULTS_PATH_APPENDIX: str = "_metric_results.csv.gz"
     EXP_RESULT_ZIP_PATH_PREFIX: Path
     EXP_RESULT_ZIP_PATH: Path = ".tar.gz"  # type: ignore
     EXP_RESULT_EXTRACTED_ZIP_PATH: Path
