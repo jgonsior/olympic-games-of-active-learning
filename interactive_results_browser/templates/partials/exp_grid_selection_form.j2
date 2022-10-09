@@ -29,9 +29,9 @@
         <script type="text/javascript">
             new TomSelect('#{{k}}', {
                 plugins: {
-                    'remove_button': {
-                        title: 'Remove this item',
-                    }, 'input_autogrow': {},
+                    'input_autogrow': {},
+                    'checkbox_options': {},
+                    'clear_button': { 'title': "Remove all selected options" }
                 },
                 persist: false,
                 create: true,
