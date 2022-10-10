@@ -15,6 +15,7 @@ from misc.config import Config
 from collections.abc import Iterable
 
 from resources.data_types import _encrypt_tuple, _format_tuple
+from livereload.watcher import INotifyWatcher
 
 app = Flask(
     __name__,
@@ -121,5 +122,11 @@ if __name__ == "__main__":
         sr_local_path = Path(f"interactive_results_browser/static/{sr_local_path}")
         if not sr_local_path.exists():
             sr_local_path.write_bytes(requests.get(sr_url).content)
-    server = Server(app.wsgi_app)
+
+    server = Server(app.wsgi_app, watcher=INotifyWatcher())
+    server.watch("*.py")
+    server.watch("*.yaml")
+    server.watch("*.j2")
+    server.watch("*.css")
+    server.watch("*.js")
     server.serve()
