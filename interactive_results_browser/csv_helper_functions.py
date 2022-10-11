@@ -1,4 +1,5 @@
 from __future__ import annotations
+import enum
 import itertools
 from pathlib import Path
 from typing import Dict, List, Tuple
@@ -6,12 +7,14 @@ from typing import Dict, List, Tuple
 from typing import TYPE_CHECKING, Any, List
 from matplotlib.pyplot import table
 import numpy as np
+from numpy import full
 import pandas as pd
 from sklearn.model_selection import ParameterGrid
 from datasets import DATASET
 from misc.helpers import _create_exp_grid
 from resources.data_types import (
     AL_STRATEGY,
+    LEARNER_MODEL,
     _convert_encrypted_strat_to_enum_param_tuple,
 )
 
@@ -51,7 +54,28 @@ def create_open_done_workload_table(
     config: Config,
     get_data_exp_frame: Dict[str, List[str]],
 ) -> pd.DataFrame:
+    print(len(full_workload))
+    print(len(done_jobs))
     # @todo: limit results of full_workload by get_data_exp_frame
+    if len(get_data_exp_frame) == 0:
+        # do not filter at all!
+        pass
+    else:
+        # only focus on the specified samples
+        print("hui")
+        for k, v in get_data_exp_frame.items():
+            k = k.replace("_GRID", "")
+
+            if k == "EXP_STRATEGY":
+                pass
+            elif k == "EXP_LEARNER_MODEL":
+                # convert into enum
+                v = [int(LEARNER_MODEL[vv]) for vv in v]
+            else:
+                v = [int(vv) for vv in v]
+
+            full_workload = full_workload.loc[full_workload[k].isin(v)]
+            done_jobs = done_jobs.loc[done_jobs[k].isin(v)]
 
     dataset_strat_counts = {}
     datasets = full_workload["EXP_DATASET"].unique().tolist()

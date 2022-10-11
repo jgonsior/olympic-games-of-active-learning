@@ -109,11 +109,10 @@ def show_runtimes():
 
 
 if __name__ == "__main__":
-    # check if static ressources exist
+    # check if static external ressources exist
     # if not: download them
     static_ressources = {
         "https://raw.githubusercontent.com/kevquirk/simple.css/main/simple.min.css": "_simple.min.css",
-        # "https://code.jquery.com/jquery-3.6.1.min.js": "_jquery.min.js",
         "https://cdn.jsdelivr.net/npm/tom-select@2.2.1/dist/css/tom-select.css": "_tom_min.css",
         "https://cdn.jsdelivr.net/npm/tom-select@2.2.1/dist/js/tom-select.complete.min.js": "_tom_min.js",
     }
