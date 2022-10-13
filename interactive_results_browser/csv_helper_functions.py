@@ -75,6 +75,7 @@ def create_open_done_workload_table(
     config: Config,
     exp_grid_request_params: Dict[str, List[str]],
 ) -> pd.DataFrame:
+    print(exp_grid_request_params.keys())
     if len(exp_grid_request_params) == 0:
         # do not filter at all!
         pass
@@ -83,7 +84,10 @@ def create_open_done_workload_table(
         for k, v in exp_grid_request_params.items():
             k = k.replace("_GRID", "")
 
-            if k == "EXP_STRATEGY":
+            if k in ["VISUALIZATIONS"]:
+                continue
+
+            if k in ["EXP_STRATEGY"]:
                 pass
             elif k == "EXP_LEARNER_MODEL":
                 # convert into enum
@@ -161,7 +165,7 @@ def create_open_done_workload_table(
     return table_data_df
 
 
-def get_exp_grid(experiment_name: str, config: Config):
+def _get_exp_grid(experiment_name: str, config: Config):
     exp_configs = yaml.safe_load(Path(config.LOCAL_YAML_EXP_PATH).read_bytes())
     exp_config = exp_configs[experiment_name]
 
@@ -171,10 +175,6 @@ def get_exp_grid(experiment_name: str, config: Config):
         exp_config["EXP_GRID_STRATEGY"], config
     )
 
-    def _al_strat_string_to_enum(encrtpyet_al_strat: str) -> str:
-        splits = encrtpyet_al_strat.split(config._EXP_STRATEGY_STRAT_PARAMS_DELIM)
-        splits[0] = str(int(AL_STRATEGY[splits[0]]))
-        return config._EXP_STRATEGY_STRAT_PARAMS_DELIM.join(splits)
 
     exp_config["EXP_GRID_STRATEGY"] = [
         _al_strat_string_to_enum(k) for k in exp_config["EXP_GRID_STRATEGY"]
@@ -195,11 +195,16 @@ def get_exp_grid(experiment_name: str, config: Config):
         range(0, exp_grid["EXP_GRID_RANDOM_SEEDS_END"])
     )
 
-    exp_grid["PLOTS"] = ["Learning Curves", ""]
+    del exp_grid["EXP_GRID_RANDOM_SEEDS_END"]
+
+    exp_grid["VISUALIZATIONS"] = [viz for viz in list(VISUALIZATION)]
+
     return exp_grid
 
 
-def get_exp_grid_request_params(exp_grid):
+def get_exp_grid_request_params(experiment_name: str, config: Config):
+    exp_grid = _get_exp_grid(experiment_name, config)
+
     get_exp_grid_request_params = {}
     for k in exp_grid.keys():
         if k in request.args.keys():
@@ -209,10 +214,18 @@ def get_exp_grid_request_params(exp_grid):
                 ]
             except ValueError:
                 get_exp_grid_request_params[k] = request.args.getlist(k)
+        else:
+            get_exp_grid_request_params[k] = exp_grid[k]
 
-    if "EXP_GRID_DATASET" in get_exp_grid_request_params:
-        get_exp_grid_request_params["EXP_GRID_DATASET"] = [
-            DATASET(int(dataset_id))
-            for dataset_id in get_exp_grid_request_params["EXP_GRID_DATASET"]
-        ]
+    # convert int_enums to real enums
+    get_exp_grid_request_params["EXP_GRID_DATASET"] = [
+        DATASET(int(dataset_id))
+        for dataset_id in get_exp_grid_request_params["EXP_GRID_DATASET"]
+    ]
+
+    get_exp_grid_request_params["VISUALIZATIONS"] = [
+        VISUALIZATION(int(dataset_id))
+        for dataset_id in get_exp_grid_request_params["VISUALIZATIONS"]
+    ]
+
     return get_exp_grid_request_params

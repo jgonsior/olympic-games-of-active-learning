@@ -32,10 +32,6 @@ done_workload = pd.read_csv(
 print(len(done_workload))
 
 
-done_workload["EXP_FULL_STRATEGY"] = (
-    done_workload["EXP_STRATEGY"] + "#" + done_workload["EXP_STRATEGY_PARAMS"]
-)
-
 datasets = done_workload["EXP_DATASET"].unique()
 
 al_strategies = done_workload["EXP_FULL_STRATEGY"].unique()

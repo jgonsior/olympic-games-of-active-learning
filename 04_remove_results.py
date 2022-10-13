@@ -24,10 +24,6 @@ config = Config()
 done_workload = pd.read_csv(config.DONE_WORKLOAD_FILE)
 
 
-done_workload["EXP_FULL_STRATEGY"] = (
-    done_workload["EXP_STRATEGY"] + "#" + done_workload["EXP_STRATEGY_PARAMS"]
-)
-
 remove_quire = False
 
 if remove_quire:
