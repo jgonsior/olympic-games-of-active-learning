@@ -175,7 +175,6 @@ def _get_exp_grid(experiment_name: str, config: Config):
         exp_config["EXP_GRID_STRATEGY"], config
     )
 
-
     exp_config["EXP_GRID_STRATEGY"] = [
         _al_strat_string_to_enum(k) for k in exp_config["EXP_GRID_STRATEGY"]
     ]
