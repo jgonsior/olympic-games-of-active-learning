@@ -1,8 +1,11 @@
 import enum
+from multiprocessing.sharedctypes import Value
 from pathlib import Path
+from pkgutil import get_data
 from flask import Flask, render_template
 from flask import request
 import requests
+from sklearn.datasets import fetch_olivetti_faces
 from datasets import DATASET
 from interactive_results_browser.csv_helper_functions import (
     create_open_done_workload_table,
@@ -35,14 +38,22 @@ def show_available_experiments():
 
 @app.route("/workload/<string:experiment_name>", methods=["GET"])
 def show_open_done_workload(experiment_name: str):
+    # random seed fehlt
     config = Config(no_cli_args={"WORKER_INDEX": None, "EXP_TITLE": experiment_name})
 
     exp_grid = get_exp_grid(experiment_name, config)
     get_data_exp_grid = {}
 
+    exp_grid["EXP_GRID_RANDOM_SEED"] = list(
+        range(0, exp_grid["EXP_GRID_RANDOM_SEEDS_END"])
+    )
+
     for k in exp_grid.keys():
         if k in request.args.keys():
-            get_data_exp_grid[k] = request.args.getlist(k)
+            try:
+                get_data_exp_grid[k] = [int(kkk) for kkk in request.args.getlist(k)]
+            except ValueError:
+                get_data_exp_grid[k] = request.args.getlist(k)
 
     if "EXP_GRID_DATASET" in get_data_exp_grid:
         get_data_exp_grid["EXP_GRID_DATASET"] = [

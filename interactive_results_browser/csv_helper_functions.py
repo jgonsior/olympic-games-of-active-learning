@@ -54,15 +54,11 @@ def create_open_done_workload_table(
     config: Config,
     get_data_exp_frame: Dict[str, List[str]],
 ) -> pd.DataFrame:
-    print(len(full_workload))
-    print(len(done_jobs))
-    # @todo: limit results of full_workload by get_data_exp_frame
     if len(get_data_exp_frame) == 0:
         # do not filter at all!
         pass
     else:
         # only focus on the specified samples
-        print("hui")
         for k, v in get_data_exp_frame.items():
             k = k.replace("_GRID", "")
 
@@ -147,7 +143,6 @@ def create_open_done_workload_table(
 def get_exp_grid(experiment_name: str, config: Config):
     exp_configs = yaml.safe_load(Path(config.LOCAL_YAML_EXP_PATH).read_bytes())
     exp_config = exp_configs[experiment_name]
-    # print(exp_config)
 
     # strategy -> strategy enum and params
 
