@@ -16,9 +16,9 @@
             {% set v2_id = v2 %}
             {% endif %}
 
-            {% if k in get_data_exp_grid.keys() and v2_id in get_data_exp_grid[k] %}
+            {% if k in exp_grid_request_params.keys() and v2_id in exp_grid_request_params[k] %}
             <option value="{{v2_id}}" selected>{{v2_str}}</option>
-            {% elif k not in get_data_exp_grid.keys() %}
+            {% elif k not in exp_grid_request_params.keys() %}
             <option value="{{v2_id}}" selected>{{v2_str}}</option>
             {% else %}
             <option value="{{v2_id}}">{{v2_str}}</option>
