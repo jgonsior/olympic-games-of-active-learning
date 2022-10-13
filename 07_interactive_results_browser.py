@@ -1,14 +1,18 @@
 import enum
 from pathlib import Path
+from typing import List
 from flask import Flask, render_template
 from datasets import DATASET
 from interactive_results_browser.csv_helper_functions import (
-    create_open_done_workload_table,
     get_exp_config_names,
-    load_workload_csv_files,
     get_exp_grid_request_params,
 )
+from interactive_results_browser.visualizations import (
+    vizualization_to_python_function_mapping,
+)
+
 from livereload import Server
+from interactive_results_browser.visualizations.base import Base_Visualizer
 from misc.config import Config
 from collections.abc import Iterable
 
@@ -30,7 +34,7 @@ def show_available_experiments():
     return render_template("available_experiments.html.j2", config_names=config_names)
 
 
-@app.route("/result/<string:experiment_name>", methods=["GET"])
+@app.route("/viz/<string:experiment_name>", methods=["GET"])
 def show_results(experiment_name: str):
     config = Config(
         no_cli_args={"WORKER_INDEX": None, "EXP_TITLE": experiment_name},
@@ -40,42 +44,17 @@ def show_results(experiment_name: str):
         experiment_name, config
     )
 
+    visualizations_and_tables: List[Base_Visualizer] = []
     for viz in exp_grid_request_params["VISUALIZATIONS"]:
-        print(viz)
-
-    visualizations_and_tables = []
-
-    full_workload, open_jobs, done_jobs = load_workload_csv_files(config)
-
-    open_done_df = create_open_done_workload_table(
-        full_workload,
-        open_jobs,
-        done_jobs,
-        config,
-        exp_grid_request_params,
-    )
-    print(exp_grid_request_params)
-
-    rows = list(open_done_df.values.tolist())
-    rows[0][0] = "Dataset"
+        visualizer = vizualization_to_python_function_mapping[viz](config)
+        visualizations_and_tables.append(visualizer)
 
     return render_template(
-        "open_done_workload.html.j2",
+        "viz.html.j2",
         experiment_name=experiment_name,
-        column_names=rows[0],
-        row_data=rows[1:],
-        link_column="Dataset",
-        zip=zip,
-        str=str,
-        isinstance=isinstance,
-        Iterable=Iterable,
-        exp_grid_request_params=exp_grid_request_params,
-        full_exp_grid=full_exp_grid,
-        type=type,
-        tuple=tuple,
-        enum=enum.Enum,
-        int=int,
         config=config,
+        full_exp_grid=full_exp_grid,
+        visualizations_and_tables=visualizations_and_tables,
     )
 
 
