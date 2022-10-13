@@ -42,7 +42,6 @@ class Config:
     EXP_DATASET: DATASET
     EXP_GRID_DATASET: List[DATASET]
     EXP_STRATEGY: AL_STRATEGY
-    EXP_STRATEGY_PARAMS: Dict[str, Any]
     EXP_GRID_STRATEGY: List[AL_STRATEGY]
     EXP_GRID_RANDOM_SEEDS_START: int = 0
     EXP_GRID_RANDOM_SEEDS_END: int
@@ -94,10 +93,6 @@ class Config:
     EXP_RESULT_ZIP_PATH: Path = ".tar.gz"  # type: ignore
     EXP_RESULT_EXTRACTED_ZIP_PATH: Path
     METRIC_RESULTS_FILE_PATH: Path
-
-    _EXP_STRATEGY_STRAT_PARAMS_DELIM = "#"
-    _EXP_STRATEGY_PARAM_PARAM_DELIM = "-"
-    _EXP_STRATEGY_PARAM_VALUE_DELIM = ":"
 
     DONE_WORKLOAD_FILE: Path
     RESULTS_PATH: Path
@@ -279,22 +274,7 @@ class Config:
             # log_it(f"{k}\t\t\t{str(v)}")
             # convert str/ints to enum data types first
             if k == "EXP_STRATEGY":
-                # super complex EXP_STRATEGY parsing
-                _strat_params_split = v.split(self._EXP_STRATEGY_STRAT_PARAMS_DELIM)
-                if _strat_params_split[1] == "":
-                    params = {}
-                else:
-                    _params_params_split = _strat_params_split[1].split(
-                        self._EXP_STRATEGY_PARAM_PARAM_DELIM
-                    )
-                    _params_params_split = [
-                        _x.split(self._EXP_STRATEGY_PARAM_VALUE_DELIM)
-                        for _x in _params_params_split
-                    ]
-                    params = {_x[0]: _x[1] for _x in _params_params_split}
-                v = AL_STRATEGY(int(_strat_params_split[0]))
-
-                self.EXP_STRATEGY_PARAMS = params
+                v = AL_STRATEGY(int(v))
             elif k == "EXP_DATASET":
                 v = DATASET(int(v))
             elif k == "EXP_LEARNER_MODEL":

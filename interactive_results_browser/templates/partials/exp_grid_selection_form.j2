@@ -1,8 +1,13 @@
 <form id="params" method="GET" action="">
-    {% for k,v in exp_grid.items() %}
+    {% for k,v in exp_grid_request_params.items() %}
     <p style="display: inline-block">
         {% if isinstance(v, Iterable) %}
-        <label for="[[k}}">{{k[9:]}}</label>
+        {% if k.startswith("EXP_GRID") %}
+        {% set k_display = k[9:] %}
+        {% else %}
+        {% set k_display = k %}
+        {% endif %}
+        <label for="[[k}}">{{k_display}}</label>
         <select id="{{k}}" multiple autocomplete="off" name="{{k}}">
             {% for v2 in v %}
             {% if isinstance(v2, enum) %}
@@ -16,9 +21,7 @@
             {% set v2_id = v2 %}
             {% endif %}
 
-            {% if k in exp_grid_request_params.keys() and v2_id in exp_grid_request_params[k] %}
-            <option value="{{v2_id}}" selected>{{v2_str}}</option>
-            {% elif k not in exp_grid_request_params.keys() %}
+            {% if v2_id in exp_grid_request_params[k] %}
             <option value="{{v2_id}}" selected>{{v2_str}}</option>
             {% else %}
             <option value="{{v2_id}}">{{v2_str}}</option>

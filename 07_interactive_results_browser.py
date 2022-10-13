@@ -5,7 +5,6 @@ from datasets import DATASET
 from interactive_results_browser.csv_helper_functions import (
     create_open_done_workload_table,
     get_exp_config_names,
-    get_exp_grid,
     load_workload_csv_files,
     get_exp_grid_request_params,
 )
@@ -32,11 +31,14 @@ def show_available_experiments():
     return render_template("available_experiments.html.j2", config_names=config_names)
 
 
-@app.route("/workload/<string:experiment_name>", methods=["GET"])
-def show_open_done_workload(experiment_name: str):
+@app.route("/result/<string:experiment_name>", methods=["GET"])
+def show_results(experiment_name: str):
     config = Config(no_cli_args={"WORKER_INDEX": None, "EXP_TITLE": experiment_name})
-    exp_grid = get_exp_grid(experiment_name, config)
-    exp_grid_request_params = get_exp_grid_request_params(exp_grid)
+
+    exp_grid_request_params = get_exp_grid_request_params(experiment_name, config)
+
+    for viz in exp_grid_request_params["VISUALIZATIONS"]:
+        print(viz)
 
     visualizations_and_tables = []
 
@@ -49,6 +51,7 @@ def show_open_done_workload(experiment_name: str):
         config,
         exp_grid_request_params,
     )
+    print(exp_grid_request_params)
 
     rows = list(open_done_df.values.tolist())
     rows[0][0] = "Dataset"
@@ -63,7 +66,6 @@ def show_open_done_workload(experiment_name: str):
         str=str,
         isinstance=isinstance,
         Iterable=Iterable,
-        exp_grid=exp_grid,
         exp_grid_request_params=exp_grid_request_params,
         type=type,
         tuple=tuple,
@@ -73,61 +75,6 @@ def show_open_done_workload(experiment_name: str):
         _format_tuple=_format_tuple,
         config=config,
     )
-
-
-@app.route("/single_experiment/<int:exp_id>", methods=["GET"])
-def show_single_experiment(exp_id: int):
-    return render_template("single_experiment.html.j2")
-
-
-@app.route("/dataset_strategy/<int:dataset_id>/<int:strategy_id>", methods=["GET"])
-def show_dataset_strategy(dataset_id: int, strategy_id: int):
-    return render_template("single_experiment.html.j2")
-
-
-@app.route("/dataset/<int:dataset_id>", methods=["GET"])
-def show_dataset_overview(dataset_id: int):
-    config = Config(no_cli_args={"WORKER_INDEX": None, "EXP_TITLE": experiment_name})
-    exp_grid = get_exp_grid(experiment_name, config)
-    exp_grid_request_params = get_exp_grid_request_params(exp_grid)
-
-    # dataset_name = dataset_id_to_name(dataset_id)
-    # random_ids = random_ids_for_dataset(dataset_id)
-    return render_template(
-        "dataset_overview.html.j2",
-        experiment_name=experiment_name,
-        column_names=rows[0],
-        row_data=rows[1:],
-        link_column="Dataset",
-        zip=zip,
-        str=str,
-        isinstance=isinstance,
-        Iterable=Iterable,
-        exp_grid=exp_grid,
-        exp_grid_request_params=exp_grid_request_params,
-        type=type,
-        tuple=tuple,
-        enum=enum.Enum,
-        int=int,
-        _encrypt_tuple=_encrypt_tuple,
-        _format_tuple=_format_tuple,
-        config=config,
-    )
-
-
-@app.route("/strategy/<int:strategy_id>", methods=["GET"])
-def show_strategy_overview(strategy_id: int):
-    return render_template("strategy_overview.html.j2")
-
-
-@app.route("/compare_learning_curves", methods=["GET"])
-def show_learning_curve_comparison():
-    return render_template("learning_curve.html.j2")
-
-
-@app.route("/runtimes", methods=["GET"])
-def show_runtimes():
-    return render_template("runtimes.html.j2")
 
 
 if __name__ == "__main__":

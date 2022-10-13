@@ -75,9 +75,7 @@ from datasets import DATASET
 @unique
 class AL_STRATEGY(IntEnum):
     ALIPY_RANDOM = 1
-    ALIPY_UNCERTAINTY = (
-        2  # ['least_confident', 'margin', 'entropy', 'distance_to_boundary']:
-    )
+    ALIPY_UNCERTAINTY_LC = 2
     ALIPY_GRAPH_DENSITY = 3  # metric in ['euclidean', 'l2', 'l1', 'manhattan', 'cityblock',                      'braycurtis', 'canberra', 'chebyshev', 'correlation',                      'cosine', 'dice', 'hamming', 'jaccard', 'kulsinski',                      'mahalanobis', 'matching', 'minkowski', 'rogerstanimoto',                      'russellrao', 'seuclidean', 'sokalmichener',                      'sokalsneath', 'sqeuclidean', 'yule', "wminkowski"]
     ALIPY_CORESET_GREEDY = (
         4  # distance in ['cityblock', 'cosine', 'euclidean', 'l1', 'l2', 'manhattan'].
@@ -110,40 +108,57 @@ class AL_STRATEGY(IntEnum):
     LIBACT_HIERARCHICAL_SAMPLING = 30
     LIBACT_ALBL = 31
     PLAYGROUND_BANDIT = 32
+    ALIPY_UNCERTAINTY_MM = 33
+    ALIPY_UNCERTAINTY_ENTROPY = 34
+    ALIPY_UNCERTAINTY_DTB = 35
 
 
-al_strategy_to_python_classes_mapping: Dict[AL_STRATEGY, Callable] = {
-    AL_STRATEGY.ALIPY_RANDOM: QueryInstanceRandom,
-    AL_STRATEGY.ALIPY_UNCERTAINTY: QueryInstanceUncertainty,
-    AL_STRATEGY.ALIPY_GRAPH_DENSITY: QueryInstanceGraphDensity,
-    AL_STRATEGY.ALIPY_CORESET_GREEDY: QueryInstanceCoresetGreedy,
-    AL_STRATEGY.ALIPY_QUIRE: QueryInstanceQUIRE,
-    AL_STRATEGY.ALIPY_QBC: QueryInstanceQBC,
-    AL_STRATEGY.ALIPY_EXPECTED_ERROR_REDUCTION: QueryExpectedErrorReduction,
-    AL_STRATEGY.ALIPY_BMDR: QueryInstanceBMDR,
-    AL_STRATEGY.ALIPY_SPAL: QueryInstanceSPAL,
-    AL_STRATEGY.ALIPY_LAL: QueryInstanceLAL,
-    AL_STRATEGY.ALIPY_DENSITY_WEIGHTED: QueryInstanceDensityWeighted,
-    AL_STRATEGY.OPTIMAL_GREEDY: Greedy_Optimal,
-    AL_STRATEGY.OPTIMAL_BSO: Beeam_Search_Optimal,
-    AL_STRATEGY.OPTIMAL_TRUE: True_Optimal,
+al_strategy_to_python_classes_mapping: Dict[
+    AL_STRATEGY, Tuple[Callable, Dict[Any, Any]]
+] = {
+    AL_STRATEGY.ALIPY_RANDOM: (QueryInstanceRandom, {}),
+    AL_STRATEGY.ALIPY_UNCERTAINTY_LC: (
+        QueryInstanceUncertainty,
+        {"measure": "least_confident"},
+    ),
+    AL_STRATEGY.ALIPY_UNCERTAINTY_MM: (QueryInstanceUncertainty, {"measure": "margin"}),
+    AL_STRATEGY.ALIPY_UNCERTAINTY_ENTROPY: (
+        QueryInstanceUncertainty,
+        {"measure": "entropy"},
+    ),
+    AL_STRATEGY.ALIPY_UNCERTAINTY_DTB: (
+        QueryInstanceUncertainty,
+        {"measure": "distance_to_boundary"},
+    ),
+    AL_STRATEGY.ALIPY_GRAPH_DENSITY: (QueryInstanceGraphDensity, {}),
+    AL_STRATEGY.ALIPY_CORESET_GREEDY: (QueryInstanceCoresetGreedy, {}),
+    AL_STRATEGY.ALIPY_QUIRE: (QueryInstanceQUIRE, {}),
+    AL_STRATEGY.ALIPY_QBC: (QueryInstanceQBC, {}),
+    AL_STRATEGY.ALIPY_EXPECTED_ERROR_REDUCTION: (QueryExpectedErrorReduction, {}),
+    AL_STRATEGY.ALIPY_BMDR: (QueryInstanceBMDR, {}),
+    AL_STRATEGY.ALIPY_SPAL: (QueryInstanceSPAL, {}),
+    AL_STRATEGY.ALIPY_LAL: (QueryInstanceLAL, {"train_slt": False}),
+    AL_STRATEGY.ALIPY_DENSITY_WEIGHTED: (QueryInstanceDensityWeighted, {}),
+    AL_STRATEGY.OPTIMAL_GREEDY: (Greedy_Optimal, {}),
+    AL_STRATEGY.OPTIMAL_BSO: (Beeam_Search_Optimal, {}),
+    AL_STRATEGY.OPTIMAL_TRUE: (True_Optimal, {}),
     # AL_STRATEGY.OPTIMAL_SUBSETS: (, {}),
-    AL_STRATEGY.LIBACT_UNCERTAINTY: UncertaintySampling,
-    AL_STRATEGY.LIBACT_QBC: QueryByCommittee,
-    AL_STRATEGY.LIBACT_DWUS: DWUS,
-    AL_STRATEGY.LIBACT_QUIRE: QUIRE,
-    AL_STRATEGY.LIBACT_EER: EER,
-    AL_STRATEGY.LIBACT_HIERARCHICAL_SAMPLING: HierarchicalSampling,
-    AL_STRATEGY.LIBACT_ALBL: ActiveLearningByLearning,
-    AL_STRATEGY.PLAYGROUND_UNIFORM: UniformSampling,
-    AL_STRATEGY.PLAYGROUND_MARGIN: MarginAL,
-    AL_STRATEGY.PLAYGROUND_MIXTURE: MixtureOfSamplers,
-    AL_STRATEGY.PLAYGROUND_KCENTER_GREEDY: kCenterGreedy,
-    AL_STRATEGY.PLAYGROUND_MCM: RepresentativeClusterMeanSampling,
-    AL_STRATEGY.PLAYGROUND_GRAPH_DENSITY: GraphDensitySampler,
-    AL_STRATEGY.PLAYGROUND_HIERARCHICAL_CLUSTER: HierarchicalClusterAL,
-    AL_STRATEGY.PLAYGROUND_INFORMATIVE_DIVERSE: InformativeClusterDiverseSampler,
-    AL_STRATEGY.PLAYGROUND_BANDIT: BanditDiscreteSampler,
+    AL_STRATEGY.LIBACT_UNCERTAINTY: (UncertaintySampling, {}),
+    AL_STRATEGY.LIBACT_QBC: (QueryByCommittee, {}),
+    AL_STRATEGY.LIBACT_DWUS: (DWUS, {}),
+    AL_STRATEGY.LIBACT_QUIRE: (QUIRE, {}),
+    AL_STRATEGY.LIBACT_EER: (EER, {}),
+    AL_STRATEGY.LIBACT_HIERARCHICAL_SAMPLING: (HierarchicalSampling, {}),
+    AL_STRATEGY.LIBACT_ALBL: (ActiveLearningByLearning, {}),
+    AL_STRATEGY.PLAYGROUND_UNIFORM: (UniformSampling, {}),
+    AL_STRATEGY.PLAYGROUND_MARGIN: (MarginAL, {}),
+    AL_STRATEGY.PLAYGROUND_MIXTURE: (MixtureOfSamplers, {}),
+    AL_STRATEGY.PLAYGROUND_KCENTER_GREEDY: (kCenterGreedy, {}),
+    AL_STRATEGY.PLAYGROUND_MCM: (RepresentativeClusterMeanSampling, {}),
+    AL_STRATEGY.PLAYGROUND_GRAPH_DENSITY: (GraphDensitySampler, {}),
+    AL_STRATEGY.PLAYGROUND_HIERARCHICAL_CLUSTER: (HierarchicalClusterAL, {}),
+    AL_STRATEGY.PLAYGROUND_INFORMATIVE_DIVERSE: (InformativeClusterDiverseSampler, {}),
+    AL_STRATEGY.PLAYGROUND_BANDIT: (BanditDiscreteSampler, {}),
 }
 
 
@@ -241,58 +256,3 @@ AL_framework_to_classes_mapping: Dict[AL_FRAMEWORK, Tuple[Callable, Dict[Any, An
     AL_FRAMEWORK.LIBACT: (LIBACT_Experiment, {}),
     AL_FRAMEWORK.PLAYGROUND: (PLAYGROUND_AL_Experiment, {}),
 }
-
-
-def _format_strategy(encrypted_string: str, config: Config) -> str:
-    splits = encrypted_string.split(config._EXP_STRATEGY_STRAT_PARAMS_DELIM)
-    strat = AL_STRATEGY(int(splits[0]))
-
-    if splits[1] != "":
-        appendix = f" ({splits[1]})"
-    else:
-        appendix = ""
-
-    return f"{strat.__str__()[12:]}{appendix}"
-
-
-def _encrypt_tuple(strat_tuple, config: Config) -> str:
-    result_string = str(int(strat_tuple[0])) + config._EXP_STRATEGY_STRAT_PARAMS_DELIM
-
-    for k, v in strat_tuple[1].items():
-        result_string += f"{k}{config._EXP_STRATEGY_PARAM_VALUE_DELIM}{v}{config._EXP_STRATEGY_PARAM_PARAM_DELIM}"
-
-    if len(strat_tuple[1]) > 0:
-        result_string = result_string[:-1]
-    return result_string
-
-
-def _format_tuple(strat_tuple, config: Config) -> str:
-    result_string = f"{strat_tuple[0].name} ("
-
-    for k, v in strat_tuple[1].items():
-        result_string += f"{k}: {v}, "
-    result_string = result_string[:-2]
-
-    if len(strat_tuple[1]) > 0:
-        result_string += ")"
-    return result_string
-
-
-def _convert_encrypted_strat_to_enum_param_tuple(
-    encrypted_string: str, config: Config
-) -> Tuple[AL_STRATEGY, Dict[str, Any]]:
-    splits = encrypted_string.split(config._EXP_STRATEGY_STRAT_PARAMS_DELIM)
-    strat = AL_STRATEGY(int(splits[0]))
-
-    params = {}
-    if splits[1] != "":
-        param_value_split = splits[1].split(config._EXP_STRATEGY_PARAM_PARAM_DELIM)
-
-        for param_value in param_value_split:
-            param_value = param_value.split(config._EXP_STRATEGY_PARAM_VALUE_DELIM)
-            params[param_value[0]] = param_value[1]
-    return (strat, params)
-
-
-def _format_dataset(dataset_id: int) -> str:
-    return DATASET(dataset_id).name
