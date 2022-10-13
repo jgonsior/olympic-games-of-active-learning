@@ -1,5 +1,14 @@
 {% extends "base.html.j2" %}
 {% block title %}Home{% endblock %}
 {% block body %}
-    <h1>And the table with the content goes here!</h1>
+
+{% include "partials/exp_grid_selection_form.j2" %}
+
+<h1>And the table with the content goes here!</h1>
+<ul>
+    <li>filter</li>
+    <li>lernkurve</li>
+    <li>statistik über datensatz</li>
+    <li>heatmap über angetragte samples pro datensatz</li>
+</ul>
 {% endblock %}

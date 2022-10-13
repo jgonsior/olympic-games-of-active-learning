@@ -1,16 +1,23 @@
 from __future__ import annotations
-import enum
 import itertools
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Callable, Dict, List, Tuple
 
 from typing import TYPE_CHECKING, Any, List
+from enum import IntEnum, unique
 from matplotlib.pyplot import table
 import numpy as np
 from numpy import full
 import pandas as pd
+from flask import request
+
 from sklearn.model_selection import ParameterGrid
 from datasets import DATASET
+from interactive_results_browser.visualizations.visualizations import (
+    _plot_learning_curves,
+    _plot_retrieved_samples,
+    _plot_run_done_stats,
+)
 from misc.helpers import _create_exp_grid
 from resources.data_types import (
     AL_STRATEGY,
@@ -22,6 +29,20 @@ import yaml
 
 if TYPE_CHECKING:
     from misc.config import Config
+
+
+@unique
+class VISUALIZATION(IntEnum):
+    LEARNING_CURVES = 1
+    RETRIEVED_SAMPLES = 2
+    RUN_DONE_STATS = 3
+
+
+vizualization_to_python_function_mapping: Dict[VISUALIZATION, Callable] = {
+    VISUALIZATION.LEARNING_CURVES: _plot_learning_curves,
+    VISUALIZATION.RETRIEVED_SAMPLES: _plot_retrieved_samples,
+    VISUALIZATION.RUN_DONE_STATS: _plot_run_done_stats,
+}
 
 
 def get_exp_config_names(config: Config) -> List[str]:
@@ -52,14 +73,14 @@ def create_open_done_workload_table(
     open_jobs: pd.DataFrame,
     done_jobs: pd.DataFrame,
     config: Config,
-    get_data_exp_frame: Dict[str, List[str]],
+    exp_grid_request_params: Dict[str, List[str]],
 ) -> pd.DataFrame:
-    if len(get_data_exp_frame) == 0:
+    if len(exp_grid_request_params) == 0:
         # do not filter at all!
         pass
     else:
         # only focus on the specified samples
-        for k, v in get_data_exp_frame.items():
+        for k, v in exp_grid_request_params.items():
             k = k.replace("_GRID", "")
 
             if k == "EXP_STRATEGY":
@@ -167,4 +188,31 @@ def get_exp_grid(experiment_name: str, config: Config):
     exp_config["EXP_GRID_DATASET"] = [
         DATASET(dataset_id) for dataset_id in exp_config["EXP_GRID_DATASET"]
     ]
-    return exp_configs[experiment_name]
+
+    exp_grid = exp_configs[experiment_name]
+
+    exp_grid["EXP_GRID_RANDOM_SEED"] = list(
+        range(0, exp_grid["EXP_GRID_RANDOM_SEEDS_END"])
+    )
+
+    exp_grid["PLOTS"] = ["Learning Curves", ""]
+    return exp_grid
+
+
+def get_exp_grid_request_params(exp_grid):
+    get_exp_grid_request_params = {}
+    for k in exp_grid.keys():
+        if k in request.args.keys():
+            try:
+                get_exp_grid_request_params[k] = [
+                    int(kkk) for kkk in request.args.getlist(k)
+                ]
+            except ValueError:
+                get_exp_grid_request_params[k] = request.args.getlist(k)
+
+    if "EXP_GRID_DATASET" in get_exp_grid_request_params:
+        get_exp_grid_request_params["EXP_GRID_DATASET"] = [
+            DATASET(int(dataset_id))
+            for dataset_id in get_exp_grid_request_params["EXP_GRID_DATASET"]
+        ]
+    return get_exp_grid_request_params

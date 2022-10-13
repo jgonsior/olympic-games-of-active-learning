@@ -1,17 +1,13 @@
 import enum
-from multiprocessing.sharedctypes import Value
 from pathlib import Path
-from pkgutil import get_data
 from flask import Flask, render_template
-from flask import request
-import requests
-from sklearn.datasets import fetch_olivetti_faces
 from datasets import DATASET
 from interactive_results_browser.csv_helper_functions import (
     create_open_done_workload_table,
     get_exp_config_names,
     get_exp_grid,
     load_workload_csv_files,
+    get_exp_grid_request_params,
 )
 from livereload import Server
 from misc.config import Config
@@ -38,28 +34,11 @@ def show_available_experiments():
 
 @app.route("/workload/<string:experiment_name>", methods=["GET"])
 def show_open_done_workload(experiment_name: str):
-    # random seed fehlt
     config = Config(no_cli_args={"WORKER_INDEX": None, "EXP_TITLE": experiment_name})
-
     exp_grid = get_exp_grid(experiment_name, config)
-    get_data_exp_grid = {}
+    exp_grid_request_params = get_exp_grid_request_params(exp_grid)
 
-    exp_grid["EXP_GRID_RANDOM_SEED"] = list(
-        range(0, exp_grid["EXP_GRID_RANDOM_SEEDS_END"])
-    )
-
-    for k in exp_grid.keys():
-        if k in request.args.keys():
-            try:
-                get_data_exp_grid[k] = [int(kkk) for kkk in request.args.getlist(k)]
-            except ValueError:
-                get_data_exp_grid[k] = request.args.getlist(k)
-
-    if "EXP_GRID_DATASET" in get_data_exp_grid:
-        get_data_exp_grid["EXP_GRID_DATASET"] = [
-            DATASET(int(dataset_id))
-            for dataset_id in get_data_exp_grid["EXP_GRID_DATASET"]
-        ]
+    visualizations_and_tables = []
 
     full_workload, open_jobs, done_jobs = load_workload_csv_files(config)
 
@@ -68,7 +47,7 @@ def show_open_done_workload(experiment_name: str):
         open_jobs,
         done_jobs,
         config,
-        get_data_exp_grid,
+        exp_grid_request_params,
     )
 
     rows = list(open_done_df.values.tolist())
@@ -85,7 +64,7 @@ def show_open_done_workload(experiment_name: str):
         isinstance=isinstance,
         Iterable=Iterable,
         exp_grid=exp_grid,
-        get_data_exp_grid=get_data_exp_grid,
+        exp_grid_request_params=exp_grid_request_params,
         type=type,
         tuple=tuple,
         enum=enum.Enum,
@@ -96,12 +75,44 @@ def show_open_done_workload(experiment_name: str):
     )
 
 
+@app.route("/single_experiment/<int:exp_id>", methods=["GET"])
+def show_single_experiment(exp_id: int):
+    return render_template("single_experiment.html.j2")
+
+
+@app.route("/dataset_strategy/<int:dataset_id>/<int:strategy_id>", methods=["GET"])
+def show_dataset_strategy(dataset_id: int, strategy_id: int):
+    return render_template("single_experiment.html.j2")
+
+
 @app.route("/dataset/<int:dataset_id>", methods=["GET"])
 def show_dataset_overview(dataset_id: int):
+    config = Config(no_cli_args={"WORKER_INDEX": None, "EXP_TITLE": experiment_name})
+    exp_grid = get_exp_grid(experiment_name, config)
+    exp_grid_request_params = get_exp_grid_request_params(exp_grid)
 
     # dataset_name = dataset_id_to_name(dataset_id)
     # random_ids = random_ids_for_dataset(dataset_id)
-    return render_template("dataset_overview.html.j2")
+    return render_template(
+        "dataset_overview.html.j2",
+        experiment_name=experiment_name,
+        column_names=rows[0],
+        row_data=rows[1:],
+        link_column="Dataset",
+        zip=zip,
+        str=str,
+        isinstance=isinstance,
+        Iterable=Iterable,
+        exp_grid=exp_grid,
+        exp_grid_request_params=exp_grid_request_params,
+        type=type,
+        tuple=tuple,
+        enum=enum.Enum,
+        int=int,
+        _encrypt_tuple=_encrypt_tuple,
+        _format_tuple=_format_tuple,
+        config=config,
+    )
 
 
 @app.route("/strategy/<int:strategy_id>", methods=["GET"])
@@ -134,9 +145,9 @@ if __name__ == "__main__":
             sr_local_path.write_bytes(requests.get(sr_url).content)
 
     server = Server(app.wsgi_app, watcher=INotifyWatcher())
-    server.watch("*.py")
-    server.watch("*.yaml")
-    server.watch("*.j2")
-    server.watch("*.css")
-    server.watch("*.js")
+    # server.watch("*.py")
+    # server.watch("*.yaml")
+    # server.watch("*.j2")
+    # server.watch("*.css")
+    # server.watch("*.js")
     server.serve()
