@@ -10,7 +10,6 @@ import modin.pandas as pd
 # import pandas as pd
 
 from misc.config import Config
-from misc.helpers import _create_exp_grid
 from misc.logging import log_it
 from sklearn.model_selection import ParameterGrid
 import os
@@ -48,10 +47,7 @@ def create_workload(config: Config) -> List[int]:
             exp_parameter: config.__getattribute__(exp_parameter)
             for exp_parameter in exp_grid_params_names
         }
-        # convert EXP_GRID_STRATEGY with params into list of param objects
-        exp_param_grid["EXP_GRID_STRATEGY"] = _create_exp_grid(
-            exp_param_grid["EXP_GRID_STRATEGY"], config
-        )
+
         all_workloads = ParameterGrid(exp_param_grid)
 
         open_workload_df = pd.DataFrame(
