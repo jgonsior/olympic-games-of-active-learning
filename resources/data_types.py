@@ -139,9 +139,21 @@ al_strategy_to_python_classes_mapping: Dict[
     AL_STRATEGY.ALIPY_SPAL: (QueryInstanceSPAL, {}),
     AL_STRATEGY.ALIPY_LAL: (QueryInstanceLAL, {"train_slt": False}),
     AL_STRATEGY.ALIPY_DENSITY_WEIGHTED: (QueryInstanceDensityWeighted, {}),
-    AL_STRATEGY.OPTIMAL_GREEDY: (Greedy_Optimal, {}),
-    AL_STRATEGY.OPTIMAL_BSO: (Beeam_Search_Optimal, {}),
-    AL_STRATEGY.OPTIMAL_TRUE: (True_Optimal, {}),
+    AL_STRATEGY.OPTIMAL_GREEDY: (
+        Greedy_Optimal,
+        {
+            "amount_of_pre_selections": 10,
+            "future_peak_eval_metric": FuturePeakEvalMetric.ACC,
+        },
+    ),
+    AL_STRATEGY.OPTIMAL_BSO: (
+        Beeam_Search_Optimal,
+        {"future_peak_eval_metric": FuturePeakEvalMetric.ACC},
+    ),
+    AL_STRATEGY.OPTIMAL_TRUE: (
+        True_Optimal,
+        {"future_peak_eval_metric": FuturePeakEvalMetric.ACC},
+    ),
     # AL_STRATEGY.OPTIMAL_SUBSETS: (, {}),
     AL_STRATEGY.LIBACT_UNCERTAINTY: (UncertaintySampling, {}),
     AL_STRATEGY.LIBACT_QBC: (QueryByCommittee, {}),
