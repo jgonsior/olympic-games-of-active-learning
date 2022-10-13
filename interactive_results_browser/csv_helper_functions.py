@@ -18,11 +18,9 @@ from interactive_results_browser.visualizations.visualizations import (
     _plot_retrieved_samples,
     _plot_run_done_stats,
 )
-from misc.helpers import _create_exp_grid
 from resources.data_types import (
     AL_STRATEGY,
     LEARNER_MODEL,
-    _convert_encrypted_strat_to_enum_param_tuple,
 )
 
 import yaml
@@ -36,6 +34,7 @@ class VISUALIZATION(IntEnum):
     LEARNING_CURVES = 1
     RETRIEVED_SAMPLES = 2
     RUN_DONE_STATS = 3
+    STRATEGY_RANKING = 4
 
 
 vizualization_to_python_function_mapping: Dict[VISUALIZATION, Callable] = {
@@ -87,13 +86,7 @@ def create_open_done_workload_table(
             if k in ["VISUALIZATIONS"]:
                 continue
 
-            if k in ["EXP_STRATEGY"]:
-                pass
-            elif k == "EXP_LEARNER_MODEL":
-                # convert into enum
-                v = [int(LEARNER_MODEL[vv]) for vv in v]
-            else:
-                v = [int(vv) for vv in v]
+            v = [int(vv) for vv in v]
 
             full_workload = full_workload.loc[full_workload[k].isin(v)]
             done_jobs = done_jobs.loc[done_jobs[k].isin(v)]
@@ -121,13 +114,9 @@ def create_open_done_workload_table(
             open_count,
         )
 
-    table_data = [
-        [""]
-        + [
-            _convert_encrypted_strat_to_enum_param_tuple(strat, config)
-            for strat in strategies
-        ]
-    ] + [([DATASET(dataset)] + [0 for strat in strategies]) for dataset in datasets]
+    table_data = [[""] + [strat for strat in strategies]] + [
+        ([DATASET(dataset)] + [0 for strat in strategies]) for dataset in datasets
+    ]
 
     for (dataset, strat), count in dataset_strat_counts.items():
         # convert dataset and strat to indices
@@ -165,47 +154,26 @@ def create_open_done_workload_table(
     return table_data_df
 
 
-def _get_exp_grid(experiment_name: str, config: Config):
-    exp_configs = yaml.safe_load(Path(config.LOCAL_YAML_EXP_PATH).read_bytes())
-    exp_config = exp_configs[experiment_name]
-
-    # strategy -> strategy enum and params
-
-    exp_config["EXP_GRID_STRATEGY"] = _create_exp_grid(
-        exp_config["EXP_GRID_STRATEGY"], config
-    )
-
-    exp_config["EXP_GRID_STRATEGY"] = [
-        _al_strat_string_to_enum(k) for k in exp_config["EXP_GRID_STRATEGY"]
-    ]
-
-    exp_config["EXP_GRID_STRATEGY"] = [
-        _convert_encrypted_strat_to_enum_param_tuple(param["x"], config)
-        for param in ParameterGrid({"x": exp_config["EXP_GRID_STRATEGY"]})
-    ]
-
-    exp_config["EXP_GRID_DATASET"] = [
-        DATASET(dataset_id) for dataset_id in exp_config["EXP_GRID_DATASET"]
-    ]
-
-    exp_grid = exp_configs[experiment_name]
-
-    exp_grid["EXP_GRID_RANDOM_SEED"] = list(
-        range(0, exp_grid["EXP_GRID_RANDOM_SEEDS_END"])
-    )
-
-    del exp_grid["EXP_GRID_RANDOM_SEEDS_END"]
-
-    exp_grid["VISUALIZATIONS"] = [viz for viz in list(VISUALIZATION)]
-
-    return exp_grid
-
-
 def get_exp_grid_request_params(experiment_name: str, config: Config):
-    exp_grid = _get_exp_grid(experiment_name, config)
+    full_exp_grid = {
+        "EXP_BATCH_SIZE": config.EXP_GRID_BATCH_SIZE,
+        "EXP_DATASET": config.EXP_GRID_DATASET,
+        "EXP_LEARNER_MODEL": config.EXP_GRID_LEARNER_MODEL,
+        "EXP_NUM_QUERIES": config.EXP_GRID_NUM_QUERIES,
+        "EXP_STRATEGY": config.EXP_GRID_STRATEGY,
+        "EXP_TRAIN_TEST_BUCKET_SIZE": config.EXP_GRID_TRAIN_TEST_BUCKET_SIZE,
+        "EXP_NUM_QUERIES": config.EXP_GRID_NUM_QUERIES,
+        "EXP_RANDOM_SEED": config.EXP_GRID_RANDOM_SEED,
+    }
+
+    print("Batch size")
+    print(full_exp_grid["EXP_BATCH_SIZE"])
+
+    full_exp_grid["VISUALIZATIONS"] = [viz for viz in list(VISUALIZATION)]
 
     get_exp_grid_request_params = {}
-    for k in exp_grid.keys():
+
+    for k in full_exp_grid.keys():
         if k in request.args.keys():
             try:
                 get_exp_grid_request_params[k] = [
@@ -214,12 +182,22 @@ def get_exp_grid_request_params(experiment_name: str, config: Config):
             except ValueError:
                 get_exp_grid_request_params[k] = request.args.getlist(k)
         else:
-            get_exp_grid_request_params[k] = exp_grid[k]
+            get_exp_grid_request_params[k] = full_exp_grid[k]
 
     # convert int_enums to real enums
-    get_exp_grid_request_params["EXP_GRID_DATASET"] = [
+    get_exp_grid_request_params["EXP_DATASET"] = [
         DATASET(int(dataset_id))
-        for dataset_id in get_exp_grid_request_params["EXP_GRID_DATASET"]
+        for dataset_id in get_exp_grid_request_params["EXP_DATASET"]
+    ]
+
+    get_exp_grid_request_params["EXP_LEARNER_MODEL"] = [
+        LEARNER_MODEL(int(dataset_id))
+        for dataset_id in get_exp_grid_request_params["EXP_LEARNER_MODEL"]
+    ]
+
+    get_exp_grid_request_params["EXP_STRATEGY"] = [
+        AL_STRATEGY(int(dataset_id))
+        for dataset_id in get_exp_grid_request_params["EXP_STRATEGY"]
     ]
 
     get_exp_grid_request_params["VISUALIZATIONS"] = [
@@ -227,4 +205,4 @@ def get_exp_grid_request_params(experiment_name: str, config: Config):
         for dataset_id in get_exp_grid_request_params["VISUALIZATIONS"]
     ]
 
-    return get_exp_grid_request_params
+    return get_exp_grid_request_params, full_exp_grid

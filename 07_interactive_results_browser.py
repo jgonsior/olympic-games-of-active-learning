@@ -12,7 +12,6 @@ from livereload import Server
 from misc.config import Config
 from collections.abc import Iterable
 
-from resources.data_types import _encrypt_tuple, _format_tuple
 from livereload.watcher import INotifyWatcher
 
 app = Flask(
@@ -33,9 +32,13 @@ def show_available_experiments():
 
 @app.route("/result/<string:experiment_name>", methods=["GET"])
 def show_results(experiment_name: str):
-    config = Config(no_cli_args={"WORKER_INDEX": None, "EXP_TITLE": experiment_name})
+    config = Config(
+        no_cli_args={"WORKER_INDEX": None, "EXP_TITLE": experiment_name},
+    )
 
-    exp_grid_request_params = get_exp_grid_request_params(experiment_name, config)
+    exp_grid_request_params, full_exp_grid = get_exp_grid_request_params(
+        experiment_name, config
+    )
 
     for viz in exp_grid_request_params["VISUALIZATIONS"]:
         print(viz)
@@ -67,12 +70,11 @@ def show_results(experiment_name: str):
         isinstance=isinstance,
         Iterable=Iterable,
         exp_grid_request_params=exp_grid_request_params,
+        full_exp_grid=full_exp_grid,
         type=type,
         tuple=tuple,
         enum=enum.Enum,
         int=int,
-        _encrypt_tuple=_encrypt_tuple,
-        _format_tuple=_format_tuple,
         config=config,
     )
 

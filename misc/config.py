@@ -29,7 +29,6 @@ class Config:
     LOCAL_CODE_PATH: Path
     LOCAL_OUTPUT_PATH: Path
 
-    USE_EXP_YAML: str = "NOOOOO"
     INCLUDE_RESULTS_FROM: List[str]
 
     EXP_TITLE: str = "test_exp_2"
@@ -96,14 +95,12 @@ class Config:
 
         self._pathes_magic()
 
-        # check if we have a yaml defined experiment
-        if self.USE_EXP_YAML != "NOOOOO":
-            # yes, we have -> overwrite everything, except for the stuff which was explicitly defined
-            self._load_exp_yaml()
+        # load yaml and overwrite everything, except for the stuff which was explicitly defined
+        self._load_exp_yaml()
 
-            self.EXP_GRID_RANDOM_SEED = list(
-                range(self.EXP_GRID_RANDOM_SEEDS_START, self.EXP_GRID_RANDOM_SEEDS_END)
-            )
+        self.EXP_GRID_RANDOM_SEED = list(
+            range(self.EXP_GRID_RANDOM_SEEDS_START, self.EXP_GRID_RANDOM_SEEDS_END)
+        )
 
         if self.RANDOM_SEED != -1 and self.RANDOM_SEED != -2:
             np.random.seed(self.RANDOM_SEED)
@@ -127,9 +124,6 @@ class Config:
             self.OUTPUT_PATH = Path(self.HPC_OUTPUT_PATH)
             self.DATASETS_PATH = Path(self.HPC_DATASETS_PATH)
 
-        if self.USE_EXP_YAML != "NOOOOO":
-            self.EXP_TITLE = self.USE_EXP_YAML
-
         self.EXP_RESULT_ZIP_PATH_PREFIX = Path(
             str(self.HPC_WS_PATH)[1:] + "exp_results/" + self.EXP_TITLE
         )
@@ -145,6 +139,8 @@ class Config:
 
         # check if a config file exists which could be read in
         self.CONFIG_FILE_PATH = self.OUTPUT_PATH / self.CONFIG_FILE_PATH
+
+        self.LOCAL_YAML_EXP_PATH = Path(self.LOCAL_YAML_EXP_PATH)
 
         self.LOCAL_CONFIG_FILE_PATH = Path(self.LOCAL_CONFIG_FILE_PATH)
         self.CONFIG_FILE_PATH = Path(self.CONFIG_FILE_PATH)
@@ -203,9 +199,7 @@ class Config:
     def _load_exp_yaml(self) -> None:
         yaml_config_params = yaml.safe_load(self.LOCAL_YAML_EXP_PATH.read_bytes())
 
-        yaml_config_params = yaml_config_params[self.USE_EXP_YAML]
-
-        self.EXP_TITLE = self.USE_EXP_YAML
+        yaml_config_params = yaml_config_params[self.EXP_TITLE]
 
         explicitly_defined_cli_args = self._return_list_of_explicitly_defined_cli_args()
 
@@ -216,10 +210,10 @@ class Config:
             # convert str/ints to enum data types first
             if k == "EXP_GRID_STRATEGY":
                 # parse args
-                # if type(v[0]) == int:
-                #    v = [AL_STRATEGY(x) for x in v]
-                # else:
-                v = [{AL_STRATEGY[list(x.keys())[0]]: list(x.values())[0]} for x in v]
+                if type(v[0]) == int:
+                    v = [AL_STRATEGY(x) for x in v]
+                else:
+                    v = [AL_STRATEGY[x] for x in v]
             elif k == "EXP_GRID_DATASET":
                 if type(v[0]) == int:
                     v = [DATASET(x) for x in v]
