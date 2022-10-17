@@ -1,25 +1,47 @@
 from __future__ import annotations
-from typing import List
-from misc.config import Config
+import contextlib
+from distutils.log import warn
+import io
+
+import numpy as np
 from framework_runners.base_runner import AL_Experiment
+
+from typing import TYPE_CHECKING, List
+import warnings
+
+if TYPE_CHECKING:
+    from misc.config import Config
+
 
 class PLAYGROUND_AL_Experiment(AL_Experiment):
     def __init__(self, config: Config):
         super().__init__(config)
-        self.al_strategy = None,
+        self.al_strategy = (None,)
 
     def get_AL_strategy(self):
-        from ressources.data_types import AL_STRATEGY
-        from ressources.data_types import al_strategy_to_python_classes_mapping
+        from resources.data_types import AL_STRATEGY
+        from resources.data_types import al_strategy_to_python_classes_mapping
+
         strategy = AL_STRATEGY(self.config.EXP_STRATEGY)
-        self.al_strategy = al_strategy_to_python_classes_mapping[strategy](self.X, self.Y, self.config.RANDOM_SEED)
+        self.al_strategy = al_strategy_to_python_classes_mapping[strategy](
+            self.X, self.Y, self.config.EXP_RANDOM_SEED
+        )
 
     def query_AL_strategy(self) -> List[int]:
         if self.al_strategy is None:
             from misc.Errors import NoStrategyError
+
             raise NoStrategyError("get_AL_strategy() has to be called before querying")
-        return self.al_strategy.select_batch_(self.model, self.label_idx, self.config.EXP_BATCH_SIZE)
+
+        warnings.filterwarnings("error")
+        with contextlib.redirect_stdout(io.StringIO()) as f:
+
+            result = self.al_strategy.select_batch_(
+                self.model, self.label_idx, self.config.EXP_BATCH_SIZE
+            )
+            s = f.getvalue()
+            print(s)
+        return result
 
     def prepare_dataset(self):
         pass
-

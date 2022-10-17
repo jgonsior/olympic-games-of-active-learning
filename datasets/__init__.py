@@ -19,7 +19,7 @@ if TYPE_CHECKING:
         Config,
     )
 
-    from ressources.data_types import (
+    from resources.data_types import (
         SampleIndiceList,
         FeatureVectors,
         LabelList,
@@ -33,7 +33,7 @@ class DATASET(IntEnum):
 
 
 # load dataset names from yaml files
-with open("ressources/datasets.yaml", "r") as params_file:
+with open("resources/datasets.yaml", "r") as params_file:
     datasets_yaml_parameter_dict: Dict[str, Any] = yaml.safe_load(params_file)
 
 for dataset_name in datasets_yaml_parameter_dict:
@@ -75,7 +75,6 @@ def split_dataset(
     # scale back to [0,1]
     scaler = MinMaxScaler()
     X = scaler.fit_transform(X)
-
     # fancy ALiPy train/test split
     train_idx: SampleIndiceList = ast.literal_eval(
         train_test_split.iloc[config.EXP_TRAIN_TEST_BUCKET_SIZE]["train"]
@@ -83,6 +82,7 @@ def split_dataset(
     test_idx: SampleIndiceList = ast.literal_eval(
         train_test_split.iloc[config.EXP_TRAIN_TEST_BUCKET_SIZE]["test"]
     )
+
     unlabel_idx: SampleIndiceList = train_idx.copy()
     label_idx: SampleIndiceList = []
     for label in np.unique(Y):  # type: ignore
