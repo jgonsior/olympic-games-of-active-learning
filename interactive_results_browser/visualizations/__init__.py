@@ -3,10 +3,10 @@ from typing import Callable, Dict
 from interactive_results_browser.visualizations.base import Base_Visualizer
 from interactive_results_browser.visualizations.learning_curves import Learning_Curves
 from interactive_results_browser.visualizations.retrieved_samples import (
-    Retrived_Samples,
+    Retrieved_Samples,
 )
 
-from interactive_results_browser.visualizations.run_don_stats import (
+from interactive_results_browser.visualizations.run_done_stats_table import (
     Run_Done_Stats_Table,
 )
 from interactive_results_browser.visualizations.strategy_ranking import Strategy_Ranking
@@ -22,7 +22,7 @@ class VISUALIZATION(IntEnum):
 
 vizualization_to_python_function_mapping: Dict[VISUALIZATION, Base_Visualizer] = {
     VISUALIZATION.LEARNING_CURVES: Learning_Curves,
-    VISUALIZATION.RETRIEVED_SAMPLES: Retrived_Samples,
+    VISUALIZATION.RETRIEVED_SAMPLES: Retrieved_Samples,
     VISUALIZATION.RUN_DONE_STATS: Run_Done_Stats_Table,
     VISUALIZATION.STRATEGY_RANKING: Strategy_Ranking,
 }

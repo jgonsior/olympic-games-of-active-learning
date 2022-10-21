@@ -1,6 +1,6 @@
-import enum
 from pathlib import Path
 from typing import List
+from enum import Enum
 from flask import Flask, render_template
 from datasets import DATASET
 from interactive_results_browser.csv_helper_functions import (
@@ -45,8 +45,11 @@ def show_results(experiment_name: str):
     )
 
     visualizations_and_tables: List[Base_Visualizer] = []
+
     for viz in exp_grid_request_params["VISUALIZATIONS"]:
-        visualizer = vizualization_to_python_function_mapping[viz](config)
+        visualizer = vizualization_to_python_function_mapping[viz](
+            config, exp_grid_request_params, experiment_name
+        )
         visualizations_and_tables.append(visualizer)
 
     return render_template(
@@ -55,6 +58,12 @@ def show_results(experiment_name: str):
         config=config,
         full_exp_grid=full_exp_grid,
         visualizations_and_tables=visualizations_and_tables,
+        isinstance=isinstance,
+        Iterable=Iterable,
+        Enum=Enum,
+        int=int,
+        str=str,
+        exp_grid_request_params=exp_grid_request_params,
     )
 
 
@@ -73,9 +82,4 @@ if __name__ == "__main__":
             sr_local_path.write_bytes(requests.get(sr_url).content)
 
     server = Server(app.wsgi_app, watcher=INotifyWatcher())
-    # server.watch("*.py")
-    # server.watch("*.yaml")
-    # server.watch("*.j2")
-    # server.watch("*.css")
-    # server.watch("*.js")
     server.serve()

@@ -5,10 +5,10 @@
         <th>{{col}}</th>
         {% else %}
         <th>
-            {{col[0].name}}
-            {% for k,v in col[1].items() %}
-            ({{ k}}: {{ v }})
-            {% endfor %}
+            <a type="submit" href={{ url_for("show_results", experiment_name=experiment_name,
+                **update_get_params(EXP_STRATEGY=col.value)) }}>
+                {{ col.name }}
+            </a>
         </th>
         {% endif %}
         {% endfor %}
@@ -18,7 +18,8 @@
         {% for col, row_ in zip(column_names, row) %}
         {% if col == link_column %}
         <td>
-            <a type="submit" href={{ url_for("show_dataset_overview", dataset_id=row_.value) }}>
+            <a type="submit" href={{ url_for("show_results", experiment_name=experiment_name,
+                **update_get_params(EXP_DATASET=row_.value)) }}>
                 {{ row_.name }}
             </a>
         </td>
