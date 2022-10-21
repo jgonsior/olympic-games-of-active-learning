@@ -6,4 +6,8 @@
 
 {% include "partials/exp_grid_selection_form.j2" %}
 
+{% for viz in visualizations_and_tables %}
+{{ viz.render() }}
+{% endfor %}
+
 {% endblock %}

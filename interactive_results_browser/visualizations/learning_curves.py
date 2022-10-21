@@ -10,11 +10,5 @@ if TYPE_CHECKING:
 
 
 class Learning_Curves(Base_Visualizer):
-    def __init__(self, config: Config) -> None:
-        super().__init__(config)
-
-    def get_data(self) -> Dict[str, Any]:
-        return super().get_data()
-
-    def template_name(self) -> str:
-        return "learning_curves.html.j2"
+    def get_template_data(self) -> Dict[str, Any]:
+        return super().get_template_data()

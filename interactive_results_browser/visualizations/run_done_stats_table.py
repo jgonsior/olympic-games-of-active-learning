@@ -1,7 +1,9 @@
 from __future__ import annotations
+import copy
 import enum
 
 import itertools
+from matplotlib.pyplot import table
 import pandas as pd
 from datasets import DATASET
 from interactive_results_browser.visualizations.base import Base_Visualizer
@@ -9,21 +11,15 @@ from typing import TYPE_CHECKING, Any, Iterable, List, Tuple
 
 from typing import Any, Dict
 
+from resources.data_types import AL_STRATEGY
+
 if TYPE_CHECKING:
     from misc.config import Config
 
 
 class Run_Done_Stats_Table(Base_Visualizer):
-    def __init__(self, config: Config) -> None:
-        super().__init__(config)
-
-    def template_name(self) -> str:
-        return "run_done_stats.html.j2"
-
-    def get_data(self) -> Dict[str, Any]:
-        return super().get_data()
-
-    def load_workload_csv_files(
+    def _load_workload_csv_files(
+        self,
         config: Config,
     ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         done_workload: pd.DataFrame = pd.read_csv(config.DONE_WORKLOAD_PATH)  # type: ignore
@@ -40,14 +36,27 @@ class Run_Done_Stats_Table(Base_Visualizer):
 
         return full_workload, open_jobs, done_jobs
 
-    def _plot_run_done_stats(config: Config, exp_grid_request_params):
-        full_workload, open_jobs, done_jobs = self._load_workload_csv_files(config)
-        if len(exp_grid_request_params) == 0:
+    def _update_get_params(self, **kwargs):
+        updated_params = {
+            k: [int(vv) if isinstance(vv, enum.Enum) else vv for vv in v]
+            for k, v in self._exp_grid_request_params.items()
+        }
+
+        for k, v in kwargs.items():
+            updated_params[k] = v
+
+        return updated_params
+
+    def get_template_data(self) -> Dict[str, Any]:
+        full_workload, open_jobs, done_jobs = self._load_workload_csv_files(
+            self._config
+        )
+        if len(self._exp_grid_request_params) == 0:
             # do not filter at all!
             pass
         else:
             # only focus on the specified samples
-            for k, v in exp_grid_request_params.items():
+            for k, v in self._exp_grid_request_params.items():
                 k = k.replace("_GRID", "")
 
                 if k in ["VISUALIZATIONS"]:
@@ -80,8 +89,7 @@ class Run_Done_Stats_Table(Base_Visualizer):
                 dataset_strat_counts[(dataset, strat)],
                 open_count,
             )
-
-        table_data = [[""] + [strat for strat in strategies]] + [
+        table_data = [[""] + [AL_STRATEGY(strat) for strat in strategies]] + [
             ([DATASET(dataset)] + [0 for strat in strategies]) for dataset in datasets
         ]
 
@@ -93,32 +101,12 @@ class Run_Done_Stats_Table(Base_Visualizer):
 
         # sort columns, rows -> using pandas
         table_data_df = pd.DataFrame(table_data)
-
-        # sort after dataset NAME
-        dataset_names = table_data_df[1:][0].values.tolist()
-        dataset_names_str = [str(x.name).lower() for x in dataset_names]
-        sorted_range = sorted(
-            range(len(dataset_names_str)), key=dataset_names_str.__getitem__
+        table_data_df = table_data_df.sort_values(
+            by=0, axis=0, key=lambda x: [str(x2) for x2 in x]
         )
-        dataset_names_ints = list(range(len(dataset_names_str)))
-        new_sorting = [sorted_range.index(x) for x in dataset_names_ints]
-        custom_sorting = {
-            idx: value + 1 for idx, value in zip(dataset_names, new_sorting)
-        }
-        custom_sorting[""] = 0
-
-        table_data_df.sort_values(
-            by=[table_data_df.columns[0]],
-            key=lambda x: x.map(lambda col: custom_sorting[col]),
-            inplace=True,
+        table_data_df = table_data_df.sort_values(
+            by=0, axis=1, key=lambda x: [str(x2) for x2 in x]
         )
-
-        # same for header columns
-        column_names = table_data_df.columns.values.tolist()[1:]
-        strategy_names = [str(x).lower() for x in table_data_df.loc[0][1:]]
-        yx = list(zip(strategy_names, column_names))
-        yx_sort = sorted(yx)
-        sorted_column_titles = [0] + [x[1] for x in yx_sort]
 
         rows = list(table_data_df.values.tolist())
         rows[0][0] = "Dataset"
@@ -127,13 +115,15 @@ class Run_Done_Stats_Table(Base_Visualizer):
             "column_names": rows[0],
             "row_data": rows[1:],
             "link_column": "Dataset",
+            "experiment_name": self._experiment_name,
             "zip": zip,
             "str": str,
             "isinstance": isinstance,
             "Iterable": Iterable,
-            "exp_grid_request_params": exp_grid_request_params,
+            "exp_grid_request_params": self._exp_grid_request_params,
             "type": type,
             "tuple": tuple,
             "enum": enum.Enum,
             "int": int,
+            "update_get_params": self._update_get_params,
         }

@@ -10,11 +10,5 @@ if TYPE_CHECKING:
 
 
 class Strategy_Ranking(Base_Visualizer):
-    def __init__(self, config: Config) -> None:
-        super().__init__(config)
-
-    def template_name(self) -> str:
-        return "strategy_ranking.html.j2"
-
-    def get_data(self) -> Dict[str, Any]:
-        return super().get_data()
+    def get_template_data(self) -> Dict[str, Any]:
+        return super().get_template_data()
