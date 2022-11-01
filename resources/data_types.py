@@ -247,7 +247,7 @@ def _convert_encrypted_strat_enum_to_readable_string(
     splits = encrypted_string.split(config._EXP_STRATEGY_STRAT_PARAMS_DELIM)
     strat = AL_STRATEGY(int(splits[0]))
 
-    if splits[1] is not "":
+    if splits[1] != "":
         appendix = f" ({splits[1]})"
     else:
         appendix = ""
