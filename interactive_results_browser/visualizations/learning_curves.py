@@ -11,4 +11,8 @@ if TYPE_CHECKING:
 
 class Learning_Curves(Base_Visualizer):
     def get_template_data(self) -> Dict[str, Any]:
+        # read in all metrics
+        # plotly
+        # group by irgendwas
+        # let metric of learning plots be determined by get parameter list
         return super().get_template_data()
