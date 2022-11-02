@@ -58,6 +58,8 @@ DATASETS_PATH =/some/path/to/the/datasets
 OUTPUT_PATH =/some/path/where/to/store/the/results
 SLURM_MAIL=your.name@example.org
 SLURM_PROJECT="project title"
+CODE_PATH=/some/path/where/the/code/should/be
+PYTHON_PATH=/the/path/of/the/python/interpreter
 
 [LOCAL]
 DATASETS_PATH = /home/your_name/Projects/al_survey/datasets
