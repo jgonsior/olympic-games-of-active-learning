@@ -1,5 +1,7 @@
 from __future__ import annotations
+import base64
 from distutils.command.config import config
+import io
 
 import pandas as pd
 from datasets import DATASET
@@ -13,10 +15,8 @@ from resources.data_types import AL_STRATEGY, LEARNER_MODEL
 
 if TYPE_CHECKING:
     from misc.config import Config
-import plotly
-import plotly.express as px
-import plotly.graph_objs as go
-import json
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 
 class Learning_Curves(Base_Visualizer):
@@ -60,25 +60,17 @@ class Learning_Curves(Base_Visualizer):
         if len(self._exp_grid_request_params["VIZ_LC_METRIC"]) != 1:
             return {"ERROR": "Please select only one VIZ_LC_METRIC value"}
 
-        number_facets = int(len(df["EXP_DATASET"].unique()) / 3)
-
-        fig = px.bar(
+        g = sns.relplot(
             df,
             x="EXP_STRATEGY",
             y=self._exp_grid_request_params["VIZ_LC_METRIC"][0],
-            color="EXP_STRATEGY",
-            pattern_shape="EXP_STRATEGY",
-            text_auto=True,
-            facet_col="EXP_DATASET",
-            facet_col_wrap=6,
-            width=3000,
-            height=number_facets * 100,
-            facet_row_spacing=0.02,
-            facet_col_spacing=0.01,
+            col="EXP_DATASET",
+            col_wrap=6,
         )
 
-        fig.update_yaxes(title=None)
+        img = io.BytesIO()
+        plt.savefig(img, format="png")
+        img.seek(0)
+        plot_url = base64.b64encode(img.getvalue()).decode("utf8")
 
-        graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-
-        return {"graphJSON": graphJSON}
+        return {"plot_data": plot_url}
