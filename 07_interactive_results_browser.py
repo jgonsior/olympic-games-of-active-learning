@@ -52,6 +52,12 @@ def show_results(experiment_name: str):
         )
         visualizations_and_tables.append(visualizer)
 
+    for viz in visualizations_and_tables:
+        additional_request_params = viz.get_additional_request_params()
+        if additional_request_params != {}:
+            print(additional_request_params)
+            # show metrics, and display name of vizualization before them
+
     return render_template(
         "viz.html.j2",
         experiment_name=experiment_name,

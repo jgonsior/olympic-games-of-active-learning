@@ -12,6 +12,8 @@ if TYPE_CHECKING:
 
 
 class Base_Visualizer(ABC):
+    _NON_WORKLOAD_KEYS = ["VISUALIZATIONS"]
+
     def __init__(
         self,
         config: Config,
@@ -31,3 +33,7 @@ class Base_Visualizer(ABC):
 
     def render(self) -> str:
         return render_template(self.get_template_name(), **self.get_template_data())
+
+    @staticmethod
+    def get_additional_request_params() -> Dict[str, List[Any]]:
+        return {}
