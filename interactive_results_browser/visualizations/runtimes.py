@@ -19,20 +19,13 @@ import plotly.graph_objs as go
 import json
 
 
-class Learning_Curves(Base_Visualizer):
+class Runtimes(Base_Visualizer):
     @staticmethod
     def get_additional_request_params() -> Dict[str, List[Any]]:
         return {
-            "VIZ_LC_METRIC": [
+            "VIZ_RT_METRIC": [
                 "learner_training_time",
                 "query_selection_time",
-                "acc_auc",
-                "macro_f1_auc",
-                "macro_prec_auc",
-                "macro_recall_auc",
-                "weighted_f1_auc",
-                "weighted_prec_auc",
-                "weighted_recall_auc",
             ]
         }
 
@@ -57,8 +50,11 @@ class Learning_Curves(Base_Visualizer):
         # read in all metrics
         df = self._load_done_workload()
 
-        if len(self._exp_grid_request_params["VIZ_LC_METRIC"]) != 1:
-            return {"ERROR": "Please select only one VIZ_LC_METRIC value"}
+        if (
+            "VIZ_RT_METRIC" not in self._exp_grid_request_params
+            or len(self._exp_grid_request_params["VIZ_RT_METRIC"]) != 1
+        ):
+            return {"ERROR": "Please select only one VIZ_RT_METRIC value"}
 
         number_facets = int(len(df["EXP_DATASET"].unique()) / 3)
 
