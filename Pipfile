@@ -43,7 +43,6 @@ modin = "*"
 cvxpy = "*"
 flask = "*"
 livereload = "==2.5.1"
-plotly = "*"
 pyinotify = "*"
 
 [requires]
