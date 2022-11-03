@@ -9,6 +9,7 @@ from interactive_results_browser.visualizations.retrieved_samples import (
 from interactive_results_browser.visualizations.run_done_stats_table import (
     Run_Done_Stats_Table,
 )
+from interactive_results_browser.visualizations.runtimes import Runtimes
 from interactive_results_browser.visualizations.strategy_ranking import Strategy_Ranking
 
 
@@ -18,6 +19,7 @@ class VISUALIZATION(IntEnum):
     RETRIEVED_SAMPLES = 2
     RUN_DONE_STATS = 3
     STRATEGY_RANKING = 4
+    RUNTIMES = 5
 
 
 vizualization_to_python_function_mapping: Dict[VISUALIZATION, Base_Visualizer] = {
@@ -25,4 +27,5 @@ vizualization_to_python_function_mapping: Dict[VISUALIZATION, Base_Visualizer] =
     VISUALIZATION.RETRIEVED_SAMPLES: Retrieved_Samples,
     VISUALIZATION.RUN_DONE_STATS: Run_Done_Stats_Table,
     VISUALIZATION.STRATEGY_RANKING: Strategy_Ranking,
+    VISUALIZATION.RUNTIMES: Runtimes,
 }

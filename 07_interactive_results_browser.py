@@ -60,7 +60,7 @@ def show_results(experiment_name: str):
                 **full_exp_grid,
                 **additional_request_params,
             }
-    print(full_exp_grid)
+
     return render_template(
         "viz.html.j2",
         experiment_name=experiment_name,
