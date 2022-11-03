@@ -83,16 +83,17 @@ class Learning_Curves(Base_Visualizer):
                 )
 
         results = pd.DataFrame(
-            data=result_data, columns=["Strategy", "Dataset", "#Iteration", metric]
+            data=result_data, columns=["Strategy", "Dataset", "AL Cycle", metric]
         )
         rel = sns.relplot(
             results,
-            x="#Iteration",
+            x="AL Cycle",
             y=metric,
             hue="Strategy",
             kind="line",
             style="Strategy",
             col="Dataset",
+            markers=True,
             col_wrap=min(6, len(self._exp_grid_request_params["EXP_DATASET"])),
         )
         for ax in rel.fig.axes:
