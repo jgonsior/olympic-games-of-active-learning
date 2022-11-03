@@ -1,1 +1,12 @@
+{% if ERROR %}
+<mark>{{ ERROR }}</mark>
+{% else %}
+<div id='chart' class='chart'></div>
+
+<script type='text/javascript'>
+    var graphs = {{ graphJSON | safe}};
+    Plotly.plot('chart', graphs, {});
+</script>
+
 {{ done_workload }}
+{% endif %}

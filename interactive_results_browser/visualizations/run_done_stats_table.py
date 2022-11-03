@@ -59,7 +59,7 @@ class Run_Done_Stats_Table(Base_Visualizer):
             for k, v in self._exp_grid_request_params.items():
                 k = k.replace("_GRID", "")
 
-                if k in ["VISUALIZATIONS"]:
+                if k in ["VISUALIZATIONS"] or k.startswith("VIZ_"):
                     continue
 
                 v = [int(vv) for vv in v]

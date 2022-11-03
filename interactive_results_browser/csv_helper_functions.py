@@ -40,7 +40,8 @@ def get_exp_grid_request_params(experiment_name: str, config: Config):
 
     get_exp_grid_request_params = {}
 
-    for k in full_exp_grid.keys():
+    keys = list(set([*full_exp_grid.keys(), *request.args.keys()]))
+    for k in keys:
         if k in request.args.keys():
             try:
                 get_exp_grid_request_params[k] = [

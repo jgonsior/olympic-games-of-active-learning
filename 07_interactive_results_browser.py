@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import List
 from enum import Enum
+import requests
 from flask import Flask, render_template
 from datasets import DATASET
 from interactive_results_browser.csv_helper_functions import (
@@ -55,9 +56,11 @@ def show_results(experiment_name: str):
     for viz in visualizations_and_tables:
         additional_request_params = viz.get_additional_request_params()
         if additional_request_params != {}:
-            print(additional_request_params)
-            # show metrics, and display name of vizualization before them
-
+            full_exp_grid = {
+                **full_exp_grid,
+                **additional_request_params,
+            }
+    print(full_exp_grid)
     return render_template(
         "viz.html.j2",
         experiment_name=experiment_name,
@@ -80,6 +83,7 @@ if __name__ == "__main__":
         "https://raw.githubusercontent.com/kevquirk/simple.css/main/simple.min.css": "_simple.min.css",
         "https://cdn.jsdelivr.net/npm/tom-select@2.2.1/dist/css/tom-select.css": "_tom_min.css",
         "https://cdn.jsdelivr.net/npm/tom-select@2.2.1/dist/js/tom-select.complete.min.js": "_tom_min.js",
+        "https://cdn.plot.ly/plotly-latest.min.js": "_plotly_min.js",
     }
 
     for sr_url, sr_local_path in static_ressources.items():
