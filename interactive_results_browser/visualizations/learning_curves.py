@@ -10,13 +10,16 @@ from typing import Any, Dict
 
 if TYPE_CHECKING:
     from misc.config import Config
+import plotly
+import plotly.express as px
+import json
 
 
 class Learning_Curves(Base_Visualizer):
     @staticmethod
     def get_additional_request_params() -> Dict[str, List[Any]]:
         return {
-            "metric": [
+            "VIZ_LC_METRIC": [
                 "learner_training_time",
                 "query_selection_time",
                 "acc_auc",
@@ -43,7 +46,17 @@ class Learning_Curves(Base_Visualizer):
         # read in all metrics
         done_workload = self._load_done_workload()
 
-        return {"done_workload": len(done_workload)}
-        # plotly
-        # group by irgendwas
-        # let metric of learning plots be determined by get parameter list
+        if len(self._exp_grid_request_params["VIZ_LC_METRIC"]) != 1:
+            return {"ERROR": "Please select only one VIZ_LC_METRIC value"}
+
+        print(done_workload[self._exp_grid_request_params["VIZ_LC_METRIC"][0]])
+
+        fig = px.bar(
+            done_workload,
+            x="EXP_STRATEGY",
+            y=self._exp_grid_request_params["VIZ_LC_METRIC"][0],
+        )
+
+        graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+        return {"graphJSON": graphJSON}

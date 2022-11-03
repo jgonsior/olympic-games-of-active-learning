@@ -24,6 +24,9 @@ class Base_Visualizer(ABC):
         self._exp_grid_request_params = exp_grid_request_params
         self._experiment_name = experiment_name
 
+        for k in self.__class__.get_additional_request_params().keys():
+            self._NON_WORKLOAD_KEYS.append(k)
+
     def get_template_name(self) -> str:
         return "partials/" + self.__class__.__name__.lower() + ".html.j2"
 
