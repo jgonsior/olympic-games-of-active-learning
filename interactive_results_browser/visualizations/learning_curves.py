@@ -36,7 +36,9 @@ class Learning_Curves(Base_Visualizer):
             ]
         }
 
-    def _load_done_workload(self, limit_to_get_params=True) -> pd.DataFrame:
+    def _load_done_workload(
+        self, limit_to_get_params=True, enum_to_str=True
+    ) -> pd.DataFrame:
         df: pd.DataFrame = pd.read_csv(self._config.DONE_WORKLOAD_PATH)
 
         if limit_to_get_params:
@@ -45,22 +47,27 @@ class Learning_Curves(Base_Visualizer):
                     continue
                 df = df.loc[df[k].isin(v)]
 
-        # convert int_enums to real enums
-        df["EXP_DATASET"] = df["EXP_DATASET"].apply(lambda x: DATASET(x).name)
-        df["EXP_LEARNER_MODEL"] = df["EXP_LEARNER_MODEL"].apply(
-            lambda x: LEARNER_MODEL(x).name
-        )
-        df["EXP_STRATEGY"] = df["EXP_STRATEGY"].apply(lambda x: AL_STRATEGY(x).name)
+        if enum_to_str:
+            # convert int_enums to real enums
+            df["EXP_DATASET"] = df["EXP_DATASET"].apply(lambda x: DATASET(x).name)
+            df["EXP_LEARNER_MODEL"] = df["EXP_LEARNER_MODEL"].apply(
+                lambda x: LEARNER_MODEL(x).name
+            )
+            df["EXP_STRATEGY"] = df["EXP_STRATEGY"].apply(lambda x: AL_STRATEGY(x).name)
         return df
 
     def get_template_data(self) -> Dict[str, Any]:
         # read in all metrics
-        df = self._load_done_workload()
+        done_workload_df = self._load_done_workload()
+
+        # read in each csv file to get learning curve data for plot
+        for _, row in done_workload_df.iterrows():
+            print(row)
 
         if len(self._exp_grid_request_params["VIZ_LC_METRIC"]) != 1:
             return {"ERROR": "Please select only one VIZ_LC_METRIC value"}
 
-        g = sns.relplot(
+        fig = sns.relplot(
             df,
             x="EXP_STRATEGY",
             y=self._exp_grid_request_params["VIZ_LC_METRIC"][0],
