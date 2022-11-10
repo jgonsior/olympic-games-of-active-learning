@@ -2,13 +2,6 @@
 {% if ERROR %}
 <mark>{{ ERROR }}</mark>
 {% else %}
-<div id='chartrt' class='chart'></div>
-
-<script type='text/javascript'>
-    var graphs = {{ graphJSON | safe}};
-    Plotly.plot('chartrt', graphs, {});
-</script>
-
-{{ done_workload }}
+<img src="data:image/png;base64,{{ plot_data }}">
 {% endif %}
 <hr>
