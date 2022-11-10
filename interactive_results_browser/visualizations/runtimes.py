@@ -52,7 +52,6 @@ class Runtimes(Base_Visualizer):
 
         metric = self._exp_grid_request_params["VIZ_RT_METRIC"][0]
 
-        # read in all metrics
         df = self._load_done_workload()
         rel = sns.displot(
             df,
