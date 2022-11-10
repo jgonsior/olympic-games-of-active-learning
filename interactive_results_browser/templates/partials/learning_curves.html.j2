@@ -2,8 +2,6 @@
 {% if ERROR %}
 <mark>{{ ERROR }}</mark>
 {% else %}
-<div id='chartlc' class='chart'></div>
-
 <img src="data:image/png;base64,{{ plot_data }}">
 {% endif %}
 <hr>

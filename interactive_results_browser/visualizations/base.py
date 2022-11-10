@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, List
 from typing import Any, Dict
 
 from flask import render_template
+from matplotlib import pyplot as plt
 
 if TYPE_CHECKING:
     from misc.config import Config
@@ -35,7 +36,9 @@ class Base_Visualizer(ABC):
         return {}
 
     def render(self) -> str:
-        return render_template(self.get_template_name(), **self.get_template_data())
+        result = render_template(self.get_template_name(), **self.get_template_data())
+        plt.clf()
+        return result
 
     @staticmethod
     def get_additional_request_params() -> Dict[str, List[Any]]:
