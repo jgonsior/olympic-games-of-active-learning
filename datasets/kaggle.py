@@ -1,148 +1,60 @@
+import shutil
+import zipfile
 from distutils.command.config import config
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
+
+import kaggle
 import numpy as np
-import zipfile
 import pandas as pd
 import yaml
-from datasets import DATASET
-from misc.config import Config
-import kaggle
-from misc.logging import log_it
 from sklearn.model_selection import (
     StratifiedKFold,
     StratifiedShuffleSplit,
     train_test_split,
 )
 
+from datasets import DATASET
+from datasets.base import Base_Dataset_Loader
+from misc.config import Config
+from misc.logging import log_it
 from resources.data_types import SampleIndiceList
 
 
-class Kaggle:
+class Kaggle(Base_Dataset_Loader):
     def __init__(self, config: Config) -> None:
-        self.config = config
+        super().__init__(config)
         self.parameter_dict: Dict[str, Any] = yaml.safe_load(
             config.KAGGLE_DATASETS_PATH.read_text()
         )
 
-    def download_all_datasets(self) -> None:
-        for dataset_name in self.parameter_dict.keys():
-            print(f"Downloading {dataset_name}")
-            self.download_single_dataset(dataset_name)
-            self.preprocess_dataset(dataset_name)
-
-    def download_single_dataset(self, dataset_name: str) -> None:
-        destination_path: Path = (
-            self.config.RAW_DATASETS_PATH
-            / self.parameter_dict[dataset_name]["kaggle_file"]
+    def load_single_dataset(
+        self, dataset_name: str, dataset_raw_path: Path
+    ) -> pd.DataFrame:
+        log_it(
+            "Dowloading {} to {}".format(
+                dataset_name,
+                dataset_raw_path,
+            )
         )
 
-        if not destination_path.exists():
-            log_it(
-                "Dowloading {} to {}".format(
-                    dataset_name,
-                    destination_path,
-                )
-            )
-            kaggle.api.dataset_download_file(
-                dataset=self.parameter_dict[dataset_name]["kaggle_name"],
-                file_name=self.parameter_dict[dataset_name]["kaggle_file"],
-                path=self.config.RAW_DATASETS_PATH,
-            )
+        kaggle.api.dataset_download_file(
+            dataset=self.parameter_dict[dataset_name]["kaggle_name"],
+            file_name=self.parameter_dict[dataset_name]["kaggle_file"],
+            path=dataset_raw_path.parent,
+        )
 
-            potential_zip_file = Path(str(destination_path) + ".zip")
-            if potential_zip_file.exists():
-                with zipfile.ZipFile(potential_zip_file, "r") as zip_ref:
-                    zip_ref.extractall(self.config.RAW_DATASETS_PATH)
+        potential_zip_file = (
+            dataset_raw_path.parent
+            / f"{self.parameter_dict[dataset_name]['kaggle_file']}.zip"
+        )
+        if potential_zip_file.exists():
+            with zipfile.ZipFile(potential_zip_file, "r") as zip_ref:
+                zip_ref.extractall(dataset_raw_path.parent)
 
-    """
-    Creates a train_test_split.csv file, which contains for each specified split (0-9 or 0-4) the indices for the train, and the indices for the test split
-    """
-
-    def save_train_test_splits(self, df: pd.DataFrame, destination: Path) -> None:
-
-        # remove all classes, where we have less than 2 samples
-        value_counts = df["LABEL_TARGET"].value_counts()
-
-        for label, count in value_counts.iteritems():
-            if count <= 2:
-                df = df[df.LABEL_TARGET != label]
-
-        X = df.loc[:, df.columns != "LABEL_TARGET"].to_numpy()  # type: ignore
-        Y = df["LABEL_TARGET"].to_numpy()  # type: ignore
-        classes = np.unique(Y)
-
-        no_good_split_found = 0
-        splits: Dict[int, Tuple[SampleIndiceList, SampleIndiceList]] = {}
-
-        while no_good_split_found < self.config.DATASETS_AMOUNT_OF_SPLITS:
-            for split_number, (train_index, test_index) in enumerate(
-                StratifiedShuffleSplit(
-                    n_splits=self.config.DATASETS_AMOUNT_OF_SPLITS,
-                    test_size=self.config.DATASETS_TEST_SIZE_PERCENTAGE,
-                ).split(X, Y)
-            ):
-                # quick test that all classes are present in all test_index sets
-                if np.setdiff1d(np.unique(Y[test_index]), classes) == 0:  # type: ignore
-                    no_good_split_found = 0
-                    splits = {}
-                no_good_split_found += 1
-                splits[split_number] = (train_index.tolist(), test_index.tolist())  # type: ignore
-        splits_df = pd.DataFrame(splits).T
-        splits_df.columns = ["train", "test"]
-
-        # quick check that everything wored as intented
-        for split in range(0, 5):
-            print(len(splits_df.iloc[split]["train"]) / len(X))
-            print(len(splits_df.iloc[split]["test"]) / len(X))
-
-            print(np.unique(Y[splits_df.iloc[split]["train"]], return_counts=True))
-            print(np.unique(Y[splits_df.iloc[split]["test"]], return_counts=True))
-
-        splits_df.to_csv(destination, index=None)
-
-    def preprocess_dataset(self, dataset_name: str) -> None:
-        datasets_raw_path = self.config.RAW_DATASETS_PATH
-        datasets_cleaned_path = self.config.DATASETS_PATH
-
-        datasets_raw_path.mkdir(parents=True, exist_ok=True)
-        destination_path = dataset_name + ".csv"
-        datasets_cleaned_path = datasets_cleaned_path / destination_path
-
-        if not datasets_cleaned_path.exists():
-
-            parsing_args = self.parameter_dict[dataset_name]
-
-            with open(
-                datasets_raw_path / self.parameter_dict[dataset_name]["kaggle_file"],
-                "r",
-            ) as f:
-                df: pd.DataFrame = pd.read_csv(f, sep=",")
-
-            if parsing_args["drop_columns"] is not None:
-                df.drop(parsing_args["drop_columns"], axis=1, inplace=True)
-
-            for column, dtype in df.dtypes.items():  # type: ignore
-                if dtype not in ["int64", "float64"]:
-                    if dtype.name != "category":
-                        df[column] = df[column].astype("category")
-                    df[column] = df[column].cat.codes  # type: ignore
-
-            label_column = parsing_args["target"]
-            df.rename(columns={label_column: "LABEL_TARGET"}, inplace=True)
-
-            # remove rows having NaN values
-            df.dropna(inplace=True)
-
-            self.save_train_test_splits(
-                df,
-                self.config.DATASETS_PATH
-                / str(dataset_name + self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX),
-            )
-
-            df.to_csv(
-                datasets_cleaned_path,
-                index=False,
-            )
-
-            log_it(f"Done Preprocessing {dataset_name} to {datasets_cleaned_path}")
+        shutil.move(
+            dataset_raw_path.parent / self.parameter_dict[dataset_name]["kaggle_file"],
+            dataset_raw_path,
+        )
+        df = pd.read_csv(dataset_raw_path, sep=",")
+        return df
