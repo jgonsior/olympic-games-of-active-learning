@@ -122,9 +122,13 @@ class Config:
         # load yaml and overwrite everything, except for the stuff which was explicitly defined
         self._load_exp_yaml()
 
-        self.EXP_GRID_RANDOM_SEED = list(
-            range(self.EXP_GRID_RANDOM_SEEDS_START, self.EXP_GRID_RANDOM_SEEDS_END)
-        )
+        if (
+            self.EXP_GRID_RANDOM_SEEDS_START != None
+            and self.EXP_GRID_RANDOM_SEEDS_END != None
+        ):
+            self.EXP_GRID_RANDOM_SEED = list(
+                range(self.EXP_GRID_RANDOM_SEEDS_START, self.EXP_GRID_RANDOM_SEEDS_END)
+            )
 
         if self.RANDOM_SEED != -1 and self.RANDOM_SEED != -2:
             np.random.seed(self.RANDOM_SEED)
