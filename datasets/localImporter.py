@@ -10,7 +10,7 @@ import glob
 
 import pandas as pd
 from datasets.base import Base_Dataset_Loader
-
+import shutil
 
 if TYPE_CHECKING:
     from misc.config import Config
@@ -22,7 +22,7 @@ class Local_Importer(Base_Dataset_Loader):
         self.local_datasets_path = config.DATASETS_PATH.parent / "local_datasets"
 
         for local_csv in glob.glob(str(self.local_datasets_path) + "/*.csv"):
-            self.parameter_dict[local_csv.replace(".csv", "")] = {
+            self.parameter_dict[local_csv.split("/")[-1].replace(".csv", "")] = {
                 "target": "Color",
                 "drop_columns": None,
                 id: None,

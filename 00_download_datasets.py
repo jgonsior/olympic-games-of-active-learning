@@ -14,8 +14,6 @@ kaggle.load_datasets()
 local_importer = Local_Importer(config)
 local_importer.load_datasets()
 
-exit(-1)
-
 data = []
 for dataset_csv in list(glob.glob(str(config.DATASETS_PATH) + "/*.csv")):
     if "_split" in dataset_csv:
