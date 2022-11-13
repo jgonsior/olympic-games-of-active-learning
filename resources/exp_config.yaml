@@ -175,7 +175,7 @@ local_SynDs: {
                 ALIPY_EXPECTED_ERROR_REDUCTION,
                 ALIPY_BMDR,
                 ALIPY_SPAL,
-                #ALIPY_LAL,
+                ALIPY_LAL,
                 ALIPY_DENSITY_WEIGHTED,
             ],
         EXP_GRID_RANDOM_SEEDS_END: 5,
