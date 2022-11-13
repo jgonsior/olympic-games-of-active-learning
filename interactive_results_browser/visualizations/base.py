@@ -49,3 +49,9 @@ class Base_Visualizer(ABC):
     @staticmethod
     def get_additional_request_params() -> Dict[str, List[Any]]:
         return {}
+
+
+    def _generate_image(self, args, image_creation_function)->None:
+        # first check if args_image_creating_function exists in cache
+        # if so -> return the cached image, do not run the cache
+        # if not -> create image, and we're happy!
