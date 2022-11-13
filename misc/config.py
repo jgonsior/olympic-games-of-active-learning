@@ -239,8 +239,9 @@ class Config:
         # if they are not -> add them to it
 
         for potential_dataset_name in yaml_config_params["EXP_GRID_DATASET"]:
-            if potential_dataset_name not in [d.value for d in DATASET]:
-                extend_enum(DATASET, potential_dataset_name)
+            if isinstance(potential_dataset_name, str):
+                if potential_dataset_name not in [d.name for d in DATASET]:
+                    extend_enum(DATASET, potential_dataset_name)
 
         for k, v in yaml_config_params.items():
             if k in explicitly_defined_cli_args:
