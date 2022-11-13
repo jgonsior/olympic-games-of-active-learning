@@ -40,7 +40,7 @@ pip install git+https://github.com/jgonsior/libact.git
 ## Usage
 
 ```bash
-python 00_dowload_datasets.py
+python 00_download_datasets.py
 python 01_create_workload.py --EXP_TITLE test_experiment --IGNORE_CONFIG_FILE --EXP_DATASETS 1 2 3 --EXP_STRATEGIES 5 2 --EXP_RANDOM_SEEDS_END 100
 # or alternatively using the yaml file:
 python 01_create_workload.py --EXP_TITLE test_exp_2
@@ -58,6 +58,8 @@ DATASETS_PATH =/some/path/to/the/datasets
 OUTPUT_PATH =/some/path/where/to/store/the/results
 SLURM_MAIL=your.name@example.org
 SLURM_PROJECT="project title"
+CODE_PATH=/some/path/where/the/code/should/be
+PYTHON_PATH=/the/path/of/the/python/interpreter
 
 [LOCAL]
 DATASETS_PATH = /home/your_name/Projects/al_survey/datasets
