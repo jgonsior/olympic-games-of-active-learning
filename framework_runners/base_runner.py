@@ -3,6 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 import csv
 from itertools import chain
+import pickle
 import random
 import time
 from typing import TYPE_CHECKING, Any, List
@@ -73,7 +74,9 @@ class AL_Experiment(ABC):
         self.model = model_instantiation_tuple[0](**model_instantiation_tuple[1])
 
         # initially train model on initally labeled data
+        start_time = time.process_time()
         self.model.fit(X=self.X[self.label_idx, :], y=self.Y[self.label_idx])  # type: ignore
+        end_time = time.process_time()
 
         # select the AL strategy to use
         self.get_AL_strategy()
@@ -86,14 +89,26 @@ class AL_Experiment(ABC):
         else:
             total_amount_of_iterations = self.config.EXP_NUM_QUERIES
 
+        pred = self.model.predict(self.X[self.test_idx, :])  # type: ignore
+
         # the metrics we want to analyze later on
-        confusion_matrices: List[np.ndarray] = []
-        selected_indices: List[List[int]] = []
+        confusion_matrices: List[np.ndarray] = [
+            classification_report(
+                y_true=self.Y[self.test_idx],
+                y_pred=pred,
+                output_dict=True,
+                zero_division=0,
+            )
+        ]
+        selected_indices: List[List[int]] = [self.label_idx]
+        pickled_learner_models: List[str] = [pickle.dumps(self.model, protocol=5)]
+
+        # should we store initial metrics? I think yes!
 
         log_it(f"Running for a total of {total_amount_of_iterations} iterations")
 
         query_selection_time = 0
-        learner_training_time = 0
+        learner_training_time = end_time - start_time
 
         for iteration in range(0, total_amount_of_iterations):
             if len(self.unlabel_idx) == 0:
@@ -126,6 +141,8 @@ class AL_Experiment(ABC):
             end_time = time.process_time()
             learner_training_time += end_time - start_time
 
+            pickled_learner_models.append(pickle.dumps(self.model, protocol=5))
+
             # prediction on test set for metrics
             pred = self.model.predict(self.X[self.test_idx, :])  # type: ignore
 
@@ -144,6 +161,7 @@ class AL_Experiment(ABC):
 
         metric_df = pd.json_normalize(confusion_matrices, sep="_")  # type: ignore
         metric_df["selected_indices"] = selected_indices
+        metric_df["pickled_learner_models"] = pickled_learner_models
 
         log_it(f"saving to {self.config.METRIC_RESULTS_FILE_PATH}")
         metric_df.to_csv(
@@ -166,9 +184,9 @@ class AL_Experiment(ABC):
         weighted_prec_auc = metric_df["weighted avg_precision"].sum() / len(metric_df)
         weighted_recall_auc = metric_df["weighted avg_recall"].sum() / len(metric_df)
         metric_df["selected_indices"] = selected_indices
-        selected_indices = list(
-            chain.from_iterable(metric_df["selected_indices"].to_list())
-        )
+        # selected_indices = list(
+        #    chain.from_iterable(metric_df["selected_indices"].to_list())
+        # )
 
         workload.update(
             {

@@ -5,6 +5,7 @@ import sys
 from configparser import RawConfigParser
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Union, get_args
+from aenum import extend_enum
 
 import git
 import numpy as np
@@ -70,7 +71,7 @@ class Config:
     BASH_PARALLEL_RUNNERS: int = 10
 
     DATASETS_PATH: Path
-    DATASETS_TRAIN_TEST_SPLIT_APPENDIX: str = "_train_test_split.csv"
+    DATASETS_TRAIN_TEST_SPLIT_APPENDIX: str = "_split.csv"
     RAW_DATASETS_PATH: Path = "_raw"  # type: ignore
     DATASETS_AMOUNT_OF_SPLITS: int = 5
     DATASETS_TEST_SIZE_PERCENTAGE: float = 0.4
@@ -233,6 +234,13 @@ class Config:
         yaml_config_params = yaml_config_params[self.EXP_TITLE]
 
         explicitly_defined_cli_args = self._return_list_of_explicitly_defined_cli_args()
+
+        # check if dataset args ar not in the DATASET enmus
+        # if they are not -> add them to it
+
+        for potential_dataset_name in yaml_config_params["EXP_GRID_DATASET"]:
+            if potential_dataset_name not in [d.value for d in DATASET]:
+                extend_enum(DATASET, potential_dataset_name)
 
         for k, v in yaml_config_params.items():
             if k in explicitly_defined_cli_args:

@@ -16,7 +16,7 @@ local_importer.load_datasets()
 
 data = []
 for dataset_csv in list(glob.glob(str(config.DATASETS_PATH) + "/*.csv")):
-    if "_split" in dataset_csv:
+    if config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX in dataset_csv:
         continue
     df = pd.read_csv(dataset_csv)
     data.append(
