@@ -5,6 +5,7 @@ import sys
 from configparser import RawConfigParser
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Union, get_args
+from aenum import extend_enum
 
 import git
 import numpy as np
@@ -35,14 +36,12 @@ class Config:
     LOCAL_CODE_PATH: Path
     LOCAL_OUTPUT_PATH: Path
 
-    USE_EXP_YAML: str = "NOOOOO"
     INCLUDE_RESULTS_FROM: List[str]
 
     EXP_TITLE: str = "test_exp_2"
     EXP_DATASET: DATASET
     EXP_GRID_DATASET: List[DATASET]
     EXP_STRATEGY: AL_STRATEGY
-    EXP_STRATEGY_PARAMS: Dict[str, Any]
     EXP_GRID_STRATEGY: List[AL_STRATEGY]
     EXP_GRID_RANDOM_SEEDS_START: int = 0
     EXP_GRID_RANDOM_SEEDS_END: int
@@ -72,7 +71,7 @@ class Config:
     BASH_PARALLEL_RUNNERS: int = 10
 
     DATASETS_PATH: Path
-    DATASETS_TRAIN_TEST_SPLIT_APPENDIX: str = "_train_test_split.csv"
+    DATASETS_TRAIN_TEST_SPLIT_APPENDIX: str = "_split.csv"
     RAW_DATASETS_PATH: Path = "_raw"  # type: ignore
     DATASETS_AMOUNT_OF_SPLITS: int = 5
     DATASETS_TEST_SIZE_PERCENTAGE: float = 0.4
@@ -89,15 +88,11 @@ class Config:
     EXPERIMENT_PYTHON_PARALLEL_BASH_FILE_PATH: Path = "02b_run_bash_parallel.py"  # type: ignore
     EXPERIMENT_SYNC_AND_RUN_FILE_PATH: Path = "04_sync_and_run.sh"  # type: ignore
     DONE_WORKLOAD_PATH: Path = "05_done_workload.csv"  # type: ignore
-    METRIC_RESULTS_PATH_APPENDIX: str = "_metric_results.csv"
+    METRIC_RESULTS_PATH_APPENDIX: str = "_metric_results.csv.gz"
     EXP_RESULT_ZIP_PATH_PREFIX: Path
     EXP_RESULT_ZIP_PATH: Path = ".tar.gz"  # type: ignore
     EXP_RESULT_EXTRACTED_ZIP_PATH: Path
     METRIC_RESULTS_FILE_PATH: Path
-
-    _EXP_STRATEGY_STRAT_PARAMS_DELIM = "#"
-    _EXP_STRATEGY_PARAM_PARAM_DELIM = "-"
-    _EXP_STRATEGY_PARAM_VALUE_DELIM = ":"
 
     DONE_WORKLOAD_FILE: Path
     RESULTS_PATH: Path
@@ -125,11 +120,13 @@ class Config:
 
         self._pathes_magic()
 
-        # check if we have a yaml defined experiment
-        if self.USE_EXP_YAML != "NOOOOO":
-            # yes, we have -> overwrite everything, except for the stuff which was explicitly defined
-            self._load_exp_yaml()
+        # load yaml and overwrite everything, except for the stuff which was explicitly defined
+        self._load_exp_yaml()
 
+        if (
+            self.EXP_GRID_RANDOM_SEEDS_START != None
+            and self.EXP_GRID_RANDOM_SEEDS_END != None
+        ):
             self.EXP_GRID_RANDOM_SEED = list(
                 range(self.EXP_GRID_RANDOM_SEEDS_START, self.EXP_GRID_RANDOM_SEEDS_END)
             )
@@ -157,9 +154,6 @@ class Config:
             self.OUTPUT_PATH = Path(self.HPC_OUTPUT_PATH)
             self.DATASETS_PATH = Path(self.HPC_DATASETS_PATH)
 
-        if self.USE_EXP_YAML != "NOOOOO":
-            self.EXP_TITLE = self.USE_EXP_YAML
-
         self.EXP_RESULT_ZIP_PATH_PREFIX = Path(
             str(self.HPC_WS_PATH)[1:] + "exp_results/" + self.EXP_TITLE
         )
@@ -175,6 +169,8 @@ class Config:
 
         # check if a config file exists which could be read in
         self.CONFIG_FILE_PATH = self.OUTPUT_PATH / self.CONFIG_FILE_PATH
+
+        self.LOCAL_YAML_EXP_PATH = Path(self.LOCAL_YAML_EXP_PATH)
 
         self.LOCAL_CONFIG_FILE_PATH = Path(self.LOCAL_CONFIG_FILE_PATH)
         self.CONFIG_FILE_PATH = Path(self.CONFIG_FILE_PATH)
@@ -235,11 +231,16 @@ class Config:
     def _load_exp_yaml(self) -> None:
         yaml_config_params = yaml.safe_load(self.LOCAL_YAML_EXP_PATH.read_bytes())
 
-        yaml_config_params = yaml_config_params[self.USE_EXP_YAML]
-
-        self.EXP_TITLE = self.USE_EXP_YAML
+        yaml_config_params = yaml_config_params[self.EXP_TITLE]
 
         explicitly_defined_cli_args = self._return_list_of_explicitly_defined_cli_args()
+
+        # check if dataset args ar not in the DATASET enmus
+        # if they are not -> add them to it
+
+        for potential_dataset_name in yaml_config_params["EXP_GRID_DATASET"]:
+            if potential_dataset_name not in [d.value for d in DATASET]:
+                extend_enum(DATASET, potential_dataset_name)
 
         for k, v in yaml_config_params.items():
             if k in explicitly_defined_cli_args:
@@ -248,10 +249,10 @@ class Config:
             # convert str/ints to enum data types first
             if k == "EXP_GRID_STRATEGY":
                 # parse args
-                # if type(v[0]) == int:
-                #    v = [AL_STRATEGY(x) for x in v]
-                # else:
-                v = [{AL_STRATEGY[list(x.keys())[0]]: list(x.values())[0]} for x in v]
+                if type(v[0]) == int:
+                    v = [AL_STRATEGY(x) for x in v]
+                else:
+                    v = [AL_STRATEGY[x] for x in v]
             elif k == "EXP_GRID_DATASET":
                 if type(v[0]) == int:
                     v = [DATASET(x) for x in v]
@@ -279,22 +280,7 @@ class Config:
             # log_it(f"{k}\t\t\t{str(v)}")
             # convert str/ints to enum data types first
             if k == "EXP_STRATEGY":
-                # super complex EXP_STRATEGY parsing
-                _strat_params_split = v.split(self._EXP_STRATEGY_STRAT_PARAMS_DELIM)
-                if _strat_params_split[1] == "":
-                    params = {}
-                else:
-                    _params_params_split = _strat_params_split[1].split(
-                        self._EXP_STRATEGY_PARAM_PARAM_DELIM
-                    )
-                    _params_params_split = [
-                        _x.split(self._EXP_STRATEGY_PARAM_VALUE_DELIM)
-                        for _x in _params_params_split
-                    ]
-                    params = {_x[0]: _x[1] for _x in _params_params_split}
-                v = AL_STRATEGY(int(_strat_params_split[0]))
-
-                self.EXP_STRATEGY_PARAMS = params
+                v = AL_STRATEGY(int(v))
             elif k == "EXP_DATASET":
                 v = DATASET(int(v))
             elif k == "EXP_LEARNER_MODEL":

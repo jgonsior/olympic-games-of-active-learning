@@ -1,32 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{% block title %}{% endblock %}</title>
-        <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
-        <link rel="stylesheet" href="/static/custom.css">
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="/static/_simple.min.css">
+    <link rel="stylesheet" href="/static/_tom_min.css">
+    <link rel="stylesheet" href="/static/custom.css">
 
-    <body>
-        <header>
-            <h1>Active Learning Survey</h1>
-            <nav>
-                <a href="{{ url_for('show_available_experiments') }}">Overview</a>
-                <a href="{{ url_for('show_runtimes') }}">Runtimes</a>
-                <a href="" onclick="history.go(-1)">Back</a>
-                <a href="" onclick="history.go(1)">Forward</a>
-            </nav>
-        </header>
+    <script src="/static/_tom_min.js"></script>
 
-        <main>
-            {% block body %} {% endblock %}
-        </main>
+</head>
 
-        <footer>
-            <p>Made by the <a href="https://wwwdb.inf.tu-dresden.de/">Dresden Database Research Group</a></p>
-        </footer>
-    </body>
+<body>
+    <header>
+        <h1>Active Learning Survey</h1>
+        <nav>
+            <a href="{{ url_for('show_available_experiments') }}">Overview</a>
+            <a href="" onclick="history.go(-1)">Back</a>
+            <a href="" onclick="history.go(1)">Forward</a>
+        </nav>
+    </header>
+
+    <main>
+        {% block body %} {% endblock %}
+    </main>
+
+    <footer>
+        <p>Made by the <a href="https://wwwdb.inf.tu-dresden.de/">Dresden Database Research Group</a></p>
+    </footer>
+
+
+
+</body>
 
 </html>

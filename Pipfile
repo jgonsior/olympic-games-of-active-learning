@@ -43,6 +43,7 @@ modin = "*"
 cvxpy = "*"
 flask = "*"
 livereload = "==2.5.1"
+pyinotify = "*"
 
 [requires]
 python_version = "3.10"

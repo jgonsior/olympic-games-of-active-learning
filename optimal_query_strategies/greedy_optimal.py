@@ -39,7 +39,7 @@ class Greedy_Optimal(Base_AL_Strategy):
     ) -> None:
         super().__init__(X, Y)
         self.amount_of_pre_selections = int(amount_of_pre_selections)
-        self.future_peak_eval_metric = FuturePeakEvalMetric[future_peak_eval_metric]  # type: ignore
+        self.future_peak_eval_metric = FuturePeakEvalMetric(future_peak_eval_metric)  # type: ignore
 
     def _future_peak(
         self,

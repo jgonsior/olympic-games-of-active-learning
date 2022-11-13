@@ -14,20 +14,20 @@ class ALIPY_AL_Experiment(AL_Experiment):
         )
 
         al_strategy = AL_STRATEGY(self.config.EXP_STRATEGY)
-        if al_strategy == AL_STRATEGY.ALIPY_LAL:
-            self.config.EXP_STRATEGY_PARAMS["train_slt"] = False
+
+        additional_params = al_strategy_to_python_classes_mapping[al_strategy][1]
 
         if al_strategy in [
             AL_STRATEGY.ALIPY_QUIRE,
             AL_STRATEGY.ALIPY_GRAPH_DENSITY,
             AL_STRATEGY.ALIPY_CORESET_GREEDY,
         ]:
-            self.config.EXP_STRATEGY_PARAMS["train_idx"] = self.train_idx
+            additional_params["train_idx"] = self.train_idx
 
-        al_strategy = al_strategy_to_python_classes_mapping[al_strategy](
+        al_strategy = al_strategy_to_python_classes_mapping[al_strategy][0](
             X=self.X,
             y=self.Y,
-            **self.config.EXP_STRATEGY_PARAMS,
+            **additional_params,
         )
 
         if self.config.EXP_STRATEGY == AL_STRATEGY.ALIPY_LAL:

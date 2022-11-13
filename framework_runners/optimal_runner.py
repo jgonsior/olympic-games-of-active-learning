@@ -11,15 +11,16 @@ class OPTIMAL_AL_Experiment(AL_Experiment):
             al_strategy_to_python_classes_mapping,
         )
 
-        if self.config.EXP_STRATEGY == AL_STRATEGY.OPTIMAL_BSO:
-            self.config.EXP_STRATEGY_PARAMS["num_queries"] = self.config.EXP_NUM_QUERIES
-
         al_strategy = AL_STRATEGY(self.config.EXP_STRATEGY)
+        additional_params = al_strategy_to_python_classes_mapping[al_strategy][1]
 
-        al_strategy = al_strategy_to_python_classes_mapping[al_strategy](
+        if self.config.EXP_STRATEGY == AL_STRATEGY.OPTIMAL_BSO:
+            additional_params["num_queries"] = self.config.EXP_NUM_QUERIES
+
+        al_strategy = al_strategy_to_python_classes_mapping[al_strategy][0](
             X=self.X,
             Y=self.Y,
-            **self.config.EXP_STRATEGY_PARAMS,
+            **additional_params,
         )
         self.al_strategy = al_strategy
 

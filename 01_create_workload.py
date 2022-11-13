@@ -28,25 +28,6 @@ def _determine_exp_grid_parameters(config: Config) -> List[str]:
     return result_list
 
 
-def _create_exp_grid(
-    exp_strat_grid: List[Dict[AL_STRATEGY, Dict[str, List[Any]]]], config: Config
-) -> List[str]:
-    result: List[str] = []
-    for a in exp_strat_grid:
-        for b, c in a.items():
-            kwargs = []
-            for d, e in c.items():
-                kwargs.append(
-                    [f"{d}{config._EXP_STRATEGY_PARAM_VALUE_DELIM}{_x}" for _x in e]
-                )
-            for f in [
-                config._EXP_STRATEGY_PARAM_PARAM_DELIM.join(_x)
-                for _x in itertools.product(*kwargs)
-            ]:
-                result.append(f"{b}{config._EXP_STRATEGY_STRAT_PARAMS_DELIM}{f}")
-    return result
-
-
 def create_workload(config: Config) -> List[int]:
     exp_grid_params_names = _determine_exp_grid_parameters(config)
     if os.path.isfile(config.DONE_WORKLOAD_PATH):
@@ -66,10 +47,7 @@ def create_workload(config: Config) -> List[int]:
             exp_parameter: config.__getattribute__(exp_parameter)
             for exp_parameter in exp_grid_params_names
         }
-        # convert EXP_GRID_STRATEGY with params into list of param objects
-        exp_param_grid["EXP_GRID_STRATEGY"] = _create_exp_grid(
-            exp_param_grid["EXP_GRID_STRATEGY"], config
-        )
+
         all_workloads = ParameterGrid(exp_param_grid)
 
         open_workload_df = pd.DataFrame(

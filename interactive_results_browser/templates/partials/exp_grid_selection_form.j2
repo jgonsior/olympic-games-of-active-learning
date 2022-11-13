@@ -1,0 +1,46 @@
+<form id="params" method="GET" action="">
+    {% for k,v in full_exp_grid.items() %}
+    <p style="display: inline-block">
+        {% if isinstance(v, Iterable) %}
+        {% if k.startswith("EXP_GRID") %}
+        {% set k_display = k[9:] %}
+        {% else %}
+        {% set k_display = k %}
+        {% endif %}
+        <label for="[[k}}">{{k_display}}</label>
+        <select id="{{k}}" multiple autocomplete="off" name="{{k}}">
+            {% for v2 in v %}
+            {% if isinstance(v2, Enum) %}
+            {% set v2_str = v2.name %}
+            {% set v2_id = int(v2) %}
+            {% else %}
+            {% set v2_str = str(v2) %}
+            {% set v2_id = v2 %}
+            {% endif %}
+
+            {% if v2_id in exp_grid_request_params[k] %}
+            <option value="{{v2_id}}" selected>{{v2_str}}</option>
+            {% else %}
+            <option value="{{v2_id}}">{{v2_str}}</option>
+            {% endif %}
+            {% endfor %}
+        </select>
+
+        <script type="text/javascript">
+            new TomSelect('#{{k}}', {
+                plugins: {
+                    'input_autogrow': {},
+                    'checkbox_options': {},
+                    'clear_button': { 'title': "Remove all selected options" }
+                },
+                persist: false,
+                create: true,
+
+            });
+        </script>
+        {% endif %}
+
+    </p>
+    {% endfor %}
+    <input type="submit" value="Update" submit />
+</form>
