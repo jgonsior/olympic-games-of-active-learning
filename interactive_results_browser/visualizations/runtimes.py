@@ -56,6 +56,8 @@ class Runtimes(Base_Visualizer):
         rel = sns.displot(
             df,
             x=metric,
+            hue="EXP_STRATEGY",
+            multiple="stack",
             col="EXP_DATASET",
             facet_kws=dict(margin_titles=True),
             col_wrap=min(6, len(self._exp_grid_request_params["EXP_DATASET"])),
