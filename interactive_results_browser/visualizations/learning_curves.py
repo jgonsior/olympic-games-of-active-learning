@@ -21,6 +21,19 @@ from matplotlib.ticker import FuncFormatter
 from interactive_results_browser.cache import memory
 
 
+def _plot_function(plot_df, metric):
+    rel = sns.lineplot(
+        plot_df,
+        x="AL Cycle",
+        y=metric,
+        hue="Strategy",
+        style="Strategy",
+        markers=True,
+    )
+    rel.xaxis.set_major_formatter(FuncFormatter(lambda x, _: int(x)))
+    return rel
+
+
 @memory.cache()
 def _cache_create_plots(
     done_workload_df,
@@ -28,7 +41,7 @@ def _cache_create_plots(
     OUTPUT_PATH,
     METRIC_RESULTS_PATH_APPENDIX,
     max_col_wrap,
-) -> str:
+) -> List[str]:
     result_data = []
     # read in each csv file to get learning curve data for plot
     for _, row in done_workload_df.iterrows():
@@ -46,25 +59,13 @@ def _cache_create_plots(
         data=result_data, columns=["Strategy", "Dataset", "AL Cycle", metric]
     )
 
-    rel = sns.relplot(
-        plot_df,
-        x="AL Cycle",
-        y=metric,
-        hue="Strategy",
-        kind="line",
-        style="Strategy",
-        col="Dataset",
-        markers=True,
-        col_wrap=min(6, max_col_wrap),
+    plot_urls = Base_Visualizer._render_images(
+        plot_df=plot_df,
+        args={"metric": metric},
+        plot_function=_plot_function,
+        df_col_key="Dataset",
     )
-    for ax in rel.fig.axes:
-        ax.xaxis.set_major_formatter(FuncFormatter(lambda x, _: int(x)))
-
-    img = io.BytesIO()
-    plt.savefig(img, format="png")
-    img.seek(0)
-    plot_url = base64.b64encode(img.getvalue()).decode("utf8")
-    return plot_url
+    return plot_urls
 
 
 class Learning_Curves(Base_Visualizer):

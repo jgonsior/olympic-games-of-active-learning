@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod, abstractproperty
+import base64
+import io
 from typing import TYPE_CHECKING, Any, Callable, List
 
 from typing import Any, Dict
@@ -81,12 +83,31 @@ class Base_Visualizer(ABC):
     def get_additional_request_params() -> Dict[str, List[Any]]:
         return {}
 
+    @staticmethod
     def _render_images(
-        self,
+        plot_df: pd.DataFrame,
         args: Dict[str, Any],
-        vizualization_result_creation_function: Callable[[Any], str],
-    ) -> str:
-        ...
+        plot_function: Callable[[Any], Any],
+        df_col_key: str,
+    ) -> List[str]:
+        # take in dataframe
+        # take in argument to iterate over, and to split the dataframe into
+        # determine if to disable legend, or show it
+        figs = []
+        for ix, df_col_value in enumerate(plot_df[df_col_key].unique()):
+            fig = plot_function(
+                plot_df.loc[plot_df[df_col_key] == df_col_value], **args
+            )
+            if ix != 0:
+                plt.legend([], [], frameon=False)
+
+            img = io.BytesIO()
+            plt.savefig(img, format="png")
+            img.seek(0)
+            plot_url = base64.b64encode(img.getvalue()).decode("utf8")
+            figs.append(plot_url)
+
+        return figs
 
     def _load_done_workload(
         self, limit_to_get_params=True, enum_to_str=True
