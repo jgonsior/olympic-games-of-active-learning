@@ -22,9 +22,13 @@ from interactive_results_browser.cache import memory
 
 
 @memory.cache()
-def _cache_load_individual_results(
-    done_workload_df, metric, OUTPUT_PATH, METRIC_RESULTS_PATH_APPENDIX
-) -> pd.DataFrame:
+def _cache_create_plots(
+    done_workload_df,
+    metric,
+    OUTPUT_PATH,
+    METRIC_RESULTS_PATH_APPENDIX,
+    max_col_wrap,
+) -> str:
     result_data = []
     # read in each csv file to get learning curve data for plot
     for _, row in done_workload_df.iterrows():
@@ -38,14 +42,10 @@ def _cache_load_individual_results(
                 (row["EXP_STRATEGY"], row["EXP_DATASET"], str(ix), row2[metric])
             )
 
-    results = pd.DataFrame(
+    plot_df = pd.DataFrame(
         data=result_data, columns=["Strategy", "Dataset", "AL Cycle", metric]
     )
-    return results
 
-
-@memory.cache()
-def _cache_create_plots(plot_df, max_col_wrap, metric) -> str:
     rel = sns.relplot(
         plot_df,
         x="AL Cycle",
@@ -96,17 +96,12 @@ class Learning_Curves(Base_Visualizer):
         # read in all metrics
         done_workload_df = self._load_done_workload()
 
-        plot_df = _cache_load_individual_results(
-            done_workload_df=done_workload_df,
-            metric=metric,
-            OUTPUT_PATH=self._config.OUTPUT_PATH,
-            METRIC_RESULTS_PATH_APPENDIX=self._config.METRIC_RESULTS_PATH_APPENDIX,
-        )
-
         plot_url = _cache_create_plots(
-            plot_df=plot_df,
             max_col_wrap=len(self._exp_grid_request_params["EXP_DATASET"]),
             metric=metric,
+            done_workload_df=done_workload_df,
+            OUTPUT_PATH=self._config.OUTPUT_PATH,
+            METRIC_RESULTS_PATH_APPENDIX=self._config.METRIC_RESULTS_PATH_APPENDIX,
         )
 
         return {"plot_data": plot_url}

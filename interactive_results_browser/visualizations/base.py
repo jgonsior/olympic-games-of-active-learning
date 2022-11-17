@@ -57,9 +57,6 @@ class Base_Visualizer(ABC):
 
         additional_request_params = self.__class__.get_additional_request_params()
 
-        print(additional_request_params.keys())
-        print(self._NON_WORKLOAD_KEYS)
-        print(self._exp_grid_request_params)
         for k in additional_request_params.keys():
             if not k in self._NON_WORKLOAD_KEYS:
                 self._NON_WORKLOAD_KEYS.append(k)
