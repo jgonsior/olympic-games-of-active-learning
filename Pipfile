@@ -45,6 +45,7 @@ flask = "*"
 livereload = "==2.5.1"
 pyinotify = "*"
 flask-caching = "*"
+pandarallel = "*"
 
 [requires]
 python_version = "3.10"

@@ -20,6 +20,8 @@ from collections.abc import Iterable
 from livereload.watcher import INotifyWatcher
 from flask_caching import Cache
 from interactive_results_browser.cache import cache
+import matplotlib.pyplot as plt
+from pandarallel import pandarallel
 
 app = Flask(
     __name__,
@@ -52,6 +54,8 @@ def show_results(experiment_name: str):
 
     visualizations_and_tables: List[Base_Visualizer] = []
 
+    plt.ioff()
+
     for viz in exp_grid_request_params["VISUALIZATIONS"]:
         visualizer = vizualization_to_python_function_mapping[viz](
             config, exp_grid_request_params, experiment_name
@@ -82,6 +86,8 @@ def show_results(experiment_name: str):
 
 
 if __name__ == "__main__":
+
+    pandarallel.initialize(progress_bar=True, use_memory_fs=True)
     # check if static external ressources exist
     # if not: download them
     static_ressources = {

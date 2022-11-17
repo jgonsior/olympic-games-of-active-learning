@@ -41,25 +41,13 @@ class Learning_Curves(Base_Visualizer):
             ]
         }
 
-    def _load_done_workload(
-        self, limit_to_get_params=True, enum_to_str=True
-    ) -> pd.DataFrame:
-        df: pd.DataFrame = pd.read_csv(self._config.DONE_WORKLOAD_PATH)
+    def get_template_data2(self) -> Dict[str, Any]:
+        if len(self._exp_grid_request_params["VIZ_LC_METRIC"]) != 1:
+            return {"ERROR": "Please select only one VIZ_LC_METRIC value"}
 
-        if limit_to_get_params:
-            for k, v in self._exp_grid_request_params.items():
-                if k in self._NON_WORKLOAD_KEYS:
-                    continue
-                df = df.loc[df[k].isin(v)]
-
-        if enum_to_str:
-            # convert int_enums to real enums
-            df["EXP_DATASET"] = df["EXP_DATASET"].apply(lambda x: DATASET(x).name)
-            df["EXP_LEARNER_MODEL"] = df["EXP_LEARNER_MODEL"].apply(
-                lambda x: LEARNER_MODEL(x).name
-            )
-            df["EXP_STRATEGY"] = df["EXP_STRATEGY"].apply(lambda x: AL_STRATEGY(x).name)
-        return df
+        metric = self._exp_grid_request_params["VIZ_LC_METRIC"][0]
+        # read in all metrics
+        done_workload_df = self._load_done_workload()
 
     def get_template_data(self) -> Dict[str, Any]:
         if len(self._exp_grid_request_params["VIZ_LC_METRIC"]) != 1:

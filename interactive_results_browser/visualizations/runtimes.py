@@ -53,15 +53,17 @@ class Runtimes(Base_Visualizer):
         metric = self._exp_grid_request_params["VIZ_RT_METRIC"][0]
 
         df = self._load_done_workload()
-        rel = sns.displot(
+
+        rel = sns.FacetGrid(
             df,
-            x=metric,
-            hue="EXP_STRATEGY",
-            multiple="stack",
             col="EXP_DATASET",
-            facet_kws=dict(margin_titles=True),
             col_wrap=min(6, len(self._exp_grid_request_params["EXP_DATASET"])),
+            # subplot_kws=dict(margin_titles=True),
         )
+        rel.map_dataframe(
+            sns.barplot, x=metric, y="EXP_STRATEGY", orient="h"
+        )  # , hue="EXP_STRATEGY")
+
         img = io.BytesIO()
         plt.savefig(img, format="png")
         img.seek(0)
