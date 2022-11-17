@@ -19,11 +19,14 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 from interactive_results_browser.cache import memory
+from matplotlib import pyplot
 
 
 def _plot_function(plot_df, metric):
+    fig, ax = pyplot.subplots(figsize=(8, 4))
     rel = sns.lineplot(
         plot_df,
+        ax=ax,
         x="AL Cycle",
         y=metric,
         hue="Strategy",
@@ -31,6 +34,7 @@ def _plot_function(plot_df, metric):
         markers=True,
     )
     rel.xaxis.set_major_formatter(FuncFormatter(lambda x, _: int(x)))
+    rel.set(ylim=(0, 1))
     return rel
 
 

@@ -96,13 +96,9 @@ class Base_Visualizer(ABC):
         figs = []
         for ix, df_col_value in enumerate(plot_df[df_col_key].unique()):
             ax = plot_function(plot_df.loc[plot_df[df_col_key] == df_col_value], **args)
-            # if ix != 0:
             plt.legend([], [], frameon=False)
-
-            plt.tight_layout()
-
             img = io.BytesIO()
-            plt.savefig(img, format="png", bbox_inches="tight")
+            plt.savefig(img, format="png")
             img.seek(0)
             plot_url = base64.b64encode(img.getvalue()).decode("utf8")
             figs.append(plot_url)
@@ -122,7 +118,7 @@ class Base_Visualizer(ABC):
                 img.seek(0)
                 plot_url = base64.b64encode(img.getvalue()).decode("utf8")
                 figs = [plot_url, figs[0]]
-                plt.clf()
+            plt.clf()
 
         return figs
 
