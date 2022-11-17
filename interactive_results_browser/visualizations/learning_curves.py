@@ -18,6 +18,53 @@ if TYPE_CHECKING:
 import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
+from interactive_results_browser.cache import memory
+
+
+@memory.cache()
+def _cache_load_individual_results(
+    done_workload_df, metric, OUTPUT_PATH, METRIC_RESULTS_PATH_APPENDIX
+) -> pd.DataFrame:
+    result_data = []
+    # read in each csv file to get learning curve data for plot
+    for _, row in done_workload_df.iterrows():
+        detailed_metrics_df = pd.read_csv(
+            f"{OUTPUT_PATH}/{row['EXP_DATASET']}/{row['EXP_UNIQUE_ID']}{METRIC_RESULTS_PATH_APPENDIX}",
+            usecols=[metric],
+        )
+
+        for ix, row2 in detailed_metrics_df.iterrows():
+            result_data.append(
+                (row["EXP_STRATEGY"], row["EXP_DATASET"], str(ix), row2[metric])
+            )
+
+    results = pd.DataFrame(
+        data=result_data, columns=["Strategy", "Dataset", "AL Cycle", metric]
+    )
+    return results
+
+
+@memory.cache()
+def _cache_create_plots(plot_df, max_col_wrap, metric) -> str:
+    rel = sns.relplot(
+        plot_df,
+        x="AL Cycle",
+        y=metric,
+        hue="Strategy",
+        kind="line",
+        style="Strategy",
+        col="Dataset",
+        markers=True,
+        col_wrap=min(6, max_col_wrap),
+    )
+    for ax in rel.fig.axes:
+        ax.xaxis.set_major_formatter(FuncFormatter(lambda x, _: int(x)))
+
+    img = io.BytesIO()
+    plt.savefig(img, format="png")
+    img.seek(0)
+    plot_url = base64.b64encode(img.getvalue()).decode("utf8")
+    return plot_url
 
 
 class Learning_Curves(Base_Visualizer):
@@ -41,14 +88,6 @@ class Learning_Curves(Base_Visualizer):
             ]
         }
 
-    def get_template_data2(self) -> Dict[str, Any]:
-        if len(self._exp_grid_request_params["VIZ_LC_METRIC"]) != 1:
-            return {"ERROR": "Please select only one VIZ_LC_METRIC value"}
-
-        metric = self._exp_grid_request_params["VIZ_LC_METRIC"][0]
-        # read in all metrics
-        done_workload_df = self._load_done_workload()
-
     def get_template_data(self) -> Dict[str, Any]:
         if len(self._exp_grid_request_params["VIZ_LC_METRIC"]) != 1:
             return {"ERROR": "Please select only one VIZ_LC_METRIC value"}
@@ -57,39 +96,17 @@ class Learning_Curves(Base_Visualizer):
         # read in all metrics
         done_workload_df = self._load_done_workload()
 
-        result_data = []
-        # read in each csv file to get learning curve data for plot
-        for _, row in done_workload_df.iterrows():
-            detailed_metrics_df = pd.read_csv(
-                f"{self._config.OUTPUT_PATH}/{row['EXP_DATASET']}/{row['EXP_UNIQUE_ID']}{self._config.METRIC_RESULTS_PATH_APPENDIX}",
-                usecols=[metric],
-            )
-
-            for ix, row2 in detailed_metrics_df.iterrows():
-                result_data.append(
-                    (row["EXP_STRATEGY"], row["EXP_DATASET"], str(ix), row2[metric])
-                )
-
-        results = pd.DataFrame(
-            data=result_data, columns=["Strategy", "Dataset", "AL Cycle", metric]
+        plot_df = _cache_load_individual_results(
+            done_workload_df=done_workload_df,
+            metric=metric,
+            OUTPUT_PATH=self._config.OUTPUT_PATH,
+            METRIC_RESULTS_PATH_APPENDIX=self._config.METRIC_RESULTS_PATH_APPENDIX,
         )
-        rel = sns.relplot(
-            results,
-            x="AL Cycle",
-            y=metric,
-            hue="Strategy",
-            kind="line",
-            style="Strategy",
-            col="Dataset",
-            markers=True,
-            col_wrap=min(6, len(self._exp_grid_request_params["EXP_DATASET"])),
-        )
-        for ax in rel.fig.axes:
-            ax.xaxis.set_major_formatter(FuncFormatter(lambda x, _: int(x)))
 
-        img = io.BytesIO()
-        plt.savefig(img, format="png")
-        img.seek(0)
-        plot_url = base64.b64encode(img.getvalue()).decode("utf8")
+        plot_url = _cache_create_plots(
+            plot_df=plot_df,
+            max_col_wrap=len(self._exp_grid_request_params["EXP_DATASET"]),
+            metric=metric,
+        )
 
         return {"plot_data": plot_url}

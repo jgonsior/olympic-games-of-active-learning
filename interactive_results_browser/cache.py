@@ -1,4 +1,5 @@
-from flask_caching import Cache
+cachedir = ".cache"
 
-# hip hip hooray for python circular imports!
-cache = Cache(config={"CACHE_TYPE": "FileSystemCache", "CACHE_DIR": ".cache"})
+from joblib import Memory
+
+memory = Memory(cachedir, verbose=1)
