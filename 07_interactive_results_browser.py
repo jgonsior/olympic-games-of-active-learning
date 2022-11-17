@@ -18,8 +18,7 @@ from misc.config import Config
 from collections.abc import Iterable
 
 from livereload.watcher import INotifyWatcher
-from flask_caching import Cache
-from interactive_results_browser.cache import cache
+from interactive_results_browser.cache import memory
 import matplotlib.pyplot as plt
 from pandarallel import pandarallel
 
@@ -30,11 +29,11 @@ app = Flask(
 )
 app.debug = True
 
-cache.init_app(app)
+# cache.init_app(app)
 
 
 @app.route("/")
-@cache.cached(timeout=50)
+# @cache.cached(timeout=50)
 def show_available_experiments():
 
     config = Config(no_cli_args={"WORKER_INDEX": None, "EXP_TITLE": "only_random"})

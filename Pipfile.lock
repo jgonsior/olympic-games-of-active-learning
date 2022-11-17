@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "83350693c1037fd5fb86f242d1ec868d2d0dab7b610ee3590e4334c3f4cdf005"
+            "sha256": "62e2185b4cf1ca34a946c58e88a93b9490d2c46e1a27d0e1b58d7a428eedd265"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -184,14 +184,6 @@
             ],
             "index": "pypi",
             "version": "==0.0.1"
-        },
-        "cachelib": {
-            "hashes": [
-                "sha256:38222cc7c1b79a23606de5c2607f4925779e37cdcea1c2ad21b8bae94b5425a5",
-                "sha256:811ceeb1209d2fe51cd2b62810bd1eccf70feba5c52641532498be5c675493b3"
-            ],
-            "markers": "python_version >= '3.7'",
-            "version": "==0.9.0"
         },
         "certifi": {
             "hashes": [
@@ -512,14 +504,6 @@
             ],
             "index": "pypi",
             "version": "==2.2.2"
-        },
-        "flask-caching": {
-            "hashes": [
-                "sha256:10df200a03f032af60077befe41779dd94898b67c82040d34e87210b71ba2638",
-                "sha256:703df847cbe904d8ddffd5f5fb320e236a31cb7bebac4a93d6b1701dd16dbf37"
-            ],
-            "index": "pypi",
-            "version": "==2.0.1"
         },
         "fonttools": {
             "hashes": [
