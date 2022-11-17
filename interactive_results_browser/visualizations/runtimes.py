@@ -18,6 +18,32 @@ if TYPE_CHECKING:
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+from interactive_results_browser.cache import memory
+
+
+@memory.cache()
+def _cache_runtimes(_exp_grid_request_params, done_workload) -> str:
+    if len(_exp_grid_request_params["VIZ_RT_METRIC"]) != 1:
+        return {"ERROR": "Please select only one VIZ_RT_METRIC value"}
+
+    metric = _exp_grid_request_params["VIZ_RT_METRIC"][0]
+
+    rel = sns.FacetGrid(
+        done_workload,
+        col="EXP_DATASET",
+        col_wrap=min(6, len(_exp_grid_request_params["EXP_DATASET"])),
+        # subplot_kws=dict(margin_titles=True),
+    )
+    rel.map_dataframe(
+        sns.barplot, x=metric, y="EXP_STRATEGY", orient="h"
+    )  # , hue="EXP_STRATEGY")
+
+    img = io.BytesIO()
+    plt.savefig(img, format="png")
+    img.seek(0)
+    plot_url = base64.b64encode(img.getvalue()).decode("utf8")
+    return plot_url
+
 
 class Runtimes(Base_Visualizer):
     @staticmethod
@@ -29,43 +55,9 @@ class Runtimes(Base_Visualizer):
             ]
         }
 
-    def _load_done_workload(self, limit_to_get_params=True) -> pd.DataFrame:
-        df: pd.DataFrame = pd.read_csv(self._config.DONE_WORKLOAD_PATH)
-
-        if limit_to_get_params:
-            for k, v in self._exp_grid_request_params.items():
-                if k in self._NON_WORKLOAD_KEYS:
-                    continue
-                df = df.loc[df[k].isin(v)]
-
-        # convert int_enums to real enums
-        df["EXP_DATASET"] = df["EXP_DATASET"].apply(lambda x: DATASET(x).name)
-        df["EXP_LEARNER_MODEL"] = df["EXP_LEARNER_MODEL"].apply(
-            lambda x: LEARNER_MODEL(x).name
-        )
-        df["EXP_STRATEGY"] = df["EXP_STRATEGY"].apply(lambda x: AL_STRATEGY(x).name)
-        return df
-
     def get_template_data(self) -> Dict[str, Any]:
-        if len(self._exp_grid_request_params["VIZ_RT_METRIC"]) != 1:
-            return {"ERROR": "Please select only one VIZ_RT_METRIC value"}
-
-        metric = self._exp_grid_request_params["VIZ_RT_METRIC"][0]
-
-        df = self._load_done_workload()
-
-        rel = sns.FacetGrid(
-            df,
-            col="EXP_DATASET",
-            col_wrap=min(6, len(self._exp_grid_request_params["EXP_DATASET"])),
-            # subplot_kws=dict(margin_titles=True),
+        plot_url = _cache_runtimes(
+            _exp_grid_request_params=self._exp_grid_request_params,
+            done_workload=self._load_done_workload(),
         )
-        rel.map_dataframe(
-            sns.barplot, x=metric, y="EXP_STRATEGY", orient="h"
-        )  # , hue="EXP_STRATEGY")
-
-        img = io.BytesIO()
-        plt.savefig(img, format="png")
-        img.seek(0)
-        plot_url = base64.b64encode(img.getvalue()).decode("utf8")
         return {"plot_data": plot_url}
