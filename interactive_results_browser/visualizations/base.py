@@ -95,17 +95,34 @@ class Base_Visualizer(ABC):
         # determine if to disable legend, or show it
         figs = []
         for ix, df_col_value in enumerate(plot_df[df_col_key].unique()):
-            fig = plot_function(
-                plot_df.loc[plot_df[df_col_key] == df_col_value], **args
-            )
-            if ix != 0:
-                plt.legend([], [], frameon=False)
+            ax = plot_function(plot_df.loc[plot_df[df_col_key] == df_col_value], **args)
+            # if ix != 0:
+            plt.legend([], [], frameon=False)
+
+            plt.tight_layout()
 
             img = io.BytesIO()
-            plt.savefig(img, format="png")
+            plt.savefig(img, format="png", bbox_inches="tight")
             img.seek(0)
             plot_url = base64.b64encode(img.getvalue()).decode("utf8")
             figs.append(plot_url)
+
+            if ix == 0:
+                fig2 = plt.figure()
+                ax2 = fig2.add_subplot()
+                ax2.axis("off")
+                legend = ax2.legend(*ax.get_legend_handles_labels(), frameon=False)
+                fig = legend.figure
+                fig.canvas.draw()
+                bbox = legend.get_window_extent().transformed(
+                    fig.dpi_scale_trans.inverted(),
+                )
+                img = io.BytesIO()
+                plt.savefig(img, format="png", bbox_inches=bbox)
+                img.seek(0)
+                plot_url = base64.b64encode(img.getvalue()).decode("utf8")
+                figs = [plot_url, figs[0]]
+                plt.clf()
 
         return figs
 
