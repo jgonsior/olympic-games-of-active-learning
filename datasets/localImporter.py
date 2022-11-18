@@ -9,6 +9,7 @@ from flask import render_template
 import glob
 
 import pandas as pd
+import yaml
 from datasets.base import Base_Dataset_Loader
 import shutil
 
@@ -19,19 +20,19 @@ if TYPE_CHECKING:
 class Local_Importer(Base_Dataset_Loader):
     def __init__(self, config: Config) -> None:
         super().__init__(config)
-        self.local_datasets_path = config.DATASETS_PATH.parent / "local_datasets"
 
-        for local_csv in glob.glob(str(self.local_datasets_path) + "/*.csv"):
-            self.parameter_dict[local_csv.split("/")[-1].replace(".csv", "")] = {
-                "target": "Color",
-                "drop_columns": None,
-                id: None,
-            }
+        self.parameter_dict: Dict[str, Any] = yaml.safe_load(
+            config.LOCAL_DATASETS_YAML_CONFIG_PATH.read_text()
+        )
+
+        for k in self.parameter_dict.keys():
+            self.parameter_dict[k]["id"] = None
+            self.parameter_dict[k]["drop_columns"] = None
 
     def load_single_dataset(
         self, dataset_name: str, dataset_raw_path: Path
     ) -> pd.DataFrame:
-        # copy over to dataset_raw_path
-        shutil.copy(self.local_datasets_path / f"{dataset_name}.csv", dataset_raw_path)
+        shutil.copy(self.parameter_dict[dataset_name]["path"], dataset_raw_path)
+
         df = pd.read_csv(dataset_raw_path, sep=",")
         return df
