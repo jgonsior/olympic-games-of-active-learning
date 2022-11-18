@@ -1,0 +1,22 @@
+Local_Dataset_Name: {
+        path: some_path_to_somewhere.csv,
+        enum_id: 40, # has to be higher than the amount of kaggle datasets!
+        train_test_splits: [], # if empty, automatically compute splits
+        target: Color, # the name of the csv column with the target classes
+    }
+Local_Dataset_Name_with_pre_defined_splits: {
+        path: some_path_to_somewhere.csv,
+        enum_id: 40, # has to be higher than the amount of kaggle datasets!
+        # start_points can also be empty, it specifies, with which initially labeled points to start, if empty, we pick a random start point from the train set
+        train_test_splits:
+            [
+                [
+                    {
+                        start_points: [[1, 10], [2, 3], [6, 7], [1, 7]],
+                        train_ids: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                        test_ids: [11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+                    },
+                ],
+            ],
+        target: Color, # the name of the csv column with the target classes
+    }
