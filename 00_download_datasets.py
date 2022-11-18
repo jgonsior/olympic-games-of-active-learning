@@ -8,8 +8,8 @@ from tabulate import tabulate
 
 config = Config()
 
-# kaggle = Kaggle(config)
-# kaggle.load_datasets()
+kaggle = Kaggle(config)
+kaggle.load_datasets()
 
 local_importer = Local_Importer(config)
 local_importer.load_datasets()
