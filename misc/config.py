@@ -38,7 +38,7 @@ class Config:
 
     INCLUDE_RESULTS_FROM: List[str]
 
-    EXP_TITLE: str = "test_exp_2"
+    EXP_TITLE: str = "all_strategies_all_datasets_single_random_seed"
     EXP_DATASET: DATASET
     EXP_GRID_DATASET: List[DATASET]
     EXP_STRATEGY: AL_STRATEGY
@@ -76,7 +76,8 @@ class Config:
     DATASETS_AMOUNT_OF_SPLITS: int = 5
     DATASETS_TEST_SIZE_PERCENTAGE: float = 0.4
 
-    KAGGLE_DATASETS_PATH: Path = "resources/datasets.yaml"  # type: ignore
+    KAGGLE_DATASETS_YAML_CONFIG_PATH: Path = "resources/datasets.yaml"  # type: ignore
+    LOCAL_DATASETS_YAML_CONFIG_PATH: Path = "resources/local_datasets.yaml"  # type: ignore
     LOCAL_CONFIG_FILE_PATH: Path = ".server_access_credentials.cfg"  # type: ignore
     LOCAL_YAML_EXP_PATH: Path = "resources/exp_config.yaml"  # type: ignore
     CONFIG_FILE_PATH: Path = "00_config.yaml"  # type: ignore
@@ -199,7 +200,12 @@ class Config:
 
         self.RAW_DATASETS_PATH = self.DATASETS_PATH / self.RAW_DATASETS_PATH
 
-        self.KAGGLE_DATASETS_PATH = Path(self.KAGGLE_DATASETS_PATH)
+        self.KAGGLE_DATASETS_YAML_CONFIG_PATH = Path(
+            self.KAGGLE_DATASETS_YAML_CONFIG_PATH
+        )
+        self.LOCAL_DATASETS_YAML_CONFIG_PATH = Path(
+            self.LOCAL_DATASETS_YAML_CONFIG_PATH
+        )
 
         self.DONE_WORKLOAD_PATH = self.OUTPUT_PATH / self.DONE_WORKLOAD_PATH
 
@@ -237,11 +243,13 @@ class Config:
 
         # check if dataset args ar not in the DATASET enmus
         # if they are not -> add them to it
+        local_datasets_yaml_config = yaml.safe_load(
+            self.LOCAL_DATASETS_YAML_CONFIG_PATH.read_text()
+        )
 
-        for potential_dataset_name in yaml_config_params["EXP_GRID_DATASET"]:
-            if isinstance(potential_dataset_name, str):
-                if potential_dataset_name not in [d.name for d in DATASET]:
-                    extend_enum(DATASET, potential_dataset_name)
+        for k in local_datasets_yaml_config.keys():
+            if k not in [d.name for d in DATASET]:
+                extend_enum(DATASET, k, local_datasets_yaml_config[k]["enum_id"])
 
         for k, v in yaml_config_params.items():
             if k in explicitly_defined_cli_args:

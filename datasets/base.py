@@ -26,7 +26,6 @@ class Base_Dataset_Loader(ABC):
     parameter_dict: Dict[str, Dict[str, Any]] = {}
 
     def __init__(self, config: Config) -> None:
-        super().__init__()
         self.config: Config = config
 
     @abstractmethod

@@ -186,3 +186,4 @@ LAL-randomtree-simulatedunbalanced-big.npz
 LAL-iterativetree-simulatedunbalanced-big.npz_model
 
 interactive_results_browser/static/_*
+resources/local_datasets.yaml

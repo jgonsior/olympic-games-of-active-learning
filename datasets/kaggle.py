@@ -25,7 +25,7 @@ class Kaggle(Base_Dataset_Loader):
     def __init__(self, config: Config) -> None:
         super().__init__(config)
         self.parameter_dict: Dict[str, Any] = yaml.safe_load(
-            config.KAGGLE_DATASETS_PATH.read_text()
+            config.KAGGLE_DATASETS_YAML_CONFIG_PATH.read_text()
         )
 
     def load_single_dataset(
