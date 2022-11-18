@@ -32,7 +32,8 @@ conda activate $WS_URL/-al_olympics/conda-env
 conda install -c anaconda cython -y
 conda install -y -c conda-forge cvxpy pipenv liblapacke
 python -m pipenv --python=$(conda run which python) --site-packages install --dev
-python -m pipenv --python=$(conda run which python) --site-packages install --dev
+python -m pipenv shell
+pip install "modin[ray]"
 pip install git+https://github.com/jgonsior/libact.git
 ```
 
