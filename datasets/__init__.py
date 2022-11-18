@@ -69,13 +69,6 @@ def split_dataset(
     X = df.loc[:, df.columns != "LABEL_TARGET"].to_numpy()  # type: ignore
     Y = df["LABEL_TARGET"].to_numpy()  # type: ignore
 
-    scaler = RobustScaler()
-    X = scaler.fit_transform(X)
-
-    # scale back to [0,1]
-    scaler = MinMaxScaler()
-    X = scaler.fit_transform(X)
-    # fancy ALiPy train/test split
     train_idx: SampleIndiceList = ast.literal_eval(
         train_test_split.iloc[config.EXP_TRAIN_TEST_BUCKET_SIZE]["train"]
     )
@@ -85,9 +78,5 @@ def split_dataset(
 
     unlabel_idx: SampleIndiceList = train_idx.copy()
     label_idx: SampleIndiceList = []
-    for label in np.unique(Y):  # type: ignore
-        init_labeled_index = unlabel_idx[np.where(Y[unlabel_idx] == label)[0][0]]  # type: ignore
-        label_idx.append(init_labeled_index)
-        unlabel_idx.remove(init_labeled_index)
 
     return X, Y, train_idx, test_idx, label_idx, unlabel_idx
