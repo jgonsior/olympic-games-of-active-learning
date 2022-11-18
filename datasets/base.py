@@ -55,7 +55,7 @@ class Base_Dataset_Loader(ABC):
 
             if not dataset_clean_path.exists():
                 df = self.preprocess_dataframe(df, dataset_name)
-                splits = self.calculate_train_test_splits(df)
+                splits = self.calculate_train_test_splits(dataset_name, df)
 
                 self.save_dataset_and_splits(
                     df, splits, dataset_name, dataset_clean_path
@@ -97,7 +97,9 @@ class Base_Dataset_Loader(ABC):
     Creates a train_test_split.csv file, which contains for each specified split (0-9 or 0-4) the indices for the train, and the indices for the test split
     """
 
-    def calculate_train_test_splits(self, df: pd.DataFrame) -> pd.DataFrame:
+    def calculate_train_test_splits(
+        self, dataset_name: str, df: pd.DataFrame
+    ) -> pd.DataFrame:
         # remove all classes, where we have less than 2 samples
         value_counts = df["LABEL_TARGET"].value_counts()
 

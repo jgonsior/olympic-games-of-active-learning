@@ -36,3 +36,14 @@ class Local_Importer(Base_Dataset_Loader):
 
         df = pd.read_csv(dataset_raw_path, sep=",")
         return df
+
+    def calculate_train_test_splits(
+        self, dataset_name: str, df: pd.DataFrame
+    ) -> pd.DataFrame:
+
+        if self.parameter_dict[dataset_name]["train_test_splits"] == "None":
+            return super().calculate_train_test_splits(dataset_name, df)
+        else:
+            pre_defined_splits = self.parameter_dict[dataset_name]["train_test_splits"]
+            splits_df = pd.DataFrame(pre_defined_splits)
+            return splits_df
