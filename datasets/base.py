@@ -3,6 +3,8 @@ from __future__ import annotations
 from abc import ABC, abstractmethod, abstractproperty
 from typing import TYPE_CHECKING, Any, Dict, List
 
+from sklearn.preprocessing import MinMaxScaler, RobustScaler
+
 if TYPE_CHECKING:
     from misc.config import Config
 
@@ -76,6 +78,19 @@ class Base_Dataset_Loader(ABC):
         # remove rows having NaN values
         df.dropna(inplace=True)
 
+        X = df.loc[:, df.columns != "LABEL_TARGET"].to_numpy()  # type: ignore
+        Y = df["LABEL_TARGET"].to_numpy()  # type: ignore
+
+        scaler = RobustScaler()
+        X = scaler.fit_transform(X)
+
+        # scale back to [0,1]
+        scaler = MinMaxScaler()
+        X = scaler.fit_transform(X)
+
+        df = pd.DataFrame(X)
+        df["LABEL_TARGET"] = Y
+
         return df
 
     """
@@ -86,7 +101,7 @@ class Base_Dataset_Loader(ABC):
         # remove all classes, where we have less than 2 samples
         value_counts = df["LABEL_TARGET"].value_counts()
 
-        for label, count in value_counts.iteritems():
+        for label, count in value_counts.items():
             if count <= 2:
                 df = df[df.LABEL_TARGET != label]
 
@@ -112,6 +127,35 @@ class Base_Dataset_Loader(ABC):
                 splits[split_number] = (train_index.tolist(), test_index.tolist())  # type: ignore
         splits_df = pd.DataFrame(splits).T
         splits_df.columns = ["train", "test"]
+
+        splits_df["start_points"] = [None for _ in range(0, len(splits_df))]
+
+        for ix, split in splits_df.iterrows():
+
+            start_points: List[List[int]] = []
+
+            indices_per_label = {}
+
+            train_copy = np.copy(split["train"])
+            for label in np.unique(Y):
+                indices_per_label[label] = train_copy[np.where(Y[train_copy] == label)]
+
+            for _ in range(0, self.config.AMOUNT_OF_START_POINTS_TO_GENERATE):
+                # first, pick one random sample from each class
+                # then pick as much other samples as needed
+                # check if we have that already, if not, we have a new start set!
+                _starting_points: List[int] = []
+
+                for label in np.unique(Y):  # type: ignore
+                    # pick a random sample from that
+                    index_of_start_sample_of_that_class = np.random.choice(
+                        indices_per_label[label]
+                    )
+                    _starting_points.append(index_of_start_sample_of_that_class)
+
+                start_points.append(_starting_points)
+
+            splits_df.iloc[ix]["start_points"] = start_points
 
         # quick check that everything wored as intented
         for split in range(0, 5):

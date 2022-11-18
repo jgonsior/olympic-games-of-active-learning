@@ -38,6 +38,8 @@ class Config:
 
     INCLUDE_RESULTS_FROM: List[str]
 
+    AMOUNT_OF_START_POINTS_TO_GENERATE: int = 10000
+
     EXP_TITLE: str = "all_strategies_all_datasets_single_random_seed"
     EXP_DATASET: DATASET
     EXP_GRID_DATASET: List[DATASET]
