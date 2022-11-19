@@ -45,9 +45,10 @@ class Config:
     EXP_GRID_DATASET: List[DATASET]
     EXP_STRATEGY: AL_STRATEGY
     EXP_GRID_STRATEGY: List[AL_STRATEGY]
-    EXP_GRID_RANDOM_SEED: List[int]
-    EXP_GRID_START_POINT: List[int]
     EXP_RANDOM_SEED: int
+    EXP_GRID_RANDOM_SEED: List[int]
+    EXP_START_POINT: int
+    EXP_GRID_START_POINT: List[int]
     EXP_NUM_QUERIES: int
     EXP_GRID_NUM_QUERIES: List[int] = [0]
     EXP_BATCH_SIZE: int
@@ -57,7 +58,6 @@ class Config:
     EXP_TRAIN_TEST_BUCKET_SIZE: int
     EXP_GRID_TRAIN_TEST_BUCKET_SIZE: List[int] = list(range(0, 5))
     EXP_UNIQUE_ID: int
-    EXP_START_POINT_INDEX: int
 
     WORKER_INDEX: int
 

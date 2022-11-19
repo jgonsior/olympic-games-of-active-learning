@@ -178,8 +178,7 @@ class Base_Dataset_Loader(ABC):
     ) -> None:
         splits_df.to_csv(
             str(dataset_clean_path).replace(".csv", "")
-            + self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX
-            + ".csv",
+            + self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX,
             index=False,
         )
         dataset_df.to_csv(dataset_clean_path, index=False)
