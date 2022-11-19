@@ -45,9 +45,8 @@ class Config:
     EXP_GRID_DATASET: List[DATASET]
     EXP_STRATEGY: AL_STRATEGY
     EXP_GRID_STRATEGY: List[AL_STRATEGY]
-    EXP_GRID_RANDOM_SEEDS_START: int = 0
-    EXP_GRID_RANDOM_SEEDS_END: int
     EXP_GRID_RANDOM_SEED: List[int]
+    EXP_GRID_START_POINT: List[int]
     EXP_RANDOM_SEED: int
     EXP_NUM_QUERIES: int
     EXP_GRID_NUM_QUERIES: List[int] = [0]
@@ -58,6 +57,7 @@ class Config:
     EXP_TRAIN_TEST_BUCKET_SIZE: int
     EXP_GRID_TRAIN_TEST_BUCKET_SIZE: List[int] = list(range(0, 5))
     EXP_UNIQUE_ID: int
+    EXP_START_POINT_INDEX: int
 
     WORKER_INDEX: int
 
@@ -125,14 +125,6 @@ class Config:
 
         # load yaml and overwrite everything, except for the stuff which was explicitly defined
         self._load_exp_yaml()
-
-        if (
-            self.EXP_GRID_RANDOM_SEEDS_START != None
-            and self.EXP_GRID_RANDOM_SEEDS_END != None
-        ):
-            self.EXP_GRID_RANDOM_SEED = list(
-                range(self.EXP_GRID_RANDOM_SEEDS_START, self.EXP_GRID_RANDOM_SEEDS_END)
-            )
 
         if self.RANDOM_SEED != -1 and self.RANDOM_SEED != -2:
             np.random.seed(self.RANDOM_SEED)
@@ -242,6 +234,15 @@ class Config:
         yaml_config_params = yaml_config_params[self.EXP_TITLE]
 
         explicitly_defined_cli_args = self._return_list_of_explicitly_defined_cli_args()
+
+        # extract int ranges for datatypes who could potentially contain lists
+        for k, v in yaml_config_params.items():
+            v = str(v)
+
+            if v.startswith("['") and v.endswith("']") and "-" in v:
+                v = v[2:-2]
+                v = v.split("-")
+                yaml_config_params[k] = [iii for iii in range(int(v[0]), int(v[1]))]
 
         # check if dataset args ar not in the DATASET enmus
         # if they are not -> add them to it
