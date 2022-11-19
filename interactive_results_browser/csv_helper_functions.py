@@ -34,6 +34,7 @@ def get_exp_grid_request_params(experiment_name: str, config: Config):
         "EXP_TRAIN_TEST_BUCKET_SIZE": config.EXP_GRID_TRAIN_TEST_BUCKET_SIZE,
         "EXP_NUM_QUERIES": config.EXP_GRID_NUM_QUERIES,
         "EXP_RANDOM_SEED": config.EXP_GRID_RANDOM_SEED,
+        "EXP_START_POINT": config.EXP_GRID_START_POINT,
     }
 
     full_exp_grid["VISUALIZATIONS"] = [viz for viz in list(VISUALIZATION)]
