@@ -75,11 +75,10 @@ def split_dataset(
     test_idx: SampleIndiceList = ast.literal_eval(
         train_test_split.iloc[config.EXP_TRAIN_TEST_BUCKET_SIZE]["test"]
     )
+
     label_idx: SampleIndiceList = ast.literal_eval(
-        train_test_split.iloc[config.EXP_TRAIN_TEST_BUCKET_SIZE]["start_points"][
-            config.EXP_START_POINT_INDEX
-        ]
-    )
+        train_test_split.iloc[config.EXP_TRAIN_TEST_BUCKET_SIZE]["start_points"]
+    )[config.EXP_START_POINT]
     unlabel_idx: SampleIndiceList = np.setdiff1d(train_idx, label_idx).copy()
 
     return X, Y, train_idx, test_idx, label_idx, unlabel_idx
