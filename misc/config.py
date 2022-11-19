@@ -242,7 +242,7 @@ class Config:
             if v.startswith("['") and v.endswith("']") and "-" in v:
                 v = v[2:-2]
                 v = v.split("-")
-                yaml_config_params[k] = [iii for iii in range(int(v[0]), int(v[1]))]
+                yaml_config_params[k] = [iii for iii in range(int(v[0]), int(v[1]) + 1)]
 
         # check if dataset args ar not in the DATASET enmus
         # if they are not -> add them to it
