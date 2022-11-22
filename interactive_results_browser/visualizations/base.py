@@ -104,6 +104,7 @@ class Base_Visualizer(ABC):
             figs.append(plot_url)
 
             if ix == 0:
+                # generate legend
                 fig2 = plt.figure()
                 ax2 = fig2.add_subplot()
                 ax2.axis("off")

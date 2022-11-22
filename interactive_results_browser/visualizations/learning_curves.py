@@ -38,7 +38,7 @@ def _plot_function(plot_df, metric):
     return rel
 
 
-@memory.cache()
+#@memory.cache()
 def _cache_create_plots(
     done_workload_df,
     metric,
