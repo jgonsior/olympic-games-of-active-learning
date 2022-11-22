@@ -1,4 +1,4 @@
-#!/bin/bash{% if array %}{% set THREADS = 1 %}{% set MEMORY = 1875 %}{% endif %}
+#!/bin/bash{% if array %}{% set THREADS = 1 %}{% set MEMORY = 2214 %}{% endif %}
 #SBATCH --partition=haswell,romeo
 #SBATCH --time={{SLURM_TIME_LIMIT}}   # walltime
 #SBATCH --nodes=1
