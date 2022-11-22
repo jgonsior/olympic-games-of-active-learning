@@ -54,7 +54,7 @@ class Config:
 
     SLURM_TIME_LIMIT: str = "1:59:59"
     SLURM_NR_THREADS: int = 1
-    SLURM_MEMORY: int = 1875
+    SLURM_MEMORY: int = 2210
     SLURM_JOBS_PR_THREAD = 10
     HPC_SLURM_MAIL: str
     HPC_SLURM_PROJECT: str
