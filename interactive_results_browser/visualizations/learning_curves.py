@@ -19,26 +19,27 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 from interactive_results_browser.cache import memory
-from matplotlib import pyplot
 
 
-def _plot_function(plot_df, metric):
-    fig, ax = pyplot.subplots(figsize=(8, 4))
+def _plot_function(plot_df, metric, my_palette, my_markers):
+    fig, ax = plt.subplots(figsize=(8, 4))
     rel = sns.lineplot(
         plot_df,
         ax=ax,
         x="AL Cycle",
         y=metric,
-        hue="Strategy",
         style="Strategy",
-        markers=True,
+        # markers="Strategy",
+        markers=my_markers,
+        palette=my_palette,
+        hue="Strategy",
     )
     rel.xaxis.set_major_formatter(FuncFormatter(lambda x, _: int(x)))
     rel.set(ylim=(0, 1))
     return rel
 
 
-# @memory.cache()
+@memory.cache()
 def _cache_create_plots(
     done_workload_df,
     metric,
@@ -68,6 +69,7 @@ def _cache_create_plots(
         args={"metric": metric},
         plot_function=_plot_function,
         df_col_key="Dataset",
+        legend_names=plot_df["Strategy"].unique(),
     )
     return plot_urls
 
