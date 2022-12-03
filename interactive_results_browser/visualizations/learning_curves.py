@@ -103,7 +103,6 @@ class Learning_Curves(Base_Visualizer):
         done_workload_df = self._load_done_workload()
 
         plot_url = _cache_create_plots(
-            max_col_wrap=len(self._exp_grid_request_params["EXP_DATASET"]),
             metric=metric,
             done_workload_df=done_workload_df,
             OUTPUT_PATH=self._config.OUTPUT_PATH,
