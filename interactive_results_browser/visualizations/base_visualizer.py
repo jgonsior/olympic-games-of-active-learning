@@ -15,6 +15,8 @@ import pandas as pd
 from datasets import DATASET
 from interactive_results_browser.cache import memory
 from resources.data_types import AL_STRATEGY, LEARNER_MODEL
+import seaborn as sns
+from seaborn._core.properties import Marker
 
 if TYPE_CHECKING:
     from misc.config import Config
@@ -89,8 +91,12 @@ class Base_Visualizer(ABC):
     def __render_single_image_multithreaded(
         plot_function: Callable[[Any], Any],
         plot_df: pd.DataFrame,
+        my_color_dict: Dict[str, str],
+        my_markers: Dict[str, Any],
         args: Dict[str, Any],
     ):
+        args["my_palette"] = my_color_dict
+        args["my_markers"] = my_markers
         ax = plot_function(plot_df, **args)
         plt.legend([], [], frameon=False)
         img = io.BytesIO()
@@ -106,10 +112,18 @@ class Base_Visualizer(ABC):
         args: Dict[str, Any],
         plot_function: Callable[[Any], Any],
         df_col_key: str,
+        legend_names: List[str],
     ) -> List[str]:
-        # take in dataframe
-        # take in argument to iterate over, and to split the dataframe into
-        # determine if to disable legend, or show it
+
+        # calculate colormap
+        palette_colors = sns.color_palette("husl", len(legend_names))
+        my_color_dict = {k: v for k, v in zip(legend_names, palette_colors)}
+
+        # calculate markers
+
+        marker_values = Marker()
+        marker_values = marker_values._default_values(len(legend_names))
+        my_markers = {k: v for k, v in zip(legend_names, marker_values)}
 
         with parallel_backend("loky", n_jobs=multiprocessing.cpu_count()):
             figs = Parallel()(
@@ -117,12 +131,27 @@ class Base_Visualizer(ABC):
                     plot_function=plot_function,
                     plot_df=plot_df.loc[plot_df[df_col_key] == df_col_value],
                     args=args,
+                    my_color_dict=my_color_dict,
+                    my_markers=my_markers,
                 )
                 for df_col_value in plot_df[df_col_key].unique()
             )
 
-        # generate legend
-        """fig2 = plt.figure()
+        legend_df = pd.DataFrame(
+            [(k, v) for k, v in my_color_dict.items()], columns=["label", "color"]
+        )
+        ax = sns.lineplot(
+            legend_df,
+            legend=True,
+            x="label",
+            y=[1 for _ in range(0, len(legend_df))],
+            hue="label",
+            palette=my_color_dict,
+            markers=my_markers,
+            style="label",
+        )
+
+        fig2 = plt.figure()
         ax2 = fig2.add_subplot()
         ax2.axis("off")
         legend = ax2.legend(*ax.get_legend_handles_labels(), frameon=False)
@@ -131,11 +160,12 @@ class Base_Visualizer(ABC):
         bbox = legend.get_window_extent().transformed(
             fig.dpi_scale_trans.inverted(),
         )
+
         img = io.BytesIO()
         plt.savefig(img, format="png", bbox_inches=bbox)
         img.seek(0)
         plot_url = base64.b64encode(img.getvalue()).decode("utf8")
-        figs = [plot_url, figs[0]]"""
+        figs = [plot_url, *figs]
         return figs
 
     def _load_done_workload(
