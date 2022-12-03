@@ -3,11 +3,13 @@ from __future__ import annotations
 from abc import ABC, abstractmethod, abstractproperty
 import base64
 import io
+import multiprocessing
 from typing import TYPE_CHECKING, Any, Callable, List
 
 from typing import Any, Dict
 
 from flask import render_template
+from joblib import Parallel, delayed, parallel_backend
 import matplotlib.pyplot as plt
 import pandas as pd
 from datasets import DATASET
@@ -84,6 +86,21 @@ class Base_Visualizer(ABC):
         return {}
 
     @staticmethod
+    def __render_single_image_multithreaded(
+        plot_function: Callable[[Any], Any],
+        plot_df: pd.DataFrame,
+        args: Dict[str, Any],
+    ):
+        ax = plot_function(plot_df, **args)
+        plt.legend([], [], frameon=False)
+        img = io.BytesIO()
+        plt.savefig(img, format="png")
+        img.seek(0)
+        plot_url = base64.b64encode(img.getvalue()).decode("utf8")
+        plt.clf()
+        return plot_url
+
+    @staticmethod
     def _render_images(
         plot_df: pd.DataFrame,
         args: Dict[str, Any],
@@ -93,34 +110,32 @@ class Base_Visualizer(ABC):
         # take in dataframe
         # take in argument to iterate over, and to split the dataframe into
         # determine if to disable legend, or show it
-        figs = []
-        for ix, df_col_value in enumerate(plot_df[df_col_key].unique()):
-            ax = plot_function(plot_df.loc[plot_df[df_col_key] == df_col_value], **args)
-            plt.legend([], [], frameon=False)
-            img = io.BytesIO()
-            plt.savefig(img, format="png")
-            img.seek(0)
-            plot_url = base64.b64encode(img.getvalue()).decode("utf8")
-            figs.append(plot_url)
 
-            if ix == 0:
-                # generate legend
-                fig2 = plt.figure()
-                ax2 = fig2.add_subplot()
-                ax2.axis("off")
-                legend = ax2.legend(*ax.get_legend_handles_labels(), frameon=False)
-                fig = legend.figure
-                fig.canvas.draw()
-                bbox = legend.get_window_extent().transformed(
-                    fig.dpi_scale_trans.inverted(),
+        with parallel_backend("loky", n_jobs=multiprocessing.cpu_count()):
+            figs = Parallel()(
+                delayed(Base_Visualizer.__render_single_image_multithreaded)(
+                    plot_function=plot_function,
+                    plot_df=plot_df.loc[plot_df[df_col_key] == df_col_value],
+                    args=args,
                 )
-                img = io.BytesIO()
-                plt.savefig(img, format="png", bbox_inches=bbox)
-                img.seek(0)
-                plot_url = base64.b64encode(img.getvalue()).decode("utf8")
-                figs = [plot_url, figs[0]]
-            plt.clf()
+                for df_col_value in plot_df[df_col_key].unique()
+            )
 
+        # generate legend
+        """fig2 = plt.figure()
+        ax2 = fig2.add_subplot()
+        ax2.axis("off")
+        legend = ax2.legend(*ax.get_legend_handles_labels(), frameon=False)
+        fig = legend.figure
+        fig.canvas.draw()
+        bbox = legend.get_window_extent().transformed(
+            fig.dpi_scale_trans.inverted(),
+        )
+        img = io.BytesIO()
+        plt.savefig(img, format="png", bbox_inches=bbox)
+        img.seek(0)
+        plot_url = base64.b64encode(img.getvalue()).decode("utf8")
+        figs = [plot_url, figs[0]]"""
         return figs
 
     def _load_done_workload(

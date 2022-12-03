@@ -6,7 +6,7 @@ import io
 import pandas as pd
 from datasets import DATASET
 
-from interactive_results_browser.visualizations.base import Base_Visualizer
+from interactive_results_browser.visualizations.base_visualizer import Base_Visualizer
 from typing import TYPE_CHECKING, Any, List, Tuple
 
 from typing import Any, Dict
@@ -38,7 +38,7 @@ def _plot_function(plot_df, metric):
     return rel
 
 
-#@memory.cache()
+# @memory.cache()
 def _cache_create_plots(
     done_workload_df,
     metric,

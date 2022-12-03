@@ -1,6 +1,6 @@
 from enum import IntEnum, unique
 from typing import Callable, Dict
-from interactive_results_browser.visualizations.base import Base_Visualizer
+from interactive_results_browser.visualizations.base_visualizer import Base_Visualizer
 from interactive_results_browser.visualizations.learning_curves import Learning_Curves
 from interactive_results_browser.visualizations.retrieved_samples import (
     Retrieved_Samples,
