@@ -2,6 +2,9 @@
 {% if ERROR %}
 <mark>{{ ERROR }}</mark>
 {% else %}
-<img src="data:image/png;base64,{{ plot_data }}">
+
+{% for plot_url in plot_data %}
+<img src="data:image/png;base64,{{ plot_url }}">
+{% endfor %}
 {% endif %}
 <hr>
