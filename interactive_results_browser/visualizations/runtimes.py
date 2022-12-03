@@ -21,28 +21,31 @@ import matplotlib.pyplot as plt
 from interactive_results_browser.cache import memory
 
 
-@memory.cache()
-def _cache_runtimes(_exp_grid_request_params, done_workload) -> str:
-    if len(_exp_grid_request_params["VIZ_RT_METRIC"]) != 1:
-        return {"ERROR": "Please select only one VIZ_RT_METRIC value"}
-
-    metric = _exp_grid_request_params["VIZ_RT_METRIC"][0]
-
-    rel = sns.FacetGrid(
-        done_workload,
-        col="EXP_DATASET",
-        col_wrap=min(6, len(_exp_grid_request_params["EXP_DATASET"])),
-        # subplot_kws=dict(margin_titles=True),
+def _plot_function(plot_df, metric, my_palette, my_markers):
+    fig, ax = plt.subplots(figsize=(8, 4))
+    rel = sns.barplot(
+        plot_df,
+        x=metric,
+        y="EXP_STRATEGY",
+        orient="h",
+        hue="EXP_STRATEGY",
+        palette=my_palette,
+        ax=ax,
     )
-    rel.map_dataframe(
-        sns.barplot, x=metric, y="EXP_STRATEGY", orient="h"
-    )  # , hue="EXP_STRATEGY")
+    ax.set(ylabel=None)
+    return rel
 
-    img = io.BytesIO()
-    plt.savefig(img, format="png")
-    img.seek(0)
-    plot_url = base64.b64encode(img.getvalue()).decode("utf8")
-    return plot_url
+
+@memory.cache()
+def _cache_runtimes(metric, done_workload) -> List[str]:
+    plot_urls = Base_Visualizer._render_images(
+        plot_df=done_workload,
+        args={"metric": metric},
+        plot_function=_plot_function,
+        legend_names=done_workload["EXP_STRATEGY"].unique(),
+        df_col_key="EXP_DATASET",
+    )
+    return plot_urls
 
 
 class Runtimes(Base_Visualizer):
@@ -56,8 +59,13 @@ class Runtimes(Base_Visualizer):
         }
 
     def get_template_data(self) -> Dict[str, Any]:
+        if len(self._exp_grid_request_params["VIZ_RT_METRIC"]) != 1:
+            return {"ERROR": "Please select only one VIZ_RT_METRIC value"}
+
+        metric = self._exp_grid_request_params["VIZ_RT_METRIC"][0]
+
         plot_url = _cache_runtimes(
-            _exp_grid_request_params=self._exp_grid_request_params,
+            metric=metric,
             done_workload=self._load_done_workload(),
         )
         return {"plot_data": plot_url}

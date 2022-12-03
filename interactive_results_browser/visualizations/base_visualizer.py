@@ -36,7 +36,8 @@ def _cache_load_done_workload(
         for k, v in exp_grid_request_params.items():
             if k in non_workload_keys:
                 continue
-            df = df.loc[df[k].isin(v)]
+            if k in df.columns:
+                df = df.loc[df[k].isin(v)]
 
     if enum_to_str:
         # convert int_enums to real enums
@@ -100,7 +101,7 @@ class Base_Visualizer(ABC):
         ax = plot_function(plot_df, **args)
         plt.legend([], [], frameon=False)
         img = io.BytesIO()
-        plt.savefig(img, format="png")
+        plt.savefig(img, format="png", bbox_inches="tight")
         img.seek(0)
         plot_url = base64.b64encode(img.getvalue()).decode("utf8")
         plt.clf()
@@ -114,7 +115,7 @@ class Base_Visualizer(ABC):
         df_col_key: str,
         legend_names: List[str],
     ) -> List[str]:
-
+        legend_names = sorted(legend_names)
         # calculate colormap
         palette_colors = sns.color_palette("husl", len(legend_names))
         my_color_dict = {k: v for k, v in zip(legend_names, palette_colors)}

@@ -45,7 +45,6 @@ def _cache_create_plots(
     metric,
     OUTPUT_PATH,
     METRIC_RESULTS_PATH_APPENDIX,
-    max_col_wrap,
 ) -> List[str]:
     result_data = []
     # read in each csv file to get learning curve data for plot
