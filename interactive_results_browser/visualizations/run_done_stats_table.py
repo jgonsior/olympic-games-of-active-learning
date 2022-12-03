@@ -6,7 +6,7 @@ import itertools
 from matplotlib.pyplot import table
 import pandas as pd
 from datasets import DATASET
-from interactive_results_browser.visualizations.base import Base_Visualizer
+from interactive_results_browser.visualizations.base_visualizer import Base_Visualizer
 from typing import TYPE_CHECKING, Any, Iterable, List, Tuple
 
 from typing import Any, Dict

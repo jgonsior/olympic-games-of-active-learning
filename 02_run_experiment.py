@@ -25,6 +25,28 @@ else:
     )
 
 
+"""
+df.EXP_STRATEGY.value_counts()
+34    1630
+5     1617
+3     1605
+1     1604
+28    1583
+33    1576
+2     1565
+7     1408
+6     1253
+
+
+24     826
+23     703
+35     397
+26     341
+25     290
+
+the strategies below: we should run them with more memory
+"""
+
 al_strategies_to_temporarily_ignore = [
     AL_STRATEGY.ALIPY_BMDR,
     AL_STRATEGY.ALIPY_CORESET_GREEDY,

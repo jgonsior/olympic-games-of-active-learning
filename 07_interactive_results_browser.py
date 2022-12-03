@@ -13,7 +13,7 @@ from interactive_results_browser.visualizations import (
 )
 
 from livereload import Server
-from interactive_results_browser.visualizations.base import Base_Visualizer
+from interactive_results_browser.visualizations.base_visualizer import Base_Visualizer
 from misc.config import Config
 from collections.abc import Iterable
 
