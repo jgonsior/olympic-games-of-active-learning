@@ -33,6 +33,7 @@ def _cache_runtimes(metric, done_workload) -> List[str]:
     plot_df = done_workload.filter([metric, "EXP_STRATEGY", "EXP_DATASET"]).sort_values(
         by=metric
     )
+
     plot_urls = Base_Visualizer._render_images(
         plot_df=plot_df,
         args={"metric": metric},
@@ -40,6 +41,7 @@ def _cache_runtimes(metric, done_workload) -> List[str]:
         legend_names=done_workload["EXP_STRATEGY"].unique(),
         df_col_key="EXP_DATASET",
         create_legend=False,
+        combined_df_col_key_plot=True,
     )
     return plot_urls
 

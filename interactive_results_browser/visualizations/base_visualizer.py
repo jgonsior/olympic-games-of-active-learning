@@ -96,7 +96,10 @@ class Base_Visualizer(ABC):
         my_markers: Dict[str, Any],
         args: Dict[str, Any],
         df_col_value: str,
+        df_col_key: str,
     ):
+        if df_col_value != "ALL_DATASETS":
+            plot_df = plot_df.loc[plot_df[df_col_key] == df_col_value]
         args["my_palette"] = my_color_dict
         args["my_markers"] = my_markers
         ax = plot_function(plot_df, **args)
@@ -120,6 +123,7 @@ class Base_Visualizer(ABC):
         df_col_key: str,
         legend_names: List[str],
         create_legend: bool = True,
+        combined_df_col_key_plot: bool = False,
     ) -> List[str]:
         legend_names = sorted(legend_names)
         # calculate colormap
@@ -132,17 +136,22 @@ class Base_Visualizer(ABC):
         marker_values = marker_values._default_values(len(legend_names))
         my_markers = {k: v for k, v in zip(legend_names, marker_values)}
 
+        df_col_values = plot_df[df_col_key].unique().tolist()
+        if combined_df_col_key_plot:
+            df_col_values.append("ALL_DATASETS")
+
         with parallel_backend("loky", n_jobs=multiprocessing.cpu_count()):
             figs = Parallel()(
                 delayed(Base_Visualizer.__render_single_image_multithreaded)(
                     plot_function=plot_function,
-                    plot_df=plot_df.loc[plot_df[df_col_key] == df_col_value],
+                    plot_df=plot_df,
                     args=args,
                     my_color_dict=my_color_dict,
                     my_markers=my_markers,
                     df_col_value=df_col_value,
+                    df_col_key=df_col_key,
                 )
-                for df_col_value in plot_df[df_col_key].unique()
+                for df_col_value in df_col_values
             )
 
         if create_legend:
