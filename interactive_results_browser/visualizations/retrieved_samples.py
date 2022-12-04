@@ -19,7 +19,12 @@ from interactive_results_browser.cache import memory
 
 
 def _plot_function(plot_df, my_palette, my_markers):
-    # fig, ax = plt.subplots(figsize=(8, 4))
+    fig, ax = plt.subplots(
+        figsize=(
+            len(plot_df["STRAT_A"].unique()),
+            int(len(plot_df["STRAT_B"].unique()) / 3),
+        )
+    )
     plot_df = plot_df.pivot(index="STRAT_A", columns="STRAT_B", values="JACCARD")
 
     # sort
@@ -29,9 +34,10 @@ def _plot_function(plot_df, my_palette, my_markers):
     ax = sns.heatmap(
         data=plot_df,
         annot=True,
-        cmap=sns.color_palette("Spectral", as_cmap=True),
+        cmap=sns.color_palette("coolwarm_r", as_cmap=True),
         fmt=".2f",
-        # ax=ax,
+        # square=True,
+        ax=ax,
         xticklabels=True,
         yticklabels=True,
         vmin=0,
@@ -40,15 +46,17 @@ def _plot_function(plot_df, my_palette, my_markers):
     ax.set(ylabel=None)
     ax.set(xlabel=None)
 
+    ax.xaxis.tick_top()
+
     ax.set_xticklabels(
         ax.get_xticklabels(),
         rotation=20,
-        horizontalalignment="right",
+        horizontalalignment="left",
     )
     return ax
 
 
-# @memory.cache()
+@memory.cache()
 def _cache_retrieved_samples(done_workload) -> List[str]:
     plot_df = done_workload.filter(
         [
@@ -94,7 +102,7 @@ def _cache_retrieved_samples(done_workload) -> List[str]:
             ]
 
             if len(sampled_indices_strat_a) == 0 or len(sampled_indices_strat_b) == 0:
-                jaccard = -1
+                jaccard = np.nan
                 all_datasets_combined_unions += 0
                 all_datasets_combined_intersections += 0
             else:
