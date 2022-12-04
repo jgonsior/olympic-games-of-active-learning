@@ -95,10 +95,15 @@ class Base_Visualizer(ABC):
         my_color_dict: Dict[str, str],
         my_markers: Dict[str, Any],
         args: Dict[str, Any],
+        df_col_value: str,
     ):
         args["my_palette"] = my_color_dict
         args["my_markers"] = my_markers
         ax = plot_function(plot_df, **args)
+
+        if ax != None:
+            ax.set(title=df_col_value)
+
         plt.legend([], [], frameon=False)
         img = io.BytesIO()
         plt.savefig(img, format="png", bbox_inches="tight")
@@ -114,6 +119,7 @@ class Base_Visualizer(ABC):
         plot_function: Callable[[Any], Any],
         df_col_key: str,
         legend_names: List[str],
+        create_legend: bool = True,
     ) -> List[str]:
         legend_names = sorted(legend_names)
         # calculate colormap
@@ -134,39 +140,41 @@ class Base_Visualizer(ABC):
                     args=args,
                     my_color_dict=my_color_dict,
                     my_markers=my_markers,
+                    df_col_value=df_col_value,
                 )
                 for df_col_value in plot_df[df_col_key].unique()
             )
 
-        legend_df = pd.DataFrame(
-            [(k, v) for k, v in my_color_dict.items()], columns=["label", "color"]
-        )
-        ax = sns.lineplot(
-            legend_df,
-            legend=True,
-            x="label",
-            y=[1 for _ in range(0, len(legend_df))],
-            hue="label",
-            palette=my_color_dict,
-            markers=my_markers,
-            style="label",
-        )
+        if create_legend:
+            legend_df = pd.DataFrame(
+                [(k, v) for k, v in my_color_dict.items()], columns=["label", "color"]
+            )
+            ax = sns.lineplot(
+                legend_df,
+                legend=True,
+                x="label",
+                y=[1 for _ in range(0, len(legend_df))],
+                hue="label",
+                palette=my_color_dict,
+                markers=my_markers,
+                style="label",
+            )
 
-        fig2 = plt.figure()
-        ax2 = fig2.add_subplot()
-        ax2.axis("off")
-        legend = ax2.legend(*ax.get_legend_handles_labels(), frameon=False)
-        fig = legend.figure
-        fig.canvas.draw()
-        bbox = legend.get_window_extent().transformed(
-            fig.dpi_scale_trans.inverted(),
-        )
+            fig2 = plt.figure()
+            ax2 = fig2.add_subplot()
+            ax2.axis("off")
+            legend = ax2.legend(*ax.get_legend_handles_labels(), frameon=False)
+            fig = legend.figure
+            fig.canvas.draw()
+            bbox = legend.get_window_extent().transformed(
+                fig.dpi_scale_trans.inverted(),
+            )
 
-        img = io.BytesIO()
-        plt.savefig(img, format="png", bbox_inches=bbox)
-        img.seek(0)
-        plot_url = base64.b64encode(img.getvalue()).decode("utf8")
-        figs = [plot_url, *figs]
+            img = io.BytesIO()
+            plt.savefig(img, format="png", bbox_inches=bbox)
+            img.seek(0)
+            plot_url = base64.b64encode(img.getvalue()).decode("utf8")
+            figs = [plot_url, *figs]
         return figs
 
     def _load_done_workload(
