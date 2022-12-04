@@ -69,10 +69,12 @@ def _cache_retrieved_samples(done_workload) -> List[str]:
     new_data = []
 
     # create large count_dict per dataset and strategy, and calculate, how often each sample was queried
-    for dataset in plot_df["EXP_DATASET"].unique():
-        for (strat_a, strat_b) in itertools.combinations_with_replacement(
-            plot_df["EXP_STRATEGY"].unique(), 2
-        ):
+    for (strat_a, strat_b) in itertools.combinations_with_replacement(
+        plot_df["EXP_STRATEGY"].unique(), 2
+    ):
+        all_datasets_combined_intersections = 0
+        all_datasets_combined_unions = 0
+        for dataset in plot_df["EXP_DATASET"].unique():
             sampled_indices_strat_a = [
                 single_value
                 for single_list in plot_df.loc[
@@ -93,6 +95,8 @@ def _cache_retrieved_samples(done_workload) -> List[str]:
 
             if len(sampled_indices_strat_a) == 0 or len(sampled_indices_strat_b) == 0:
                 jaccard = -1
+                all_datasets_combined_unions += 0
+                all_datasets_combined_intersections += 0
             else:
                 counter_a = Counter(sampled_indices_strat_a)
                 counter_b = Counter(sampled_indices_strat_b)
@@ -101,11 +105,31 @@ def _cache_retrieved_samples(done_workload) -> List[str]:
                 union_count = len(list((counter_a | counter_b).elements()))
 
                 jaccard = intersection_count / union_count
+
+                all_datasets_combined_intersections += intersection_count
+                all_datasets_combined_unions += union_count
             new_data.append([dataset, strat_a, strat_b, jaccard])
 
             # also add strat_b,strat_a as result
             if strat_a != strat_b:
                 new_data.append([dataset, strat_b, strat_a, jaccard])
+
+        all_datasets_combined_jaccard = (
+            all_datasets_combined_intersections / all_datasets_combined_unions
+        )
+        new_data.append(
+            ["All Datasets Combined", strat_a, strat_b, all_datasets_combined_jaccard]
+        )
+        if strat_a != strat_b:
+            new_data.append(
+                [
+                    "All Datasets Combined",
+                    strat_b,
+                    strat_a,
+                    all_datasets_combined_jaccard,
+                ]
+            )
+
     new_data = pd.DataFrame(
         new_data, columns=["EXP_DATASET", "STRAT_A", "STRAT_B", "JACCARD"]
     )
