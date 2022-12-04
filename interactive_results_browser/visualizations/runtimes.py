@@ -39,6 +39,7 @@ def _cache_runtimes(metric, done_workload) -> List[str]:
         plot_function=_plot_function,
         legend_names=done_workload["EXP_STRATEGY"].unique(),
         df_col_key="EXP_DATASET",
+        create_legend=False,
     )
     return plot_urls
 
