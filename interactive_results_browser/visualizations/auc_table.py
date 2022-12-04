@@ -52,8 +52,8 @@ def _plot_function(plot_df, my_palette, my_markers):
         ax=ax,
         xticklabels=True,
         yticklabels=True,
-        vmin=0,
-        vmax=100,
+        # vmin=0,
+        # vmax=100,
         linewidth=0.5,
     )
     ax.set(ylabel=None)
