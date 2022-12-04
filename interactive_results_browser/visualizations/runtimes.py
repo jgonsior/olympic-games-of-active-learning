@@ -1,45 +1,40 @@
 from __future__ import annotations
-import base64
-from distutils.command.config import config
-import io
-
-import pandas as pd
-from datasets import DATASET
-
 from interactive_results_browser.visualizations.base_visualizer import Base_Visualizer
-from typing import TYPE_CHECKING, Any, List, Tuple
+from typing import TYPE_CHECKING, Any, List
 
 from typing import Any, Dict
 
-from resources.data_types import AL_STRATEGY, LEARNER_MODEL
 
 if TYPE_CHECKING:
     from misc.config import Config
 import seaborn as sns
 import matplotlib.pyplot as plt
-
 from interactive_results_browser.cache import memory
 
 
 def _plot_function(plot_df, metric, my_palette, my_markers):
     fig, ax = plt.subplots(figsize=(8, 4))
-    rel = sns.barplot(
-        plot_df,
-        x=metric,
+    ax = sns.barplot(
+        data=plot_df,
         y="EXP_STRATEGY",
-        orient="h",
-        hue="EXP_STRATEGY",
+        x=metric,
         palette=my_palette,
         ax=ax,
     )
     ax.set(ylabel=None)
-    return rel
+    ax.set_xscale("log")
+    for container in ax.containers:
+        ax.bar_label(container, padding=10, fmt="%.2g")
+    return ax
 
 
 @memory.cache()
 def _cache_runtimes(metric, done_workload) -> List[str]:
+    plot_df = done_workload.filter([metric, "EXP_STRATEGY", "EXP_DATASET"]).sort_values(
+        by=metric
+    )
     plot_urls = Base_Visualizer._render_images(
-        plot_df=done_workload,
+        plot_df=plot_df,
         args={"metric": metric},
         plot_function=_plot_function,
         legend_names=done_workload["EXP_STRATEGY"].unique(),
