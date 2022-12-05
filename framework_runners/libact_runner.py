@@ -7,6 +7,7 @@ from libact.base.dataset import Dataset
 from libact.models import LogisticRegression, SklearnProbaAdapter, SVM
 from libact.query_strategies import UncertaintySampling, HintSVM
 
+
 from typing import TYPE_CHECKING, List
 
 if TYPE_CHECKING:
@@ -25,7 +26,6 @@ class LIBACT_Experiment(AL_Experiment):
         from resources.data_types import (
             al_strategy_to_python_classes_mapping,
         )
-
         strategy = AL_STRATEGY(self.config.EXP_STRATEGY)
         params = self.config.EXP_STRATEGY_PARAMS
         if (
@@ -53,20 +53,41 @@ class LIBACT_Experiment(AL_Experiment):
         )
 
     def query_AL_strategy(self) -> List[int]:
+        from resources.data_types import AL_STRATEGY
         if self.al_strategy is None:
             from misc.Errors import NoStrategyError
-
             raise NoStrategyError("get_AL_strategy() has to be called before querying")
         ret = []
-        select_id, scores = self.al_strategy.make_query(return_score=True)
-        ret.append(select_id)
         batch_size = self.config.EXP_BATCH_SIZE
-        ids, scores = zip(*scores)
-        i = 0
-        while i < batch_size:
-            maximum = max(scores)
-            max_ind = scores.index(maximum)
-            ret.append(ids[max_ind])
+        match self.config.EXP_STRATEGY:
+            case AL_STRATEGY.LIBACT_VR:
+                ret = self.al_strategy.make_n_queries()
+            case AL_STRATEGY.LIBACT_HINTSVM:
+                ret = self.al_strategy.make_n_queries()
+            case AL_STRATEGY.LIBACT_DWUS:
+                ret = self.al_strategy.make_n_queries()
+            case AL_STRATEGY.LIBACT_ALBL:
+                pass # TODO
+            case AL_STRATEGY.LIBACT_QUIRE:
+                ret = self.al_strategy.make_n_queries()
+            case AL_STRATEGY.LIBACT_UNCERTAINTY:
+                select_id, scores = self.al_strategy.make_query(return_score=True)
+                ret.append(select_id)
+                ids, scores = zip(*scores)
+                i = 0
+                while i < batch_size:
+                    maximum = max(scores)
+                    max_ind = scores.index(maximum)
+                    ret.append(ids[max_ind])
+            case AL_STRATEGY.LIBACT_EER:
+                ret = self.al_strategy.make_n_queries()
+            case AL_STRATEGY.LIBACT_HIERARCHICAL_SAMPLING:
+                pass # TODO
+            case AL_STRATEGY.LIBACT_QBC:
+                pass # TODO
+            case _:
+                from misc.Errors import WrongFrameworkError
+                raise WrongFrameworkError("Libact runner was called with a non-Libact strategy")
         return ret
 
     def prepare_dataset(self):
