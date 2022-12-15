@@ -37,7 +37,7 @@ aenum = "*"
 kaggle = "*"
 alipy = {editable = true, ref = "058c3a025c77964422a5417cfb2285f893a62295", git = "https://github.com/jgonsior/ALiPy.git"}
 libact = {editable = true, ref = "c0d17b877944f4551430e54fcbc5faf1c6417210", git = "https://github.com/jgonsior/libact.git"}
-playground = {editable = true, ref = "b0d3025267a89497f8ca7953af7694dbab4a5f97", git = "https://github.com/triess/active-learning.git"}
+playground = {editable = true, ref = "0f8a3e912db6f8423f9f6718e9f607fe0e0405c9", git = "https://github.com/triess/active-learning.git"}
 ray = "*"
 modin = "*"
 
