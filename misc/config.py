@@ -11,7 +11,7 @@ import yaml
 
 from datasets import DATASET
 from misc.logging import init_logger, log_it
-from ressources.data_types import AL_STRATEGY, LEARNER_MODEL
+from resources.data_types import AL_STRATEGY, LEARNER_MODEL
 
 
 class Config:
