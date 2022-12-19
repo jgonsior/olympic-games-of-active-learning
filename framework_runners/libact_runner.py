@@ -28,29 +28,31 @@ class LIBACT_Experiment(AL_Experiment):
         )
 
         strategy = AL_STRATEGY(self.config.EXP_STRATEGY)
-        params = self.config.EXP_STRATEGY_PARAMS
+        additional_params = al_strategy_to_python_classes_mapping[strategy][1]
+
         if (
             self.config.EXP_LEARNER_MODEL == "LOG_REG"
             or self.config.EXP_LEARNER_MODEL == "SVM_LIBACT"
         ):
-            params["model"] = self.model
+            additional_params["model"] = self.model
         else:
-            params["model"] = SklearnProbaAdapter(self.model)
+            additional_params["model"] = SklearnProbaAdapter(self.model)
 
-        params["random_state"] = self.config.EXP_RANDOM_SEED
+        additional_params["random_state"] = self.config.EXP_RANDOM_SEED
 
         if self.config.EXP_STRATEGY == AL_STRATEGY.LIBACT_ALBL:
-            params["T"] = 100
-            params["query_strategies"] = [
+            additional_params["T"] = 100
+            additional_params["query_strategies"] = [
                 UncertaintySampling(self.trn_ds, model=LogisticRegression(C=1.0)),
                 UncertaintySampling(self.trn_ds, model=LogisticRegression(C=0.01)),
                 HintSVM(self.trn_ds),
             ]
         elif self.config.EXP_STRATEGY == AL_STRATEGY.LIBACT_HIERARCHICAL_SAMPLING:
-            del params["model"]
-            params["classes"] = np.unique(self.Y[self.train_idx]).tolist()
-        self.al_strategy = al_strategy_to_python_classes_mapping[strategy](
-            self.trn_ds, **params
+            del additional_params["model"]
+            additional_params["classes"] = np.unique(self.Y[self.train_idx]).tolist()
+
+        self.al_strategy = al_strategy_to_python_classes_mapping[strategy][0](
+            self.trn_ds, **additional_params
         )
 
     def query_AL_strategy(self) -> List[int]:
