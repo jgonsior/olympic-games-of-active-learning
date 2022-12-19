@@ -29,13 +29,13 @@ app = Flask(
 )
 app.debug = True
 
+
 # cache.init_app(app)
 
 
 @app.route("/")
 # @cache.cached(timeout=50)
 def show_available_experiments():
-
     config = Config(no_cli_args={"WORKER_INDEX": None, "EXP_TITLE": "only_random"})
     config_names = get_exp_config_names(config)
     return render_template("available_experiments.html.j2", config_names=config_names)
@@ -85,17 +85,16 @@ def show_results(experiment_name: str):
 
 
 if __name__ == "__main__":
-
     pandarallel.initialize(progress_bar=True, use_memory_fs=True)
     # check if static external ressources exist
     # if not: download them
-    static_ressources = {
+    static_resources = {
         "https://raw.githubusercontent.com/kevquirk/simple.css/main/simple.min.css": "_simple.min.css",
         "https://cdn.jsdelivr.net/npm/tom-select@2.2.1/dist/css/tom-select.css": "_tom_min.css",
         "https://cdn.jsdelivr.net/npm/tom-select@2.2.1/dist/js/tom-select.complete.min.js": "_tom_min.js",
     }
 
-    for sr_url, sr_local_path in static_ressources.items():
+    for sr_url, sr_local_path in static_resources.items():
         sr_local_path = Path(f"interactive_results_browser/static/{sr_local_path}")
         if not sr_local_path.exists():
             sr_local_path.write_bytes(requests.get(sr_url).content)
