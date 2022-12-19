@@ -70,7 +70,7 @@ class Config:
 
     KAGGLE_DATASETS_PATH: Path = "ressources/datasets.yaml"  # type: ignore
     LOCAL_CONFIG_FILE_PATH: Path = ".server_access_credentials.cfg"  # type: ignore
-    LOCAL_YAML_EXP_PATH: Path = "ressources/exp_config.yaml"  # type: ignore
+    LOCAL_YAML_EXP_PATH: Path = "resources/exp_config.yaml"  # type: ignore
     CONFIG_FILE_PATH: Path = "00_config.yaml"  # type: ignore
     WORKLOAD_FILE_PATH: Path = "01_workload.csv"  # type: ignore
     EXPERIMENT_SLURM_FILE_PATH: Path = "02_slurm.slurm"  # type: ignore
