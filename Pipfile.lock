@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "20978e9a4dc9b392c4527e1a9640b2f190430f8e6898fd8c327f280448c21a39"
+            "sha256": "f3132fc8661bff1a78e60c1e131f686747fcdf5d2a8207f3d617967243b607e3"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -1582,7 +1582,7 @@
         "playground": {
             "editable": true,
             "git": "https://github.com/jgonsior/active-learning.git",
-            "ref": "0f8a3e912db6f8423f9f6718e9f607fe0e0405c9"
+            "ref": "cf12cb7822483165ec156822fdb4c7e2f89d8c0c"
         },
         "prettytable": {
             "hashes": [
