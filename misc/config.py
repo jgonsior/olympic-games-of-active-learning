@@ -16,7 +16,7 @@ from resources.data_types import AL_STRATEGY, LEARNER_MODEL
 
 class Config:
     N_JOBS: int = 1
-    RANDOM_SEED: int = -1
+    RANDOM_SEED: int = 1312
     LOG_FILE: str = "console"
     RUNNING_ENVIRONMENT: Literal["local", "hpc"] = "local"
 
