@@ -1,0 +1,80 @@
+test_exp_1:
+    {
+        EXP_GRID_DATASET: [1, 2, 3],
+        EXP_GRID_STRATEGY:
+            [
+                {
+                    OPTIMAL_GREEDY:
+                        {
+                            amount_of_pre_selections: [10, 50, 100],
+                            future_peak_eval_metric: [ACC, F1],
+                        },
+                },
+                { OPTIMAL_TRUE: { future_peak_eval_metric: [ACC, F1] } },
+                { OPTIMAL_BSO: { future_peak_eval_metric: [ACC, F1] } },
+                {
+                    ALIPY_UNCERTAINTY:
+                        { measure: [least_confident, margin, entropy] },
+                },
+
+                { ALIPY_RANDOM: {} },
+                { ALIPY_QUIRE: {} },
+            ],
+        EXP_GRID_RANDOM_SEEDS_END: 1,
+        EXP_GRID_NUM_QUERIES: [10],
+        EXP_GRID_BATCH_SIZE: [1, 5, 10],
+        EXP_GRID_LEARNER_MODEL:
+            [RF, DT, MNB, GNB, RBF_SVM, LINEAR_SVM, POLY_SVM, MLP, LBFGS_MLP],
+        EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0, 1, 2, 3, 4],
+    }
+test_exp_2:
+    {
+        EXP_GRID_DATASET: [1],
+        EXP_GRID_STRATEGY:
+            [
+                {
+                    OPTIMAL_GREEDY:
+                        {
+                            amount_of_pre_selections: [10],
+                            future_peak_eval_metric: [ACC],
+                        },
+                },
+                { ALIPY_UNCERTAINTY: { measure: [least_confident] } },
+
+                { ALIPY_RANDOM: {} },
+            ],
+        EXP_GRID_RANDOM_SEEDS_END: 1,
+        EXP_GRID_NUM_QUERIES: [10],
+        EXP_GRID_BATCH_SIZE: [1, 5],
+        EXP_GRID_LEARNER_MODEL: [RF, MLP],
+        EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0, 1, 2, 3, 4],
+    }
+simple_exps:
+    {
+        EXP_GRID_DATASET: [1, 2, 3],
+        EXP_GRID_STRATEGY:
+            [
+                {
+                    OPTIMAL_GREEDY:
+                        {
+                            amount_of_pre_selections: [10, 50, 100],
+                            future_peak_eval_metric: [ACC, F1],
+                        },
+                },
+                { OPTIMAL_TRUE: { future_peak_eval_metric: [ACC, F1] } },
+                { OPTIMAL_BSO: { future_peak_eval_metric: [ACC, F1] } },
+                {
+                    ALIPY_UNCERTAINTY:
+                        { measure: [least_confident, margin, entropy] },
+                },
+
+                { ALIPY_RANDOM: {} },
+                { ALIPY_QUIRE: {} },
+            ],
+        EXP_GRID_RANDOM_SEEDS_END: 1000,
+        EXP_GRID_NUM_QUERIES: [100],
+        EXP_GRID_BATCH_SIZE: [1, 5, 10],
+        EXP_GRID_LEARNER_MODEL:
+            [RF, DT, MNB, GNB, RBF_SVM, LINEAR_SVM, POLY_SVM, MLP, LBFGS_MLP],
+        EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0, 1, 2, 3, 4],
+    }

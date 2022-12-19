@@ -1,5 +1,4 @@
 import argparse
-import os
 import random
 import sys
 from configparser import RawConfigParser
@@ -13,11 +12,7 @@ import yaml
 
 from datasets import DATASET
 from misc.logging import init_logger, log_it
-from resources.data_types import (
-    AL_STRATEGY,
-    LEARNER_MODEL,
-    _import_compiled_libact_strategies,
-)
+from resources.data_types import AL_STRATEGY, LEARNER_MODEL
 
 
 class Config:
@@ -30,7 +25,6 @@ class Config:
     HPC_WS_PATH: Path
     HPC_DATASETS_PATH: Path
     HPC_OUTPUT_PATH: Path
-    HPC_CODE_PATH: Path
 
     LOCAL_DATASETS_PATH: Path
     LOCAL_CODE_PATH: Path
@@ -76,12 +70,11 @@ class Config:
     DATASETS_TRAIN_TEST_SPLIT_APPENDIX: str = "_split.csv"
     RAW_DATASETS_PATH: Path = "_raw"  # type: ignore
     DATASETS_AMOUNT_OF_SPLITS: int = 5
-    DATASETS_TEST_SIZE_PERCENTAGE: float = 0.4
 
     KAGGLE_DATASETS_YAML_CONFIG_PATH: Path = "resources/datasets.yaml"  # type: ignore
     LOCAL_DATASETS_YAML_CONFIG_PATH: Path = "resources/local_datasets.yaml"  # type: ignore
     LOCAL_CONFIG_FILE_PATH: Path = ".server_access_credentials.cfg"  # type: ignore
-    LOCAL_YAML_EXP_PATH: Path = "resources/exp_config.yaml"  # type: ignore
+    LOCAL_YAML_EXP_PATH: Path = "ressources/exp_config.yaml"  # type: ignore
     CONFIG_FILE_PATH: Path = "00_config.yaml"  # type: ignore
     WORKLOAD_FILE_PATH: Path = "01_workload.csv"  # type: ignore
     EXPERIMENT_SLURM_FILE_PATH: Path = "02_slurm.slurm"  # type: ignore
@@ -99,27 +92,10 @@ class Config:
 
     DONE_WORKLOAD_FILE: Path
     RESULTS_PATH: Path
-    HTML_STATUS_PATH: Path = "06_status.html"  # type:ignore
 
-    def __init__(self, no_cli_args: Optional[Dict[str, Any]] = None) -> None:
-        if no_cli_args is not None:
-            self._parse_non_cli_arguments(no_cli_args)
-        else:
-            self._parse_cli_arguments()
-        self._setup_everything()
-
-    def _parse_non_cli_arguments(self, no_cli_args: Dict[str, Any]) -> None:
-        for k, v in no_cli_args.items():
-            self.__setattr__(k, v)
-
-    def _setup_everything(self):
+    def __init__(self) -> None:
+        self._parse_cli_arguments()
         self._load_server_setup_from_file(Path(self.LOCAL_CONFIG_FILE_PATH))
-
-        if not Path(self.HPC_CODE_PATH).exists():
-            self.RUNNING_ENVIRONMENT = "local"
-            _import_compiled_libact_strategies()
-        else:
-            self.RUNNING_ENVIRONMENT = "hpc"
 
         self._pathes_magic()
 
@@ -144,7 +120,6 @@ class Config:
         if self.RUNNING_ENVIRONMENT == "local":
             self.OUTPUT_PATH = Path(self.LOCAL_OUTPUT_PATH)
             self.DATASETS_PATH = Path(self.LOCAL_DATASETS_PATH)
-
         elif self.RUNNING_ENVIRONMENT == "hpc":
             self.OUTPUT_PATH = Path(self.HPC_OUTPUT_PATH)
             self.DATASETS_PATH = Path(self.HPC_DATASETS_PATH)
@@ -189,8 +164,6 @@ class Config:
         self.EXPERIMENT_SYNC_AND_RUN_FILE_PATH = (
             self.OUTPUT_PATH / self.EXPERIMENT_SYNC_AND_RUN_FILE_PATH
         )
-
-        self.HTML_STATUS_PATH = self.OUTPUT_PATH / self.HTML_STATUS_PATH
 
         self.RAW_DATASETS_PATH = self.DATASETS_PATH / self.RAW_DATASETS_PATH
 
@@ -289,7 +262,7 @@ class Config:
         )
         workload = workload_df.iloc[0].to_dict()
         for k, v in workload.items():
-            # log_it(f"{k}\t\t\t{str(v)}")
+            log_it(f"{k}\t\t\t{v}")
             # convert str/ints to enum data types first
             if k == "EXP_STRATEGY":
                 v = AL_STRATEGY(int(v))
@@ -301,12 +274,6 @@ class Config:
             if str(self.__annotations__[k]).endswith("int]"):
                 v = int(v)
             self.__setattr__(k, v)
-
-        for k in workload.keys():
-            log_it(f"{k}\t\t\t{str(self.__getattribute__(k))}")
-
-        np.random.seed(self.EXP_RANDOM_SEED)
-        random.seed(self.EXP_RANDOM_SEED)
 
         self._original_workload = workload
 

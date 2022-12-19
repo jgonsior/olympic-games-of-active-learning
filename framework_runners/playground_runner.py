@@ -34,13 +34,36 @@ class PLAYGROUND_AL_Experiment(AL_Experiment):
             raise NoStrategyError("get_AL_strategy() has to be called before querying")
 
         warnings.filterwarnings("error")
-        with contextlib.redirect_stdout(io.StringIO()) as f:
+        from resources.data_types import AL_STRATEGY
 
-            result = self.al_strategy.select_batch_(
-                self.model, self.label_idx, self.config.EXP_BATCH_SIZE
-            )
-            s = f.getvalue()
-            print(s)
+        result = None
+        bs = self.config.EXP_BATCH_SIZE
+        match self.config.EXP_STRATEGY:
+            case AL_STRATEGY.PLAYGROUND_INFORMATIVE_DIVERSE:
+                result = self.al_strategy.select_batch_(self.model, self.label_idx, bs)
+            case AL_STRATEGY.PLAYGROUND_MARGIN:
+                result = self.al_strategy.select_batch_(self.model, self.label_idx, bs)
+            case AL_STRATEGY.PLAYGROUND_MIXTURE:
+                result = self.al_strategy.select_batch_(self.label_idx, bs)
+            case AL_STRATEGY.PLAYGROUND_UNIFORM:
+                result = self.al_strategy.select_batch_(self.label_idx, bs)
+            case AL_STRATEGY.PLAYGROUND_GRAPH_DENSITY:
+                result = self.al_strategy.select_batch_(bs, self.label_idx)
+            case AL_STRATEGY.PLAYGROUND_HIERARCHICAL_CLUSTER:
+                result = self.al_strategy.select_batch_(
+                    bs, self.label_idx, bs, self.label_idx, self.Y
+                )
+            case AL_STRATEGY.PLAYGROUND_KCENTER_GREEDY:
+                result = self.al_strategy.select_batch_(self.model, self.label_idx, bs)
+            case AL_STRATEGY.PLAYGROUND_BANDIT:
+                result = self.al_strategy.select_batch_(
+                    self.label_idx,
+                    bs,
+                    self.model.score(self.X, self.Y),
+                    model=self.model,
+                )
+            case AL_STRATEGY.PLAYGROUND_MCM:
+                result = self.al_strategy.select_batch_(self.model, bs, self.label_idx)
         return result
 
     def prepare_dataset(self):

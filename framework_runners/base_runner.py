@@ -7,7 +7,7 @@ import pickle
 import random
 import time
 from typing import TYPE_CHECKING, Any, List
-from aenum import enum
+import pandas as pd
 from datasets import DATASET, load_dataset, split_dataset
 from misc.logging import log_it
 
