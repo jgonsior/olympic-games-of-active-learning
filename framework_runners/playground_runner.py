@@ -23,8 +23,10 @@ class PLAYGROUND_AL_Experiment(AL_Experiment):
         from resources.data_types import al_strategy_to_python_classes_mapping
 
         strategy = AL_STRATEGY(self.config.EXP_STRATEGY)
-        self.al_strategy = al_strategy_to_python_classes_mapping[strategy](
-            self.X, self.Y, self.config.EXP_RANDOM_SEED
+
+        additional_params = al_strategy_to_python_classes_mapping[strategy][1]
+        self.al_strategy = al_strategy_to_python_classes_mapping[strategy][0](
+            self.X, self.Y, self.config.EXP_RANDOM_SEED, **additional_params
         )
 
     def query_AL_strategy(self) -> List[int]:
