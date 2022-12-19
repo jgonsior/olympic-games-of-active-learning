@@ -1,27 +1,18 @@
-from abc import ABC, abstractmethod
-
 from framework_runners.base_runner import AL_Experiment
+from metrics.base_metric import Base_Metric
 
 
-class Base_Metric(ABC):
-    @abstractmethod
+class Timing_Metrics(Base_Metric):
+    metrics = ["learner_training_time", "query_selection_time"]
+
     def pre_retraining_of_learner_hook(self, al_experiment: AL_Experiment):
         pass
 
-    @abstractmethod
     def post_retraining_of_learner_hook(self, al_experiment: AL_Experiment):
         pass
 
-    @abstractmethod
     def pre_query_selection_hook(self, al_experiment: AL_Experiment):
         pass
 
-    @abstractmethod
     def post_query_selection_hook(self, al_experiment: AL_Experiment):
         pass
-
-    def selected_indices(self):
-        ...
-
-    def pickled_learner_model(self):
-        ...

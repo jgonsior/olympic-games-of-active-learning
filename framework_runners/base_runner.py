@@ -71,6 +71,8 @@ class AL_Experiment(ABC):
         ]
         self.model = model_instantiation_tuple[0](**model_instantiation_tuple[1])
 
+        # TODO: refactor into own method and simulate al cycle zero
+
         # initially train model on initally labeled data
         self.model.fit(X=self.X[self.label_idx, :], y=self.Y[self.label_idx])  # type: ignore
 
