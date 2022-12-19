@@ -34,7 +34,7 @@ conda install -y -c conda-forge cvxpy pipenv liblapacke
 python -m pipenv --python=$(conda run which python) --site-packages install --dev
 python -m pipenv shell
 pip install "modin[ray]"
-pip install git+https://github.com/jgonsior/libact.git
+pip install git+https://github.com/triess/libact.git
 ```
 
 
