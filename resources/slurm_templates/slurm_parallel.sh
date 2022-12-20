@@ -7,7 +7,7 @@
 #SBATCH --cpus-per-task={{ SLURM_NR_THREADS }}
 #SBATCH --mem-per-cpu={{ SLURM_MEMORY }}M   # memory per CPU core
 #SBATCH -A {{ HPC_SLURM_PROJECT }}
-#SBATCH --output {{HPC_OUTPUT_PATH}}/exp_results/{{EXP_TITLE}}{{PYTHON_FILE}}_out.txt
+#SBATCH --output {{HPC_OUTPUT_PATH}}/{{EXP_TITLE}}{{PYTHON_FILE}}_out.txt
 #SBATCH --error {{HPC_OUTPUT_PATH}}/{{EXP_TITLE}}{{PYTHON_FILE}}_error.txt
 {% if array %}#SBATCH --array {{ START }}-{{ END }}{% endif %}
 
