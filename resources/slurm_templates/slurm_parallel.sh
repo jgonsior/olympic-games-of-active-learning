@@ -7,8 +7,8 @@
 #SBATCH --cpus-per-task={{ SLURM_NR_THREADS }}
 #SBATCH --mem-per-cpu={{ SLURM_MEMORY }}M   # memory per CPU core
 #SBATCH -A {{ HPC_SLURM_PROJECT }}
-#SBATCH --output {{HPC_WS_PATH}}/slurm_{{EXP_TITLE}}{{PYTHON_FILE}}_out.txt
-#SBATCH --error {{HPC_WS_PATH}}/slurm_{{EXP_TITLE}}{{PYTHON_FILE}}_error.txt
+#SBATCH --output {{HPC_WS_PATH}}/{{EXP_TITLE}}{{PYTHON_FILE}}_out.txt
+#SBATCH --error {{HPC_WS_PATH}}/{{EXP_TITLE}}{{PYTHON_FILE}}_error.txt
 {% if array %}#SBATCH --array {{ START }}-{{ END }}{% endif %}
 
 # Set the max number of threads to use for programs using OpenMP. Should be <= ppn. Does nothing if the program doesn't use OpenMP.
