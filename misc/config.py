@@ -90,6 +90,8 @@ class Config:
     DONE_WORKLOAD_FILE: Path
     RESULTS_PATH: Path
 
+    METRICS: List[str]
+
     def __init__(self) -> None:
         self._parse_cli_arguments()
         self._load_server_setup_from_file(Path(self.LOCAL_CONFIG_FILE_PATH))
