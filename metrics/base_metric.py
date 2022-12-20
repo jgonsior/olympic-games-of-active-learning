@@ -1,6 +1,7 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 import csv
+import gzip
 from pathlib import Path
 from typing import Any, Dict, List, TYPE_CHECKING
 
@@ -35,9 +36,12 @@ class Base_Metric(ABC):
     def save_metrics(self, al_experiment: AL_Experiment) -> None:
         for metric, values in self.metric_values.items():
             metric_result_file = Path(
-                str(al_experiment.config.METRIC_RESULTS_FOLDER) + "/" + metric + ".csv"
+                str(al_experiment.config.METRIC_RESULTS_FOLDER)
+                + "/"
+                + metric
+                + ".csv.gz"
             )
-            with open(metric_result_file, "a") as f:
+            with gzip.open(metric_result_file, "at") as f:
                 w = csv.DictWriter(
                     f, fieldnames=["EXP_UNIQUE_ID"] + [a for a in range(0, len(values))]
                 )
