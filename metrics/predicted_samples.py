@@ -2,8 +2,9 @@ from framework_runners.base_runner import AL_Experiment
 from metrics.base_metric import Base_Metric
 
 
-class Selected_Indice(Base_Metric):
-    metrics = ["selected_indices"]
+# TODO ersetzt pickled learner, ersetzt
+class Predicted_Samples(Base_Metric):
+    metrics = ["y_pred_train", "y_pred_test"]
 
     def pre_retraining_of_learner_hook(self, al_experiment: AL_Experiment):
         pass

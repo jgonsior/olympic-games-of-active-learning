@@ -97,6 +97,6 @@ class LIBACT_Experiment(AL_Experiment):
     def prepare_dataset(self):
         self.fully_labeled = Dataset(self.X, self.Y)
         self.trn_ds = Dataset(
-            (self.X[self.unlabel_idx].tolist() + self.X[self.label_idx].tolist()),
-            ([None] * len(self.unlabel_idx) + self.Y[self.label_idx].tolist()),
+            (self.X[self.unlabeled_idx].tolist() + self.X[self.labeled_idx].tolist()),
+            ([None] * len(self.unlabeled_idx) + self.Y[self.labeled_idx].tolist()),
         )
