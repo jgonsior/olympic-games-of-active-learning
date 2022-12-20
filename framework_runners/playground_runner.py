@@ -42,30 +42,38 @@ class PLAYGROUND_AL_Experiment(AL_Experiment):
         bs = self.config.EXP_BATCH_SIZE
         match self.config.EXP_STRATEGY:
             case AL_STRATEGY.PLAYGROUND_INFORMATIVE_DIVERSE:
-                result = self.al_strategy.select_batch_(self.model, self.label_idx, bs)
+                result = self.al_strategy.select_batch_(
+                    self.model, self.labeled_idx, bs
+                )
             case AL_STRATEGY.PLAYGROUND_MARGIN:
-                result = self.al_strategy.select_batch_(self.model, self.label_idx, bs)
+                result = self.al_strategy.select_batch_(
+                    self.model, self.labeled_idx, bs
+                )
             case AL_STRATEGY.PLAYGROUND_MIXTURE:
-                result = self.al_strategy.select_batch_(self.label_idx, bs)
+                result = self.al_strategy.select_batch_(self.labeled_idx, bs)
             case AL_STRATEGY.PLAYGROUND_UNIFORM:
-                result = self.al_strategy.select_batch_(self.label_idx, bs)
+                result = self.al_strategy.select_batch_(self.labeled_idx, bs)
             case AL_STRATEGY.PLAYGROUND_GRAPH_DENSITY:
-                result = self.al_strategy.select_batch_(bs, self.label_idx)
+                result = self.al_strategy.select_batch_(bs, self.labeled_idx)
             case AL_STRATEGY.PLAYGROUND_HIERARCHICAL_CLUSTER:
                 result = self.al_strategy.select_batch_(
-                    bs, self.label_idx, bs, self.label_idx, self.Y
+                    bs, self.labeled_idx, bs, self.labeled_idx, self.Y
                 )
             case AL_STRATEGY.PLAYGROUND_KCENTER_GREEDY:
-                result = self.al_strategy.select_batch_(self.model, self.label_idx, bs)
+                result = self.al_strategy.select_batch_(
+                    self.model, self.labeled_idx, bs
+                )
             case AL_STRATEGY.PLAYGROUND_BANDIT:
                 result = self.al_strategy.select_batch_(
-                    self.label_idx,
+                    self.labeled_idx,
                     bs,
                     self.model.score(self.X, self.Y),
                     model=self.model,
                 )
             case AL_STRATEGY.PLAYGROUND_MCM:
-                result = self.al_strategy.select_batch_(self.model, bs, self.label_idx)
+                result = self.al_strategy.select_batch_(
+                    self.model, bs, self.labeled_idx
+                )
         return result
 
     def prepare_dataset(self):

@@ -9,7 +9,11 @@ import time
 from typing import TYPE_CHECKING, Any, List
 import pandas as pd
 from datasets import DATASET, load_dataset, split_dataset
+from metrics.base_metric import Base_Metric
+from metrics.pickled_learner_model import Pickled_Learner_Model
+from metrics.selected_indices import Selected_Indice
 from misc.logging import log_it
+import pandas as pd
 
 if TYPE_CHECKING:
     from misc.config import Config
@@ -26,6 +30,7 @@ class AL_Experiment(ABC):
 
     def __init__(self, config: Config) -> None:
         self.config = config
+        self.metrics: List[Base_Metric] = [Selected_Indice(), Pickled_Learner_Model()]
 
         log_it(
             f"Executing Job # {self.config.WORKER_INDEX} of workload {self.config.WORKLOAD_FILE_PATH}: {self.config.EXP_DATASET.name} {self.config.EXP_STRATEGY.name}"
@@ -43,6 +48,23 @@ class AL_Experiment(ABC):
     def prepare_dataset(self):
         pass
 
+    def al_cycle(self, iteration_counter: int, selected_indices: List[int]) -> None:
+        for metric in self.metrics:
+            metric.pre_retraining_of_learner_hook(self)
+
+        for metric in self.metrics:
+            metric.post_retraining_of_learner_hook(self)
+
+        for metric in self.metrics:
+            metric.pre_query_selection_hook(self)
+
+        for metric in self.metrics:
+            metric.post_query_selection_hook(self)
+
+        # nicht hier drinnen
+        for metric in self.metrics:
+            metric.save_metrics()
+
     def run_experiment(self) -> None:
         warnings.filterwarnings("ignore", category=ConvergenceWarning)
         np.random.seed(self.config.EXP_RANDOM_SEED)
@@ -57,8 +79,8 @@ class AL_Experiment(ABC):
             self.Y,
             self.train_idx,
             self.test_idx,
-            self.label_idx,
-            self.unlabel_idx,
+            self.labeled_idx,
+            self.unlabeled_idx,
         ) = split_dataset(dataset_tuple, self.config)
 
         self.prepare_dataset()
@@ -73,73 +95,47 @@ class AL_Experiment(ABC):
         ]
         self.model = model_instantiation_tuple[0](**model_instantiation_tuple[1])
 
-        # TODO: refactor into own method and simulate al cycle zero
-
-        # initially train model on initally labeled data
-        start_time = time.process_time()
-        self.model.fit(X=self.X[self.label_idx, :], y=self.Y[self.label_idx])  # type: ignore
-        end_time = time.process_time()
-
-        # select the AL strategy to use
-        self.get_AL_strategy()
-
         # either we stop until all samples are labeled, or earlier
         if self.config.EXP_NUM_QUERIES == 0:
             total_amount_of_iterations = (
-                int(len(self.unlabel_idx) / self.config.EXP_BATCH_SIZE) + 1
+                int(len(self.unlabeled_idx) / self.config.EXP_BATCH_SIZE) + 1
             )
         else:
             total_amount_of_iterations = self.config.EXP_NUM_QUERIES
 
-        pred = self.model.predict(self.X[self.test_idx, :])  # type: ignore
-
-        # the metrics we want to analyze later on
-        confusion_matrices: List[np.ndarray] = [
-            classification_report(
-                y_true=self.Y[self.test_idx],
-                y_pred=pred,
-                output_dict=True,
-                zero_division=0,
-            )
-        ]
-        selected_indices: List[List[int]] = [self.label_idx]
-        pickled_learner_models: List[str] = [pickle.dumps(self.model, protocol=5)]
-
-        # should we store initial metrics? I think yes!
-
-        log_it(f"Running for a total of {total_amount_of_iterations} iterations")
-
-        query_selection_time = 0
-        learner_training_time = end_time - start_time
+        # TODO: refactor into own method and simulate al cycle zero
+        self.al_cycle(iteration_counter=0, selected_indices=self.labeled_idx)
 
         for iteration in range(0, total_amount_of_iterations):
-            if len(self.unlabel_idx) == 0:
+            if len(self.unlabeled_idx) == 0:
                 log_it("early stopping")
                 break
 
             log_it(f"#{iteration}")
 
+            self.al_cycle(iteration_counter=iteration, selected_indices=??)
+
             start_time = time.process_time()
 
             # only use the query strategy if there are actualy samples left to label
-            if len(self.unlabel_idx) > self.config.EXP_BATCH_SIZE:
+            if len(self.unlabeled_idx) > self.config.EXP_BATCH_SIZE:
                 select_ind = self.query_AL_strategy()
             else:
                 # if we have labeled everything except for a small batch -> return that
-                select_ind = self.unlabel_idx
+                select_ind = self.unlabeled_idx
             end_time = time.process_time()
             query_selection_time += end_time - start_time
 
-            self.label_idx = self.label_idx + select_ind
+            self.labeled_idx = self.labeled_idx + select_ind
 
-            self.unlabel_idx = self._list_difference(self.unlabel_idx, select_ind)
+            self.unlabeled_idx = self._list_difference(self.unlabeled_idx, select_ind)
 
             # save indices for later
             selected_indices.append(select_ind)
 
             # update our learner model
             start_time = time.process_time()
-            self.model.fit(X=self.X[self.label_idx, :], y=self.Y[self.label_idx])  # type: ignore
+            self.model.fit(X=self.X[self.labeled_idx, :], y=self.Y[self.labeled_idx])  # type: ignore
             end_time = time.process_time()
             learner_training_time += end_time - start_time
 
@@ -158,8 +154,6 @@ class AL_Experiment(ABC):
             confusion_matrices.append(current_confusion_matrix)
 
         # save metric results into a single file
-
-        import pandas as pd
 
         metric_df = pd.json_normalize(confusion_matrices, sep="_")  # type: ignore
         metric_df["selected_indices"] = selected_indices

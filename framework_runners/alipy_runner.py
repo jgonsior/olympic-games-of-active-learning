@@ -7,7 +7,6 @@ from framework_runners.base_runner import AL_Experiment
 
 class ALIPY_AL_Experiment(AL_Experiment):
     def get_AL_strategy(self):
-
         from resources.data_types import AL_STRATEGY
         from resources.data_types import (
             al_strategy_to_python_classes_mapping,
@@ -55,8 +54,8 @@ class ALIPY_AL_Experiment(AL_Experiment):
 
     def query_AL_strategy(self) -> List[int]:
         select_ind = self.al_strategy.select(
-            label_index=self.label_idx,
-            unlabel_index=self.unlabel_idx,
+            label_index=self.labeled_idx,
+            unlabel_index=self.unlabeled_idx,
             model=self.model,
             batch_size=self.config.EXP_BATCH_SIZE,
         )

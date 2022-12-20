@@ -26,8 +26,8 @@ class OPTIMAL_AL_Experiment(AL_Experiment):
 
     def query_AL_strategy(self) -> List[int]:
         select_ind = self.al_strategy.select(
-            labeled_index=self.label_idx,
-            unlabeled_index=self.unlabel_idx,
+            labeled_index=self.labeled_idx,
+            unlabeled_index=self.unlabeled_idx,
             model=self.model,
             batch_size=self.config.EXP_BATCH_SIZE,
         )
