@@ -77,7 +77,7 @@ def _cache_retrieved_samples(done_workload) -> List[str]:
     new_data = []
 
     # create large count_dict per dataset and strategy, and calculate, how often each sample was queried
-    for (strat_a, strat_b) in itertools.combinations_with_replacement(
+    for strat_a, strat_b in itertools.combinations_with_replacement(
         plot_df["EXP_STRATEGY"].unique(), 2
     ):
         all_datasets_combined_intersections = 0

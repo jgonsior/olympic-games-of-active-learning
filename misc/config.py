@@ -84,12 +84,11 @@ class Config:
     EXPERIMENT_BASH_FILE_PATH: Path = "02_bash.sh"  # type: ignore
     EXPERIMENT_PYTHON_PARALLEL_BASH_FILE_PATH: Path = "02b_run_bash_parallel.py"  # type: ignore
     EXPERIMENT_SYNC_AND_RUN_FILE_PATH: Path = "04_sync_and_run.sh"  # type: ignore
-    DONE_WORKLOAD_PATH: Path = "05_done_workload.csv"  # type: ignore
-    METRIC_RESULTS_PATH_APPENDIX: str = "_metric_results.csv.gz"
+    OVERALL_DONE_WORKLOAD_PATH: Path = "05_done_workload.csv"  # type: ignore
     EXP_RESULT_ZIP_PATH_PREFIX: Path
     EXP_RESULT_ZIP_PATH: Path = ".tar.gz"  # type: ignore
     EXP_RESULT_EXTRACTED_ZIP_PATH: Path
-    METRIC_RESULTS_FILE_PATH: Path
+    METRIC_RESULTS_FOLDER: Path
 
     DONE_WORKLOAD_FILE: Path
     RESULTS_PATH: Path
@@ -112,12 +111,10 @@ class Config:
         if self.WORKER_INDEX is not None:
             self.load_workload()
 
-            self.METRIC_RESULTS_FILE_PATH = (
-                self.OUTPUT_PATH
-                / self.EXP_DATASET.name
-                / str(str(self.EXP_UNIQUE_ID) + self.METRIC_RESULTS_PATH_APPENDIX)
+            self.METRIC_RESULTS_FOLDER = (
+                self.OUTPUT_PATH / self.EXP_STRATEGY.name / self.EXP_DATASET.name
             )
-            self.METRIC_RESULTS_FILE_PATH.parent.mkdir(exist_ok=True)
+            self.METRIC_RESULTS_FOLDER.mkdir(exist_ok=True, parents=True)
 
     def _pathes_magic(self) -> None:
         if self.RUNNING_ENVIRONMENT == "local":
@@ -177,7 +174,9 @@ class Config:
             self.LOCAL_DATASETS_YAML_CONFIG_PATH
         )
 
-        self.DONE_WORKLOAD_PATH = self.OUTPUT_PATH / self.DONE_WORKLOAD_PATH
+        self.OVERALL_DONE_WORKLOAD_PATH = (
+            self.OUTPUT_PATH / self.OVERALL_DONE_WORKLOAD_PATH
+        )
 
         self.OUTPUT_PATH.mkdir(parents=True, exist_ok=True)
 

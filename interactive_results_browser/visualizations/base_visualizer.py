@@ -190,7 +190,7 @@ class Base_Visualizer(ABC):
         self, limit_to_get_params=True, enum_to_str=True
     ) -> pd.DataFrame:
         return _cache_load_done_workload(
-            done_workload_path=self._config.DONE_WORKLOAD_PATH,
+            done_workload_path=self._config.OVERALL_DONE_WORKLOAD_PATH,
             limit_to_get_params=limit_to_get_params,
             enum_to_str=enum_to_str,
             non_workload_keys=self._NON_WORKLOAD_KEYS,

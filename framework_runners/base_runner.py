@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+import csv
 import importlib
 import random
 from typing import TYPE_CHECKING, Any, List
@@ -132,7 +133,15 @@ class AL_Experiment(ABC):
             self.al_cycle(iteration_counter=iteration)
 
         for metric in self.metrics:
-            metric.save_metrics()
+            metric.save_metrics(self)
+
+        # global results
+        with open(self.config.OVERALL_DONE_WORKLOAD_PATH, "a") as f:
+            w = csv.DictWriter(f, fieldnames=self.config._original_workload.keys())
+
+            if self.config.OVERALL_DONE_WORKLOAD_PATH.stat().st_size == 0:
+                w.writeheader()
+            w.writerow(self.config._original_workload)
 
     # efficient list difference
     def _list_difference(
@@ -151,5 +160,4 @@ class AL_Experiment(ABC):
         if not self.y_pred_test_calculated:
             self.y_pred_test = self.model.predict(self.X[self.test_idx, :]).tolist()
             self.y_pred_test_calculated = True
-            print("wird berechnet")
         return self.y_pred_test

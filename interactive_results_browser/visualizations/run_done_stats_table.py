@@ -129,6 +129,6 @@ class Run_Done_Stats_Table(Base_Visualizer):
             exp_grid_request_params=self._exp_grid_request_params,
             experiment_name=self._experiment_name,
             update_get_params=self._update_get_params,
-            DONE_WORKLOAD_PATH=self._config.DONE_WORKLOAD_PATH,
+            DONE_WORKLOAD_PATH=self._config.OVERALL_DONE_WORKLOAD_PATH,
             WORKLOAD_FILE_PATH=self._config.WORKLOAD_FILE_PATH,
         )

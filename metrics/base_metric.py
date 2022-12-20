@@ -1,6 +1,7 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 import csv
+from pathlib import Path
 from typing import Any, Dict, List, TYPE_CHECKING
 
 from misc.logging import log_it
@@ -32,20 +33,18 @@ class Base_Metric(ABC):
         pass
 
     def save_metrics(self, al_experiment: AL_Experiment) -> None:
-        print(self.metric_values)
         for metric, values in self.metric_values.items():
-            # print(metric)
-            # print(values)
-            # check if csv file exists
-            # if yes, append our values
-            # final csv file as 20 columns, each per timestamp, and each column gets the value of this single metric
+            metric_result_file = Path(
+                str(al_experiment.config.METRIC_RESULTS_FOLDER) + "/" + metric + ".csv"
+            )
+            with open(metric_result_file, "a") as f:
+                w = csv.DictWriter(
+                    f, fieldnames=["EXP_UNIQUE_ID"] + [a for a in range(0, len(values))]
+                )
 
-            # eine "done workload" pro strategie/datensatz ordner --> die werden dann zusammengemerged!
-
-            with open(al_experiment.config.DONE_WORKLOAD_PATH, "a") as f:
-                w = csv.DictWriter(f, fieldnames=[a for a in range(0, len(values))])
-
-                if al_experiment.config.DONE_WORKLOAD_PATH.stat().st_size == 0:
+                if metric_result_file.stat().st_size == 0:
                     log_it("write headers first")
                     w.writeheader()
+                values = {ix: v for ix, v in enumerate(values)}
+                values["EXP_UNIQUE_ID"] = al_experiment.config.EXP_UNIQUE_ID
                 w.writerow(values)
