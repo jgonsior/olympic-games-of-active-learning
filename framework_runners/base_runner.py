@@ -103,7 +103,6 @@ class AL_Experiment(ABC):
         else:
             total_amount_of_iterations = self.config.EXP_NUM_QUERIES
 
-        # TODO: refactor into own method and simulate al cycle zero
         self.al_cycle(iteration_counter=0, selected_indices=self.labeled_idx)
 
         for iteration in range(0, total_amount_of_iterations):
@@ -139,73 +138,7 @@ class AL_Experiment(ABC):
             end_time = time.process_time()
             learner_training_time += end_time - start_time
 
-            pickled_learner_models.append(pickle.dumps(self.model, protocol=5))
 
-            # prediction on test set for metrics
-            pred = self.model.predict(self.X[self.test_idx, :])  # type: ignore
-
-            current_confusion_matrix = classification_report(
-                y_true=self.Y[self.test_idx],
-                y_pred=pred,
-                output_dict=True,
-                zero_division=0,
-            )
-
-            confusion_matrices.append(current_confusion_matrix)
-
-        # save metric results into a single file
-
-        metric_df = pd.json_normalize(confusion_matrices, sep="_")  # type: ignore
-        metric_df["selected_indices"] = selected_indices
-        metric_df["pickled_learner_models"] = pickled_learner_models
-
-        log_it(f"saving to {self.config.METRIC_RESULTS_FILE_PATH}")
-        metric_df.to_csv(
-            self.config.METRIC_RESULTS_FILE_PATH, index=None, compression="infer"
-        )
-
-        # save workload parameters in the workload_done_file
-        workload = {}
-
-        workload = self.config._original_workload
-        workload["learner_training_time"] = learner_training_time
-        workload["query_selection_time"] = query_selection_time
-
-        # calculate metrics
-        acc_auc = metric_df["accuracy"].sum() / len(metric_df)
-        macro_f1_auc = metric_df["macro avg_f1-score"].sum() / len(metric_df)
-        macro_prec_auc = metric_df["macro avg_precision"].sum() / len(metric_df)
-        macro_recall_auc = metric_df["macro avg_recall"].sum() / len(metric_df)
-        weighted_f1_auc = metric_df["weighted avg_f1-score"].sum() / len(metric_df)
-        weighted_prec_auc = metric_df["weighted avg_precision"].sum() / len(metric_df)
-        weighted_recall_auc = metric_df["weighted avg_recall"].sum() / len(metric_df)
-        metric_df["selected_indices"] = selected_indices
-        # selected_indices = list(
-        #    chain.from_iterable(metric_df["selected_indices"].to_list())
-        # )
-
-        workload.update(
-            {
-                "acc_auc": acc_auc,
-                "macro_f1_auc": macro_f1_auc,
-                "macro_prec_auc": macro_prec_auc,
-                "macro_recall_auc": macro_recall_auc,
-                "weighted_f1_auc": weighted_f1_auc,
-                "weighted_prec_auc": weighted_prec_auc,
-                "weighted_recall_auc": weighted_recall_auc,
-                "selected_indices": selected_indices,
-            }
-        )
-
-        log_it(str(workload))
-
-        with open(self.config.DONE_WORKLOAD_PATH, "a") as f:
-            w = csv.DictWriter(f, fieldnames=workload.keys())
-
-            if self.config.DONE_WORKLOAD_PATH.stat().st_size == 0:
-                log_it("write headers first")
-                w.writeheader()
-            w.writerow(workload)
 
     # efficient list difference
     def _list_difference(
