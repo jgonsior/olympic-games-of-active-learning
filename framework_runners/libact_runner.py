@@ -5,7 +5,7 @@ from framework_runners.base_runner import AL_Experiment
 from typing import List
 from libact.base.dataset import Dataset
 from libact.models import LogisticRegression, SklearnProbaAdapter, SVM
-from libact.query_strategies import UncertaintySampling, HintSVM
+from libact.query_strategies import UncertaintySampling
 
 
 from typing import TYPE_CHECKING, List
@@ -41,6 +41,8 @@ class LIBACT_Experiment(AL_Experiment):
         additional_params["random_state"] = self.config.EXP_RANDOM_SEED
 
         if self.config.EXP_STRATEGY == AL_STRATEGY.LIBACT_ALBL:
+            from libact.query_strategies import HintSVM
+
             additional_params["T"] = 100
             additional_params["query_strategies"] = [
                 UncertaintySampling(self.trn_ds, model=LogisticRegression(C=1.0)),
