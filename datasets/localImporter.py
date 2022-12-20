@@ -40,7 +40,6 @@ class Local_Importer(Base_Dataset_Loader):
     def calculate_train_test_splits(
         self, dataset_name: str, df: pd.DataFrame
     ) -> pd.DataFrame:
-
         if self.parameter_dict[dataset_name]["train_test_splits"] == "None":
             return super().calculate_train_test_splits(dataset_name, df)
         else:

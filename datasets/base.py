@@ -133,7 +133,6 @@ class Base_Dataset_Loader(ABC):
         splits_df["start_points"] = [None for _ in range(0, len(splits_df))]
 
         for ix, split in splits_df.iterrows():
-
             start_points: List[List[int]] = []
 
             indices_per_label = {}

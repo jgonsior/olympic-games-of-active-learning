@@ -21,6 +21,7 @@ if TYPE_CHECKING:
         SampleIndiceList,
     )
 
+
 # details about BSO: https://www.ijcai.org/proceedings/2021/0634.pdf
 class Beeam_Search_Optimal(Greedy_Optimal):
     optimal_order: List[int] = []

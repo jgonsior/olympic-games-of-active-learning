@@ -18,6 +18,7 @@ from resources.data_types import AL_STRATEGY
 
 ray.init()
 
+
 # determine config parameters which are to be used -> they all start with EXP_ and have a typing hint of [List[XXX]]
 def _determine_exp_grid_parameters(config: Config) -> List[str]:
     result_list: List[str] = []
@@ -30,10 +31,10 @@ def _determine_exp_grid_parameters(config: Config) -> List[str]:
 
 def create_workload(config: Config) -> List[int]:
     exp_grid_params_names = _determine_exp_grid_parameters(config)
-    if os.path.isfile(config.DONE_WORKLOAD_PATH):
+    if os.path.isfile(config.OVERALL_DONE_WORKLOAD_PATH):
         # experiment has already been run, check which worsloads are still missing
         done_workload_df = pd.read_csv(
-            config.DONE_WORKLOAD_PATH,
+            config.OVERALL_DONE_WORKLOAD_PATH,
         )
 
         open_workload_df = pd.read_csv(config.WORKLOAD_FILE_PATH)
