@@ -169,4 +169,11 @@ refactoring_test_new:
         EXP_GRID_LEARNER_MODEL: [RF], #, DT, MNB, GNB, RBF_SVM, LINEAR_SVM, POLY_SVM, MLP, LBFGS_MLP, LR],
         EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0],
         EXP_GRID_START_POINT: [1],
+        METRICS: [
+                #Pickled_Learner_Model,
+                Predicted_Samples,
+                Selected_Indices,
+                Standard_ML_Metrics,
+                Timing_Metrics,
+            ],
     }
