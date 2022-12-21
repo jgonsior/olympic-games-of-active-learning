@@ -1,5 +1,5 @@
 from __future__ import annotations
-from abc import ABC, abstractmethod
+from abc import ABC, abstractmethod, abstractproperty
 from pathlib import Path
 from typing import List
 
@@ -15,12 +15,18 @@ class Base_Computed_Metric(ABC):
         self.config = config
 
     @abstractmethod
+    def computed_metric_appendix(self) -> str:
+        ...
+
+    @abstractmethod
     def apply_to_row(self, row: pd.Series) -> pd.Series:
         pass
 
     def convert_original_df(self, original_df: pd.DataFrame) -> pd.DataFrame:
         # do stuff using lambda etc
-        original_df["new_"] = original_df.apply(lambda x: self.apply_to_row(x), axis=1)
+        original_df["computed_metric"] = original_df.apply(
+            lambda x: self.apply_to_row(x), axis=1
+        )
         return original_df
 
     def compute(self) -> None:
@@ -40,8 +46,20 @@ class Base_Computed_Metric(ABC):
                         del original_df["EXP_UNIQUE_ID"]
 
                         new_df = self.convert_original_df(original_df)
+                        new_df = new_df.loc[:, ["computed_metric"]]
                         new_df["EXP_UNIQUE_ID"] = exp_unique_id_column
-                        print(new_df)
-                        exit(-1)
 
                         # save new df somehow
+                        new_df.to_csv(
+                            Path(
+                                METRIC_RESULTS_FILE.parent
+                                / str(
+                                    self.computed_metric_appendix()
+                                    + "_"
+                                    + metric
+                                    + ".csv.gz"
+                                )
+                            ),
+                            compression="infer",
+                            index=False,
+                        )
