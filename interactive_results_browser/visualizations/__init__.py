@@ -1,5 +1,5 @@
 from enum import IntEnum, unique
-from typing import Callable, Dict
+from typing import Dict
 from interactive_results_browser.visualizations.auc_table import Auc_Table
 from interactive_results_browser.visualizations.base_visualizer import Base_Visualizer
 from interactive_results_browser.visualizations.learning_curves import Learning_Curves

@@ -6,7 +6,7 @@ from typing import Any, Dict
 
 
 if TYPE_CHECKING:
-    from misc.config import Config
+    pass
 import seaborn as sns
 import matplotlib.pyplot as plt
 from interactive_results_browser.cache import memory

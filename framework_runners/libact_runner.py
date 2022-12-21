@@ -1,10 +1,9 @@
-from distutils.command.config import config
 
 import numpy as np
 from framework_runners.base_runner import AL_Experiment
 from typing import List
 from libact.base.dataset import Dataset
-from libact.models import LogisticRegression, SklearnProbaAdapter, SVM
+from libact.models import LogisticRegression, SklearnProbaAdapter
 from libact.query_strategies import UncertaintySampling
 
 

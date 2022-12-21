@@ -1,11 +1,9 @@
-from lib2to3.pgen2.pgen import DFAState
-from operator import mod
 import os
 from typing import Any, List
 from matplotlib import pyplot as plt
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import classification_report, accuracy_score
+from sklearn.metrics import accuracy_score
 from datasets import split_dataset, load_dataset, DATASET
 from misc.config import Config
 from pathlib import Path

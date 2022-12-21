@@ -1,15 +1,7 @@
 from __future__ import annotations
-import copy
-from enum import unique
-import random
-from typing import TYPE_CHECKING, List, Literal
+from typing import List, TYPE_CHECKING
 
-from enum import IntEnum
 
-import numpy as np
-from pyrsistent import b
-from sklearn.metrics import accuracy_score, f1_score
-from optimal_query_strategies.base_class import Base_AL_Strategy
 from optimal_query_strategies.greedy_optimal import FuturePeakEvalMetric, Greedy_Optimal
 
 

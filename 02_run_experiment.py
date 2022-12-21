@@ -56,6 +56,8 @@ al_strategies_to_temporarily_ignore = [
     AL_STRATEGY.ALIPY_UNCERTAINTY_DTB,
     AL_STRATEGY.ALIPY_QBC,
     AL_STRATEGY.ALIPY_EXPECTED_ERROR_REDUCTION,
+    AL_STRATEGY.OPTIMAL_GREEDY,
+    AL_STRATEGY.OPTIMAL_TRUE,
 ]
 
 if config.EXP_STRATEGY in al_strategies_to_temporarily_ignore:

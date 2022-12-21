@@ -1,11 +1,9 @@
 import csv
-import glob
 import itertools
 from pathlib import Path
 import pickle
 import shutil
 from timeit import timeit
-from tkinter.ttk import Separator
 from sklearn.metrics import classification_report
 import numpy as np
 import pandas as pd

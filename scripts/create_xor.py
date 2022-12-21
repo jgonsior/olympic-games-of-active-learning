@@ -1,9 +1,7 @@
 from pathlib import Path
 import urllib.request
-from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
-import seaborn as sns
 
 urls_to_download = [
     "checkerboard2x2_",

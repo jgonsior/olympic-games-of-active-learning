@@ -1,6 +1,4 @@
 from matplotlib import pyplot as plt
-import numpy as np
-import scipy
 import pandas as pd
 from sklearn.datasets import make_classification
 
