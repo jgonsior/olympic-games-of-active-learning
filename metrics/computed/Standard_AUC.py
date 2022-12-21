@@ -15,7 +15,8 @@ class Standard_AUC(Base_Computed_Metric):
         "weighted_recall",
     ]
 
-    computed_metric_appendix = "_auc"
+    def computed_metric_appendix(self) -> str:
+        return "auc"
 
     def apply_to_row(self, row: pd.Series) -> pd.Series:
         return row.sum() / len(row)
