@@ -3,7 +3,6 @@ from typing import List
 from enum import Enum
 import requests
 from flask import Flask, render_template
-from datasets import DATASET
 from interactive_results_browser.csv_helper_functions import (
     get_exp_config_names,
     get_exp_grid_request_params,
@@ -18,7 +17,6 @@ from misc.config import Config
 from collections.abc import Iterable
 
 from livereload.watcher import INotifyWatcher
-from interactive_results_browser.cache import memory
 import matplotlib.pyplot as plt
 from pandarallel import pandarallel
 

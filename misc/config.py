@@ -3,7 +3,7 @@ import random
 import sys
 from configparser import RawConfigParser
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional, Union, get_args
+from typing import List, Literal, get_args
 from aenum import extend_enum
 
 import git

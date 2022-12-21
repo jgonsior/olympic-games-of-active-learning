@@ -7,12 +7,12 @@ import numpy as np
 import pandas as pd
 
 from interactive_results_browser.visualizations.base_visualizer import Base_Visualizer
-from typing import TYPE_CHECKING, Any, List, Tuple
+from typing import Any, List, TYPE_CHECKING
 
 from typing import Any, Dict
 
 if TYPE_CHECKING:
-    from misc.config import Config
+    pass
 import seaborn as sns
 import matplotlib.pyplot as plt
 from interactive_results_browser.cache import memory

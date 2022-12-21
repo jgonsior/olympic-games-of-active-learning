@@ -1,6 +1,5 @@
 from __future__ import annotations
-from abc import ABC, abstractmethod
-from typing import Any, Dict, List, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from sklearn.metrics import classification_report
 from metrics.base_metric import Base_Metric

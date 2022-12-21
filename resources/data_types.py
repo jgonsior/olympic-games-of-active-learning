@@ -1,8 +1,6 @@
 from __future__ import annotations
-from distutils.command.config import config
 import multiprocessing
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Tuple
-from aenum import Enum
 import numpy as np
 from enum import IntEnum, unique
 from alipy.query_strategy import (
@@ -28,7 +26,6 @@ from libact.query_strategies import (
 from libact.query_strategies.multiclass import EER, HierarchicalSampling
 
 from libact.models import LogisticRegression, SVM
-from numpy import result_type
 from playground.sampling_methods.bandit_discrete import BanditDiscreteSampler  # wrapper
 from playground.sampling_methods.simulate_batch import SimulateBatchSampler  # wrapper
 from playground.sampling_methods.graph_density import GraphDensitySampler
@@ -64,12 +61,11 @@ from optimal_query_strategies.greedy_optimal import (
 from optimal_query_strategies.true_optimal import True_Optimal
 
 if TYPE_CHECKING:
-    from misc.config import Config
+    pass
 
 SampleIndiceList = List[int]
 FeatureVectors = np.ndarray
 LabelList = np.ndarray
-from datasets import DATASET
 
 
 @unique

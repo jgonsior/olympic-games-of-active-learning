@@ -1,9 +1,8 @@
 from __future__ import annotations
 from pathlib import Path
-from typing import List, Tuple
+from typing import List
 
-from typing import TYPE_CHECKING, Any, List
-import pandas as pd
+from typing import List, TYPE_CHECKING
 from flask import request
 
 from datasets import DATASET

@@ -1,24 +1,16 @@
 from __future__ import annotations
-import base64
-from distutils.command.config import config
-import io
 
-import pandas as pd
-from datasets import DATASET
 
 from interactive_results_browser.visualizations.base_visualizer import Base_Visualizer
-from typing import TYPE_CHECKING, Any, List, Tuple
+from typing import Any, List, TYPE_CHECKING
 
 from typing import Any, Dict
 
-from resources.data_types import AL_STRATEGY, LEARNER_MODEL
 
 if TYPE_CHECKING:
-    from misc.config import Config
+    pass
 import seaborn as sns
 import matplotlib.pyplot as plt
-from matplotlib.ticker import FuncFormatter
-from interactive_results_browser.cache import memory
 
 
 def _plot_function(plot_df, my_palette, my_markers):

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod, abstractproperty
+from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Dict, List
 
 from sklearn.preprocessing import MinMaxScaler, RobustScaler
@@ -17,7 +17,6 @@ from sklearn.model_selection import (
     StratifiedShuffleSplit,
 )
 
-from misc.logging import log_it
 from resources.data_types import SampleIndiceList
 
 if TYPE_CHECKING:
