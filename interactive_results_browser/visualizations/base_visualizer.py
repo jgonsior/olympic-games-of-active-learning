@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 import base64
 import io
 import multiprocessing
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, List
 
 from typing import Any, Dict
@@ -196,3 +197,28 @@ class Base_Visualizer(ABC):
             non_workload_keys=self._NON_WORKLOAD_KEYS,
             exp_grid_request_params=self._exp_grid_request_params,
         )
+
+    @staticmethod
+    def load_detailed_metric_files(
+        done_workload_df: pd.DataFrame,
+        metric: str,
+        OUTPUT_PATH: Path,
+    ) -> pd.DataFrame:
+        result_df = pd.DataFrame()
+
+        for EXP_STRATEGY in done_workload_df["EXP_STRATEGY"].unique():
+            for EXP_DATASET in done_workload_df["EXP_DATASET"].unique():
+                detailed_metrics_path = Path(
+                    f"{OUTPUT_PATH}/{EXP_STRATEGY}/{EXP_DATASET}/{metric}.csv.gz"
+                )
+                if detailed_metrics_path.exists():
+                    # read in each csv file to get learning curve data for plot
+                    detailed_metrics_df = pd.read_csv(detailed_metrics_path)
+
+                    detailed_metrics_df = detailed_metrics_df.merge(
+                        done_workload_df, on="EXP_UNIQUE_ID", how="inner"
+                    )
+                    result_df = pd.concat(
+                        [result_df, detailed_metrics_df], ignore_index=True
+                    )
+        return result_df
