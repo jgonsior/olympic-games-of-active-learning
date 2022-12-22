@@ -3,7 +3,7 @@ import random
 import sys
 from configparser import RawConfigParser
 from pathlib import Path
-from typing import List, Literal, get_args
+from typing import Any, Dict, List, Literal, Optional, get_args
 from aenum import extend_enum
 
 import git
@@ -12,7 +12,11 @@ import yaml
 
 from datasets import DATASET
 from misc.logging import init_logger, log_it
-from resources.data_types import AL_STRATEGY, LEARNER_MODEL
+from resources.data_types import (
+    AL_STRATEGY,
+    LEARNER_MODEL,
+    _import_compiled_libact_strategies,
+)
 
 
 class Config:
@@ -25,6 +29,7 @@ class Config:
     HPC_WS_PATH: Path
     HPC_DATASETS_PATH: Path
     HPC_OUTPUT_PATH: Path
+    HPC_CODE_PATH: Path
 
     LOCAL_DATASETS_PATH: Path
     LOCAL_CODE_PATH: Path
@@ -93,11 +98,25 @@ class Config:
     DONE_WORKLOAD_FILE: Path
     RESULTS_PATH: Path
 
-    METRICS: List[str]
+    def __init__(self, no_cli_args: Optional[Dict[str, Any]] = None) -> None:
+        if no_cli_args is not None:
+            self._parse_non_cli_arguments(no_cli_args)
+        else:
+            self._parse_cli_arguments()
+        self._setup_everything()
 
-    def __init__(self) -> None:
-        self._parse_cli_arguments()
+    def _parse_non_cli_arguments(self, no_cli_args: Dict[str, Any]) -> None:
+        for k, v in no_cli_args.items():
+            self.__setattr__(k, v)
+
+    def _setup_everything(self):
         self._load_server_setup_from_file(Path(self.LOCAL_CONFIG_FILE_PATH))
+
+        if not Path(self.HPC_CODE_PATH).exists():
+            self.RUNNING_ENVIRONMENT = "local"
+            _import_compiled_libact_strategies()
+        else:
+            self.RUNNING_ENVIRONMENT = "hpc"
 
         self._pathes_magic()
 
@@ -120,6 +139,7 @@ class Config:
         if self.RUNNING_ENVIRONMENT == "local":
             self.OUTPUT_PATH = Path(self.LOCAL_OUTPUT_PATH)
             self.DATASETS_PATH = Path(self.LOCAL_DATASETS_PATH)
+
         elif self.RUNNING_ENVIRONMENT == "hpc":
             self.OUTPUT_PATH = Path(self.HPC_OUTPUT_PATH)
             self.DATASETS_PATH = Path(self.HPC_DATASETS_PATH)
@@ -264,7 +284,7 @@ class Config:
         )
         workload = workload_df.iloc[0].to_dict()
         for k, v in workload.items():
-            log_it(f"{k}\t\t\t{v}")
+            # log_it(f"{k}\t\t\t{str(v)}")
             # convert str/ints to enum data types first
             if k == "EXP_STRATEGY":
                 v = AL_STRATEGY(int(v))
@@ -276,6 +296,12 @@ class Config:
             if str(self.__annotations__[k]).endswith("int]"):
                 v = int(v)
             self.__setattr__(k, v)
+
+        for k in workload.keys():
+            log_it(f"{k}\t\t\t{str(self.__getattribute__(k))}")
+
+        np.random.seed(self.EXP_RANDOM_SEED)
+        random.seed(self.EXP_RANDOM_SEED)
 
         self._original_workload = workload
 
