@@ -2,6 +2,7 @@ from __future__ import annotations
 import ast
 from collections import Counter
 import itertools
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -56,16 +57,35 @@ def _plot_function(plot_df, my_palette, my_markers):
     return ax
 
 
-@memory.cache()
-def _cache_retrieved_samples(done_workload) -> List[str]:
-    plot_df = done_workload.filter(
-        [
-            "selected_indices",
-            "EXP_STRATEGY",
-            "EXP_DATASET",
-        ]
+# @memory.cache()
+def _cache_retrieved_samples(
+    done_workload_df: pd.DataFrame, OUTPUT_PATH: Path
+) -> List[str]:
+    done_workload_df = done_workload_df.loc[
+        :, ["EXP_UNIQUE_ID", "EXP_STRATEGY", "EXP_DATASET"]
+    ]
+
+    plot_df = Base_Visualizer.load_detailed_metric_files(
+        done_workload_df, "selected_indices", OUTPUT_PATH
+    )
+    del plot_df["EXP_UNIQUE_ID"]
+
+    vor merge: 0,1,2,EXP_DATASET, EXP_STRATERY
+    nach merge: AL Cycle, selected_indices
+
+    was ich eigentlich will: selected_indices_list_of_list
+
+    --> frage: brauche ich wirklich so eine liste für das was unten kommt? kann ich das ni auch anders machen?
+    --> oder doch per melt?
+    fragen über fragen
+
+    plot_df = plot_df.melt(
+        id_vars=["EXP_STRATEGY", "EXP_DATASET"],
+        var_name="AL Cycle",
+        value_name="selected_indices",
     )
     plot_df["selected_indices"] = plot_df["selected_indices"].apply(ast.literal_eval)
+    print(plot_df)
 
     # remove starting point
     plot_df["selected_indices"] = plot_df["selected_indices"].apply(
@@ -156,6 +176,7 @@ def _cache_retrieved_samples(done_workload) -> List[str]:
 class Retrieved_Samples(Base_Visualizer):
     def get_template_data(self) -> Dict[str, Any]:
         plot_url = _cache_retrieved_samples(
-            done_workload=self._load_done_workload(),
+            done_workload_df=self._load_done_workload(),
+            OUTPUT_PATH=self._config.OUTPUT_PATH,
         )
         return {"plot_data": plot_url}

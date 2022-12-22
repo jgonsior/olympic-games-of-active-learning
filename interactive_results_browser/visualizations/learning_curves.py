@@ -46,21 +46,9 @@ def _cache_create_plots(
         :, ["EXP_UNIQUE_ID", "EXP_STRATEGY", "EXP_DATASET"]
     ]
 
-    plot_df = pd.DataFrame()
-
-    for EXP_STRATEGY in done_workload_df["EXP_STRATEGY"].unique():
-        for EXP_DATASET in done_workload_df["EXP_DATASET"].unique():
-            detailed_metrics_path = Path(
-                f"{OUTPUT_PATH}/{EXP_STRATEGY}/{EXP_DATASET}/{metric}.csv.gz"
-            )
-            if detailed_metrics_path.exists():
-                # read in each csv file to get learning curve data for plot
-                detailed_metrics_df = pd.read_csv(detailed_metrics_path)
-
-                detailed_metrics_df = detailed_metrics_df.merge(
-                    done_workload_df, on="EXP_UNIQUE_ID", how="inner"
-                )
-                plot_df = pd.concat([plot_df, detailed_metrics_df], ignore_index=True)
+    plot_df = Base_Visualizer.load_detailed_metric_files(
+        done_workload_df, metric, OUTPUT_PATH
+    )
 
     del plot_df["EXP_UNIQUE_ID"]
 
