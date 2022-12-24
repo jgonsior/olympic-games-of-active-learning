@@ -134,7 +134,7 @@ local_SynDs: {
             ],
     } #, DT, MNB, GNB, RBF_SVM, LINEAR_SVM, POLY_SVM, MLP, LBFGS_MLP, LR],
 
-optimal_alipy_random: { EXP_GRID_DATASET: [1-39], EXP_GRID_STRATEGY: [
+full_exp: { EXP_GRID_DATASET: [1-39], EXP_GRID_STRATEGY: [
                 ALIPY_RANDOM,
                 ALIPY_UNCERTAINTY_LC,
                 ALIPY_UNCERTAINTY_MM,
