@@ -6,7 +6,6 @@ from libact.base.dataset import Dataset
 from libact.models import LogisticRegression, SklearnProbaAdapter
 from libact.query_strategies import UncertaintySampling
 
-
 from typing import TYPE_CHECKING
 
 
@@ -22,6 +21,7 @@ class LIBACT_Experiment(AL_Experiment):
     def __init__(self, config: "Config"):
         super().__init__(config)
         self.trn_ds = None
+        self.fully_labeled_trn_ds = None
         self.al_strategy = None
 
     def get_AL_strategy(self):
@@ -74,6 +74,7 @@ class LIBACT_Experiment(AL_Experiment):
             raise NoStrategyError("get_AL_strategy() has to be called before querying")
         ret = []
         batch_size = self.config.EXP_BATCH_SIZE
+
         match self.config.EXP_STRATEGY:
             case AL_STRATEGY.LIBACT_VR:
                 ret = self.al_strategy.make_n_queries(
@@ -88,27 +89,28 @@ class LIBACT_Experiment(AL_Experiment):
                     batch_size=self.config.EXP_BATCH_SIZE
                 )
             case AL_STRATEGY.LIBACT_ALBL:
+                raise ValueError("ALBL not yet implemented")
                 pass  # TODO
             case AL_STRATEGY.LIBACT_QUIRE:
                 ret = self.al_strategy.make_n_queries(
                     batch_size=self.config.EXP_BATCH_SIZE
                 )
-            case AL_STRATEGY.LIBACT_UNCERTAINTY:
-                select_id, scores = self.al_strategy.make_query(return_score=True)
-                ret.append(select_id)
-                ids, scores = zip(*scores)
-                i = 0
-                while i < batch_size:
-                    maximum = max(scores)
-                    max_ind = scores.index(maximum)
-                    ret.append(ids[max_ind])
+            case AL_STRATEGY.LIBACT_UNCERTAINTY_SM | AL_STRATEGY.LIBACT_UNCERTAINTY_ENT | AL_STRATEGY.LIBACT_UNCERTAINTY_LC:
+                unlabeled_entry_ids, scores = zip(*self.al_strategy._get_scores())
+
+                max_ids = np.argpartition(
+                    -np.array(scores), self.config.EXP_BATCH_SIZE
+                )[: self.config.EXP_BATCH_SIZE]
+                ret = np.array(unlabeled_entry_ids)[max_ids]
             case AL_STRATEGY.LIBACT_EER:
                 ret = self.al_strategy.make_n_queries(
                     batch_size=self.config.EXP_BATCH_SIZE
                 )
             case AL_STRATEGY.LIBACT_HIERARCHICAL_SAMPLING:
+                raise ValueError("ALBL not yet implemented")
                 pass  # TODO
             case AL_STRATEGY.LIBACT_QBC:
+                raise ValueError("ALBL not yet implemented")
                 pass  # TODO
             case _:
                 from misc.Errors import WrongFrameworkError
@@ -116,15 +118,23 @@ class LIBACT_Experiment(AL_Experiment):
                 raise WrongFrameworkError(
                     "Libact runner was called with a non-Libact strategy"
                 )
+        print("libact runner pool")
+        print(self.trn_ds.get_unlabeled_entries()[0])
+        lb = self.local_Y_train[ret]
+        print(ret)
+        print(lb)
+        self.trn_ds.update(ret, lb)
+        print("danach")
+        print(self.trn_ds.get_unlabeled_entries()[0])
+
+        if not isinstance(ret, list):
+            ret = ret.tolist()
         return ret
 
     def prepare_dataset(self):
-        # TODO starting points in libact??
-        print(self.local_X_train)
-        print(self.local_idx_X_train_idx)
-        print(sorted(self.global_train_idx))
-        print(sorted(self.global_test_idx))
-        print(self.local_Y_train)
-        print(self.local_train_labeled_idx)
-        print(self.local_train_unlabeled_idx)
-        self.trn_ds = Dataset(self.local_X_train, self.local_Y_train)
+        init_labeled_mask = np.array([None for _ in self.local_Y_train])
+        for labeled_idx in self.local_train_labeled_idx:
+            init_labeled_mask[labeled_idx] = self.local_Y_train[labeled_idx]
+        self.trn_ds = Dataset(self.local_X_train, init_labeled_mask)
+        print("libact runner pool init")
+        print(self.trn_ds.get_unlabeled_entries()[0])

@@ -19,7 +19,7 @@ pipenv --python=$(conda run which python) --site-packages install --dev
 python -m pipenv --python=$(conda run which python) --site-packages install --dev
 python -m pipenv shell
 #pip install modin[ray] # has to be run everytime anything is being changed by pipenv
-pip install git+https://github.com/jgonsior/libact.git "modin[ray]"
+pip install git+https://github.com/triess/libact.git "modin[ray]"
 ```
 
 

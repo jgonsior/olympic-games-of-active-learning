@@ -79,7 +79,7 @@ class AL_STRATEGY(IntEnum):
     OPTIMAL_BSO = 6
     OPTIMAL_TRUE = 7
     OPTIMAL_GREEDY = 8
-    LIBACT_UNCERTAINTY = 9
+    LIBACT_UNCERTAINTY_LC = 9
     LIBACT_QBC = 10
     LIBACT_DWUS = 11
     LIBACT_QUIRE = 12
@@ -106,6 +106,8 @@ class AL_STRATEGY(IntEnum):
     ALIPY_UNCERTAINTY_MM = 33
     ALIPY_UNCERTAINTY_ENTROPY = 34
     ALIPY_UNCERTAINTY_DTB = 35
+    LIBACT_UNCERTAINTY_SM = 36
+    LIBACT_UNCERTAINTY_ENT = 37
 
 
 al_strategy_to_python_classes_mapping: Dict[
@@ -150,7 +152,9 @@ al_strategy_to_python_classes_mapping: Dict[
         {"future_peak_eval_metric": FuturePeakEvalMetric.ACC},
     ),
     # AL_STRATEGY.OPTIMAL_SUBSETS: (, {}),
-    AL_STRATEGY.LIBACT_UNCERTAINTY: (UncertaintySampling, {}),
+    AL_STRATEGY.LIBACT_UNCERTAINTY_LC: (UncertaintySampling, {"method": "lc"}),
+    AL_STRATEGY.LIBACT_UNCERTAINTY_SM: (UncertaintySampling, {"method": "sm"}),
+    AL_STRATEGY.LIBACT_UNCERTAINTY_ENT: (UncertaintySampling, {"method": 'entropy"'}),
     AL_STRATEGY.LIBACT_QBC: (QueryByCommittee, {}),
     AL_STRATEGY.LIBACT_DWUS: (DWUS, {}),
     AL_STRATEGY.LIBACT_QUIRE: (QUIRE, {}),
