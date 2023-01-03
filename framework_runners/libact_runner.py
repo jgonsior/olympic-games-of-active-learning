@@ -1,22 +1,26 @@
+from __future__ import annotations
 
 import numpy as np
 from framework_runners.base_runner import AL_Experiment
-from typing import List
 from libact.base.dataset import Dataset
 from libact.models import LogisticRegression, SklearnProbaAdapter
 from libact.query_strategies import UncertaintySampling
 
 
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
+
 
 if TYPE_CHECKING:
     from misc.config import Config
+
+    from resources.data_types import (
+        SampleIndiceList,
+    )
 
 
 class LIBACT_Experiment(AL_Experiment):
     def __init__(self, config: "Config"):
         super().__init__(config)
-        self.fully_labeled = None
         self.trn_ds = None
         self.al_strategy = None
 
@@ -27,6 +31,11 @@ class LIBACT_Experiment(AL_Experiment):
         )
 
         strategy = AL_STRATEGY(self.config.EXP_STRATEGY)
+        if strategy in [AL_STRATEGY.LIBACT_VR]:
+            from resources.data_types import _import_compiled_libact_strategies
+
+            _import_compiled_libact_strategies()
+
         additional_params = al_strategy_to_python_classes_mapping[strategy][1]
 
         if (
@@ -50,13 +59,13 @@ class LIBACT_Experiment(AL_Experiment):
             ]
         elif self.config.EXP_STRATEGY == AL_STRATEGY.LIBACT_HIERARCHICAL_SAMPLING:
             del additional_params["model"]
-            additional_params["classes"] = np.unique(self.Y[self.train_idx]).tolist()
+            additional_params["classes"] = np.unique(self.local_Y_train).tolist()
 
         self.al_strategy = al_strategy_to_python_classes_mapping[strategy][0](
             self.trn_ds, **additional_params
         )
 
-    def query_AL_strategy(self) -> List[int]:
+    def query_AL_strategy(self) -> SampleIndiceList:
         from resources.data_types import AL_STRATEGY
 
         if self.al_strategy is None:
@@ -67,15 +76,23 @@ class LIBACT_Experiment(AL_Experiment):
         batch_size = self.config.EXP_BATCH_SIZE
         match self.config.EXP_STRATEGY:
             case AL_STRATEGY.LIBACT_VR:
-                ret = self.al_strategy.make_n_queries()
+                ret = self.al_strategy.make_n_queries(
+                    batch_size=self.config.EXP_BATCH_SIZE
+                )
             case AL_STRATEGY.LIBACT_HINTSVM:
-                ret = self.al_strategy.make_n_queries()
+                ret = self.al_strategy.make_n_queries(
+                    batch_size=self.config.EXP_BATCH_SIZE
+                )
             case AL_STRATEGY.LIBACT_DWUS:
-                ret = self.al_strategy.make_n_queries()
+                ret = self.al_strategy.make_n_queries(
+                    batch_size=self.config.EXP_BATCH_SIZE
+                )
             case AL_STRATEGY.LIBACT_ALBL:
                 pass  # TODO
             case AL_STRATEGY.LIBACT_QUIRE:
-                ret = self.al_strategy.make_n_queries()
+                ret = self.al_strategy.make_n_queries(
+                    batch_size=self.config.EXP_BATCH_SIZE
+                )
             case AL_STRATEGY.LIBACT_UNCERTAINTY:
                 select_id, scores = self.al_strategy.make_query(return_score=True)
                 ret.append(select_id)
@@ -86,7 +103,9 @@ class LIBACT_Experiment(AL_Experiment):
                     max_ind = scores.index(maximum)
                     ret.append(ids[max_ind])
             case AL_STRATEGY.LIBACT_EER:
-                ret = self.al_strategy.make_n_queries()
+                ret = self.al_strategy.make_n_queries(
+                    batch_size=self.config.EXP_BATCH_SIZE
+                )
             case AL_STRATEGY.LIBACT_HIERARCHICAL_SAMPLING:
                 pass  # TODO
             case AL_STRATEGY.LIBACT_QBC:
@@ -100,8 +119,12 @@ class LIBACT_Experiment(AL_Experiment):
         return ret
 
     def prepare_dataset(self):
-        self.fully_labeled = Dataset(self.X, self.Y)
-        self.trn_ds = Dataset(
-            (self.X[self.unlabeled_idx].tolist() + self.X[self.labeled_idx].tolist()),
-            ([None] * len(self.unlabeled_idx) + self.Y[self.labeled_idx].tolist()),
-        )
+        # TODO starting points in libact??
+        print(self.local_X_train)
+        print(self.local_idx_X_train_idx)
+        print(sorted(self.global_train_idx))
+        print(sorted(self.global_test_idx))
+        print(self.local_Y_train)
+        print(self.local_train_labeled_idx)
+        print(self.local_train_unlabeled_idx)
+        self.trn_ds = Dataset(self.local_X_train, self.local_Y_train)

@@ -9,7 +9,6 @@ from typing import Any, Dict, Tuple
 import pandas as pd
 import yaml
 import pandas as pd
-import numpy as np
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -60,7 +59,6 @@ def split_dataset(
     SampleIndiceList,
     SampleIndiceList,
     SampleIndiceList,
-    SampleIndiceList,
 ]:
     df, train_test_split = dataset
     X = df.loc[:, df.columns != "LABEL_TARGET"].to_numpy()  # type: ignore
@@ -73,9 +71,8 @@ def split_dataset(
         train_test_split.iloc[config.EXP_TRAIN_TEST_BUCKET_SIZE]["test"]
     )
 
-    label_idx: SampleIndiceList = ast.literal_eval(
+    initially_labeled_indices: SampleIndiceList = ast.literal_eval(
         train_test_split.iloc[config.EXP_TRAIN_TEST_BUCKET_SIZE]["start_points"]
     )[config.EXP_START_POINT]
-    unlabel_idx: SampleIndiceList = np.setdiff1d(train_idx, label_idx).copy()
 
-    return X, Y, train_idx, test_idx, label_idx, unlabel_idx
+    return X, Y, train_idx, test_idx, initially_labeled_indices

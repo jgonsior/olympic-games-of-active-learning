@@ -11,6 +11,7 @@ import numpy as np
 import yaml
 
 from datasets import DATASET
+from metrics.base_metric import Base_Metric
 from misc.logging import init_logger, log_it
 from resources.data_types import (
     AL_STRATEGY,
@@ -97,6 +98,8 @@ class Config:
 
     DONE_WORKLOAD_FILE: Path
     RESULTS_PATH: Path
+
+    METRICS: List[Base_Metric]
 
     def __init__(self, no_cli_args: Optional[Dict[str, Any]] = None) -> None:
         if no_cli_args is not None:

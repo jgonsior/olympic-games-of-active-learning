@@ -1,8 +1,18 @@
 from __future__ import annotations
 import os
 
-from typing import List
+from typing import TYPE_CHECKING
+
+import numpy as np
 from framework_runners.base_runner import AL_Experiment
+
+
+if TYPE_CHECKING:
+    pass
+
+    from resources.data_types import (
+        SampleIndiceList,
+    )
 
 
 class ALIPY_AL_Experiment(AL_Experiment):
@@ -17,15 +27,22 @@ class ALIPY_AL_Experiment(AL_Experiment):
         additional_params = al_strategy_to_python_classes_mapping[al_strategy][1]
 
         if al_strategy in [
-            AL_STRATEGY.ALIPY_QUIRE,
             AL_STRATEGY.ALIPY_GRAPH_DENSITY,
             AL_STRATEGY.ALIPY_CORESET_GREEDY,
         ]:
-            additional_params["train_idx"] = self.train_idx
+            additional_params["train_idx"] = np.array(
+                list(self.map_local_to_global_train_ix.keys())
+            )
+        elif al_strategy in [AL_STRATEGY.ALIPY_LAL]:
+            if len(np.unique(self.Y)) > 2:
+                print(
+                    "ALIPY_LAL is only implementend for binary classification, exiting…"
+                )
+                exit(-1)
 
         al_strategy = al_strategy_to_python_classes_mapping[al_strategy][0](
-            X=self.X,
-            y=self.Y,
+            X=self.local_X_train,
+            y=self.local_Y_train,
             **additional_params,
         )
 
@@ -52,10 +69,10 @@ class ALIPY_AL_Experiment(AL_Experiment):
 
         self.al_strategy = al_strategy
 
-    def query_AL_strategy(self) -> List[int]:
+    def query_AL_strategy(self) -> SampleIndiceList:
         select_ind = self.al_strategy.select(
-            label_index=self.labeled_idx,
-            unlabel_index=self.unlabeled_idx,
+            label_index=self.local_train_labeled_idx,
+            unlabel_index=self.local_train_unlabeled_idx,
             model=self.model,
             batch_size=self.config.EXP_BATCH_SIZE,
         )

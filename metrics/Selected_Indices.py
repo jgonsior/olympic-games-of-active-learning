@@ -11,4 +11,4 @@ class Selected_Indices(Base_Metric):
     metrics = ["selected_indices"]
 
     def post_query_selection_hook(self, al_experiment: AL_Experiment):
-        self.metric_values["selected_indices"].append(al_experiment.select_ind)
+        self.metric_values["selected_indices"].append(al_experiment.local_selected_idx)
