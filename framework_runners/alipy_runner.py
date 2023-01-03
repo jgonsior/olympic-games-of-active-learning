@@ -33,7 +33,12 @@ class ALIPY_AL_Experiment(AL_Experiment):
             additional_params["train_idx"] = np.array(
                 list(self.map_local_to_global_train_ix.keys())
             )
-        elif al_strategy in [AL_STRATEGY.ALIPY_LAL]:
+        elif al_strategy in [
+            AL_STRATEGY.ALIPY_LAL,
+            AL_STRATEGY.ALIPY_UNCERTAINTY_DTB,
+            AL_STRATEGY.ALIPY_BMDR,
+            AL_STRATEGY.ALIPY_SPAL,
+        ]:
             if len(np.unique(self.Y)) > 2:
                 print(
                     "ALIPY_LAL is only implementend for binary classification, exiting…"

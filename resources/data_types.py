@@ -169,6 +169,14 @@ al_strategy_to_python_classes_mapping: Dict[
 }
 
 
+al_strategies_which_only_support_binary_classification: List[AL_STRATEGY] = [
+    AL_STRATEGY.ALIPY_LAL,
+    AL_STRATEGY.ALIPY_UNCERTAINTY_DTB,
+    AL_STRATEGY.ALIPY_BMDR,
+    AL_STRATEGY.ALIPY_SPAL,
+]
+
+
 def _import_compiled_libact_strategies():
     from libact.query_strategies import (
         HintSVM,
