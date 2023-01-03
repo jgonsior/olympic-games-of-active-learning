@@ -22,7 +22,7 @@ class Standard_ML_Metrics(Base_Metric):
 
     def post_retraining_of_learner_hook(self, al_experiment: AL_Experiment):
         classification_report_results = classification_report(
-            y_true=al_experiment.Y[al_experiment.test_idx],
+            y_true=al_experiment.Y[al_experiment.global_test_idx],
             y_pred=al_experiment.get_y_pred_test(),
             output_dict=True,
             zero_division=0,

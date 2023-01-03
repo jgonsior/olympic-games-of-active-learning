@@ -6,7 +6,6 @@ from enum import IntEnum, unique
 from alipy.query_strategy import (
     QueryInstanceUncertainty,
     QueryInstanceRandom,
-    QueryInstanceQUIRE,
     QueryExpectedErrorReduction,
     QueryInstanceBMDR,
     QueryInstanceCoresetGreedy,
@@ -76,7 +75,7 @@ class AL_STRATEGY(IntEnum):
     ALIPY_CORESET_GREEDY = (
         4  # distance in ['cityblock', 'cosine', 'euclidean', 'l1', 'l2', 'manhattan'].
     )
-    ALIPY_QUIRE = 5  # kernel=linear, poly, rbf
+    # ALIPY_QUIRE = 5  # kernel=linear, poly, rbf -> coverd by LIBACT_QUIRE
     OPTIMAL_BSO = 6
     OPTIMAL_TRUE = 7
     OPTIMAL_GREEDY = 8
@@ -128,7 +127,7 @@ al_strategy_to_python_classes_mapping: Dict[
     ),
     AL_STRATEGY.ALIPY_GRAPH_DENSITY: (QueryInstanceGraphDensity, {}),
     AL_STRATEGY.ALIPY_CORESET_GREEDY: (QueryInstanceCoresetGreedy, {}),
-    AL_STRATEGY.ALIPY_QUIRE: (QueryInstanceQUIRE, {}),
+    # AL_STRATEGY.ALIPY_QUIRE: (QueryInstanceQUIRE, {}),
     AL_STRATEGY.ALIPY_QBC: (QueryInstanceQBC, {}),
     AL_STRATEGY.ALIPY_EXPECTED_ERROR_REDUCTION: (QueryExpectedErrorReduction, {}),
     AL_STRATEGY.ALIPY_BMDR: (QueryInstanceBMDR, {}),
@@ -176,8 +175,15 @@ def _import_compiled_libact_strategies():
         VarianceReduction,
     )
 
-    al_strategy_to_python_classes_mapping[AL_STRATEGY.LIBACT_VR] = VarianceReduction
-    al_strategy_to_python_classes_mapping[AL_STRATEGY.LIBACT_HINTSVM] = HintSVM
+    al_strategy_to_python_classes_mapping[AL_STRATEGY.LIBACT_VR] = (
+        VarianceReduction,
+        {},
+    )
+
+    al_strategy_to_python_classes_mapping[AL_STRATEGY.LIBACT_HINTSVM] = (
+        HintSVM,
+        {},
+    )
 
 
 # TODO parameter wie für AL strats in exp_config.yaml

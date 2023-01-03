@@ -61,7 +61,8 @@ al_strategies_to_temporarily_ignore = [
 ]
 
 if config.EXP_STRATEGY in al_strategies_to_temporarily_ignore:
-    exit(-1)
+    print("strategy is temporarily ignored")
+    # exit(-1)
 
 
 al_experiment.run_experiment()

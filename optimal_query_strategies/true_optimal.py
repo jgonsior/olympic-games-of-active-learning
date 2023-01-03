@@ -8,8 +8,6 @@ from optimal_query_strategies.greedy_optimal import FuturePeakEvalMetric, Greedy
 from typing import TYPE_CHECKING
 
 
-
-
 if TYPE_CHECKING:
     from resources.data_types import (
         LEARNER_MODEL,

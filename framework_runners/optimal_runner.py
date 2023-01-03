@@ -1,7 +1,16 @@
 from __future__ import annotations
 
-from typing import List
+
+from typing import TYPE_CHECKING
+
 from framework_runners.base_runner import AL_Experiment
+
+if TYPE_CHECKING:
+    pass
+
+    from resources.data_types import (
+        SampleIndiceList,
+    )
 
 
 class OPTIMAL_AL_Experiment(AL_Experiment):
@@ -18,16 +27,16 @@ class OPTIMAL_AL_Experiment(AL_Experiment):
             additional_params["num_queries"] = self.config.EXP_NUM_QUERIES
 
         al_strategy = al_strategy_to_python_classes_mapping[al_strategy][0](
-            X=self.X,
-            Y=self.Y,
+            X=self.local_X_train,
+            Y=self.local_Y_train,
             **additional_params,
         )
         self.al_strategy = al_strategy
 
-    def query_AL_strategy(self) -> List[int]:
+    def query_AL_strategy(self) -> SampleIndiceList:
         select_ind = self.al_strategy.select(
-            labeled_index=self.labeled_idx,
-            unlabeled_index=self.unlabeled_idx,
+            labeled_index=self.local_train_labeled_idx,
+            unlabeled_index=self.local_train_unlabeled_idx,
             model=self.model,
             batch_size=self.config.EXP_BATCH_SIZE,
         )
