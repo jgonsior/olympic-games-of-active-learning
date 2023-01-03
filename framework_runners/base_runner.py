@@ -44,7 +44,7 @@ class AL_Experiment(ABC):
     local_train_labeled_idx: SampleIndiceList
     local_train_unlabeled_idx: SampleIndiceList
 
-    local_selected_idx: SampleIndiceList
+    local_selected_train_idx: SampleIndiceList
 
     def __init__(self, config: Config) -> None:
         self.config = config
@@ -106,12 +106,7 @@ class AL_Experiment(ABC):
             self.map_global_to_local_train_ix[ggg]
             for ggg in self.global_initially_labeled_idx
         ]
-        self.local_train_unlabeled_idx = [
-            lll
-            for lll in self.map_local_to_global_train_ix.keys()
-            if lll not in self.local_train_labeled_idx
-        ]
-
+        self.local_train_unlabeled_idx = list(self.map_local_to_global_train_ix.keys())
         self.prepare_dataset()
 
         from resources.data_types import (
@@ -166,21 +161,16 @@ class AL_Experiment(ABC):
         # only use the query strategy if there are actualy samples left to label
         if iteration_counter == 0:
             # "fake" iteration zero
-            self.local_selected_idx = self.local_train_labeled_idx
+            self.local_selected_train_idx = self.local_train_labeled_idx
             self.local_train_labeled_idx = []
         elif len(self.local_train_unlabeled_idx) > self.config.EXP_BATCH_SIZE:
+            print("we are querying the al strategy")
             self.local_selected_train_idx = self.query_AL_strategy()
-            self.local_train_labeled_idx = (
-                self.local_train_labeled_idx + self.local_selected_train_idx
-            )
-            self.local_train_unlabeled_idx = self._list_difference(
-                self.local_train_unlabeled_idx, self.local_selected_train_idx
-            )
         else:
             # if we have labeled everything except for a small batch -> return that
-            self.local_selected_idx = self.local_train_unlabeled_idx
+            self.local_selected_train_idx = self.local_train_unlabeled_idx
 
-        local_select_idx_set = set(self.local_selected_idx)
+        local_select_idx_set = set(self.local_selected_train_idx)
         local_labeled_idx_set = set(self.local_train_labeled_idx)
         local_unlabeled_idx_set = set(self.local_train_unlabeled_idx)
         global_select_idx_set = set(
@@ -195,23 +185,28 @@ class AL_Experiment(ABC):
         global_train_idx_set = set(self.global_train_idx)
         global_test_idx_set = set(self.global_test_idx)
 
-        if iteration_counter > 0:
-            print(local_select_idx_set)
-            print(global_select_idx_set)
+        # if iteration_counter > 0:
+        print("map local, global, selected (local,global)")
+        print(self.map_local_to_global_train_ix)
+        print(local_select_idx_set)
+        print(global_select_idx_set)
 
-            print(local_labeled_idx_set)
-            print(local_unlabeled_idx_set)
-            print(global_labeled_idx_set)
-            print(global_unlabeled_idx_set)
+        print("local labeled, unlabeled")
+        print(local_labeled_idx_set)
+        print(local_unlabeled_idx_set)
+        print("global labeled, unlabeled")
+        print(global_labeled_idx_set)
+        print(global_unlabeled_idx_set)
 
-            print(global_train_idx_set)
-            print(global_test_idx_set)
+        print("global train, test")
+        print(global_train_idx_set)
+        print(global_test_idx_set)
 
-            assert local_select_idx_set.issubset(local_unlabeled_idx_set)
-            assert global_select_idx_set.issubset(global_unlabeled_idx_set)
+        assert local_select_idx_set.issubset(local_unlabeled_idx_set)
+        assert global_select_idx_set.issubset(global_unlabeled_idx_set)
 
         # no duplicates
-        assert len(self.local_selected_idx) == len(local_select_idx_set)
+        assert len(self.local_selected_train_idx) == len(local_select_idx_set)
 
         assert global_select_idx_set.issubset(global_train_idx_set)
         assert len(global_select_idx_set.intersection(global_test_idx_set)) == 0
@@ -222,10 +217,10 @@ class AL_Experiment(ABC):
             metric.post_query_selection_hook(self)
 
         self.local_train_labeled_idx = (
-            self.local_train_labeled_idx + self.local_selected_idx
+            self.local_train_labeled_idx + self.local_selected_train_idx
         )
         self.local_train_unlabeled_idx = self._list_difference(
-            self.local_train_unlabeled_idx, self.local_selected_idx
+            self.local_train_unlabeled_idx, self.local_selected_train_idx
         )
 
         for metric in self.metrics:
