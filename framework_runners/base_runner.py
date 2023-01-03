@@ -164,7 +164,6 @@ class AL_Experiment(ABC):
             self.local_selected_train_idx = self.local_train_labeled_idx
             self.local_train_labeled_idx = []
         elif len(self.local_train_unlabeled_idx) > self.config.EXP_BATCH_SIZE:
-            print("we are querying the al strategy")
             self.local_selected_train_idx = self.query_AL_strategy()
         else:
             # if we have labeled everything except for a small batch -> return that
