@@ -7,9 +7,11 @@ import modin.pandas as pd
 import ray
 from jinja2 import Template
 from sklearn.model_selection import ParameterGrid
+from datasets import DATASET, load_dataset
 
 from misc.config import Config
 from misc.logging import log_it
+from resources.data_types import al_strategies_which_only_support_binary_classification
 
 ray.init()
 
@@ -94,6 +96,23 @@ def create_workload(config: Config) -> List[int]:
         open_workload_df = open_workload_df.sample(frac=1).reset_index(drop=True)
 
         open_workload_df["EXP_UNIQUE_ID"] = open_workload_df.index
+
+    # remove all workloads which do not work
+    datasets_which_are_binary_only = []
+    for dataset_id in open_workload_df["EXP_DATASET"].unique():
+        dataset_df, _ = load_dataset(DATASET(dataset_id), config)
+
+        if len(dataset_df["LABEL_TARGET"].unique()) > 2:
+            datasets_which_are_binary_only.append(dataset_id)
+
+    for binary_only_strategy in al_strategies_which_only_support_binary_classification:
+        for binary_dataset_id in datasets_which_are_binary_only:
+            open_workload_df = open_workload_df.drop(
+                open_workload_df[
+                    (open_workload_df["EXP_DATASET"] == binary_dataset_id)
+                    & (open_workload_df["EXP_STRATEGY"] == binary_only_strategy)
+                ].index
+            )
 
     open_workload_df.to_csv(config.WORKLOAD_FILE_PATH, index=None)
     config.save_to_file()
