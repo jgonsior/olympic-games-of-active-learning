@@ -28,7 +28,7 @@ HPC:
 module load Anaconda3
 sh $EBROOTANACONDA3/etc/profile.d/conda.sh
 conda create --prefix $WS_URL/al_olympics/conda-env python=3.10
-conda activate $WS_URL/-al_olympics/conda-env
+conda activate $WS_URL/al_olympics/conda-env
 conda install -c anaconda cython -y
 conda install -y -c conda-forge cvxpy pipenv liblapacke
 python -m pipenv --python=$(conda run which python) --site-packages install --dev
