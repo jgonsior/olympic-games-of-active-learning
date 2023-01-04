@@ -230,5 +230,13 @@ create_AL_experiment_slurm_files(config, len(unique_ids))
 create_AL_experiment_bash_files(config, unique_ids)
 create_run_files(config)
 
-_write_template_file(config, Path("resources/slurm_templates/update_pipenv_dep.slurm"), config.EXPERIMENT_UPDATE_SLURM_DEP_PATH)
-_write_template_file(config, Path("resources/slurm_templates/install_pipenv_dep.slurm"), config.EXPERIMENT_INSTALL_SLURM_DEP_PATH)
+_write_template_file(
+    config,
+    Path("resources/slurm_templates/update_pipenv_dep.slurm"),
+    config.EXPERIMENT_UPDATE_SLURM_DEP_PATH,
+)
+_write_template_file(
+    config,
+    Path("resources/slurm_templates/install_pipenv_dep.slurm"),
+    config.EXPERIMENT_INSTALL_SLURM_DEP_PATH,
+)
