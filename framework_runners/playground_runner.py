@@ -54,7 +54,7 @@ class PLAYGROUND_AL_Experiment(AL_Experiment):
                 )
             case AL_STRATEGY.PLAYGROUND_MIXTURE:
                 result = self.al_strategy.select_batch_(
-                    self.local_train_labeled_idx, bs
+                    self.local_train_labeled_idx, bs, model=self.model
                 )
             case AL_STRATEGY.PLAYGROUND_UNIFORM:
                 result = self.al_strategy.select_batch_(
@@ -66,11 +66,10 @@ class PLAYGROUND_AL_Experiment(AL_Experiment):
                 )
             case AL_STRATEGY.PLAYGROUND_HIERARCHICAL_CLUSTER:
                 result = self.al_strategy.select_batch_(
-                    bs,
-                    self.local_train_labeled_idx,
-                    bs,
-                    self.local_train_labeled_idx,
-                    self.Y,
+                    N=bs,
+                    already_selected=self.local_train_labeled_idx,
+                    labeled=self.local_train_labeled_idx,
+                    y=self.Y,
                 )
             case AL_STRATEGY.PLAYGROUND_KCENTER_GREEDY:
                 result = self.al_strategy.select_batch_(

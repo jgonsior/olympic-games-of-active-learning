@@ -107,10 +107,10 @@ class LIBACT_Experiment(AL_Experiment):
                     batch_size=self.config.EXP_BATCH_SIZE
                 )
             case AL_STRATEGY.LIBACT_HIERARCHICAL_SAMPLING:
-                raise ValueError("ALBL not yet implemented")
+                raise ValueError("HIERARCHICAL_SAMPLING not yet implemented")
                 pass  # TODO
             case AL_STRATEGY.LIBACT_QBC:
-                raise ValueError("ALBL not yet implemented")
+                raise ValueError("QBC not yet implemented")
                 pass  # TODO
             case _:
                 from misc.Errors import WrongFrameworkError

@@ -184,23 +184,6 @@ class AL_Experiment(ABC):
         global_train_idx_set = set(self.global_train_idx)
         global_test_idx_set = set(self.global_test_idx)
 
-        # if iteration_counter > 0:
-        print("map local, global, selected (local,global)")
-        print(self.map_local_to_global_train_ix)
-        print(local_select_idx_set)
-        print(global_select_idx_set)
-
-        print("local labeled, unlabeled")
-        print(local_labeled_idx_set)
-        print(local_unlabeled_idx_set)
-        print("global labeled, unlabeled")
-        print(global_labeled_idx_set)
-        print(global_unlabeled_idx_set)
-
-        print("global train, test")
-        print(global_train_idx_set)
-        print(global_test_idx_set)
-
         if iteration_counter > 0:
             assert len(local_select_idx_set) == self.config.EXP_BATCH_SIZE
         assert local_select_idx_set.issubset(local_unlabeled_idx_set)

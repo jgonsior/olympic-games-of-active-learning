@@ -36,7 +36,7 @@ pyyaml = "*"
 aenum = "*"
 kaggle = "*"
 alipy = {editable = true, ref = "058c3a025c77964422a5417cfb2285f893a62295", git = "https://github.com/jgonsior/ALiPy.git"}
-playground = {editable = true, ref = "cf12cb7822483165ec156822fdb4c7e2f89d8c0c", git = "https://github.com/jgonsior/active-learning.git"}
+playground = {editable = true, ref = "311e149518f982a19b82d8c93d08f28f6710f80a", git = "https://github.com/jgonsior/active-learning.git"}
 ray = "*"
 modin = "*"
 cvxpy = "*"
