@@ -11,7 +11,12 @@ from datasets import DATASET, load_dataset
 
 from misc.config import Config
 from misc.logging import log_it
-from resources.data_types import al_strategies_which_only_support_binary_classification
+from resources.data_types import (
+    al_strategies_which_only_support_binary_classification,
+    LEARNER_MODEL,
+    al_strategies_which_require_decision_boundary_model,
+    learner_models_to_classes_mapping,
+)
 
 ray.init()
 
@@ -97,6 +102,7 @@ def create_workload(config: Config) -> List[int]:
 
         open_workload_df["EXP_UNIQUE_ID"] = open_workload_df.index
 
+    print("Removing strategies which only work in binary case")
     # remove all workloads which do not work
     datasets_which_are_binary_only = []
     for dataset_id in open_workload_df["EXP_DATASET"].unique():
@@ -111,6 +117,34 @@ def create_workload(config: Config) -> List[int]:
                 open_workload_df[
                     (open_workload_df["EXP_DATASET"] == binary_dataset_id)
                     & (open_workload_df["EXP_STRATEGY"] == binary_only_strategy)
+                ].index
+            )
+
+    print(
+        "Remove strategies and ml_model combinations which only work with decision boundary"
+    )
+    ml_models_which_do_nothave_decision_boundary_function: List[LEARNER_MODEL] = []
+    for ml_model_id in open_workload_df["EXP_LEARNER_MODEL"].unique():
+        ml_model_class = learner_models_to_classes_mapping[LEARNER_MODEL(ml_model_id)]
+        if not hasattr(ml_model_class, "decision_function"):
+            ml_models_which_do_nothave_decision_boundary_function.append(ml_model_id)
+
+    for (
+        decision_boundary_requiring_al_class
+    ) in al_strategies_which_require_decision_boundary_model:
+        for (
+            ml_model_withoud_decision_boundary_function
+        ) in ml_models_which_do_nothave_decision_boundary_function:
+            open_workload_df = open_workload_df.drop(
+                open_workload_df[
+                    (
+                        open_workload_df["EXP_LEARNER_MODEL"]
+                        == ml_model_withoud_decision_boundary_function
+                    )
+                    & (
+                        open_workload_df["EXP_STRATEGY"]
+                        == decision_boundary_requiring_al_class
+                    )
                 ].index
             )
 
