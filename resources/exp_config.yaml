@@ -42,7 +42,7 @@ all_strategies_all_datasets_single_random_seed: {
         EXP_GRID_RANDOM_SEED: [0],
         EXP_GRID_START_POINT: [0, 1],
         EXP_GRID_NUM_QUERIES: [3],
-        EXP_GRID_BATCH_SIZE: [5],
+        EXP_GRID_BATCH_SIZE: [1, 5],
         EXP_GRID_LEARNER_MODEL: [LBFGS_MLP],
         EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0],
         METRICS:
