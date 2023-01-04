@@ -69,8 +69,10 @@ def _cache_retrieved_samples(
         done_workload_df, "selected_indices", OUTPUT_PATH
     )
     del plot_df["EXP_UNIQUE_ID"]
+    print(done_workload_df)
+    print(plot_df)
 
-    vor merge: 0,1,2,EXP_DATASET, EXP_STRATERY
+    """vor merge: 0,1,2,EXP_DATASET, EXP_STRATERY
     nach merge: AL Cycle, selected_indices
 
     was ich eigentlich will: selected_indices_list_of_list
@@ -78,7 +80,7 @@ def _cache_retrieved_samples(
     --> frage: brauche ich wirklich so eine liste für das was unten kommt? kann ich das ni auch anders machen?
     --> oder doch per melt?
     fragen über fragen
-
+    """
     plot_df = plot_df.melt(
         id_vars=["EXP_STRATEGY", "EXP_DATASET"],
         var_name="AL Cycle",
