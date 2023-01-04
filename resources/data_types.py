@@ -181,6 +181,11 @@ al_strategies_which_only_support_binary_classification: List[AL_STRATEGY] = [
     AL_STRATEGY.LIBACT_HINTSVM,
 ]
 
+al_strategies_which_require_decision_boundary_model: List[AL_STRATEGY] = [
+    AL_STRATEGY.PLAYGROUND_MCM,
+    AL_STRATEGY.ALIPY_UNCERTAINTY_DTB,
+]
+
 
 def _import_compiled_libact_strategies():
     from libact.query_strategies import (
