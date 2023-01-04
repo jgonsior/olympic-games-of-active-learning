@@ -6,6 +6,7 @@ from typing import Any, List, TYPE_CHECKING
 
 from typing import Any, Dict
 
+from interactive_results_browser.cache import memory
 
 if TYPE_CHECKING:
     pass
@@ -61,11 +62,9 @@ def _plot_function(plot_df, my_palette, my_markers):
     return ax
 
 
-# @memory.cache()
+@memory.cache()
 def _cache_create_auc_table(
     done_workload_df,
-    OUTPUT_PATH,
-    METRIC_RESULTS_PATH_APPENDIX,
 ) -> List[str]:
     metric_values = [
         "acc_auc",
@@ -102,8 +101,6 @@ class Auc_Table(Base_Visualizer):
 
         plot_url = _cache_create_auc_table(
             done_workload_df=done_workload_df,
-            OUTPUT_PATH=self._config.OUTPUT_PATH,
-            METRIC_RESULTS_PATH_APPENDIX=self._config.METRIC_RESULTS_PATH_APPENDIX,
         )
 
         return {"plot_data": plot_url}

@@ -1,4 +1,7 @@
 from __future__ import annotations
+from pathlib import Path
+
+import pandas as pd
 from interactive_results_browser.visualizations.base_visualizer import Base_Visualizer
 from typing import TYPE_CHECKING, Any, List
 
@@ -29,16 +32,28 @@ def _plot_function(plot_df, metric, my_palette, my_markers):
 
 
 @memory.cache()
-def _cache_runtimes(metric, done_workload) -> List[str]:
-    plot_df = done_workload.filter([metric, "EXP_STRATEGY", "EXP_DATASET"]).sort_values(
-        by=metric
+def _cache_runtimes(
+    done_workload_df: pd.DataFrame, metric, OUTPUT_PATH: Path
+) -> List[str]:
+    done_workload_df = done_workload_df.loc[
+        :, ["EXP_UNIQUE_ID", "EXP_STRATEGY", "EXP_DATASET"]
+    ]
+
+    plot_df = Base_Visualizer.load_detailed_metric_files(
+        done_workload_df, metric, OUTPUT_PATH
+    )
+
+    del plot_df["EXP_UNIQUE_ID"]
+
+    plot_df = plot_df.melt(
+        id_vars=["EXP_STRATEGY", "EXP_DATASET"], var_name="AL Cycle", value_name=metric
     )
 
     plot_urls = Base_Visualizer._render_images(
         plot_df=plot_df,
         args={"metric": metric},
         plot_function=_plot_function,
-        legend_names=done_workload["EXP_STRATEGY"].unique(),
+        legend_names=done_workload_df["EXP_STRATEGY"].unique(),
         df_col_key="EXP_DATASET",
         create_legend=False,
         combined_df_col_key_plot=True,
@@ -62,8 +77,10 @@ class Runtimes(Base_Visualizer):
 
         metric = self._exp_grid_request_params["VIZ_RT_METRIC"][0]
 
+        done_workload_df = self._load_done_workload()
         plot_url = _cache_runtimes(
             metric=metric,
-            done_workload=self._load_done_workload(),
+            done_workload_df=done_workload_df,
+            OUTPUT_PATH=self._config.OUTPUT_PATH,
         )
         return {"plot_data": plot_url}
