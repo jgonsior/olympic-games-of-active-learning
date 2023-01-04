@@ -1,4 +1,7 @@
 from __future__ import annotations
+from pathlib import Path
+
+import pandas as pd
 
 
 from interactive_results_browser.visualizations.base_visualizer import Base_Visualizer
@@ -62,10 +65,15 @@ def _plot_function(plot_df, my_palette, my_markers):
     return ax
 
 
-@memory.cache()
+# @memory.cache()
 def _cache_create_auc_table(
-    done_workload_df,
+    done_workload_df: pd.DataFrame,
+    OUTPUT_PATH: Path,
 ) -> List[str]:
+    done_workload_df = done_workload_df.loc[
+        :, ["EXP_UNIQUE_ID", "EXP_STRATEGY", "EXP_DATASET"]
+    ]
+
     metric_values = [
         "acc_auc",
         "macro_f1_auc",
@@ -75,22 +83,34 @@ def _cache_create_auc_table(
         "weighted_prec_auc",
         "weighted_recall_auc",
     ]
+    print(done_workload_df)
+    plot_urls = []
+    for metric in metric_values:
+        plot_df = Base_Visualizer.load_detailed_metric_files(
+            done_workload_df, metric, OUTPUT_PATH
+        )
+        print(plot_df)
 
-    plot_df = done_workload_df.filter([*metric_values, "EXP_STRATEGY", "EXP_DATASET"])
-    plot_df = plot_df.melt(
-        id_vars=["EXP_STRATEGY", "EXP_DATASET"], var_name="metric", value_name="value"
-    )
+        del plot_df["EXP_UNIQUE_ID"]
 
-    plot_df["value"] = plot_df["value"].multiply(100)
+        plot_df = plot_df.melt(
+            id_vars=["EXP_STRATEGY", "EXP_DATASET"],
+            var_name="AL Cycle",
+            value_name=metric,
+        )
 
-    plot_urls = Base_Visualizer._render_images(
-        plot_df=plot_df,
-        args={},
-        plot_function=_plot_function,
-        df_col_key="metric",
-        legend_names=metric_values,
-        create_legend=False,
-    )
+        plot_df["metric"] = plot_df["metric"].multiply(100)
+
+        plot_urls.append(
+            Base_Visualizer._render_images(
+                plot_df=plot_df,
+                args={},
+                plot_function=_plot_function,
+                df_col_key="metric",
+                legend_names=metric_values,
+                create_legend=False,
+            )
+        )
     return plot_urls
 
 
@@ -101,6 +121,7 @@ class Auc_Table(Base_Visualizer):
 
         plot_url = _cache_create_auc_table(
             done_workload_df=done_workload_df,
+            OUTPUT_PATH=self._config.OUTPUT_PATH,
         )
 
         return {"plot_data": plot_url}
