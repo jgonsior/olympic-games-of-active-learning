@@ -51,6 +51,7 @@ from framework_runners.alipy_runner import ALIPY_AL_Experiment
 from framework_runners.optimal_runner import OPTIMAL_AL_Experiment
 from framework_runners.libact_runner import LIBACT_Experiment
 from framework_runners.playground_runner import PLAYGROUND_AL_Experiment
+from metrics.computed.STANDARD_AUC import STANDARD_AUC
 from optimal_query_strategies.BSO_optimal import Beeam_Search_Optimal
 
 from optimal_query_strategies.greedy_optimal import (
@@ -287,4 +288,14 @@ AL_framework_to_classes_mapping: Dict[AL_FRAMEWORK, Tuple[Callable, Dict[Any, An
     AL_FRAMEWORK.OPTIMAL: (OPTIMAL_AL_Experiment, {}),
     AL_FRAMEWORK.LIBACT: (LIBACT_Experiment, {}),
     AL_FRAMEWORK.PLAYGROUND: (PLAYGROUND_AL_Experiment, {}),
+}
+
+
+@unique
+class COMPUTED_METRIC(IntEnum):
+    STANDARD_AUC = 1
+
+
+computed_metric_to_classes_mapping: Dict[COMPUTED_METRIC, Callable] = {
+    COMPUTED_METRIC.STANDARD_AUC: STANDARD_AUC
 }

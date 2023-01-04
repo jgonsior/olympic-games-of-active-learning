@@ -15,6 +15,7 @@ from metrics.base_metric import Base_Metric
 from misc.logging import init_logger, log_it
 from resources.data_types import (
     AL_STRATEGY,
+    COMPUTED_METRIC,
     LEARNER_MODEL,
     _import_compiled_libact_strategies,
 )
@@ -101,7 +102,7 @@ class Config:
     DONE_WORKLOAD_FILE: Path
     RESULTS_PATH: Path
 
-    METRICS: List[Base_Metric]
+    METRICS: List[COMPUTED_METRIC]
 
     def __init__(self, no_cli_args: Optional[Dict[str, Any]] = None) -> None:
         if no_cli_args is not None:
@@ -276,6 +277,11 @@ class Config:
                     v = [DATASET(x) for x in v]
                 else:
                     v = [DATASET[x] for x in v]
+            elif k == "METRICS":
+                if type(v[0]) == int:
+                    v = [COMPUTED_METRIC(x) for x in v]
+                else:
+                    v = [COMPUTED_METRIC[x] for x in v]
             elif k == "EXP_GRID_LEARNER_MODEL":
                 if type(v[0]) == int:
                     v = [LEARNER_MODEL(x) for x in v]
@@ -357,6 +363,16 @@ class Config:
                 choices = [e.value for e in v_class]  # type: ignore
                 nargs = "*"
                 arg_type = int
+            elif str(v) == "typing.List[resources.data_types.COMPUTED_METRIC]":
+                full_str = str(v).split("[")[1][:-1].split(".")
+                module_str = ".".join(full_str[:-1])
+                class_str = full_str[-1]
+                v_class = getattr(sys.modules[module_str], class_str)
+
+                # allow all possible integer values from the enum classes
+                choices = [e.name for e in v_class]  # type: ignore
+                nargs = "*"
+                arg_type = str
             elif str(v) == "typing.Union[str, pathlib.Path]":
                 arg_type = str
 

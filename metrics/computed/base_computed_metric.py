@@ -1,11 +1,12 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import List
+from typing import List, TYPE_CHECKING
 
 import pandas as pd
 
-from misc.config import Config
+if TYPE_CHECKING:
+    from misc.config import Config
 
 
 class Base_Computed_Metric(ABC):

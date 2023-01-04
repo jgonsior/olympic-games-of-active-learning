@@ -4,7 +4,7 @@ import pandas as pd
 from metrics.computed.base_computed_metric import Base_Computed_Metric
 
 
-class Standard_AUC(Base_Computed_Metric):
+class STANDARD_AUC(Base_Computed_Metric):
     metrics = [
         "accuracy",
         "macro_f1-score",
