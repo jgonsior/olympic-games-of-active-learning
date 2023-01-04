@@ -57,7 +57,7 @@ def _plot_function(plot_df, my_palette, my_markers):
     return ax
 
 
-# @memory.cache()
+@memory.cache()
 def _cache_retrieved_samples(
     done_workload_df: pd.DataFrame, OUTPUT_PATH: Path
 ) -> List[str]:
@@ -69,33 +69,21 @@ def _cache_retrieved_samples(
         done_workload_df, "selected_indices", OUTPUT_PATH
     )
     del plot_df["EXP_UNIQUE_ID"]
-    print(done_workload_df)
-    print(plot_df)
 
-    """vor merge: 0,1,2,EXP_DATASET, EXP_STRATERY
-    nach merge: AL Cycle, selected_indices
+    # remove start set as it is the same for all strategies
+    del plot_df["0"]
 
-    was ich eigentlich will: selected_indices_list_of_list
+    column_names_which_are_al_cycles = list(plot_df.columns)
+    column_names_which_are_al_cycles.remove("EXP_STRATEGY")
+    column_names_which_are_al_cycles.remove("EXP_DATASET")
 
-    --> frage: brauche ich wirklich so eine liste für das was unten kommt? kann ich das ni auch anders machen?
-    --> oder doch per melt?
-    fragen über fragen
-    """
-    plot_df = plot_df.melt(
-        id_vars=["EXP_STRATEGY", "EXP_DATASET"],
-        var_name="AL Cycle",
-        value_name="selected_indices",
+    plot_df["selected_indices"] = plot_df[column_names_which_are_al_cycles].apply(
+        lambda x: "[" + ",".join(x).replace("[", "").replace("]", "") + "]", axis=1
     )
     plot_df["selected_indices"] = plot_df["selected_indices"].apply(ast.literal_eval)
-    print(plot_df)
 
-    # remove starting point
-    plot_df["selected_indices"] = plot_df["selected_indices"].apply(
-        lambda x: [
-            single_value for single_list in x[1:] for single_value in single_list
-        ]
-    )
-
+    for c in column_names_which_are_al_cycles:
+        del plot_df[c]
     new_data = []
 
     # create large count_dict per dataset and strategy, and calculate, how often each sample was queried
@@ -168,7 +156,7 @@ def _cache_retrieved_samples(
         plot_df=new_data,
         args={},
         plot_function=_plot_function,
-        legend_names=done_workload["EXP_STRATEGY"].unique(),
+        legend_names=done_workload_df["EXP_STRATEGY"].unique(),
         df_col_key="EXP_DATASET",
         create_legend=False,
     )
