@@ -118,14 +118,10 @@ class LIBACT_Experiment(AL_Experiment):
                 raise WrongFrameworkError(
                     "Libact runner was called with a non-Libact strategy"
                 )
-        print("libact runner pool")
-        print(self.trn_ds.get_unlabeled_entries()[0])
         lb = self.local_Y_train[ret]
-        print(ret)
-        print(lb)
-        self.trn_ds.update(ret, lb)
-        print("danach")
-        print(self.trn_ds.get_unlabeled_entries()[0])
+
+        for k, v in zip(ret, lb):
+            self.trn_ds.update(k, v)
 
         if not isinstance(ret, list):
             ret = ret.tolist()
@@ -136,5 +132,3 @@ class LIBACT_Experiment(AL_Experiment):
         for labeled_idx in self.local_train_labeled_idx:
             init_labeled_mask[labeled_idx] = self.local_Y_train[labeled_idx]
         self.trn_ds = Dataset(self.local_X_train, init_labeled_mask)
-        print("libact runner pool init")
-        print(self.trn_ds.get_unlabeled_entries()[0])

@@ -201,6 +201,8 @@ class AL_Experiment(ABC):
         print(global_train_idx_set)
         print(global_test_idx_set)
 
+        if iteration_counter > 0:
+            assert len(local_select_idx_set) == self.config.EXP_BATCH_SIZE
         assert local_select_idx_set.issubset(local_unlabeled_idx_set)
         assert global_select_idx_set.issubset(global_unlabeled_idx_set)
 

@@ -154,7 +154,7 @@ al_strategy_to_python_classes_mapping: Dict[
     # AL_STRATEGY.OPTIMAL_SUBSETS: (, {}),
     AL_STRATEGY.LIBACT_UNCERTAINTY_LC: (UncertaintySampling, {"method": "lc"}),
     AL_STRATEGY.LIBACT_UNCERTAINTY_SM: (UncertaintySampling, {"method": "sm"}),
-    AL_STRATEGY.LIBACT_UNCERTAINTY_ENT: (UncertaintySampling, {"method": 'entropy"'}),
+    AL_STRATEGY.LIBACT_UNCERTAINTY_ENT: (UncertaintySampling, {"method": "entropy"}),
     AL_STRATEGY.LIBACT_QBC: (QueryByCommittee, {}),
     AL_STRATEGY.LIBACT_DWUS: (DWUS, {}),
     AL_STRATEGY.LIBACT_QUIRE: (QUIRE, {}),
@@ -178,6 +178,7 @@ al_strategies_which_only_support_binary_classification: List[AL_STRATEGY] = [
     AL_STRATEGY.ALIPY_UNCERTAINTY_DTB,
     AL_STRATEGY.ALIPY_BMDR,
     AL_STRATEGY.ALIPY_SPAL,
+    AL_STRATEGY.LIBACT_HINTSVM,
 ]
 
 
