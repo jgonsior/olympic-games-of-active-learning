@@ -74,6 +74,8 @@ class Config:
     LOCAL_YAML_EXP_PATH: Path = "resources/exp_config.yaml"  # type: ignore
     CONFIG_FILE_PATH: Path = "00_config.yaml"  # type: ignore
     WORKLOAD_FILE_PATH: Path = "01_workload.csv"  # type: ignore
+    EXPERIMENT_INSTALL_SLURM_DEP_PATH = "0x_install_deps.slurm"
+    EXPERIMENT_UPDATE_SLURM_DEP_PATH = "0x_update_deps.slurm"
     EXPERIMENT_SLURM_FILE_PATH: Path = "02_slurm.slurm"  # type: ignore
     EXPERIMENT_SLURM_CHAIN_JOB: Path = "02b_chain_job.sh"  # type: ignore
     EXPERIMENT_SLURM_TAR_PATH: Path = "03_tar.slurm"  # type: ignore
@@ -151,6 +153,12 @@ class Config:
         self.WORKLOAD_FILE_PATH = self.OUTPUT_PATH / self.WORKLOAD_FILE_PATH
         self.EXPERIMENT_SLURM_FILE_PATH = (
             self.OUTPUT_PATH / self.EXPERIMENT_SLURM_FILE_PATH
+        )
+        self.EXPERIMENT_UPDATE_SLURM_DEP_PATH = (
+            self.OUTPUT_PATH / self.EXPERIMENT_UPDATE_SLURM_DEP_PATH
+        )
+        self.EXPERIMENT_INSTALL_SLURM_DEP_PATH = (
+            self.OUTPUT_PATH / self.EXPERIMENT_INSTALL_SLURM_DEP_PATH
         )
         self.EXPERIMENT_SLURM_CHAIN_JOB = (
             self.OUTPUT_PATH / self.EXPERIMENT_SLURM_CHAIN_JOB
