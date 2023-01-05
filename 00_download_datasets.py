@@ -7,7 +7,6 @@ import glob
 import pandas as pd
 from tabulate import tabulate
 from sklearn.metrics import pairwise_distances
-import numpy as np
 
 config = Config()
 

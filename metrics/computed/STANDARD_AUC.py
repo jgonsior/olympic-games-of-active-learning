@@ -1,12 +1,11 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 import pandas as pd
-from datasets import DATASET
 
 from metrics.computed.base_computed_metric import Base_Computed_Metric
 
 if TYPE_CHECKING:
-    from resources.data_types import AL_STRATEGY
+    pass
 
 
 class STANDARD_AUC(Base_Computed_Metric):
