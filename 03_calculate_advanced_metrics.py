@@ -1,16 +1,14 @@
 import importlib
-from pathlib import Path
 
-import pandas as pd
 from misc.config import Config
 
 
 config = Config()
 
-print("computung the following metrics: " + ",".join(config.METRICS))
+print("computung the following metrics: " + ",".join(config.COMPUTED_METRICS))
 
 
-for computed_metric in config.METRICS:
+for computed_metric in config.COMPUTED_METRICS:
     computed_metric_class = getattr(
         importlib.import_module("metrics.computed." + computed_metric),
         computed_metric,
