@@ -79,7 +79,7 @@ def _cache_create_auc_table(
         sacmc.computed_metric_appendix() + "_" + sss for sss in sacmc.metrics
     ]
 
-    metric_values.append("avg_dist_batch")
+    metric_values += ["avg_dist_batch", "avg_dist_labeled"]
 
     plot_df = pd.DataFrame()
 

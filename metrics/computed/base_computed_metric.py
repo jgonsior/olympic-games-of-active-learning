@@ -14,8 +14,11 @@ if TYPE_CHECKING:
 
 class Base_Computed_Metric(ABC):
     metrics: List[str]
+    done_workload_df: pd.DataFrame
 
     def __init__(self, config: Config) -> None:
+        print(config.DONE_WORKLOAD_FILE)
+        self.done_workload_df = pd.read_csv(config.DONE_WORKLOAD_FILE)
         self.config = config
 
     @abstractmethod
@@ -28,13 +31,12 @@ class Base_Computed_Metric(ABC):
     def convert_original_df(
         self,
         original_df: pd.DataFrame,
-        EXP_STRATEGY: AL_STRATEGY,
-        EXP_DATASET: DATASET,
+        unique_ids: pd.Series,
         apply_to_row,
     ) -> pd.DataFrame:
         # do stuff using lambda etc
         original_df["computed_metric"] = original_df.apply(
-            lambda x: apply_to_row(x, EXP_STRATEGY, EXP_DATASET), axis=1
+            lambda x: apply_to_row(x, unique_ids), axis=1
         )
         return original_df
 
@@ -66,8 +68,7 @@ class Base_Computed_Metric(ABC):
 
                     new_df = self.convert_original_df(
                         original_df,
-                        EXP_STRATEGY,
-                        EXP_DATASET,
+                        exp_unique_id_column,
                         apply_to_row=apply_to_row,
                     )
                     new_df = new_df.loc[:, ["computed_metric"]]
