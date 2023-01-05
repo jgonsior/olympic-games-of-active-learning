@@ -19,12 +19,18 @@ class DISTANCE_METRICS(Base_Computed_Metric):
     metrics = ["avg_dist_batch", "avg_dist_labeled", "avg_dist_unlabeled"]
 
     _precomputed_distances: np.ndarray
+    _train_test_splits: pd.DataFrame
 
     def _per_dataset_hook(self, EXP_DATASET: DATASET) -> None:
         print("loading", EXP_DATASET)
         self._precomputed_distances = np.load(
             f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}{self.config.DATASETS_DISTANCES_APPENDIX}"
         )["arr_0"]
+        self._train_test_splits = pd.read_csv(
+            f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}{self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX}"
+        )
+        print(self._train_test_splits)
+
         print("done loading")
 
     def computed_metric_appendix(self) -> str:
@@ -35,7 +41,9 @@ class DISTANCE_METRICS(Base_Computed_Metric):
         return df
 
     def avg_dist_batch(
-        self, row: pd.Series, EXP_STRATEGY: AL_STRATEGY, EXP_DATASET: DATASET
+        self,
+        row: pd.Series,
+        unique_ids: pd.Series,
     ) -> pd.Series:
         results = 0
         for _, x in row.items():
@@ -50,13 +58,45 @@ class DISTANCE_METRICS(Base_Computed_Metric):
         return results
 
     def avg_dist_labeled(
-        self, row: pd.Series, EXP_STRATEGY: AL_STRATEGY, EXP_DATASET: DATASET
+        self,
+        row: pd.Series,
+        unique_ids: pd.Series,
     ) -> pd.Series:
         results = 0
-        for _, x in row.items():
+        labeled_so_far = []
+        for ix, x in row.items():
             distances = []
-            for s1, s2 in itertools.combinations(x, 2):
-                distances.append(self._precomputed_distances[s1][s2])
+
+            for s1 in x:
+                for s2 in labeled_so_far:
+                    distances.append(self._precomputed_distances[s1][s2])
+
+            labeled_so_far += x
+
+            if len(distances) == 0:
+                results += 0
+            else:
+                results += sum(distances) / len(distances)
+        return results
+
+    def avg_dist_unlabeled(
+        self,
+        row: pd.Series,
+        unique_ids: pd.Series,
+    ) -> pd.Series:
+        results = 0
+
+        print(self.done_workload_df)
+
+        unlabeled_so_far = []
+        for ix, x in row.items():
+            distances = []
+
+            for s1 in x:
+                for s2 in labeled_so_far:
+                    distances.append(self._precomputed_distances[s1][s2])
+
+            labeled_so_far += x
 
             if len(distances) == 0:
                 results += 0
@@ -74,4 +114,9 @@ class DISTANCE_METRICS(Base_Computed_Metric):
             existing_metric_name="selected_indices",
             new_metric_name="avg_dist_labeled",
             apply_to_row=self.avg_dist_labeled,
+        )
+        self._take_single_metric_and_compute_new_one(
+            existing_metric_name="selected_indices",
+            new_metric_name="avg_dist_unlabeled",
+            apply_to_row=self.avg_dist_unlabeled,
         )
