@@ -211,6 +211,7 @@ class Base_Visualizer(ABC):
                 detailed_metrics_path = Path(
                     f"{OUTPUT_PATH}/{EXP_STRATEGY}/{EXP_DATASET}/{metric}.csv.gz"
                 )
+
                 if detailed_metrics_path.exists():
                     # read in each csv file to get learning curve data for plot
                     detailed_metrics_df = pd.read_csv(detailed_metrics_path)

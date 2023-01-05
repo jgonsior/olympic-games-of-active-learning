@@ -102,7 +102,8 @@ class Config:
     DONE_WORKLOAD_FILE: Path
     RESULTS_PATH: Path
 
-    METRICS: List[COMPUTED_METRIC]
+    METRICS: List[Base_Metric]
+    COMPUTED_METRICS: List[COMPUTED_METRIC]
 
     def __init__(self, no_cli_args: Optional[Dict[str, Any]] = None) -> None:
         if no_cli_args is not None:
@@ -277,11 +278,6 @@ class Config:
                     v = [DATASET(x) for x in v]
                 else:
                     v = [DATASET[x] for x in v]
-            elif k == "METRICS":
-                if type(v[0]) == int:
-                    v = [COMPUTED_METRIC(x) for x in v]
-                else:
-                    v = [COMPUTED_METRIC[x] for x in v]
             elif k == "EXP_GRID_LEARNER_MODEL":
                 if type(v[0]) == int:
                     v = [LEARNER_MODEL(x) for x in v]
