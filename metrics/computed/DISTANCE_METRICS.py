@@ -18,20 +18,14 @@ if TYPE_CHECKING:
 class DISTANCE_METRICS(Base_Computed_Metric):
     metrics = ["avg_dist_batch", "avg_dist_labeled", "avg_dist_unlabeled"]
 
-    _precomputed_distances: Dict[DATASET, np.ndarray] = {}
+    _precomputed_distances: np.ndarray
 
-    def __init__(self, config: Config) -> None:
-        super().__init__(config)
-
-        # compute distance matrix for all datasets
-        for dataset in self.config.EXP_GRID_DATASET:
-            distances = np.load(
-                f"{self.config.DATASETS_PATH}/{dataset.name}{self.config.DATASETS_DISTANCES_APPENDIX}"
-            )["arr_0"]
-            self._precomputed_distances[dataset] = distances
-
-    def avg_dist_batch(self) -> None:
-        ...
+    def _per_dataset_hook(self, EXP_DATASET: DATASET) -> None:
+        print("loading", EXP_DATASET)
+        self._precomputed_distances = np.load(
+            f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}{self.config.DATASETS_DISTANCES_APPENDIX}"
+        )["arr_0"]
+        print("done loading")
 
     def computed_metric_appendix(self) -> str:
         return "dist"
@@ -47,7 +41,7 @@ class DISTANCE_METRICS(Base_Computed_Metric):
         for _, x in row.items():
             distances = []
             for s1, s2 in itertools.combinations(x, 2):
-                distances.append(self._precomputed_distances[EXP_DATASET][s1][s2])
+                distances.append(self._precomputed_distances[s1][s2])
 
             if len(distances) == 0:
                 results += 0
