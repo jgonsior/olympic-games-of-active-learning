@@ -22,16 +22,19 @@ class Base_Computed_Metric(ABC):
     def computed_metric_appendix(self) -> str:
         ...
 
-    @abstractmethod
     def apply_to_row(self, row: pd.Series) -> pd.Series:
         pass
 
     def convert_original_df(
-        self, original_df: pd.DataFrame, EXP_STRATEGY: AL_STRATEGY, EXP_DATASET: DATASET
+        self,
+        original_df: pd.DataFrame,
+        EXP_STRATEGY: AL_STRATEGY,
+        EXP_DATASET: DATASET,
+        apply_to_row,
     ) -> pd.DataFrame:
         # do stuff using lambda etc
         original_df["computed_metric"] = original_df.apply(
-            lambda x: self.apply_to_row(x, EXP_STRATEGY, EXP_DATASET), axis=1
+            lambda x: apply_to_row(x, EXP_STRATEGY, EXP_DATASET), axis=1
         )
         return original_df
 
@@ -42,7 +45,7 @@ class Base_Computed_Metric(ABC):
         ...
 
     def _take_single_metric_and_compute_new_one(
-        self, existing_metric_name: str, new_metric_name: str
+        self, existing_metric_name: str, new_metric_name: str, apply_to_row
     ) -> None:
         for EXP_DATASET in self.config.EXP_GRID_DATASET:
             self._per_dataset_hook(EXP_DATASET)
@@ -62,7 +65,10 @@ class Base_Computed_Metric(ABC):
                     original_df = self._pre_appy_to_row_hook(original_df)
 
                     new_df = self.convert_original_df(
-                        original_df, EXP_STRATEGY, EXP_DATASET
+                        original_df,
+                        EXP_STRATEGY,
+                        EXP_DATASET,
+                        apply_to_row=apply_to_row,
                     )
                     new_df = new_df.loc[:, ["computed_metric"]]
                     new_df["EXP_UNIQUE_ID"] = exp_unique_id_column
@@ -82,4 +88,5 @@ class Base_Computed_Metric(ABC):
             self._take_single_metric_and_compute_new_one(
                 existing_metric_name=metric,
                 new_metric_name=self.computed_metric_appendix() + "_" + metric,
+                apply_to_row=self.apply_to_row,
             )
