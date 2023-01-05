@@ -127,17 +127,17 @@ class DISTANCE_METRICS(Base_Computed_Metric):
 
     def compute(self) -> None:
         self._take_single_metric_and_compute_new_one(
-            existing_metric_name="selected_indices",
+            existing_metric_names=["selected_indices"],
             new_metric_name="avg_dist_batch",
             apply_to_row=self.avg_dist_batch,
         )
         self._take_single_metric_and_compute_new_one(
-            existing_metric_name="selected_indices",
+            existing_metric_names=["selected_indices"],
             new_metric_name="avg_dist_labeled",
             apply_to_row=self.avg_dist_labeled,
         )
         self._take_single_metric_and_compute_new_one(
-            existing_metric_name="selected_indices",
+            existing_metric_names=["selected_indices"],
             new_metric_name="avg_dist_unlabeled",
             apply_to_row=self.avg_dist_unlabeled,
         )
