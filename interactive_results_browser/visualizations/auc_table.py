@@ -78,6 +78,9 @@ def _cache_create_auc_table(
     metric_values = [
         sacmc.computed_metric_appendix() + "_" + sss for sss in sacmc.metrics
     ]
+
+    metric_values.append("avg_dist_batch")
+
     plot_df = pd.DataFrame()
 
     for metric in metric_values:

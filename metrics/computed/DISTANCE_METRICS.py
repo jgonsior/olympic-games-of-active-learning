@@ -26,8 +26,8 @@ class DISTANCE_METRICS(Base_Computed_Metric):
         # compute distance matrix for all datasets
         for dataset in self.config.EXP_GRID_DATASET:
             distances = np.load(
-                f"{self.config.DATASETS_PATH}/{dataset.name}_{self.config.DATASETS_DISTANCES_APPENDIX}"
-            )
+                f"{self.config.DATASETS_PATH}/{dataset.name}{self.config.DATASETS_DISTANCES_APPENDIX}"
+            )["arr_0"]
             self._precomputed_distances[dataset] = distances
 
     def avg_dist_batch(self) -> None:
