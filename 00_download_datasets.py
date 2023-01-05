@@ -27,7 +27,7 @@ for dataset_csv in list(glob.glob(str(config.DATASETS_PATH) + "/*.csv")):
         continue
 
     df = pd.read_csv(dataset_csv)
-    X = dataset_df.loc[:, dataset_df.columns != "LABEL_TARGET"].to_numpy()  # type: ignore
+    X = df.loc[:, df.columns != "LABEL_TARGET"].to_numpy()  # type: ignore
     distances = pairwise_distances(
         X, X, metric="cosine", n_jobs=multiprocessing.cpu_count()
     )
