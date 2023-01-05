@@ -25,6 +25,7 @@ for dataset_csv in list(glob.glob(str(config.DATASETS_PATH) + "/*.csv")):
 
     if Path(dataset_csv_path).exists():
         continue
+    print("Computing distances for ", dataset_csv)
 
     df = pd.read_csv(dataset_csv)
     X = df.loc[:, df.columns != "LABEL_TARGET"].to_numpy()  # type: ignore
