@@ -90,7 +90,6 @@ class Config:
     EXP_RESULT_EXTRACTED_ZIP_PATH: Path
     METRIC_RESULTS_FOLDER: Path
 
-    DONE_WORKLOAD_FILE: Path
     RESULTS_PATH: Path
 
     METRICS: List[str]
