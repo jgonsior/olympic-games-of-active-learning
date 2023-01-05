@@ -80,7 +80,7 @@ class AL_STRATEGY(IntEnum):
     # ALIPY_QUIRE = 5  # kernel=linear, poly, rbf -> coverd by LIBACT_QUIRE
     OPTIMAL_BSO = 6
     OPTIMAL_TRUE = 7
-    OPTIMAL_GREEDY = 8
+    OPTIMAL_GREEDY_10 = 8
     LIBACT_UNCERTAINTY_LC = 9
     LIBACT_QBC = 10
     LIBACT_DWUS = 11
@@ -110,6 +110,7 @@ class AL_STRATEGY(IntEnum):
     ALIPY_UNCERTAINTY_DTB = 35
     LIBACT_UNCERTAINTY_SM = 36
     LIBACT_UNCERTAINTY_ENT = 37
+    OPTIMAL_GREEDY_20 = 38
 
 
 al_strategy_to_python_classes_mapping: Dict[
@@ -138,10 +139,17 @@ al_strategy_to_python_classes_mapping: Dict[
     AL_STRATEGY.ALIPY_SPAL: (QueryInstanceSPAL, {}),
     AL_STRATEGY.ALIPY_LAL: (QueryInstanceLAL, {"train_slt": False}),
     AL_STRATEGY.ALIPY_DENSITY_WEIGHTED: (QueryInstanceDensityWeighted, {}),
-    AL_STRATEGY.OPTIMAL_GREEDY: (
+    AL_STRATEGY.OPTIMAL_GREEDY_10: (
         Greedy_Optimal,
         {
             "amount_of_pre_selections": 10,
+            "future_peak_eval_metric": FuturePeakEvalMetric.ACC,
+        },
+    ),
+    AL_STRATEGY.OPTIMAL_GREEDY_20: (
+        Greedy_Optimal,
+        {
+            "amount_of_pre_selections": 20,
             "future_peak_eval_metric": FuturePeakEvalMetric.ACC,
         },
     ),
