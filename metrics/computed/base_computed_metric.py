@@ -17,8 +17,8 @@ class Base_Computed_Metric(ABC):
     done_workload_df: pd.DataFrame
 
     def __init__(self, config: Config) -> None:
-        print(config.DONE_WORKLOAD_FILE)
-        self.done_workload_df = pd.read_csv(config.DONE_WORKLOAD_FILE)
+        print(config.OVERALL_DONE_WORKLOAD_PATH)
+        self.done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
         self.config = config
 
     @abstractmethod
