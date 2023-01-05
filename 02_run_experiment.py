@@ -49,20 +49,21 @@ the strategies below: we should run them with more memory
 
 al_strategies_to_temporarily_ignore = [
     AL_STRATEGY.ALIPY_BMDR,
-    AL_STRATEGY.ALIPY_CORESET_GREEDY,
-    AL_STRATEGY.OPTIMAL_GREEDY,
+    # AL_STRATEGY.ALIPY_CORESET_GREEDY,
+    # AL_STRATEGY.OPTIMAL_GREEDY,
     AL_STRATEGY.ALIPY_LAL,
     AL_STRATEGY.ALIPY_SPAL,
-    AL_STRATEGY.ALIPY_UNCERTAINTY_DTB,
-    AL_STRATEGY.ALIPY_QBC,
+    AL_STRATEGY.ALIPY_BMDR,
+    # AL_STRATEGY.ALIPY_UNCERTAINTY_DTB,
+    # AL_STRATEGY.ALIPY_QBC,
     AL_STRATEGY.ALIPY_EXPECTED_ERROR_REDUCTION,
-    AL_STRATEGY.OPTIMAL_GREEDY,
-    AL_STRATEGY.OPTIMAL_TRUE,
+    # AL_STRATEGY.OPTIMAL_GREEDY,
+    # AL_STRATEGY.OPTIMAL_TRUE,
 ]
 
 if config.EXP_STRATEGY in al_strategies_to_temporarily_ignore:
     print("strategy is temporarily ignored")
-    # exit(-1)
+    exit(-1)
 
 
 al_experiment.run_experiment()
