@@ -34,7 +34,7 @@ for dataset_csv in list(glob.glob(str(config.DATASETS_PATH) + "/*.csv")):
     )
     np.savez_compressed(dataset_csv_path, distances)
     dist_df = pd.DataFrame(distances)
-    dist_df.to_csv(dataset_csv_path + ".csv.gzip")
+    dist_df.to_csv(dataset_csv_path + ".csv.gzip", index=False)
 
 
 data = []
