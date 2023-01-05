@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import List, TYPE_CHECKING
 
-import modin.pandas as pd
+import pandas as pd
 
 from datasets import DATASET
 

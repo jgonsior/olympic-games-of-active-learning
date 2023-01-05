@@ -2,7 +2,7 @@ from __future__ import annotations
 import ast
 import itertools
 import numpy as np
-import modin.pandas as pd
+import pandas as pd
 from datasets import DATASET, load_dataset
 
 from metrics.computed.base_computed_metric import Base_Computed_Metric
@@ -29,7 +29,6 @@ class DISTANCE_METRICS(Base_Computed_Metric):
         self._train_test_splits = pd.read_csv(
             f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}{self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX}"
         )
-        print(self._train_test_splits)
 
         print("done loading")
 
