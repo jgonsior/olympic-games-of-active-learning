@@ -34,7 +34,7 @@ for dataset_csv in list(glob.glob(str(config.DATASETS_PATH) + "/*.csv")):
     )
 
     dist_df = pd.DataFrame(distances)
-    dist_df.to_csv(dataset_csv_pathq, index=False)
+    dist_df.to_csv(dataset_csv_path, index=False)
 
 
 data = []
