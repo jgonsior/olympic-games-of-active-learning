@@ -49,7 +49,7 @@ class DISTANCE_METRICS(Base_Computed_Metric):
                 results += sum(distances) / len(distances)
         return results
 
-    def avg_dist_labeled
+    def avg_dist_labeled(
         self, row: pd.Series, EXP_STRATEGY: AL_STRATEGY, EXP_DATASET: DATASET
     ) -> pd.Series:
         results = 0
