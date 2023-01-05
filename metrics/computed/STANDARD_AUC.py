@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import pandas as pd
+import modin.pandas as pd
 from datasets import DATASET
 
 from metrics.computed.base_computed_metric import Base_Computed_Metric
@@ -23,7 +23,7 @@ class STANDARD_AUC(Base_Computed_Metric):
     def computed_metric_appendix(self) -> str:
         return "auc"
 
-    def apply_to_row(
-        self, row: pd.Series, EXP_STRATEGY: AL_STRATEGY, EXP_DATASET: DATASET
-    ) -> pd.Series:
+    def apply_to_row(self, row: pd.Series) -> pd.Series:
+        row = row.loc[row.index != "EXP_UNIQUE_ID"]
+
         return row.sum() / len(row)
