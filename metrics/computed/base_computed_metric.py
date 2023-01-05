@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import List, TYPE_CHECKING
 
-import pandas as pd
+import modin.pandas as pd
 
 from datasets import DATASET
 
@@ -17,7 +17,6 @@ class Base_Computed_Metric(ABC):
     done_workload_df: pd.DataFrame
 
     def __init__(self, config: Config) -> None:
-        print(config.OVERALL_DONE_WORKLOAD_PATH)
         self.done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
         self.config = config
 
@@ -31,12 +30,11 @@ class Base_Computed_Metric(ABC):
     def convert_original_df(
         self,
         original_df: pd.DataFrame,
-        unique_ids: pd.Series,
         apply_to_row,
     ) -> pd.DataFrame:
         # do stuff using lambda etc
         original_df["computed_metric"] = original_df.apply(
-            lambda x: apply_to_row(x, unique_ids), axis=1
+            lambda x: apply_to_row(x), axis=1
         )
         return original_df
 
@@ -60,15 +58,13 @@ class Base_Computed_Metric(ABC):
                     / str(existing_metric_name + ".csv.gz")
                 )
                 if METRIC_RESULTS_FILE.exists():
-                    original_df = pd.read_csv(METRIC_RESULTS_FILE)
+                    original_df = pd.read_csv(METRIC_RESULTS_FILE, header=0)
                     exp_unique_id_column = original_df["EXP_UNIQUE_ID"]
-                    del original_df["EXP_UNIQUE_ID"]
 
                     original_df = self._pre_appy_to_row_hook(original_df)
 
                     new_df = self.convert_original_df(
                         original_df,
-                        exp_unique_id_column,
                         apply_to_row=apply_to_row,
                     )
                     new_df = new_df.loc[:, ["computed_metric"]]

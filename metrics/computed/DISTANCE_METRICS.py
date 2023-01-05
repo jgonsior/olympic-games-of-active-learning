@@ -2,12 +2,12 @@ from __future__ import annotations
 import ast
 import itertools
 import numpy as np
-import pandas as pd
+import modin.pandas as pd
 from datasets import DATASET, load_dataset
 
 from metrics.computed.base_computed_metric import Base_Computed_Metric
 
-from typing import TYPE_CHECKING, Dict
+from typing import TYPE_CHECKING, Dict, List
 
 
 if TYPE_CHECKING:
@@ -23,9 +23,9 @@ class DISTANCE_METRICS(Base_Computed_Metric):
 
     def _per_dataset_hook(self, EXP_DATASET: DATASET) -> None:
         print("loading", EXP_DATASET)
-        self._precomputed_distances = np.load(
+        self._precomputed_distances = pd.read_csv(
             f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}{self.config.DATASETS_DISTANCES_APPENDIX}"
-        )["arr_0"]
+        ).to_numpy()
         self._train_test_splits = pd.read_csv(
             f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}{self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX}"
         )
@@ -37,16 +37,21 @@ class DISTANCE_METRICS(Base_Computed_Metric):
         return "dist"
 
     def _pre_appy_to_row_hook(self, df: pd.DataFrame) -> pd.DataFrame:
-        df = df.apply(lambda x: [ast.literal_eval(iii) for iii in x], axis=0)
+        df.loc[:, df.columns != "EXP_UNIQUE_ID"] = df.loc[
+            :, df.columns != "EXP_UNIQUE_ID"
+        ].apply(lambda x: [ast.literal_eval(iii) for iii in x], axis=0)
         return df
 
     def avg_dist_batch(
         self,
         row: pd.Series,
-        unique_ids: pd.Series,
     ) -> pd.Series:
+        row = row.loc[row.index != "EXP_UNIQUE_ID"]
+
         results = 0
-        for _, x in row.items():
+        for ix, x in row.items():
+            if ix == 0:
+                continue
             distances = []
             for s1, s2 in itertools.combinations(x, 2):
                 distances.append(self._precomputed_distances[s1][s2])
@@ -60,11 +65,13 @@ class DISTANCE_METRICS(Base_Computed_Metric):
     def avg_dist_labeled(
         self,
         row: pd.Series,
-        unique_ids: pd.Series,
     ) -> pd.Series:
+        row = row.loc[row.index != "EXP_UNIQUE_ID"]
         results = 0
         labeled_so_far = []
         for ix, x in row.items():
+            if ix == 0:
+                labeled_so_far = x
             distances = []
 
             for s1 in x:
@@ -79,24 +86,40 @@ class DISTANCE_METRICS(Base_Computed_Metric):
                 results += sum(distances) / len(distances)
         return results
 
+    def _get_train_set(self, unique_id: int) -> List[int]:
+        details = self.done_workload_df.loc[
+            self.done_workload_df["EXP_UNIQUE_ID"] == unique_id
+        ]
+        train_set = ast.literal_eval(
+            self._train_test_splits.iloc[details["EXP_TRAIN_TEST_BUCKET_SIZE"]][
+                "train"
+            ][0]
+        )
+        return train_set
+
     def avg_dist_unlabeled(
         self,
         row: pd.Series,
-        unique_ids: pd.Series,
     ) -> pd.Series:
+        unique_id = row["EXP_UNIQUE_ID"]
+        row = row.loc[row.index != "EXP_UNIQUE_ID"]
         results = 0
 
-        print(self.done_workload_df)
-
-        unlabeled_so_far = []
+        train_set = self._get_train_set(unique_id)
+        unlabeled_so_far = set(train_set)
         for ix, x in row.items():
+            if ix == 0:
+                for s1 in x:
+                    unlabeled_so_far.remove(s1)
+
             distances = []
 
             for s1 in x:
-                for s2 in labeled_so_far:
+                for s2 in unlabeled_so_far:
                     distances.append(self._precomputed_distances[s1][s2])
 
-            labeled_so_far += x
+            for s1 in x:
+                unlabeled_so_far.remove(s1)
 
             if len(distances) == 0:
                 results += 0
