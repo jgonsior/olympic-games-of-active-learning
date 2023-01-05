@@ -5,7 +5,10 @@ from typing import List, TYPE_CHECKING
 
 import pandas as pd
 
+from datasets import DATASET
+
 if TYPE_CHECKING:
+    from resources.data_types import AL_STRATEGY
     from misc.config import Config
 
 
@@ -23,44 +26,56 @@ class Base_Computed_Metric(ABC):
     def apply_to_row(self, row: pd.Series) -> pd.Series:
         pass
 
-    def convert_original_df(self, original_df: pd.DataFrame) -> pd.DataFrame:
+    def convert_original_df(
+        self, original_df: pd.DataFrame, EXP_STRATEGY: AL_STRATEGY, EXP_DATASET: DATASET
+    ) -> pd.DataFrame:
         # do stuff using lambda etc
         original_df["computed_metric"] = original_df.apply(
-            lambda x: self.apply_to_row(x), axis=1
+            lambda x: self.apply_to_row(x, EXP_STRATEGY, EXP_DATASET), axis=1
         )
         return original_df
 
-    def compute(self) -> None:
+    def _pre_appy_to_row_hook(self, df: pd.DataFrame) -> pd.DataFrame:
+        return df
+
+    def _take_single_metric_and_compute_new_one(
+        self, existing_metric_name: str, new_metric_name: str
+    ) -> None:
         for EXP_STRATEGY in self.config.EXP_GRID_STRATEGY:
             for EXP_DATASET in self.config.EXP_GRID_DATASET:
-                for metric in self.metrics:
-                    # iterate over all experiments/datasets defined for this experiment
-                    METRIC_RESULTS_FILE = Path(
-                        self.config.OUTPUT_PATH
-                        / EXP_STRATEGY.name
-                        / EXP_DATASET.name
-                        / str(metric + ".csv.gz")
+                # iterate over all experiments/datasets defined for this experiment
+                METRIC_RESULTS_FILE = Path(
+                    self.config.OUTPUT_PATH
+                    / EXP_STRATEGY.name
+                    / EXP_DATASET.name
+                    / str(existing_metric_name + ".csv.gz")
+                )
+                if METRIC_RESULTS_FILE.exists():
+                    original_df = pd.read_csv(METRIC_RESULTS_FILE)
+                    exp_unique_id_column = original_df["EXP_UNIQUE_ID"]
+                    del original_df["EXP_UNIQUE_ID"]
+
+                    original_df = self._pre_appy_to_row_hook(original_df)
+
+                    new_df = self.convert_original_df(
+                        original_df, EXP_STRATEGY, EXP_DATASET
                     )
-                    if METRIC_RESULTS_FILE.exists():
-                        original_df = pd.read_csv(METRIC_RESULTS_FILE)
-                        exp_unique_id_column = original_df["EXP_UNIQUE_ID"]
-                        del original_df["EXP_UNIQUE_ID"]
+                    new_df = new_df.loc[:, ["computed_metric"]]
+                    new_df["EXP_UNIQUE_ID"] = exp_unique_id_column
 
-                        new_df = self.convert_original_df(original_df)
-                        new_df = new_df.loc[:, ["computed_metric"]]
-                        new_df["EXP_UNIQUE_ID"] = exp_unique_id_column
+                    # save new df somehow
+                    new_df.to_csv(
+                        Path(
+                            METRIC_RESULTS_FILE.parent
+                            / str(new_metric_name + ".csv.gz")
+                        ),
+                        compression="infer",
+                        index=False,
+                    )
 
-                        # save new df somehow
-                        new_df.to_csv(
-                            Path(
-                                METRIC_RESULTS_FILE.parent
-                                / str(
-                                    self.computed_metric_appendix()
-                                    + "_"
-                                    + metric
-                                    + ".csv.gz"
-                                )
-                            ),
-                            compression="infer",
-                            index=False,
-                        )
+    def compute(self) -> None:
+        for metric in self.metrics:
+            self._take_single_metric_and_compute_new_one(
+                existing_metric_name=metric,
+                new_metric_name=self.computed_metric_appendix() + "_" + metric,
+            )
