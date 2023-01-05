@@ -38,11 +38,15 @@ class Base_Computed_Metric(ABC):
     def _pre_appy_to_row_hook(self, df: pd.DataFrame) -> pd.DataFrame:
         return df
 
+    def _per_dataset_hook(self, EXP_DATASET: DATASET) -> None:
+        ...
+
     def _take_single_metric_and_compute_new_one(
         self, existing_metric_name: str, new_metric_name: str
     ) -> None:
-        for EXP_STRATEGY in self.config.EXP_GRID_STRATEGY:
-            for EXP_DATASET in self.config.EXP_GRID_DATASET:
+        for EXP_DATASET in self.config.EXP_GRID_DATASET:
+            self._per_dataset_hook(EXP_DATASET)
+            for EXP_STRATEGY in self.config.EXP_GRID_STRATEGY:
                 # iterate over all experiments/datasets defined for this experiment
                 METRIC_RESULTS_FILE = Path(
                     self.config.OUTPUT_PATH
