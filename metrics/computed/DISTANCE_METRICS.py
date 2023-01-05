@@ -3,16 +3,15 @@ import ast
 import itertools
 import numpy as np
 import pandas as pd
-from datasets import DATASET, load_dataset
+from datasets import DATASET
 
 from metrics.computed.base_computed_metric import Base_Computed_Metric
 
-from typing import TYPE_CHECKING, Dict, List
+from typing import List, TYPE_CHECKING
 
 
 if TYPE_CHECKING:
-    from resources.data_types import AL_STRATEGY
-    from misc.config import Config
+    pass
 
 
 class DISTANCE_METRICS(Base_Computed_Metric):

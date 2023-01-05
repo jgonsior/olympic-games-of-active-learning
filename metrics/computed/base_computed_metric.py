@@ -8,7 +8,6 @@ import pandas as pd
 from datasets import DATASET
 
 if TYPE_CHECKING:
-    from resources.data_types import AL_STRATEGY
     from misc.config import Config
 
 
