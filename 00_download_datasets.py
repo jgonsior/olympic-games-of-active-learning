@@ -21,7 +21,7 @@ local_importer.load_datasets()
 for dataset_csv in list(glob.glob(str(config.DATASETS_PATH) + "/*.csv")):
     if config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX in dataset_csv:
         continue
-    dataset_csv_path = dataset_csv.replace(".csv", "_distances.csv")
+    dataset_csv_path = dataset_csv.replace(".csv", config.DATASETS_DISTANCES_APPENDIX)
 
     if Path(dataset_csv_path).exists():
         continue

@@ -79,6 +79,7 @@ class Config:
     DATASETS_AMOUNT_OF_SPLITS: int = 5
     DATASETS_TEST_SIZE_PERCENTAGE: float = 0.4
     DATASETS_COMPUTE_DISTANCES: bool = True
+    DATASETS_DISTANCES_APPENDIX: str = "_distances.npz"
 
     KAGGLE_DATASETS_YAML_CONFIG_PATH: Path = "resources/datasets.yaml"  # type: ignore
     LOCAL_DATASETS_YAML_CONFIG_PATH: Path = "resources/local_datasets.yaml"  # type: ignore
