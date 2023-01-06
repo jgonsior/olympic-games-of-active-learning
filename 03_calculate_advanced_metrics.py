@@ -3,7 +3,7 @@ import importlib
 from misc.config import Config
 from pandarallel import pandarallel
 
-pandarallel.initialize(progress_bar=True, use_memory_fs=True)
+pandarallel.initialize(progress_bar=True)
 
 config = Config()
 
