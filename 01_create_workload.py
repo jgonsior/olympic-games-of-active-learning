@@ -3,8 +3,8 @@ import stat
 from pathlib import Path
 from typing import Any, Dict, List
 
-import modin.pandas as pd
-import ray
+import pandas as pd
+
 from jinja2 import Template
 from sklearn.model_selection import ParameterGrid
 from datasets import DATASET, load_dataset
@@ -17,8 +17,6 @@ from resources.data_types import (
     al_strategies_which_require_decision_boundary_model,
     learner_models_to_classes_mapping,
 )
-
-ray.init()
 
 
 # determine config parameters which are to be used -> they all start with EXP_ and have a typing hint of [List[XXX]]

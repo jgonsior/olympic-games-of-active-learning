@@ -21,7 +21,6 @@ export OMP_NUM_THREADS=$SLURM_CPUS_ON_NODE
 
 MPLCONFIGPATH={{HPC_WS_PATH}}cache {{HPC_PYTHON_PATH}} -m pipenv update
 MPLCONFIGPATH={{HPC_WS_PATH}}cache {{HPC_PYTHON_PATH}} -m pip uninstall libact -y
-MPLCONFIGPATH={{HPC_WS_PATH}}cache {{HPC_PYTHON_PATH}} -m pip install "modin[ray]"
 LIBACT_BUILD_VARIANCE_REDUCTION=0 MPLCONFIGPATH={{HPC_WS_PATH}}cache {{HPC_PYTHON_PATH}} -m pip install git+https://github.com/jgonsior/libact.git
 
 exit 0
