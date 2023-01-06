@@ -19,7 +19,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-def _plot_function(plot_df, my_palette, my_markers):
+@memory.cache()
+def _plot_function_auc(plot_df, my_palette, my_markers):
     fig, ax = plt.subplots(
         figsize=(
             len(plot_df["EXP_STRATEGY"].unique()),
@@ -116,7 +117,7 @@ def _cache_create_auc_table(
     plot_urls = Base_Visualizer._render_images(
         plot_df=plot_df,
         args={},
-        plot_function=_plot_function,
+        plot_function=_plot_function_auc,
         df_col_key="metric",
         legend_names=metric_values,
         create_legend=False,
