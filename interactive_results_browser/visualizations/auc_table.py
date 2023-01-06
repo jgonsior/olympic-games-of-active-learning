@@ -85,6 +85,8 @@ def _cache_create_auc_table(
         "avg_dist_labeled",
         "avg_dist_unlabeled",
         "mismatch_train_test",
+        "class_distributions_chebyshev",
+        "class_distributions_manhattan",
     ]
 
     plot_df = pd.DataFrame()
@@ -93,7 +95,7 @@ def _cache_create_auc_table(
         single_metric_plot_df = Base_Visualizer.load_detailed_metric_files(
             done_workload_df, metric, OUTPUT_PATH
         )
-
+        print(metric)
         single_metric_plot_df[metric] = single_metric_plot_df[
             "computed_metric"
         ].multiply(100)
