@@ -74,8 +74,9 @@ class Base_Computed_Metric(ABC):
                         joined_df = original_df
                     else:
                         joined_df = joined_df.merge(
-                            original_df, how="inner", on="EXP_UNIQUE_ID"
+                            original_df, how="outer", on="EXP_UNIQUE_ID"
                         )
+                        joined_df.drop_duplicates(inplace=True)
 
                 exp_unique_id_column = joined_df["EXP_UNIQUE_ID"]
 

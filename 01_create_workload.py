@@ -90,6 +90,7 @@ def create_workload(config: Config) -> List[int]:
             merged_df = open_workload_df.merge(
                 others_done_workload_df, how="inner", on=hyperparameters
             )
+            merged_df.drop_duplicates(inplace=True)
 
             open_workload_df = open_workload_df.loc[
                 ~open_workload_df.index.isin(merged_df["ORIGINAL_INDEX"])

@@ -219,6 +219,8 @@ class Base_Visualizer(ABC):
                     detailed_metrics_df = detailed_metrics_df.merge(
                         done_workload_df, on="EXP_UNIQUE_ID", how="inner"
                     )
+                    detailed_metrics_df.drop_duplicates(inplace=True)
+
                     result_df = pd.concat(
                         [result_df, detailed_metrics_df], ignore_index=True
                     )

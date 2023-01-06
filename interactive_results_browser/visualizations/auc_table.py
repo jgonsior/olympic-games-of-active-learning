@@ -1,4 +1,5 @@
 from __future__ import annotations
+import copy
 import math
 from pathlib import Path
 
@@ -13,13 +14,13 @@ from typing import Any, Dict
 from interactive_results_browser.cache import memory
 from metrics.computed.STANDARD_AUC import STANDARD_AUC
 
-if TYPE_CHECKING:
-    from misc.config import Config
+from misc.config import Config
+
+# if TYPE_CHECKING:
 import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-@memory.cache()
 def _plot_function_auc(plot_df, my_palette, my_markers):
     fig, ax = plt.subplots(
         figsize=(
@@ -70,32 +71,22 @@ def _plot_function_auc(plot_df, my_palette, my_markers):
 
 @memory.cache()
 def _cache_create_auc_table(
-    done_workload_df: pd.DataFrame, OUTPUT_PATH: Path, config: Config
+    done_workload_df: pd.DataFrame,
+    OUTPUT_PATH: Path,
+    config: Config,
+    metric_values: List[str],
 ) -> List[str]:
     done_workload_df = done_workload_df.loc[
         :, ["EXP_UNIQUE_ID", "EXP_STRATEGY", "EXP_DATASET"]
-    ]
-    sacmc = STANDARD_AUC(config)
-    metric_values = [
-        sacmc.computed_metric_appendix() + "_" + sss for sss in sacmc.metrics
-    ]
-
-    metric_values += [
-        "avg_dist_batch",
-        "avg_dist_labeled",
-        "avg_dist_unlabeled",
-        "mismatch_train_test",
-        "class_distributions_chebyshev",
-        "class_distributions_manhattan",
     ]
 
     plot_df = pd.DataFrame()
 
     for metric in metric_values:
+        print(metric)
         single_metric_plot_df = Base_Visualizer.load_detailed_metric_files(
             done_workload_df, metric, OUTPUT_PATH
         )
-        print(metric)
         single_metric_plot_df[metric] = single_metric_plot_df[
             "computed_metric"
         ].multiply(100)
@@ -109,6 +100,7 @@ def _cache_create_auc_table(
                 on=["EXP_UNIQUE_ID", "EXP_DATASET", "EXP_STRATEGY"],
                 how="inner",
             )
+            plot_df.drop_duplicates(inplace=True)
 
     del plot_df["EXP_UNIQUE_ID"]
     plot_df = plot_df.melt(
@@ -129,7 +121,34 @@ def _cache_create_auc_table(
 
 
 class Auc_Table(Base_Visualizer):
+    @staticmethod
+    def get_additional_request_params() -> Dict[str, List[Any]]:
+        sacmc = STANDARD_AUC(Config())
+        basic_metrics = sacmc.metrics
+        auc_metrics = [
+            sacmc.computed_metric_appendix() + "_" + sss for sss in basic_metrics
+        ]
+        metric_values = copy.deepcopy(auc_metrics)
+
+        for basic_metric in basic_metrics:
+            metric_values.append("biggest_drop_per_" + basic_metric)
+            metric_values.append("nr_decreasing_al_cycles_per_" + basic_metric)
+            metric_values.append(basic_metric)
+
+        metric_values += [
+            "avg_dist_batch",
+            "avg_dist_labeled",
+            "avg_dist_unlabeled",
+            "mismatch_train_test",
+            "class_distributions_chebyshev",
+            "class_distributions_manhattan",
+        ]
+        return {"VIZ_AUC_TABLE_METRIC": metric_values}
+
     def get_template_data(self) -> Dict[str, Any]:
+        if len(self._exp_grid_request_params["VIZ_AUC_TABLE_METRIC"]) == 0:
+            return {"ERROR": "Please select at least one VIZ_AUC_TABLE_METRIC value"}
+
         # read in all metrics
         done_workload_df = self._load_done_workload()
 
@@ -137,6 +156,7 @@ class Auc_Table(Base_Visualizer):
             done_workload_df=done_workload_df,
             OUTPUT_PATH=self._config.OUTPUT_PATH,
             config=self._config,
+            metric_values=self._exp_grid_request_params["VIZ_AUC_TABLE_METRIC"],
         )
 
         return {"plot_data": plot_url}
