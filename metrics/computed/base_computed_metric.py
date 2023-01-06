@@ -19,7 +19,6 @@ class Base_Computed_Metric(ABC):
         self.done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
         self.config = config
 
-    @abstractmethod
     def computed_metric_appendix(self) -> str:
         ...
 

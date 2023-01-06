@@ -78,9 +78,11 @@ def _cache_retrieved_samples(
     column_names_which_are_al_cycles.remove("EXP_DATASET")
 
     plot_df["selected_indices"] = plot_df[column_names_which_are_al_cycles].apply(
-        lambda x: "[" + ",".join(x).replace("[", "").replace("]", "") + "]", axis=1
+        lambda x: ast.literal_eval(
+            "[" + ",".join(x).replace("[", "").replace("]", "") + "]"
+        ),
+        axis=1,
     )
-    plot_df["selected_indices"] = plot_df["selected_indices"].apply(ast.literal_eval)
 
     for c in column_names_which_are_al_cycles:
         del plot_df[c]

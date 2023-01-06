@@ -51,6 +51,7 @@ from framework_runners.alipy_runner import ALIPY_AL_Experiment
 from framework_runners.optimal_runner import OPTIMAL_AL_Experiment
 from framework_runners.libact_runner import LIBACT_Experiment
 from framework_runners.playground_runner import PLAYGROUND_AL_Experiment
+from metrics.computed.CLASS_DISTRIBUTIONS import CLASS_DISTRIBUTIONS
 from metrics.computed.DISTANCE_METRICS import DISTANCE_METRICS
 from metrics.computed.MISMATCH_TRAIN_TEST import MISMATCH_TRAIN_TEST
 from metrics.computed.STANDARD_AUC import STANDARD_AUC
@@ -306,10 +307,12 @@ class COMPUTED_METRIC(IntEnum):
     STANDARD_AUC = 1
     DISTANCE_METRICS = 2
     MISMATCH_TRAIN_TEST = 3
+    CLASS_DISTRIBUTIONS = 4
 
 
 computed_metric_to_classes_mapping: Dict[COMPUTED_METRIC, Callable] = {
     COMPUTED_METRIC.STANDARD_AUC: STANDARD_AUC,
     COMPUTED_METRIC.DISTANCE_METRICS: DISTANCE_METRICS,
     COMPUTED_METRIC.MISMATCH_TRAIN_TEST: MISMATCH_TRAIN_TEST,
+    COMPUTED_METRIC.CLASS_DISTRIBUTIONS: CLASS_DISTRIBUTIONS,
 }
