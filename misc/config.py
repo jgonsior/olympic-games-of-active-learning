@@ -91,6 +91,7 @@ class Config:
     EXPERIMENT_UPDATE_SLURM_DEP_PATH = "0x_update_deps.slurm"
     EXPERIMENT_SLURM_FILE_PATH: Path = "02_slurm.slurm"  # type: ignore
     EXPERIMENT_SLURM_CHAIN_JOB: Path = "02b_chain_job.sh"  # type: ignore
+    EXPERIMENT_SLURM_GZIP_RESULTS_PATH = "02c_gzip_results.sh.slurm"  # type: ignore
     EXPERIMENT_SLURM_TAR_PATH: Path = "03_tar.slurm"  # type: ignore
     EXPERIMENT_BASH_FILE_PATH: Path = "02_bash.sh"  # type: ignore
     EXPERIMENT_PYTHON_PARALLEL_BASH_FILE_PATH: Path = "02b_run_bash_parallel.py"  # type: ignore
@@ -181,6 +182,9 @@ class Config:
         )
         self.EXPERIMENT_INSTALL_SLURM_DEP_PATH = (
             self.OUTPUT_PATH / self.EXPERIMENT_INSTALL_SLURM_DEP_PATH
+        )
+        self.EXPERIMENT_SLURM_GZIP_RESULTS_PATH = (
+            self.OUTPUT_PATH / self.EXPERIMENT_SLURM_GZIP_RESULTS_PATH
         )
         self.EXPERIMENT_SLURM_CHAIN_JOB = (
             self.OUTPUT_PATH / self.EXPERIMENT_SLURM_CHAIN_JOB

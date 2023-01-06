@@ -18,6 +18,10 @@ from resources.data_types import (
     learner_models_to_classes_mapping,
 )
 
+from pandarallel import pandarallel
+
+pandarallel.initialize(progress_bar=True)
+
 
 # determine config parameters which are to be used -> they all start with EXP_ and have a typing hint of [List[XXX]]
 def _determine_exp_grid_parameters(config: Config) -> List[str]:
@@ -237,4 +241,9 @@ _write_template_file(
     config,
     Path("resources/slurm_templates/install_pipenv_dep.slurm"),
     config.EXPERIMENT_INSTALL_SLURM_DEP_PATH,
+)
+_write_template_file(
+    config,
+    Path("resources/slurm_templates/02c_gzip_results.sh.slurm"),
+    config.EXPERIMENT_SLURM_GZIP_RESULTS_PATH,
 )
