@@ -22,6 +22,10 @@ class STANDARD_AUC(Base_Computed_Metric):
     def computed_metric_appendix(self) -> str:
         return "auc"
 
+    def _pre_appy_to_row_hook(self, df: pd.DataFrame) -> pd.DataFrame:
+        del df["0"]
+        return df
+
     def apply_to_row(self, row: pd.Series) -> pd.Series:
         row = row.loc[row.index != "EXP_UNIQUE_ID"]
 
