@@ -25,7 +25,6 @@ conda install -c anaconda cython -y
 conda install -y -c conda-forge cvxpy pipenv liblapacke
 python -m pipenv --python=$(conda run which python) --site-packages install --dev
 python -m pipenv shell
-python -m pip install "modin[ray]"
 LIBACT_BUILD_VARIANCE_REDUCTION=0 python -m pip install git+https://github.com/jgonsior/libact.git
 
 
@@ -43,7 +42,6 @@ conda activate /scratch/ws/1/s5968580-al_olympics/conda-env
 #conda install -y -c conda-forge cvxpy pipenv liblapacke
 python -m pipenv --python=$(conda run which python) --site-packages install --dev
 python -m pipenv shell
-pip install modin[ray]
 pip install git+https://github.com/ntucllab/libact.git -> klappt nicht auf taurus!
 MPLCONFIGPATH={{HPC_WS_PATH}}cache {{HPC_PYTHON_PATH}}
 

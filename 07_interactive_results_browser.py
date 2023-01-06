@@ -83,7 +83,7 @@ def show_results(experiment_name: str):
 
 
 if __name__ == "__main__":
-    pandarallel.initialize(progress_bar=True, use_memory_fs=True)
+    pandarallel.initialize(progress_bar=False, use_memory_fs=True)
     # check if static external ressources exist
     # if not: download them
     static_resources = {
