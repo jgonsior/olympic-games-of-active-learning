@@ -83,7 +83,6 @@ def _cache_create_auc_table(
     plot_df = pd.DataFrame()
 
     for metric in metric_values:
-        print(metric)
         single_metric_plot_df = Base_Visualizer.load_detailed_metric_files(
             done_workload_df, metric, OUTPUT_PATH
         )

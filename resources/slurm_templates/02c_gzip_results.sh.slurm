@@ -11,6 +11,6 @@ for csv_file in {{HPC_WS_PATH}}exp_results/{{EXP_TITLE}}/**/*.csv; do
         continue
     fi
     echo $csv_file
-    gzip $csv_file
+    xz -T0 -0 $csv_file
 
 done

@@ -58,7 +58,7 @@ class Base_Computed_Metric(ABC):
                         self.config.OUTPUT_PATH
                         / EXP_STRATEGY.name
                         / EXP_DATASET.name
-                        / str(existing_metric_name + ".csv.gz")
+                        / str(existing_metric_name + ".csv.xz")
                     )
                     if not METRIC_RESULTS_FILE.exists():
                         continue
@@ -93,7 +93,7 @@ class Base_Computed_Metric(ABC):
                 # save new df somehow
                 new_df.to_csv(
                     Path(
-                        metric_result_files[0].parent / str(new_metric_name + ".csv.gz")
+                        metric_result_files[0].parent / str(new_metric_name + ".csv.xz")
                     ),
                     compression="infer",
                     index=False,

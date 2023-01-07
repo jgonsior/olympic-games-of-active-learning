@@ -26,7 +26,9 @@ class DISTANCE_METRICS(Base_Computed_Metric):
             f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}{self.config.DATASETS_DISTANCES_APPENDIX}"
         ).to_numpy()
         self._train_test_splits = pd.read_csv(
-            f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}{self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX}"
+            f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}{self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX}",
+            delimiter=",",
+            index_col=False,
         )
 
         print("done loading")
@@ -89,9 +91,9 @@ class DISTANCE_METRICS(Base_Computed_Metric):
             self.done_workload_df["EXP_UNIQUE_ID"] == unique_id
         ]
         train_set = ast.literal_eval(
-            self._train_test_splits.iloc[details["EXP_TRAIN_TEST_BUCKET_SIZE"]][
-                "train"
-            ][0]
+            self._train_test_splits["train"].iloc[
+                details["EXP_TRAIN_TEST_BUCKET_SIZE"].to_list()[0]
+            ]
         )
         return train_set
 
