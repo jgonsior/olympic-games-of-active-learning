@@ -1,7 +1,6 @@
 from __future__ import annotations
 from abc import ABC
 import csv
-import gzip
 from pathlib import Path
 from typing import Any, Dict, List, TYPE_CHECKING
 

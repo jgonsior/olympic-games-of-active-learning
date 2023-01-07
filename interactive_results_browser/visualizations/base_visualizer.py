@@ -209,7 +209,7 @@ class Base_Visualizer(ABC):
         for EXP_STRATEGY in done_workload_df["EXP_STRATEGY"].unique():
             for EXP_DATASET in done_workload_df["EXP_DATASET"].unique():
                 detailed_metrics_path = Path(
-                    f"{OUTPUT_PATH}/{EXP_STRATEGY}/{EXP_DATASET}/{metric}.csv.gz"
+                    f"{OUTPUT_PATH}/{EXP_STRATEGY}/{EXP_DATASET}/{metric}.csv.xz"
                 )
 
                 if detailed_metrics_path.exists():
