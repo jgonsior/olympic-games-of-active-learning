@@ -16,6 +16,8 @@ export OMP_NUM_THREADS=$SLURM_CPUS_ON_NODE
 
 #module load Python/3.8.6
 
+export PYTHONDONTWRITEBYTECODE=1
+
 {% if array %}i=$(( {{ SLURM_OFFSET }} + $SLURM_ARRAY_TASK_ID * {{ SLURM_ITERATIONS_PER_BATCH }} )){% endif %}
 #module load Python/3.8.6
 end=$(($i+{{ SLURM_ITERATIONS_PER_BATCH }}))
