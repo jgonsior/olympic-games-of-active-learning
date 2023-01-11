@@ -26,7 +26,7 @@ for dataset_csv in list(glob.glob(str(config.DATASETS_PATH) + "/*.csv")):
         continue
     print("Computing distances for ", dataset_csv)
 
-    df = pd.read_csv(dataset_csv, engine="pyarrow")
+    df = pd.read_csv(dataset_csv)
     X = df.loc[:, df.columns != "LABEL_TARGET"].to_numpy()  # type: ignore
     distances = pairwise_distances(
         X, X, metric="cosine", n_jobs=multiprocessing.cpu_count()
@@ -40,7 +40,7 @@ data = []
 for dataset_csv in list(glob.glob(str(config.DATASETS_PATH) + "/*.csv")):
     if config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX in dataset_csv:
         continue
-    df = pd.read_csv(dataset_csv, engine="pyarrow")
+    df = pd.read_csv(dataset_csv)
     data.append(
         [
             dataset_csv.replace(str(config.DATASETS_PATH), "")

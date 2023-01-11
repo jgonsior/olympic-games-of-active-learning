@@ -158,7 +158,7 @@ def create_many_csvs():
     accs = []
     # read all feather files
     for feather_file in tmp_path.glob("*.feather"):
-        output_df = pd.read_csv(feather_file, engine="pyarrow")
+        output_df = pd.read_csv(feather_file)
         accs.append(output_df.iloc[49]["accuracy"])
     accs = len(accs)
     print(accs)
