@@ -68,7 +68,10 @@ class Base_Computed_Metric(ABC):
 
                 joined_df = pd.DataFrame()
                 for METRIC_RESULTS_FILE in metric_result_files:
-                    original_df = pd.read_csv(METRIC_RESULTS_FILE, header=0)
+                    print(METRIC_RESULTS_FILE)
+                    original_df = pd.read_csv(
+                        METRIC_RESULTS_FILE, header=0, delimiter=","
+                    )
 
                     if len(joined_df) == 0:
                         joined_df = original_df

@@ -4,6 +4,8 @@ import csv
 from pathlib import Path
 from typing import Any, Dict, List, TYPE_CHECKING
 
+import numpy as np
+
 from misc.logging import log_it
 
 
@@ -14,6 +16,8 @@ if TYPE_CHECKING:
 class Base_Metric(ABC):
     metrics: List[str]
     metric_values: Dict[str, List[Any]]
+
+    padding_for_early_stopping = np.nan
 
     def __init__(self) -> None:
         self.metric_values = {}
@@ -37,6 +41,12 @@ class Base_Metric(ABC):
             metric_result_file = Path(
                 str(al_experiment.config.METRIC_RESULTS_FOLDER) + "/" + metric + ".csv"
             )
+
+            if len(values) < al_experiment.config.EXP_NUM_QUERIES:
+                values += [
+                    self.padding_for_early_stopping
+                    for _ in range(len(values), al_experiment.config.EXP_NUM_QUERIES)
+                ]
 
             values = {ix: v for ix, v in enumerate(values)}
             values["EXP_UNIQUE_ID"] = al_experiment.config.EXP_UNIQUE_ID
