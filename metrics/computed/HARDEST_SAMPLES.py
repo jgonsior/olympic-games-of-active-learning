@@ -35,13 +35,13 @@ class HARDEST_SAMPLES(Base_Computed_Metric):
 
             y = pd.read_csv(
                 f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}.csv",
-                usecols=["LABEL_TARGET"],
+                usecols=["LABEL_TARGET"], engine="pyarrow"
             )["LABEL_TARGET"].to_numpy()
 
             self.wrong_classified_counter = np.zeros_like(y)
 
             _train_test_splits = pd.read_csv(
-                f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}{self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX}"
+                f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}{self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX}", engine="pyarrow"
             )
             train_splits = {}
             test_splits = {}
@@ -70,8 +70,8 @@ class HARDEST_SAMPLES(Base_Computed_Metric):
                     / "y_pred_test.csv.xz"
                 )
 
-                y_pred_train = pd.read_csv(y_pred_train_path, header=0)
-                y_pred = pd.read_csv(y_pred_test_path, header=0).merge(
+                y_pred_train = pd.read_csv(y_pred_train_path, header=0, engine="pyarrow")
+                y_pred = pd.read_csv(y_pred_test_path, header=0, engine="pyarrow").merge(
                     y_pred_train,
                     how="inner",
                     on="EXP_UNIQUE_ID",

@@ -51,7 +51,9 @@ def create_single_file():
             w.writerow(flattened_exp_results_dict)
 
     # read in csv and extract "overall accuracy"
-    single_file = pd.read_csv(tmp_path / "results.csv", index_col=None)
+    single_file = pd.read_csv(
+        tmp_path / "results.csv", index_col=None, engine="pyarrow"
+    )
     accs = len(single_file["49_accuracy"])
     print(accs)
     shutil.rmtree(tmp_path)
@@ -156,7 +158,7 @@ def create_many_csvs():
     accs = []
     # read all feather files
     for feather_file in tmp_path.glob("*.feather"):
-        output_df = pd.read_csv(feather_file)
+        output_df = pd.read_csv(feather_file, engine="pyarrow")
         accs.append(output_df.iloc[49]["accuracy"])
     accs = len(accs)
     print(accs)

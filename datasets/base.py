@@ -50,7 +50,7 @@ class Base_Dataset_Loader(ABC):
             if not dataset_raw_path.exists():
                 df = self.load_single_dataset(dataset_name, dataset_raw_path)
             else:
-                df = pd.read_csv(dataset_raw_path)
+                df = pd.read_csv(dataset_raw_path, engine="pyarrow")
 
             if not dataset_clean_path.exists():
                 df = self.preprocess_dataframe(df, dataset_name)

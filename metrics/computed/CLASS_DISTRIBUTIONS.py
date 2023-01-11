@@ -22,11 +22,11 @@ class CLASS_DISTRIBUTIONS(Base_Computed_Metric):
     def _per_dataset_hook(self, EXP_DATASET: DATASET) -> None:
         print("loading", EXP_DATASET)
         _train_test_splits = pd.read_csv(
-            f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}{self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX}"
+            f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}{self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX}", engine="pyarrow"
         )
         self.y_true = pd.read_csv(
             f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}.csv",
-            usecols=["LABEL_TARGET"],
+            usecols=["LABEL_TARGET"], engine="pyarrow"
         )["LABEL_TARGET"].to_numpy()
         self.classes = np.unique(self.y_true).tolist()
         for train_test_split_ix, row in _train_test_splits.iterrows():
