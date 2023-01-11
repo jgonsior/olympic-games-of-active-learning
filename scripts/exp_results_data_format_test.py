@@ -51,9 +51,7 @@ def create_single_file():
             w.writerow(flattened_exp_results_dict)
 
     # read in csv and extract "overall accuracy"
-    single_file = pd.read_csv(
-        tmp_path / "results.csv", index_col=None, engine="pyarrow"
-    )
+    single_file = pd.read_csv(tmp_path / "results.csv", index_col=None)
     accs = len(single_file["49_accuracy"])
     print(accs)
     shutil.rmtree(tmp_path)
