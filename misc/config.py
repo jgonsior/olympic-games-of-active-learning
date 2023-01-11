@@ -253,7 +253,7 @@ class Config:
             self.WORKLOAD_FILE_PATH,
             header=0,
             index_col=None,
-            skiprows=lambda x: x not in [0, self.WORKER_INDEX + 1],
+            skiprows=lambda x: x not in [0, self.WORKER_INDEX + 1], engine="pyarrow"
         )
         workload = workload_df.iloc[0].to_dict()
         for k, v in workload.items():

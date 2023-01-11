@@ -21,10 +21,10 @@ class MISMATCH_TRAIN_TEST(Base_Computed_Metric):
     def _per_dataset_hook(self, EXP_DATASET: DATASET) -> None:
         print("loading", EXP_DATASET)
         _train_test_splits = pd.read_csv(
-            f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}{self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX}"
+            f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}{self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX}", engine="pyarrow"
         )
         y = pd.read_csv(
-            f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}.csv",
+            f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}.csv", engine="pyarrow"
             usecols=["LABEL_TARGET"],
         )["LABEL_TARGET"].to_numpy()
 

@@ -16,7 +16,7 @@ class Base_Computed_Metric(ABC):
     done_workload_df: pd.DataFrame
 
     def __init__(self, config: Config) -> None:
-        self.done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
+        self.done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH, engine="pyarrow")
         self.config = config
 
     def computed_metric_appendix(self) -> str:
@@ -70,7 +70,7 @@ class Base_Computed_Metric(ABC):
                 for METRIC_RESULTS_FILE in metric_result_files:
                     print(METRIC_RESULTS_FILE)
                     original_df = pd.read_csv(
-                        METRIC_RESULTS_FILE, header=0, delimiter=","
+                        METRIC_RESULTS_FILE, header=0, delimiter=",", engine="pyarrow"
                     )
 
                     if len(joined_df) == 0:

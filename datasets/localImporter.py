@@ -31,7 +31,7 @@ class Local_Importer(Base_Dataset_Loader):
     ) -> pd.DataFrame:
         shutil.copy(self.parameter_dict[dataset_name]["path"], dataset_raw_path)
 
-        df = pd.read_csv(dataset_raw_path, sep=",")
+        df = pd.read_csv(dataset_raw_path, sep=",", engine="pyarrow")
         return df
 
     def calculate_train_test_splits(

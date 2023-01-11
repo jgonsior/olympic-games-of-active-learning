@@ -41,7 +41,7 @@ def create_workload(config: Config) -> List[int]:
     if os.path.isfile(config.OVERALL_DONE_WORKLOAD_PATH):
         # experiment has already been run, check which worsloads are still missing
         done_workload_df = pd.read_csv(
-            config.OVERALL_DONE_WORKLOAD_PATH,
+            config.OVERALL_DONE_WORKLOAD_PATH, engine="pyarrow"
         )
 
         open_workload_df = pd.read_csv(config.WORKLOAD_FILE_PATH)
@@ -72,7 +72,7 @@ def create_workload(config: Config) -> List[int]:
 
             for other_exp_results_name in config.INCLUDE_RESULTS_FROM:
                 # load done_workload_df from other results
-                other_done_workload = pd.read_csv(Path(other_exp_results_name))
+                other_done_workload = pd.read_csv(Path(other_exp_results_name), engine="pyarrow")
                 if others_done_workload_df is None:
                     others_done_workload_df = other_done_workload
                 else:

@@ -31,7 +31,7 @@ def _cache_load_done_workload(
     non_workload_keys,
     exp_grid_request_params,
 ) -> pd.DataFrame:
-    df: pd.DataFrame = pd.read_csv(done_workload_path)
+    df: pd.DataFrame = pd.read_csv(done_workload_path, engine="pyarrow")
 
     if limit_to_get_params:
         for k, v in exp_grid_request_params.items():
@@ -214,7 +214,7 @@ class Base_Visualizer(ABC):
 
                 if detailed_metrics_path.exists():
                     # read in each csv file to get learning curve data for plot
-                    detailed_metrics_df = pd.read_csv(detailed_metrics_path)
+                    detailed_metrics_df = pd.read_csv(detailed_metrics_path, engine="pyarrow")
 
                     detailed_metrics_df = detailed_metrics_df.merge(
                         done_workload_df, on="EXP_UNIQUE_ID", how="inner"
