@@ -24,8 +24,8 @@ def _cache_run_done_stats_table(
     DONE_WORKLOAD_PATH,
     WORKLOAD_FILE_PATH,
 ) -> Dict[str, Any]:
-    done_workload: pd.DataFrame = pd.read_csv(DONE_WORKLOAD_PATH, engine="pyarrow")  # type: ignore
-    open_workload: pd.DataFrame = pd.read_csv(WORKLOAD_FILE_PATH, engine="pyarrow")  # type: ignore
+    done_workload: pd.DataFrame = pd.read_csv(DONE_WORKLOAD_PATH)  # type: ignore
+    open_workload: pd.DataFrame = pd.read_csv(WORKLOAD_FILE_PATH)  # type: ignore
     full_workload = pd.concat([done_workload, open_workload])
     full_workload.drop_duplicates(subset="EXP_UNIQUE_ID", inplace=True)
 

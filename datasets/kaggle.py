@@ -47,5 +47,5 @@ class Kaggle(Base_Dataset_Loader):
             dataset_raw_path.parent / self.parameter_dict[dataset_name]["kaggle_file"],
             dataset_raw_path,
         )
-        df = pd.read_csv(dataset_raw_path, sep=",", engine="pyarrow")
+        df = pd.read_csv(dataset_raw_path, sep=",")
         return df

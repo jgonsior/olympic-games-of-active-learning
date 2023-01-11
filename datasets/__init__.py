@@ -44,10 +44,10 @@ def load_dataset(dataset: DATASET, config: Config) -> Tuple[pd.DataFrame, pd.Dat
 
     train_test_split = pd.read_csv(
         config.DATASETS_PATH
-        / str(dataset.name + config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX), engine="pyarrow"
+        / str(dataset.name + config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX)
     )
 
-    return pd.read_csv(dataset_path, engine="pyarrow"), train_test_split
+    return pd.read_csv(dataset_path), train_test_split
 
 
 def split_dataset(
