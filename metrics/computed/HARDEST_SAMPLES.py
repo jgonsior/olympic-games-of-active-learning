@@ -34,7 +34,8 @@ class HARDEST_SAMPLES(Base_Computed_Metric):
                 usecols=["LABEL_TARGET"],
             )["LABEL_TARGET"].to_numpy()
 
-            self.wrong_classified_counter = np.zeros_like(y)
+            self.wrong_classified_counter = np.zeros_like(y, dtype=np.float16)
+            maximum_possible_value = 0
 
             _train_test_splits = pd.read_csv(
                 f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}{self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX}"
@@ -100,6 +101,11 @@ class HARDEST_SAMPLES(Base_Computed_Metric):
                         np.where(y_pred_single != y_true_single)
                     ]:
                         self.wrong_classified_counter[wrong_ix] += 1
+
+                    maximum_possible_value += 1
+
+            for ix, value in enumerate(self.wrong_classified_counter):
+                self.wrong_classified_counter[ix] = value / maximum_possible_value
 
             hardest_samples_path.parent.mkdir(exist_ok=True)
             np.savez_compressed(
