@@ -19,12 +19,8 @@ class HARDEST_SAMPLES(Base_Computed_Metric):
     wrong_classified_counter: np.ndarray
 
     def _per_dataset_hook(self, EXP_DATASET: DATASET) -> None:
-        # calculate the hardest samples for this dataset
-        # check if calculation has already been done
-        # if not: iterate over ALL strategies, and count per Y, how often the sample has been classified wrong
-        # no matter the train/test/split
         hardest_samples_path = Path(
-            f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}/HARDEST_SAMPLES.csv.xz"
+            f"{self.config.OUTPUT_PATH}/_hardest_samples/{EXP_DATASET.name}_HARDEST_SAMPLES.npz"
         )
 
         if not hardest_samples_path.exists():
@@ -35,7 +31,7 @@ class HARDEST_SAMPLES(Base_Computed_Metric):
 
             y = pd.read_csv(
                 f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}.csv",
-                usecols=["LABEL_TARGET"]
+                usecols=["LABEL_TARGET"],
             )["LABEL_TARGET"].to_numpy()
 
             self.wrong_classified_counter = np.zeros_like(y)
@@ -70,6 +66,9 @@ class HARDEST_SAMPLES(Base_Computed_Metric):
                     / "y_pred_test.csv.xz"
                 )
 
+                if not y_pred_train_path.exists():
+                    continue
+
                 y_pred_train = pd.read_csv(y_pred_train_path, header=0)
                 y_pred = pd.read_csv(y_pred_test_path, header=0).merge(
                     y_pred_train,
@@ -102,54 +101,42 @@ class HARDEST_SAMPLES(Base_Computed_Metric):
                     ]:
                         self.wrong_classified_counter[wrong_ix] += 1
 
-            print(self.wrong_classified_counter)
-            exit(-1)
+            hardest_samples_path.parent.mkdir(exist_ok=True)
+            np.savez_compressed(
+                hardest_samples_path,
+                wrong_classified_counter=self.wrong_classified_counter,
+            )
+        else:
+            print("Loading ", hardest_samples_path)
 
-    def computed_metric_appendix(self) -> str:
-        return "mismatch_train_test"
+            self.wrong_classified_counter = np.load(hardest_samples_path)[
+                "wrong_classified_counter"
+            ]
 
     def _pre_appy_to_row_hook(self, df: pd.DataFrame) -> pd.DataFrame:
-        df.loc[:, df.columns != "EXP_UNIQUE_ID"] = df.loc[
-            :, df.columns != "EXP_UNIQUE_ID"
-        ].apply(lambda x: [ast.literal_eval(iii) for iii in x], axis=0)
+        del df["0"]
+        column_names_which_are_al_cycles = list(df.columns)
+        column_names_which_are_al_cycles.remove("EXP_UNIQUE_ID")
+        df["selected_indices"] = df[column_names_which_are_al_cycles].apply(
+            lambda x: ast.literal_eval(
+                "[" + ",".join(x).replace("[", "").replace("]", "") + "]"
+            ),
+            axis=1,
+        )
+        for c in column_names_which_are_al_cycles:
+            del df[c]
+
         return df
 
     def hardest_samples(
         self,
         row: pd.Series,
     ) -> pd.Series:
-        print(row)
-        exit(-1)
-        unique_id = row["EXP_UNIQUE_ID"]
-        train_test_split_number = self.done_workload_df.loc[
-            self.done_workload_df["EXP_UNIQUE_ID"] == unique_id
-        ]["EXP_TRAIN_TEST_BUCKET_SIZE"].to_list()[0]
-
-        row = row.loc[row.index != "EXP_UNIQUE_ID"]
-
-        # calculate how many y's in train richtig vorhergesagt
-        # calculate how many y's in test richtig vorhergesagt
-        # differenz ist dann das ergebnis
-        amount_of_al_iterations = int(len(row) / 2)
-
-        results = 0
-        for al_iteration in range(1, amount_of_al_iterations):
-            y_pred_train = row[f"{al_iteration}_x"]
-            y_pred_test = row[f"{al_iteration}_y"]
-            amount_of_correct_predicted_train = np.sum(
-                y_pred_train == self.y_train_true[train_test_split_number]
-            ) / len(y_pred_train)
-            amount_of_correct_predicted_test = np.sum(
-                y_pred_test == self.y_test_true[train_test_split_number]
-            ) / len(y_pred_test)
-            results += (
-                amount_of_correct_predicted_test - amount_of_correct_predicted_train
-            )
-        return results
+        return np.sum(self.wrong_classified_counter[row["selected_indices"]])
 
     def compute(self) -> None:
         self._take_single_metric_and_compute_new_one(
-            existing_metric_names=["y_pred_train", "y_pred_test"],
+            existing_metric_names=["selected_indices"],
             new_metric_name="hardest_samples",
             apply_to_row=self.hardest_samples,
         )
