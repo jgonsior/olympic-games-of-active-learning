@@ -86,9 +86,13 @@ def _cache_create_auc_table(
         single_metric_plot_df = Base_Visualizer.load_detailed_metric_files(
             done_workload_df, metric, OUTPUT_PATH
         )
-        single_metric_plot_df[metric] = single_metric_plot_df[
-            "computed_metric"
-        ].multiply(100)
+
+        if single_metric_plot_df["computed_metric"].max() <= 1.0:
+            single_metric_plot_df[metric] = single_metric_plot_df[
+                "computed_metric"
+            ].multiply(100)
+        else:
+            single_metric_plot_df[metric] = single_metric_plot_df["computed_metric"]
         del single_metric_plot_df["computed_metric"]
 
         if len(plot_df) == 0:
@@ -141,6 +145,7 @@ class Auc_Table(Base_Visualizer):
             "mismatch_train_test",
             "class_distributions_chebyshev",
             "class_distributions_manhattan",
+            "hardest_samples",
         ]
         return {"VIZ_AUC_TABLE_METRIC": metric_values}
 
