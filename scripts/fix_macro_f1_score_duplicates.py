@@ -24,6 +24,9 @@ for file_name in glob.glob(
 
     # delete every second column
     counter = 0
+    if len(df.columns) < 22:
+        print(metric_file):
+        exit(-1)
     for col_id in range(1, len(df.columns) - 1, 2):
         df = df.drop(str(col_id), axis=1)
 
