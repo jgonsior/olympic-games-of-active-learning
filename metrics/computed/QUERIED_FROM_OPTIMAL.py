@@ -6,7 +6,6 @@ from statistics import harmonic_mean
 import numpy as np
 import pandas as pd
 from datasets import DATASET
-
 from metrics.computed.base_computed_metric import Base_Computed_Metric
 
 from typing import Dict, List, TYPE_CHECKING
@@ -50,6 +49,9 @@ class QUERIED_FROM_OPTIMAL(Base_Computed_Metric):
 
             wrongly_classified_counter = {ix: [] for ix in range(0, len(y))}
             acc_diff_per_indice_counts = {ix: [] for ix in range(0, len(y))}
+            self.optimal_samples_included_in_optimal_strategy = np.zeros_like(
+                y, dtype=np.float16
+            )
 
             _train_test_splits = pd.read_csv(
                 f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}{self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX}"
@@ -84,7 +86,29 @@ class QUERIED_FROM_OPTIMAL(Base_Computed_Metric):
                 if not y_pred_train_path.exists():
                     continue
 
-                # TODO optimal_samples_included_in_optimal_strategy mit inhalt befüllen (über alle selected indices von 20 und von 10 drüber gehen, und zählen wie oft die gesampled worden sind)
+                selected_indices_path = Path(
+                    self.config.OUTPUT_PATH
+                    / EXP_STRATEGY.name
+                    / EXP_DATASET.name
+                    / "selected_indices.csv.xz"
+                )
+                selected_indices = pd.read_csv(selected_indices_path, header=0).melt(
+                    id_vars="EXP_UNIQUE_ID",
+                    var_name="al_cycle",
+                    value_name="selected_indices",
+                )
+                selected_indices["selected_indices"] = selected_indices[
+                    "selected_indices"
+                ].apply(ast.literal_eval)
+
+                if "OPTIMAL_" in EXP_STRATEGY.name:
+                    # ignore start set
+                    for row in selected_indices.loc[
+                        selected_indices["al_cycle"] != "0"
+                    ]["selected_indices"].to_list():
+                        for si in row:
+                            self.optimal_samples_included_in_optimal_strategy[si] += 1
+
                 acc_path = Path(
                     self.config.OUTPUT_PATH
                     / EXP_STRATEGY.name
@@ -92,12 +116,6 @@ class QUERIED_FROM_OPTIMAL(Base_Computed_Metric):
                     / "accuracy.csv.xz"
                 )
 
-                selected_indices_path = Path(
-                    self.config.OUTPUT_PATH
-                    / EXP_STRATEGY.name
-                    / EXP_DATASET.name
-                    / "selected_indices.csv.xz"
-                )
                 accs = pd.read_csv(acc_path, header=0)
                 for row_ix in range(len(accs.columns) - 2, 0, -1):
                     accs[str(row_ix)] = accs[str(row_ix)] - accs[str(row_ix - 1)]
@@ -106,17 +124,9 @@ class QUERIED_FROM_OPTIMAL(Base_Computed_Metric):
                 accs = accs.melt(
                     id_vars="EXP_UNIQUE_ID", var_name="al_cycle", value_name="accs"
                 )
-                selected_indices = pd.read_csv(selected_indices_path, header=0).melt(
-                    id_vars="EXP_UNIQUE_ID",
-                    var_name="al_cycle",
-                    value_name="selected_indices",
-                )
 
                 accs = accs.merge(
                     selected_indices, on=["EXP_UNIQUE_ID", "al_cycle"], how="inner"
-                )
-                accs["selected_indices"] = accs["selected_indices"].apply(
-                    ast.literal_eval
                 )
 
                 for _, row in accs.iterrows():
