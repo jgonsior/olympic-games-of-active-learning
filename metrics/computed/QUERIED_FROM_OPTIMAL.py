@@ -23,6 +23,7 @@ class QUERIED_FROM_OPTIMAL(Base_Computed_Metric):
 
     optimal_samples_order_acc_diff_addition: np.ndarray
     optimal_samples_order_acc_diff_absolute_addition: np.ndarray
+    optimal_samples_included_in_optimal_strategy: np.ndarray
 
     def _per_dataset_hook(self, EXP_DATASET: DATASET) -> None:
         optimal_samples_path = Path(
@@ -83,6 +84,7 @@ class QUERIED_FROM_OPTIMAL(Base_Computed_Metric):
                 if not y_pred_train_path.exists():
                     continue
 
+                # TODO optimal_samples_included_in_optimal_strategy mit inhalt befüllen (über alle selected indices von 20 und von 10 drüber gehen, und zählen wie oft die gesampled worden sind)
                 acc_path = Path(
                     self.config.OUTPUT_PATH
                     / EXP_STRATEGY.name
@@ -197,6 +199,7 @@ class QUERIED_FROM_OPTIMAL(Base_Computed_Metric):
                 optimal_samples_order_easy_hard_ambiguous=self.optimal_samples_order_easy_hard_ambiguous,
                 optimal_samples_order_acc_diff_addition=self.optimal_samples_order_acc_diff_addition,
                 optimal_samples_order_acc_diff_absolute_addition=self.optimal_samples_order_acc_diff_absolute_addition,
+                optimal_samples_included_in_optimal_strategy=self.optimal_samples_included_in_optimal_strategy,
             )
         else:
             print("Loading ", optimal_samples_path)
@@ -215,12 +218,9 @@ class QUERIED_FROM_OPTIMAL(Base_Computed_Metric):
             self.optimal_samples_order_easy_hard_ambiguous = np.load(
                 optimal_samples_path
             )["optimal_samples_order_easy_hard_ambiguous"]
-        print(self.optimal_samples_order_wrongness)
-        print(self.optimal_samples_order_variability)
-        print(self.optimal_samples_order_easy_hard_ambiguous)
-        print(self.optimal_samples_order_acc_diff_addition)
-        print(self.optimal_samples_order_acc_diff_absolute_addition)
-        exit(-1)
+            self.optimal_samples_included_in_optimal_strategy = np.load(
+                optimal_samples_path
+            )["optimal_samples_included_in_optimal_strategy"]
 
     def _pre_appy_to_row_hook(self, df: pd.DataFrame) -> pd.DataFrame:
         del df["0"]
@@ -237,15 +237,80 @@ class QUERIED_FROM_OPTIMAL(Base_Computed_Metric):
 
         return df
 
-    def hardest_samples(
+    def _optimal_samples_order_wrongness(
         self,
         row: pd.Series,
     ) -> pd.Series:
-        return np.sum(self.wrong_classified_counter[row["selected_indices"]])
+        return np.sum(self.optimal_samples_order_wrongness[row["selected_indices"]])
+
+    def _optimal_samples_order_variability(
+        self,
+        row: pd.Series,
+    ) -> pd.Series:
+        return np.sum(self.optimal_samples_order_variability[row["selected_indices"]])
+
+    def _optimal_samples_order_easy_hard_ambiguous(
+        self,
+        row: pd.Series,
+    ) -> pd.Series:
+        return np.sum(
+            self.optimal_samples_order_easy_hard_ambiguous[row["selected_indices"]]
+        )
+
+    def _optimal_samples_order_acc_diff_addition(
+        self,
+        row: pd.Series,
+    ) -> pd.Series:
+        return np.sum(
+            self.optimal_samples_order_acc_diff_addition[row["selected_indices"]]
+        )
+
+    def _optimal_samples_order_acc_diff_absolute_addition(
+        self,
+        row: pd.Series,
+    ) -> pd.Series:
+        return np.sum(
+            self.optimal_samples_order_acc_diff_absolute_addition[
+                row["selected_indices"]
+            ]
+        )
+
+    def _optimal_samples_included_in_optimal_strategy(
+        self,
+        row: pd.Series,
+    ) -> pd.Series:
+        return np.sum(
+            self.optimal_samples_included_in_optimal_strategy[row["selected_indices"]]
+        )
 
     def compute(self) -> None:
         self._take_single_metric_and_compute_new_one(
             existing_metric_names=["selected_indices"],
-            new_metric_name="queried_from_optimal",
-            apply_to_row=self.hardest_samples,
+            new_metric_name="optimal_samples_order_wrongness",
+            apply_to_row=self._optimal_samples_order_wrongness,
+        )
+        self._take_single_metric_and_compute_new_one(
+            existing_metric_names=["selected_indices"],
+            new_metric_name="optimal_samples_order_variability",
+            apply_to_row=self._optimal_samples_order_variability,
+        )
+        self._take_single_metric_and_compute_new_one(
+            existing_metric_names=["selected_indices"],
+            new_metric_name="optimal_samples_order_easy_hard_ambiguous",
+            apply_to_row=self._optimal_samples_order_easy_hard_ambiguous,
+        )
+        self._take_single_metric_and_compute_new_one(
+            existing_metric_names=["selected_indices"],
+            new_metric_name="optimal_samples_order_acc_diff_addition",
+            apply_to_row=self._optimal_samples_order_acc_diff_addition,
+        )
+        self._take_single_metric_and_compute_new_one(
+            existing_metric_names=["selected_indices"],
+            new_metric_name="optimal_samples_order_acc_diff_absolute_addition",
+            apply_to_row=self._optimal_samples_order_acc_diff_absolute_addition,
+        )
+        self._take_single_metric_and_compute_new_one(
+            existing_metric_names=["selected_indices"],
+            new_metric_name="optimal_samples_included_in_optimal_strategy",
+            apply_to_row=self._optimal_samples_included_in_optimal_strategy,
         )
