@@ -35,7 +35,7 @@ class METRIC_DROP(Base_Computed_Metric):
             if diff > biggest_drop:
                 biggest_drop = diff
 
-        return biggest_drop
+        return -biggest_drop
 
     def nr_decreasing_al_cycles(self, row: pd.Series) -> pd.Series:
         row = row.loc[row.index != "EXP_UNIQUE_ID"].to_list()
@@ -45,7 +45,7 @@ class METRIC_DROP(Base_Computed_Metric):
         for v0, v1 in zip(row[0:-1], row[1:]):
             if v1 < v0:
                 nr_drops += 1
-        return nr_drops
+        return -nr_drops
 
     def compute(self) -> None:
         for basic_metric in self.metrics:

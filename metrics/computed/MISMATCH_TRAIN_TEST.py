@@ -1,13 +1,12 @@
 from __future__ import annotations
 import ast
-import itertools
 import numpy as np
 import pandas as pd
 from datasets import DATASET
 
 from metrics.computed.base_computed_metric import Base_Computed_Metric
 
-from typing import Dict, List, TYPE_CHECKING
+from typing import Dict, TYPE_CHECKING
 
 
 if TYPE_CHECKING:
@@ -75,7 +74,7 @@ class MISMATCH_TRAIN_TEST(Base_Computed_Metric):
             results += (
                 amount_of_correct_predicted_test - amount_of_correct_predicted_train
             )
-        return results
+        return -results
 
     def compute(self) -> None:
         self._take_single_metric_and_compute_new_one(

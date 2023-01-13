@@ -40,9 +40,7 @@ def create_workload(config: Config) -> List[int]:
     exp_grid_params_names = _determine_exp_grid_parameters(config)
     if os.path.isfile(config.OVERALL_DONE_WORKLOAD_PATH):
         # experiment has already been run, check which worsloads are still missing
-        done_workload_df = pd.read_csv(
-            config.OVERALL_DONE_WORKLOAD_PATH
-        )
+        done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
 
         open_workload_df = pd.read_csv(config.WORKLOAD_FILE_PATH)
 

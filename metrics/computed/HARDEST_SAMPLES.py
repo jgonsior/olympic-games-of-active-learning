@@ -1,6 +1,5 @@
 from __future__ import annotations
 import ast
-import itertools
 from pathlib import Path
 import numpy as np
 import pandas as pd
@@ -8,7 +7,7 @@ from datasets import DATASET
 
 from metrics.computed.base_computed_metric import Base_Computed_Metric
 
-from typing import Dict, List, TYPE_CHECKING
+from typing import Dict, TYPE_CHECKING
 
 
 if TYPE_CHECKING:
@@ -138,7 +137,7 @@ class HARDEST_SAMPLES(Base_Computed_Metric):
         self,
         row: pd.Series,
     ) -> pd.Series:
-        return np.sum(self.wrong_classified_counter[row["selected_indices"]])
+        return -np.sum(self.wrong_classified_counter[row["selected_indices"]])
 
     def compute(self) -> None:
         self._take_single_metric_and_compute_new_one(

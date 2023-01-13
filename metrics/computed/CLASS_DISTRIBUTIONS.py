@@ -1,6 +1,5 @@
 from __future__ import annotations
 import ast
-import itertools
 import numpy as np
 import pandas as pd
 from datasets import DATASET
@@ -26,7 +25,7 @@ class CLASS_DISTRIBUTIONS(Base_Computed_Metric):
         )
         self.y_true = pd.read_csv(
             f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}.csv",
-            usecols=["LABEL_TARGET"]
+            usecols=["LABEL_TARGET"],
         )["LABEL_TARGET"].to_numpy()
         self.classes = np.unique(self.y_true).tolist()
         for train_test_split_ix, row in _train_test_splits.iterrows():
@@ -91,7 +90,7 @@ class CLASS_DISTRIBUTIONS(Base_Computed_Metric):
         elif metric == "chebyshev":
             result = distance.chebyshev(true_counts, pred_counts)
 
-        return result
+        return -result
 
     def class_distributions_manhattan(self, row: pd.Series) -> pd.Series:
         return self._class_distributions(row, metric="manhattan")

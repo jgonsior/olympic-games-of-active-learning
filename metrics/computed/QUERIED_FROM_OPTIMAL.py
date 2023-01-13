@@ -1,6 +1,5 @@
 from __future__ import annotations
 import ast
-import itertools
 from pathlib import Path
 from statistics import harmonic_mean
 import numpy as np
@@ -8,7 +7,7 @@ import pandas as pd
 from datasets import DATASET
 from metrics.computed.base_computed_metric import Base_Computed_Metric
 
-from typing import Dict, List, TYPE_CHECKING
+from typing import Dict, TYPE_CHECKING
 
 
 if TYPE_CHECKING:
@@ -251,19 +250,19 @@ class QUERIED_FROM_OPTIMAL(Base_Computed_Metric):
         self,
         row: pd.Series,
     ) -> pd.Series:
-        return np.sum(self.optimal_samples_order_wrongness[row["selected_indices"]])
+        return -np.sum(self.optimal_samples_order_wrongness[row["selected_indices"]])
 
     def _optimal_samples_order_variability(
         self,
         row: pd.Series,
     ) -> pd.Series:
-        return np.sum(self.optimal_samples_order_variability[row["selected_indices"]])
+        return -np.sum(self.optimal_samples_order_variability[row["selected_indices"]])
 
     def _optimal_samples_order_easy_hard_ambiguous(
         self,
         row: pd.Series,
     ) -> pd.Series:
-        return np.sum(
+        return -np.sum(
             self.optimal_samples_order_easy_hard_ambiguous[row["selected_indices"]]
         )
 
@@ -271,7 +270,7 @@ class QUERIED_FROM_OPTIMAL(Base_Computed_Metric):
         self,
         row: pd.Series,
     ) -> pd.Series:
-        return np.sum(
+        return -np.sum(
             self.optimal_samples_order_acc_diff_addition[row["selected_indices"]]
         )
 
@@ -279,7 +278,7 @@ class QUERIED_FROM_OPTIMAL(Base_Computed_Metric):
         self,
         row: pd.Series,
     ) -> pd.Series:
-        return np.sum(
+        return -np.sum(
             self.optimal_samples_order_acc_diff_absolute_addition[
                 row["selected_indices"]
             ]

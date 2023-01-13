@@ -1,7 +1,7 @@
 from __future__ import annotations
-from abc import ABC, abstractmethod
+from abc import ABC
 from pathlib import Path
-from typing import List, TYPE_CHECKING, Union
+from typing import List, TYPE_CHECKING
 
 import pandas as pd
 

@@ -137,9 +137,12 @@ class Base_Visualizer(ABC):
         marker_values = marker_values._default_values(len(legend_names))
         my_markers = {k: v for k, v in zip(legend_names, marker_values)}
 
-        df_col_values = plot_df[df_col_key].unique().tolist()
-        if combined_df_col_key_plot:
-            df_col_values.append("ALL_DATASETS")
+        if df_col_key == None:
+            df_col_values = ["ALL_DATASETS"]
+        else:
+            df_col_values = plot_df[df_col_key].unique().tolist()
+            if combined_df_col_key_plot:
+                df_col_values.append("ALL_DATASETS")
 
         with parallel_backend("loky", n_jobs=multiprocessing.cpu_count()):
             figs = Parallel()(

@@ -1,1 +1,10 @@
-test2
+<h3>Strategy Ranking</h3>
+{% if ERROR %}
+<mark>{{ ERROR }}</mark>
+{% else %}
+
+{% for plot_url in plot_data %}
+<img src="data:image/png;base64,{{ plot_url }}">
+{% endfor %}
+{% endif %}
+<hr>

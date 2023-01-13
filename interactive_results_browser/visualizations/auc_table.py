@@ -7,7 +7,7 @@ import pandas as pd
 
 
 from interactive_results_browser.visualizations.base_visualizer import Base_Visualizer
-from typing import Any, List, TYPE_CHECKING
+from typing import Any, List
 
 from typing import Any, Dict
 
@@ -125,7 +125,7 @@ def _cache_create_auc_table(
 
 class Auc_Table(Base_Visualizer):
     @staticmethod
-    def get_additional_request_params() -> Dict[str, List[Any]]:
+    def get_additional_request_params(with_basic=True) -> Dict[str, List[Any]]:
         sacmc = STANDARD_AUC(Config())
         basic_metrics = sacmc.metrics
         auc_metrics = [
@@ -136,7 +136,8 @@ class Auc_Table(Base_Visualizer):
         for basic_metric in basic_metrics:
             metric_values.append("biggest_drop_per_" + basic_metric)
             metric_values.append("nr_decreasing_al_cycles_per_" + basic_metric)
-            metric_values.append(basic_metric)
+            if with_basic:
+                metric_values.append(basic_metric)
 
         metric_values += [
             "avg_dist_batch",
