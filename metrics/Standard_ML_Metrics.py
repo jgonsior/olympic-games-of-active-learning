@@ -29,9 +29,7 @@ class Standard_ML_Metrics(Base_Metric):
         )
 
         self.metric_values["accuracy"].append(classification_report_results["accuracy"])
-        self.metric_values["macro_f1-score"].append(
-            classification_report_results["macro avg"]["f1-score"]
-        )
+
         self.metric_values["macro_f1-score"].append(
             classification_report_results["macro avg"]["f1-score"]
         )
