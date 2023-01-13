@@ -67,7 +67,10 @@ def _cache_strategy_ranking(
 
     # calculate over all selected metrics the rankings
     plot_df = pd.DataFrame()
-
+    if metric_values == ["all_rankings"]:
+        metric_values = Auc_Table.get_additional_request_params(with_basic=False)[
+            "VIZ_AUC_TABLE_METRIC"
+        ]
     for metric in metric_values:
         single_metric_plot_df = Base_Visualizer.load_detailed_metric_files(
             done_workload_df, metric, OUTPUT_PATH
@@ -93,6 +96,7 @@ def _cache_strategy_ranking(
     del plot_df["EXP_UNIQUE_ID"]
     del plot_df["EXP_DATASET"]
     plot_df = plot_df.groupby(by=["EXP_STRATEGY"]).mean()
+    plot_df = plot_df.reindex(sorted(plot_df.columns), axis=1)
     plot_df = plot_df.corr()
 
     plot_urls = Base_Visualizer._render_images(
@@ -113,6 +117,7 @@ class Strategy_Ranking(Base_Visualizer):
         possible_metrics = Auc_Table.get_additional_request_params(with_basic=False)[
             "VIZ_AUC_TABLE_METRIC"
         ]
+        possible_metrics.append("all_rankings")
 
         return {"VIZ_RANKING_METHOD": possible_metrics}
 
