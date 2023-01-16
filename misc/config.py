@@ -3,15 +3,22 @@ import random
 import sys
 from configparser import RawConfigParser
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Union, get_args
+from typing import Any, Dict, List, Literal, Optional, get_args
+from aenum import extend_enum
 
 import git
 import numpy as np
 import yaml
 
 from datasets import DATASET
+from metrics.base_metric import Base_Metric
 from misc.logging import init_logger, log_it
-from resources.data_types import AL_STRATEGY, LEARNER_MODEL
+from resources.data_types import (
+    AL_STRATEGY,
+    COMPUTED_METRIC,
+    LEARNER_MODEL,
+    _import_compiled_libact_strategies,
+)
 
 
 class Config:
@@ -24,6 +31,7 @@ class Config:
     HPC_WS_PATH: Path
     HPC_DATASETS_PATH: Path
     HPC_OUTPUT_PATH: Path
+    HPC_CODE_PATH: Path
 
     LOCAL_DATASETS_PATH: Path
     LOCAL_CODE_PATH: Path
@@ -31,15 +39,17 @@ class Config:
 
     INCLUDE_RESULTS_FROM: List[str]
 
-    EXP_TITLE: str = "test_exp_2"
+    AMOUNT_OF_START_POINTS_TO_GENERATE: int = 10000
+
+    EXP_TITLE: str = "all_strategies_all_datasets_single_random_seed"
     EXP_DATASET: DATASET
     EXP_GRID_DATASET: List[DATASET]
     EXP_STRATEGY: AL_STRATEGY
     EXP_GRID_STRATEGY: List[AL_STRATEGY]
-    EXP_GRID_RANDOM_SEEDS_START: int = 0
-    EXP_GRID_RANDOM_SEEDS_END: int
-    EXP_GRID_RANDOM_SEED: List[int]
     EXP_RANDOM_SEED: int
+    EXP_GRID_RANDOM_SEED: List[int]
+    EXP_START_POINT: int
+    EXP_GRID_START_POINT: List[int]
     EXP_NUM_QUERIES: int
     EXP_GRID_NUM_QUERIES: List[int] = [0]
     EXP_BATCH_SIZE: int
@@ -64,14 +74,15 @@ class Config:
     BASH_PARALLEL_RUNNERS: int = 10
 
     DATASETS_PATH: Path
-    DATASETS_TRAIN_TEST_SPLIT_APPENDIX: str = "_train_test_split.csv"
+    DATASETS_TRAIN_TEST_SPLIT_APPENDIX: str = "_split.csv"
     RAW_DATASETS_PATH: Path = "_raw"  # type: ignore
     DATASETS_AMOUNT_OF_SPLITS: int = 5
     DATASETS_TEST_SIZE_PERCENTAGE: float = 0.4
     DATASETS_COMPUTE_DISTANCES: bool = True
     DATASETS_DISTANCES_APPENDIX: str = "_distances.csv.gzip"
 
-    KAGGLE_DATASETS_PATH: Path = "ressources/datasets.yaml"  # type: ignore
+    KAGGLE_DATASETS_YAML_CONFIG_PATH: Path = "resources/datasets.yaml"  # type: ignore
+    LOCAL_DATASETS_YAML_CONFIG_PATH: Path = "resources/local_datasets.yaml"  # type: ignore
     LOCAL_CONFIG_FILE_PATH: Path = ".server_access_credentials.cfg"  # type: ignore
     LOCAL_YAML_EXP_PATH: Path = "resources/exp_config.yaml"  # type: ignore
     CONFIG_FILE_PATH: Path = "00_config.yaml"  # type: ignore
@@ -93,24 +104,33 @@ class Config:
 
     RESULTS_PATH: Path
 
-    METRICS: List[str]
+    METRICS: List[Base_Metric]
+    COMPUTED_METRICS: List[COMPUTED_METRIC]
 
-    def __init__(self) -> None:
-        self._parse_cli_arguments()
+    def __init__(self, no_cli_args: Optional[Dict[str, Any]] = None) -> None:
+        if no_cli_args is not None:
+            self._parse_non_cli_arguments(no_cli_args)
+        else:
+            self._parse_cli_arguments()
+        self._setup_everything()
+
+    def _parse_non_cli_arguments(self, no_cli_args: Dict[str, Any]) -> None:
+        for k, v in no_cli_args.items():
+            self.__setattr__(k, v)
+
+    def _setup_everything(self):
         self._load_server_setup_from_file(Path(self.LOCAL_CONFIG_FILE_PATH))
+
+        if not Path(self.HPC_CODE_PATH).exists():
+            self.RUNNING_ENVIRONMENT = "local"
+            _import_compiled_libact_strategies()
+        else:
+            self.RUNNING_ENVIRONMENT = "hpc"
 
         self._pathes_magic()
 
         # load yaml and overwrite everything, except for the stuff which was explicitly defined
         self._load_exp_yaml()
-
-        if (
-            self.EXP_GRID_RANDOM_SEEDS_START != None
-            and self.EXP_GRID_RANDOM_SEEDS_END != None
-        ):
-            self.EXP_GRID_RANDOM_SEED = list(
-                range(self.EXP_GRID_RANDOM_SEEDS_START, self.EXP_GRID_RANDOM_SEEDS_END)
-            )
 
         if self.RANDOM_SEED != -1 and self.RANDOM_SEED != -2:
             np.random.seed(self.RANDOM_SEED)
@@ -128,6 +148,7 @@ class Config:
         if self.RUNNING_ENVIRONMENT == "local":
             self.OUTPUT_PATH = Path(self.LOCAL_OUTPUT_PATH)
             self.DATASETS_PATH = Path(self.LOCAL_DATASETS_PATH)
+
         elif self.RUNNING_ENVIRONMENT == "hpc":
             self.OUTPUT_PATH = Path(self.HPC_OUTPUT_PATH)
             self.DATASETS_PATH = Path(self.HPC_DATASETS_PATH)
@@ -184,7 +205,12 @@ class Config:
 
         self.RAW_DATASETS_PATH = self.DATASETS_PATH / self.RAW_DATASETS_PATH
 
-        self.KAGGLE_DATASETS_PATH = Path(self.KAGGLE_DATASETS_PATH)
+        self.KAGGLE_DATASETS_YAML_CONFIG_PATH = Path(
+            self.KAGGLE_DATASETS_YAML_CONFIG_PATH
+        )
+        self.LOCAL_DATASETS_YAML_CONFIG_PATH = Path(
+            self.LOCAL_DATASETS_YAML_CONFIG_PATH
+        )
 
         self.OVERALL_DONE_WORKLOAD_PATH = (
             self.OUTPUT_PATH / self.OVERALL_DONE_WORKLOAD_PATH
@@ -222,6 +248,25 @@ class Config:
 
         explicitly_defined_cli_args = self._return_list_of_explicitly_defined_cli_args()
 
+        # extract int ranges for datatypes who could potentially contain lists
+        for k, v in yaml_config_params.items():
+            v = str(v)
+
+            if v.startswith("['") and v.endswith("']") and "-" in v:
+                v = v[2:-2]
+                v = v.split("-")
+                yaml_config_params[k] = [iii for iii in range(int(v[0]), int(v[1]) + 1)]
+
+        # check if dataset args ar not in the DATASET enmus
+        # if they are not -> add them to it
+        local_datasets_yaml_config = yaml.safe_load(
+            self.LOCAL_DATASETS_YAML_CONFIG_PATH.read_text()
+        )
+
+        for k in local_datasets_yaml_config.keys():
+            if k not in [d.name for d in DATASET]:
+                extend_enum(DATASET, k, local_datasets_yaml_config[k]["enum_id"])
+
         for k, v in yaml_config_params.items():
             if k in explicitly_defined_cli_args:
                 continue
@@ -257,7 +302,7 @@ class Config:
         )
         workload = workload_df.iloc[0].to_dict()
         for k, v in workload.items():
-            log_it(f"{k}\t\t\t{v}")
+            # log_it(f"{k}\t\t\t{str(v)}")
             # convert str/ints to enum data types first
             if k == "EXP_STRATEGY":
                 v = AL_STRATEGY(int(v))
@@ -269,6 +314,12 @@ class Config:
             if str(self.__annotations__[k]).endswith("int]"):
                 v = int(v)
             self.__setattr__(k, v)
+
+        for k in workload.keys():
+            log_it(f"{k}\t\t\t{str(self.__getattribute__(k))}")
+
+        np.random.seed(self.EXP_RANDOM_SEED)
+        random.seed(self.EXP_RANDOM_SEED)
 
         self._original_workload = workload
 
@@ -313,6 +364,16 @@ class Config:
                 choices = [e.value for e in v_class]  # type: ignore
                 nargs = "*"
                 arg_type = int
+            elif str(v) == "typing.List[resources.data_types.COMPUTED_METRIC]":
+                full_str = str(v).split("[")[1][:-1].split(".")
+                module_str = ".".join(full_str[:-1])
+                class_str = full_str[-1]
+                v_class = getattr(sys.modules[module_str], class_str)
+
+                # allow all possible integer values from the enum classes
+                choices = [e.name for e in v_class]  # type: ignore
+                nargs = "*"
+                arg_type = str
             elif str(v) == "typing.Union[str, pathlib.Path]":
                 arg_type = str
 
