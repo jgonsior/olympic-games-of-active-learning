@@ -51,6 +51,7 @@ from framework_runners.alipy_runner import ALIPY_AL_Experiment
 from framework_runners.optimal_runner import OPTIMAL_AL_Experiment
 from framework_runners.libact_runner import LIBACT_Experiment
 from framework_runners.playground_runner import PLAYGROUND_AL_Experiment
+from framework_runners.smalltext_runner import SMALLTEXT_AL_Experiment
 from metrics.computed.CLASS_DISTRIBUTIONS import CLASS_DISTRIBUTIONS
 from metrics.computed.DISTANCE_METRICS import DISTANCE_METRICS
 from metrics.computed.HARDEST_SAMPLES import HARDEST_SAMPLES
@@ -59,6 +60,21 @@ from metrics.computed.MISMATCH_TRAIN_TEST import MISMATCH_TRAIN_TEST
 from metrics.computed.QUERIED_FROM_OPTIMAL import QUERIED_FROM_OPTIMAL
 from metrics.computed.STANDARD_AUC import STANDARD_AUC
 from optimal_query_strategies.BSO_optimal import Beeam_Search_Optimal
+
+from small_text import (
+    LeastConfidence, 
+    PredictionEntropy,
+    BreakingTies,
+    BALD,
+    EmbeddingKMeans,
+    GreedyCoreset,
+    LightweightCoreset,
+    ContrastiveActiveLearning,
+    DiscriminativeActiveLearning,
+    CategoryVectorInconsistencyAndRanking,
+    SEALS,
+    RandomSampling
+)
 
 from optimal_query_strategies.greedy_optimal import (
     FuturePeakEvalMetric,
@@ -116,6 +132,18 @@ class AL_STRATEGY(IntEnum):
     LIBACT_UNCERTAINTY_SM = 36
     LIBACT_UNCERTAINTY_ENT = 37
     OPTIMAL_GREEDY_20 = 38
+    SMALLTEXT_LEASTCONFIDENCE = 39
+    SMALLTEXT_PREDICTIONENTROPY = 40
+    SMALLTEXT_BREAKINGTIES = 41
+    SMALLTEXT_BALD = 42
+    SMALLTEXT_EMBEDDINGKMEANS = 43
+    SMALLTEXT_GREEDYCORESET = 44
+    SMALLTEXT_LIGHTWEIGHTCORESET = 45
+    SMALLTEXT_CONTRASTIVEAL = 46
+    SMALLTEXT_DISCRIMINATIVEAL = 47
+    SMALLTEXT_CVIAR = 48 # Category Vector Inconsistency and Ranking
+    SMALLTEXT_SEALS = 49
+    SMALLTEXT_RANDOM = 50
 
 
 al_strategy_to_python_classes_mapping: Dict[
@@ -185,6 +213,18 @@ al_strategy_to_python_classes_mapping: Dict[
     AL_STRATEGY.PLAYGROUND_HIERARCHICAL_CLUSTER: (HierarchicalClusterAL, {}),
     AL_STRATEGY.PLAYGROUND_INFORMATIVE_DIVERSE: (InformativeClusterDiverseSampler, {}),
     AL_STRATEGY.PLAYGROUND_BANDIT: (BanditDiscreteSampler, {}),
+    AL_STRATEGY.SMALLTEXT_LEASTCONFIDENCE: (LeastConfidence, {}),
+    AL_STRATEGY.SMALLTEXT_PREDICTIONENTROPY: (PredictionEntropy, {}),
+    AL_STRATEGY.SMALLTEXT_BREAKINGTIES: (BreakingTies, {}),
+    AL_STRATEGY.SMALLTEXT_BALD: (BALD, {}),
+    AL_STRATEGY.SMALLTEXT_EMBEDDINGKMEANS: (EmbeddingKMeans, {}),
+    AL_STRATEGY.SMALLTEXT_GREEDYCORESET: (GreedyCoreset, {}),
+    AL_STRATEGY.SMALLTEXT_LIGHTWEIGHTCORESET: (LightweightCoreset, {}),
+    AL_STRATEGY.SMALLTEXT_CONTRASTIVEAL: (ContrastiveActiveLearning, {}),
+    AL_STRATEGY.SMALLTEXT_DISCRIMINATIVEAL: (DiscriminativeActiveLearning, {}),
+    AL_STRATEGY.SMALLTEXT_CVIAR: (CategogyVectorInconsistencyAndRanking, {}),
+    AL_STRATEGY.SMALLTEXT_SEALS: (SEALS, {}),
+    AL_STRATEGY.SMALLTEXT_RANDOM: (RandomSampling, {})
 }
 
 
@@ -295,6 +335,7 @@ class AL_FRAMEWORK(IntEnum):
     OPTIMAL = 2
     LIBACT = 3
     PLAYGROUND = 4
+    SMALLTEXT = 5
 
 
 AL_framework_to_classes_mapping: Dict[AL_FRAMEWORK, Tuple[Callable, Dict[Any, Any]]] = {
@@ -302,6 +343,7 @@ AL_framework_to_classes_mapping: Dict[AL_FRAMEWORK, Tuple[Callable, Dict[Any, An
     AL_FRAMEWORK.OPTIMAL: (OPTIMAL_AL_Experiment, {}),
     AL_FRAMEWORK.LIBACT: (LIBACT_Experiment, {}),
     AL_FRAMEWORK.PLAYGROUND: (PLAYGROUND_AL_Experiment, {}),
+    AL_FRAMEWORK.SMALLTEXT: (SMALLTEXT_AL_Experiment, {}),
 }
 
 
