@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 class PLAYGROUND_AL_Experiment(AL_Experiment):
     def __init__(self, config: Config):
         super().__init__(config)
-        self.al_strategy = (None,)
+        self.al_strategy = None
 
     def get_AL_strategy(self):
         from resources.data_types import AL_STRATEGY
