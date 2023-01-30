@@ -20,6 +20,9 @@ for file_name in glob.glob(str(config.OUTPUT_PATH) + "/**/*.csv", recursive=True
     if metric_file.name.endswith("_workload.csv"):
         continue
 
+    if not metric_file.name.endswith("pickled_learner_model.csv"):
+        continue
+
     def _fix_nan_rows(row):
         if row.isnull().values.any():
             no_null_row = row[~row.isnull()]

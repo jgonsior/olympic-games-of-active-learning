@@ -67,8 +67,6 @@ class Base_Computed_Metric(ABC):
                         continue
                     print(METRIC_RESULTS_FILE)
                     metric_result_files.append(METRIC_RESULTS_FILE)
-                if len(metric_result_files) != len(existing_metric_names):
-                    continue
 
                 joined_df = pd.DataFrame()
                 for METRIC_RESULTS_FILE in metric_result_files:
