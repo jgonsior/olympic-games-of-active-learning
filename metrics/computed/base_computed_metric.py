@@ -1,7 +1,9 @@
 from __future__ import annotations
 from abc import ABC
+import multiprocessing
 from pathlib import Path
 from typing import List, TYPE_CHECKING
+from joblib import Parallel, delayed, parallel_backend
 
 import pandas as pd
 
@@ -50,7 +52,8 @@ class Base_Computed_Metric(ABC):
     ) -> None:
         for EXP_DATASET in self.config.EXP_GRID_DATASET:
             self._per_dataset_hook(EXP_DATASET)
-            for EXP_STRATEGY in self.config.EXP_GRID_STRATEGY:
+
+            def _process_a_single_strategy(EXP_STRATEGY):
                 # iterate over all experiments/datasets defined for this experiment
                 metric_result_files: List[Path] = []
                 for existing_metric_name in existing_metric_names:
@@ -100,6 +103,12 @@ class Base_Computed_Metric(ABC):
                     ),
                     compression="infer",
                     index=False,
+                )
+
+            with parallel_backend("loky", n_jobs=multiprocessing.cpu_count()):
+                Parallel()(
+                    delayed(_process_a_single_strategy)(EXP_STRATEGY)
+                    for EXP_STRATEGY in self.config.EXP_GRID_STRATEGY
                 )
 
     def compute(self) -> None:
