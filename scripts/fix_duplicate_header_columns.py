@@ -12,6 +12,7 @@ import shutil
 pandarallel.initialize(progress_bar=True)
 config = Config()
 for file_name in glob.glob(str(config.OUTPUT_PATH) + "/**/*.csv", recursive=True):
+    print(file_name)
     metric_file = Path(file_name)
     tmp_metric_file = Path(str(metric_file) + ".tmp")
 

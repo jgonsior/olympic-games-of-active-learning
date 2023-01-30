@@ -12,9 +12,11 @@ from pandarallel import pandarallel
 pandarallel.initialize(progress_bar=True)
 
 config = Config()
+
 for file_name in glob.glob(
     str(config.OUTPUT_PATH) + "/**/macro_f1-score.csv.xz", recursive=True
 ):
+    print(file_name)
     metric_file = Path(file_name)
 
     df = pd.read_csv(metric_file, header=0, delimiter=",")

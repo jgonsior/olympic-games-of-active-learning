@@ -62,6 +62,7 @@ class Base_Computed_Metric(ABC):
                     )
                     if not METRIC_RESULTS_FILE.exists():
                         continue
+                    print(METRIC_RESULTS_FILE)
                     metric_result_files.append(METRIC_RESULTS_FILE)
                 if len(metric_result_files) != len(existing_metric_names):
                     continue
