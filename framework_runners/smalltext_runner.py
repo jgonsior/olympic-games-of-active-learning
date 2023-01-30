@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 from framework_runners.base_runner import AL_Experiment
-from small_text import LeastConfidence
 
 if TYPE_CHECKING:
     from misc.config import Config
