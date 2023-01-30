@@ -14,7 +14,7 @@ pandarallel.initialize(progress_bar=True)
 config = Config()
 
 for file_name in glob.glob(
-    str(config.OUTPUT_PATH) + "/**/macro_f1-score.csv.xz", recursive=True
+    str(config.OUTPUT_PATH) + "/**/macro_f1-score.csv", recursive=True
 ):
     print(file_name)
     metric_file = Path(file_name)
@@ -25,7 +25,8 @@ for file_name in glob.glob(
     counter = 0
     if len(df.columns) < 22:
         print(metric_file)
-        exit(-1)
+        # exit(-1)
+        continue
     for col_id in range(1, len(df.columns) - 1, 2):
         df = df.drop(str(col_id), axis=1)
 
