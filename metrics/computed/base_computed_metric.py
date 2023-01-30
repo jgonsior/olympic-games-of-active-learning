@@ -82,6 +82,10 @@ class Base_Computed_Metric(ABC):
                         )
                         joined_df.drop_duplicates(inplace=True)
 
+                if len(joined_df) == 0:
+                    #  print(f"{metric_result_files} are all together empty")
+                    return
+
                 exp_unique_id_column = joined_df["EXP_UNIQUE_ID"]
 
                 joined_df = self._pre_appy_to_row_hook(joined_df)
