@@ -28,5 +28,4 @@ class STANDARD_AUC(Base_Computed_Metric):
 
     def apply_to_row(self, row: pd.Series) -> pd.Series:
         row = row.loc[row.index != "EXP_UNIQUE_ID"]
-
-        return row.sum() / len(row)
+        return row.sum() / row.notna().sum(0)
