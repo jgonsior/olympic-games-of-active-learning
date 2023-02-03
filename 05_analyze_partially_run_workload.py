@@ -74,6 +74,13 @@ groupings = [
     ["EXP_STRATEGY"],
 ]
 
+groupings = [
+    ["EXP_LEARNER_MODEL"],
+    ["EXP_START_POINT"],
+    ["EXP_BATCH_SIZE"],
+    ["EXP_TRAIN_TEST_BUCKET_SIZE"],
+]
+
 
 for grouping in groupings:
     df2 = (

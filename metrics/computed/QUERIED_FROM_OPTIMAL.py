@@ -96,6 +96,11 @@ class QUERIED_FROM_OPTIMAL(Base_Computed_Metric):
                     var_name="al_cycle",
                     value_name="selected_indices",
                 )
+
+                selected_indices["selected_indices"] = selected_indices[
+                    "selected_indices"
+                ].fillna("[]")
+
                 selected_indices["selected_indices"] = selected_indices[
                     "selected_indices"
                 ].apply(ast.literal_eval)
@@ -153,6 +158,10 @@ class QUERIED_FROM_OPTIMAL(Base_Computed_Metric):
                 for _, row in y_pred.iterrows():
                     EXP_TRAIN_TEST_BUCKET_SIZE = row["EXP_TRAIN_TEST_BUCKET_SIZE"]
                     train_or_test = row["train_or_test"]
+
+                    if row["y"] is np.nan:
+                        continue
+
                     y_pred_single = np.array(ast.literal_eval(row["y"]))
 
                     if train_or_test.endswith("_train"):

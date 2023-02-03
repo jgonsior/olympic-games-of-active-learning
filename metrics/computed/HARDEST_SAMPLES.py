@@ -83,10 +83,13 @@ class HARDEST_SAMPLES(Base_Computed_Metric):
                 y_pred = y_pred.merge(
                     self.done_workload_df, how="left", on=["EXP_UNIQUE_ID"]
                 )
-
                 for _, row in y_pred.iterrows():
                     EXP_TRAIN_TEST_BUCKET_SIZE = row["EXP_TRAIN_TEST_BUCKET_SIZE"]
                     train_or_test = row["train_or_test"]
+
+                    if row["y"] is np.nan:
+                        continue
+
                     y_pred_single = np.array(ast.literal_eval(row["y"]))
 
                     if train_or_test.endswith("_train"):
@@ -120,18 +123,8 @@ class HARDEST_SAMPLES(Base_Computed_Metric):
 
     def _pre_appy_to_row_hook(self, df: pd.DataFrame) -> pd.DataFrame:
         del df["0"]
-        column_names_which_are_al_cycles = list(df.columns)
-        column_names_which_are_al_cycles.remove("EXP_UNIQUE_ID")
-        df["selected_indices"] = df[column_names_which_are_al_cycles].apply(
-            lambda x: ast.literal_eval(
-                "[" + ",".join(x).replace("[", "").replace("]", "") + "]"
-            ),
-            axis=1,
-        )
-        for c in column_names_which_are_al_cycles:
-            del df[c]
 
-        return df
+        return self._convert_selected_indices_to_ast(df)
 
     def hardest_samples(
         self,

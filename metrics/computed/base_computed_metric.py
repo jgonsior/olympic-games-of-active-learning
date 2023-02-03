@@ -4,7 +4,7 @@ import multiprocessing
 from pathlib import Path
 from typing import List, TYPE_CHECKING
 from joblib import Parallel, delayed, parallel_backend
-
+import ast
 import pandas as pd
 
 from datasets import DATASET
@@ -95,6 +95,24 @@ class Base_Computed_Metric(ABC):
             lambda x: apply_to_row(x), axis=1
         )
         return original_df
+
+    def _convert_selected_indices_to_ast(self, df: pad.DataFrame) -> pd.DataFrame:
+        column_names_which_are_al_cycles = list(df.columns)
+        column_names_which_are_al_cycles.remove("EXP_UNIQUE_ID")
+
+        df = df.fillna("")
+        df["selected_indices"] = df[column_names_which_are_al_cycles].apply(
+            lambda x: ast.literal_eval(
+                ("[" + ",".join(x).replace("[", "").replace("]", "") + "]").replace(
+                    ",,", ""
+                )
+            ),
+            axis=1,
+        )
+        for c in column_names_which_are_al_cycles:
+            del df[c]
+
+        return df
 
     def _pre_appy_to_row_hook(self, df: pd.DataFrame) -> pd.DataFrame:
         return df

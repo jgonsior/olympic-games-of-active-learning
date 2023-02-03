@@ -43,18 +43,7 @@ class CLASS_DISTRIBUTIONS(Base_Computed_Metric):
 
     def _pre_appy_to_row_hook(self, df: pd.DataFrame) -> pd.DataFrame:
         del df["0"]
-        column_names_which_are_al_cycles = list(df.columns)
-        column_names_which_are_al_cycles.remove("EXP_UNIQUE_ID")
-        df["selected_indices"] = df[column_names_which_are_al_cycles].apply(
-            lambda x: ast.literal_eval(
-                "[" + ",".join(x).replace("[", "").replace("]", "") + "]"
-            ),
-            axis=1,
-        )
-        for c in column_names_which_are_al_cycles:
-            del df[c]
-
-        return df
+        return self._convert_selected_indices_to_ast(df)
 
     def _class_distributions(
         self, row: pd.Series, metric: Literal["manhattan", "chebyshev"]
