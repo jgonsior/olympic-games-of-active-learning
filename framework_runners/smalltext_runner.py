@@ -30,8 +30,8 @@ class SMALLTEXT_AL_Experiment(AL_Experiment):
             raise NoStrategyError("get_AL_strategy() has to be called before querying")
         if self.trn_ds is None:
             raise ValueError("prepare_dataset() has to be called before querying")
-        return self.al_strategy.query(self.model, self.trn_ds, self.local_train_unlabeled_idx, self.local_train_labeled_idx, self.Y, self.config.EXP_BATCH_SIZE)
+        return self.al_strategy.query(self.model, self.trn_ds, self.local_train_unlabeled_idx, self.local_train_labeled_idx, self.local_Y_train, self.config.EXP_BATCH_SIZE)
 
     def prepare_dataset(self):
         from small_text import SklearnDataset
-        self.trn_ds = SklearnDataset(self.X, self.Y)
+        self.trn_ds = SklearnDataset(self.local_X_train, self.local_Y_train)

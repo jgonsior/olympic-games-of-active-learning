@@ -74,7 +74,7 @@ from small_text import (
     DiscriminativeActiveLearning,
     CategoryVectorInconsistencyAndRanking,
     SEALS,
-    BALD,
+    #BALD,
     RandomSampling
 )
 
@@ -156,7 +156,7 @@ class AL_STRATEGY(IntEnum):
     SMALLTEXT_LEASTCONFIDENCE = 39
     SMALLTEXT_PREDICTIONENTROPY = 40
     SMALLTEXT_BREAKINGTIES = 41
-    SMALLTEXT_BALD = 42
+    #SMALLTEXT_BALD = 42
     SMALLTEXT_EMBEDDINGKMEANS = 43
     SMALLTEXT_GREEDYCORESET = 44
     SMALLTEXT_LIGHTWEIGHTCORESET = 45
@@ -263,7 +263,7 @@ al_strategy_to_python_classes_mapping: Dict[
     AL_STRATEGY.SMALLTEXT_LEASTCONFIDENCE: (LeastConfidence, {}),
     AL_STRATEGY.SMALLTEXT_PREDICTIONENTROPY: (PredictionEntropy, {}),
     AL_STRATEGY.SMALLTEXT_BREAKINGTIES: (BreakingTies, {}),
-    AL_STRATEGY.SMALLTEXT_BALD: (BALD, {}),
+    #AL_STRATEGY.SMALLTEXT_BALD: (BALD, {}),
     AL_STRATEGY.SMALLTEXT_EMBEDDINGKMEANS: (EmbeddingKMeans, {}),
     AL_STRATEGY.SMALLTEXT_GREEDYCORESET: (GreedyCoreset, {}),
     AL_STRATEGY.SMALLTEXT_LIGHTWEIGHTCORESET: (LightweightCoreset, {}),
@@ -272,9 +272,9 @@ al_strategy_to_python_classes_mapping: Dict[
     AL_STRATEGY.SMALLTEXT_CVIAR: (CategoryVectorInconsistencyAndRanking, {}),
     AL_STRATEGY.SMALLTEXT_SEALS: (SEALS, {}),
     AL_STRATEGY.SMALLTEXT_RANDOM: (RandomSampling, {}),
-    AL_STRATEGY.SKACTIVEML_EXPECTED_MODEL_OUTPUT_CHANGE: (ExpectedModelOutputChange, {}),
+    AL_STRATEGY.SKACTIVEML_EXPECTED_MODEL_OUTPUT_CHANGE: (ExpectedModelOutputChange, {"integration_dict": {"method": "gauss_hermite", "n_integration_samples": 5}}),
     AL_STRATEGY.SKACTIVEML_EXPECTED_MODEL_VARIANCE_REDUCTION: (ExpectedModelVarianceReduction, {}),
-    AL_STRATEGY.SKACTIVEML_KL_DIVERGENCE_MAXIMIZATION: (KLDivergenceMaximization, {}),
+    AL_STRATEGY.SKACTIVEML_KL_DIVERGENCE_MAXIMIZATION: (KLDivergenceMaximization, {"integration_dict": {"method": "gauss_hermite", "n_integration_samples": 5}}),
     AL_STRATEGY.SKACTIVEML_MC_EER_LOG_LOSS: (MonteCarloEER, {"method": "log_loss"}),
     AL_STRATEGY.SKACTIVEML_MC_EER_MISCLASS_LOSS: (MonteCarloEER, {}),
     AL_STRATEGY.SKACTIVEML_VOI_UNLABELED: (ValueOfInformationEER, {"consider_labeled": False, "subtract_current": True, "normalize": True}),
@@ -292,12 +292,12 @@ al_strategy_to_python_classes_mapping: Dict[
     AL_STRATEGY.SKACTIVEML_DUAL_STRAT: (SK_UncertaintySampling, {}),
     AL_STRATEGY.SKACTIVEML_COST_EMBEDDING: (CostEmbeddingAL, {}),
     AL_STRATEGY.SKACTIVEML_DAL: (DiscriminativeAL, {}),
-    AL_STRATEGY.SKACTIVEML_GREEDY_TARGET_SPACE: (GreedySamplingTarget, {}),
+    AL_STRATEGY.SKACTIVEML_GREEDY_TARGET_SPACE: (GreedySamplingTarget, {"method": "GSy"}),
     AL_STRATEGY.SKACTIVEML_GREEDY_IMPROVED: (GreedySamplingTarget, {}),
     AL_STRATEGY.SKACTIVEML_GREEDY_FEATURE_SPACE: (GreedySamplingX, {}),
     AL_STRATEGY.SKACTIVEML_MCPAL: (ProbabilisticAL, {}),
     AL_STRATEGY.SKACTIVEML_QBC_VOTE_ENTROPY: (SK_QueryByCommittee, {"method": "vote_entropy"}),
-    AL_STRATEGY.SKACTIVEML_QUIRE: (Quire, {})
+    AL_STRATEGY.SKACTIVEML_QUIRE: (Quire, {"classes": [0, 1], "metric_dict": {'gamma': 0.1}})
 }
 
 
