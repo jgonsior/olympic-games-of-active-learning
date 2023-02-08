@@ -259,13 +259,14 @@ class Config:
 
         # check if dataset args ar not in the DATASET enmus
         # if they are not -> add them to it
-        local_datasets_yaml_config = yaml.safe_load(
-            self.LOCAL_DATASETS_YAML_CONFIG_PATH.read_text()
-        )
+        if self.LOCAL_DATASETS_YAML_CONFIG_PATH.exists():
+            local_datasets_yaml_config = yaml.safe_load(
+                self.LOCAL_DATASETS_YAML_CONFIG_PATH.read_text()
+            )
 
-        for k in local_datasets_yaml_config.keys():
-            if k not in [d.name for d in DATASET]:
-                extend_enum(DATASET, k, local_datasets_yaml_config[k]["enum_id"])
+            for k in local_datasets_yaml_config.keys():
+                if k not in [d.name for d in DATASET]:
+                    extend_enum(DATASET, k, local_datasets_yaml_config[k]["enum_id"])
 
         for k, v in yaml_config_params.items():
             if k in explicitly_defined_cli_args:

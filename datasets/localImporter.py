@@ -18,9 +18,10 @@ class Local_Importer(Base_Dataset_Loader):
     def __init__(self, config: Config) -> None:
         super().__init__(config)
 
-        self.parameter_dict: Dict[str, Any] = yaml.safe_load(
-            config.LOCAL_DATASETS_YAML_CONFIG_PATH.read_text()
-        )
+        if config.LOCAL_DATASETS_YAML_CONFIG_PATH.exists():
+            self.parameter_dict: Dict[str, Any] = yaml.safe_load(
+                config.LOCAL_DATASETS_YAML_CONFIG_PATH.read_text()
+            )
 
         for k in self.parameter_dict.keys():
             self.parameter_dict[k]["id"] = None

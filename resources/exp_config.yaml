@@ -1,5 +1,5 @@
 all_strategies_all_datasets_single_random_seed:
-    { EXP_GRID_DATASET: [Iris, Chess10], EXP_GRID_STRATEGY: [
+    { EXP_GRID_DATASET: [1-39], EXP_GRID_STRATEGY: [
                 ALIPY_RANDOM,
                 ALIPY_UNCERTAINTY_LC,
                 ALIPY_UNCERTAINTY_MM,
