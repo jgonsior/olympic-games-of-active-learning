@@ -76,13 +76,16 @@ class HARDEST_SAMPLES(Base_Computed_Metric):
                     on="EXP_UNIQUE_ID",
                     suffixes=["_test", "_train"],
                 )
+
                 y_pred = y_pred.melt(
                     id_vars="EXP_UNIQUE_ID", var_name="train_or_test", value_name="y"
                 )
 
                 y_pred = y_pred.merge(
-                    self.done_workload_df, how="left", on=["EXP_UNIQUE_ID"]
+                    self.done_workload_df, how="inner", on=["EXP_UNIQUE_ID"]
                 )
+                y_pred.drop_duplicates(inplace=True)
+
                 for _, row in y_pred.iterrows():
                     EXP_TRAIN_TEST_BUCKET_SIZE = row["EXP_TRAIN_TEST_BUCKET_SIZE"]
                     train_or_test = row["train_or_test"]
@@ -91,7 +94,6 @@ class HARDEST_SAMPLES(Base_Computed_Metric):
                         continue
 
                     y_pred_single = np.array(ast.literal_eval(row["y"]))
-
                     if train_or_test.endswith("_train"):
                         y_true_single = y_train_true[EXP_TRAIN_TEST_BUCKET_SIZE]
                         global_indices = train_splits[EXP_TRAIN_TEST_BUCKET_SIZE]
