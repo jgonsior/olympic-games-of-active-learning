@@ -17,41 +17,25 @@ import shutil
 pandarallel.initialize(progress_bar=True)
 config = Config()
 
-runtimes = []
-max_time = 0
+
+# if one batch takes longer -> the whole EXP_UNIQUE_ID gets nullified -> across all metrics!
+
+overtime_exp_unique_ids = []
 for file_name in glob.glob(
     str(config.OUTPUT_PATH) + "/**/query_selection_time.csv.xz", recursive=True
 ):
     df = pd.read_csv(file_name)
     col_names = [c for c in df.columns if c != "EXP_UNIQUE_ID"]
-    df = df[col_names].to_numpy().flat
-    for i in df:
-        if i > max_time:
-            max_time = i
-            print(file_name, "\t\t\t", i)
-    # runtimes = [*runtimes, *df]
-    """metric_file = Path(file_name)
-    tmp_metric_file = Path(str(metric_file) + ".tmp")
+
+    for _, row in df.iterrows():
+        if (row[col_names] > config.EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT).any():
+            overtime_exp_unique_ids.append(row["EXP_UNIQUE_ID"])
 
 
-    with open(metric_file, "r") as mf:
-        with open(tmp_metric_file, "w") as tmf:
-            for ix, line in enumerate(mf):
-                if ix == 0 or "EXP_UNIQUE_ID" not in line:
-                    tmf.write(line)
-                else:
-                    print(metric_file)
-    shutil.move(src=tmp_metric_file, dst=metric_file)
-    """
-
-from matplotlib import pyplot as plt
-import numpy as np
-import seaborn as sns
-
-runtimes = np.asarray(runtimes)
-print(np.max(runtimes))
-runtimes = np.where(runtimes > 600)
-print(runtimes)
-print(len(runtimes))
-sns.histplot(runtimes, bins=30)
-plt.show()
+for file_name in glob.glob(str(config.OUTPUT_PATH) + "/**/*.csv.xz", recursive=True):
+    print(file_name)
+    df = pd.read_csv(file_name)
+    a = len(df)
+    df = df[~df["EXP_UNIQUE_ID"].isin(overtime_exp_unique_ids)]
+    if len(df) < a:
+        df.to_csv(file_name, index=False)
