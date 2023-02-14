@@ -23,11 +23,12 @@ for file_name in glob.glob(
     str(config.OUTPUT_PATH) + "/**/query_selection_time.csv.xz", recursive=True
 ):
     df = pd.read_csv(file_name)
-    df = df[[str(i) for i in range(0, 19)]].to_numpy().flat
+    col_names = [c for c in df.columns if c != "EXP_UNIQUE_ID"]
+    df = df[col_names].to_numpy().flat
     for i in df:
         if i > max_time:
             max_time = i
-            print(i)
+            print(file_name, "\t\t\t", i)
     # runtimes = [*runtimes, *df]
     """metric_file = Path(file_name)
     tmp_metric_file = Path(str(metric_file) + ".tmp")
