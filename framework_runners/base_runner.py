@@ -148,7 +148,6 @@ class AL_Experiment(ABC):
 
             self.al_cycle(iteration_counter=iteration)
 
-            self.config.EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT = 3
             # check if the RUNTIME LIMIT has been exceeded -> if yes -> early stopping!
             if (
                 self.timing_metric_class.metric_values["query_selection_time"][-1]
