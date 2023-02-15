@@ -19,7 +19,7 @@ config = Config()
 
 overtime_exp_unique_ids = []
 for file_name in glob.glob(
-    str(config.OUTPUT_PATH) + "/**/query_selection_time.csv.xz", recursive=True
+    str(config.OUTPUT_PATH) + "/**/query_selection_time.csv", recursive=True
 ):
     df = pd.read_csv(file_name)
     col_names = [c for c in df.columns if c != "EXP_UNIQUE_ID"]
@@ -29,7 +29,7 @@ for file_name in glob.glob(
             overtime_exp_unique_ids.append(row["EXP_UNIQUE_ID"])
 
 
-for file_name in glob.glob(str(config.OUTPUT_PATH) + "/**/*.csv.xz", recursive=True):
+for file_name in glob.glob(str(config.OUTPUT_PATH) + "/**/*.csv", recursive=True):
     print(file_name)
     df = pd.read_csv(file_name)
     a = len(df)
