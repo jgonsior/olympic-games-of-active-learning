@@ -6,6 +6,7 @@ import importlib
 import random
 from typing import TYPE_CHECKING, Any, Dict, List
 from datasets import DATASET, load_dataset, split_dataset
+from metrics.Timing_Metrics import Timing_Metrics
 from metrics.base_metric import Base_Metric
 from misc.logging import log_it
 
@@ -49,12 +50,19 @@ class AL_Experiment(ABC):
     def __init__(self, config: Config) -> None:
         self.config = config
 
+        if "Timing_Metrics" not in config.METRICS:
+            config.METRICS.append("Timing_Metrics")
+
         for metric_class in config.METRICS:
             metric_class = str(metric_class)
             metric_class = getattr(
                 importlib.import_module("metrics." + metric_class), metric_class
             )
-            self.metrics.append(metric_class())
+            metric_class = metric_class()
+            if isinstance(metric_class, Timing_Metrics):
+                self.timing_metric_class = metric_class
+
+            self.metrics.append(metric_class)
 
         log_it(
             f"Executing Job # {self.config.WORKER_INDEX} of workload {self.config.WORKLOAD_FILE_PATH}: {self.config.EXP_DATASET.name} {self.config.EXP_STRATEGY.name}"
@@ -131,6 +139,8 @@ class AL_Experiment(ABC):
         # select the AL strategy to use
         self.get_AL_strategy()
 
+        early_stopped_due_to_runtime_limit = False
+
         for iteration in range(0, total_amount_of_iterations):
             if len(self.local_train_unlabeled_idx) == 0:
                 log_it("early stopping")
@@ -138,8 +148,19 @@ class AL_Experiment(ABC):
 
             self.al_cycle(iteration_counter=iteration)
 
-        for metric in self.metrics:
-            metric.save_metrics(self)
+            # check if the RUNTIME LIMIT has been exceeded -> if yes -> early stopping!
+            if (
+                self.timing_metric_class.metric_values["query_selection_time"][-1]
+                > self.config.EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT
+            ):
+                log_it("early stopping -> runtime limit exceeded")
+
+                early_stopped_due_to_runtime_limit = True
+                break
+
+        if not early_stopped_due_to_runtime_limit:
+            for metric in self.metrics:
+                metric.save_metrics(self)
 
         # global results
         with open(self.config.OVERALL_DONE_WORKLOAD_PATH, "a") as f:

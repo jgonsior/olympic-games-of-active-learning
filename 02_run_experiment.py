@@ -8,7 +8,7 @@ from framework_runners.optimal_runner import OPTIMAL_AL_Experiment
 from framework_runners.libact_runner import LIBACT_Experiment
 from framework_runners.playground_runner import PLAYGROUND_AL_Experiment
 from misc.config import Config
-from resources.data_types import AL_FRAMEWORK, AL_STRATEGY
+from resources.data_types import AL_FRAMEWORK
 
 
 config = Config()
@@ -27,47 +27,5 @@ else:
     raise ValueError(
         "Error, could not find the specified AL Strategy or the framework does not exist"
     )
-
-
-"""
-df.EXP_STRATEGY.value_counts()
-34    1630
-5     1617
-3     1605
-1     1604
-28    1583
-33    1576
-2     1565
-7     1408
-6     1253
-
-
-24     826
-23     703
-35     397
-26     341
-25     290
-
-the strategies below: we should run them with more memory
-"""
-
-al_strategies_to_temporarily_ignore = [
-    AL_STRATEGY.ALIPY_BMDR,
-    # AL_STRATEGY.ALIPY_CORESET_GREEDY,
-    # AL_STRATEGY.OPTIMAL_GREEDY,
-    AL_STRATEGY.ALIPY_LAL,
-    AL_STRATEGY.ALIPY_SPAL,
-    AL_STRATEGY.ALIPY_BMDR,
-    # AL_STRATEGY.ALIPY_UNCERTAINTY_DTB,
-    # AL_STRATEGY.ALIPY_QBC,
-    AL_STRATEGY.ALIPY_EXPECTED_ERROR_REDUCTION,
-    # AL_STRATEGY.OPTIMAL_GREEDY,
-    # AL_STRATEGY.OPTIMAL_TRUE,
-]
-
-if config.EXP_STRATEGY in al_strategies_to_temporarily_ignore:
-    print("strategy is temporarily ignored")
-    #exit(-1)
-
 
 al_experiment.run_experiment()

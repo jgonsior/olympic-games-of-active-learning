@@ -1,7 +1,6 @@
 from pathlib import Path
 import sys
 
-import numpy as np
 
 sys.dont_write_bytecode = True
 
