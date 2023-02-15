@@ -1,7 +1,5 @@
-from pathlib import Path
 import sys
 import glob
-from matplotlib import pyplot as plt
 
 import pandas as pd
 
@@ -10,7 +8,6 @@ sys.dont_write_bytecode = True
 
 from misc.config import Config
 from pandarallel import pandarallel
-import shutil
 
 # all batches which have been running longer than 10 minutes will be ignored
 
