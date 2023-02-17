@@ -37,12 +37,11 @@ for sr_url, sr_local_path in static_resources.items():
     if not sr_local_path.exists():
         sr_local_path.write_bytes(requests.get(sr_url).content)
 
-freezer = Freezer(app, log_url_for=False)
 
+app.config.update(FREEZER_RELATIVE_URLS=True, FREEZER_IGNORE_MIMETYPE_WARNINGS=True)
+freezer = Freezer(app)
 
-@freezer.register_generator
-def find_urls():
-    yield "/"
-
+for url in freezer.all_urls():
+    print(url)
 
 freezer.freeze()

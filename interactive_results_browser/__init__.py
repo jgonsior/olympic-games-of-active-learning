@@ -62,16 +62,46 @@ def show_results(experiment_name: str):
                 **additional_request_params,
             }
 
-    return render_template(
-        "viz.html.j2",
-        experiment_name=experiment_name,
-        config=config,
-        full_exp_grid=full_exp_grid,
-        visualizations_and_tables=visualizations_and_tables,
-        isinstance=isinstance,
-        Iterable=Iterable,
-        Enum=Enum,
-        int=int,
-        str=str,
-        exp_grid_request_params=exp_grid_request_params,
-    )
+    try:
+        rendered_template = render_template(
+            "viz.html.j2",
+            experiment_name=experiment_name,
+            config=config,
+            full_exp_grid=full_exp_grid,
+            visualizations_and_tables=visualizations_and_tables,
+            isinstance=isinstance,
+            Iterable=Iterable,
+            Enum=Enum,
+            int=int,
+            str=str,
+            exp_grid_request_params=exp_grid_request_params,
+        )
+    except Exception as ex:
+        if hasattr(ex, "message"):
+            ex = ex.message
+        else:
+            ex = str(ex)
+
+        import traceback
+
+        ex = traceback.format_exc() + "\n" + ex
+        """print("###" * 50)
+        print(ex)
+        print("###" * 50)
+        print("\n" * 3)"""
+        rendered_template = render_template(
+            "error.html.j2",
+            experiment_name=experiment_name,
+            config=config,
+            full_exp_grid=full_exp_grid,
+            visualizations_and_tables=visualizations_and_tables,
+            isinstance=isinstance,
+            Iterable=Iterable,
+            Enum=Enum,
+            int=int,
+            str=str,
+            exp_grid_request_params=exp_grid_request_params,
+            exception=ex,
+        )
+
+    return rendered_template

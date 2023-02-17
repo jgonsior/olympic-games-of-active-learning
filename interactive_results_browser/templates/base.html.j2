@@ -5,11 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="/static/_simple.min.css">
-    <link rel="stylesheet" href="/static/_tom_min.css">
-    <link rel="stylesheet" href="/static/custom.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='_simple.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='_tom_min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='custom.css') }}">
 
-    <script src="/static/_tom_min.js"></script>
+    <script src="{{ url_for('static', filename='_tom_min.js' ) }}"></script>
 
 </head>
 
