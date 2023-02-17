@@ -3,7 +3,7 @@ import random
 import sys
 from configparser import RawConfigParser
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional, get_args
+from typing import Any, Dict, List, Literal, Optional, Union, get_args
 from aenum import extend_enum
 
 import git
@@ -107,6 +107,8 @@ class Config:
 
     METRICS: List[Base_Metric]
     COMPUTED_METRICS: List[COMPUTED_METRIC]
+
+    EVA_METRICS_TO_CORRELATE: List[Union[Base_Metric, COMPUTED_METRIC]]
 
     def __init__(self, no_cli_args: Optional[Dict[str, Any]] = None) -> None:
         if no_cli_args is not None:
@@ -378,7 +380,9 @@ class Config:
                 arg_type = str
             elif str(v) == "typing.Union[str, pathlib.Path]":
                 arg_type = str
-
+            elif k == "EVA_METRICS_TO_CORRELATE":
+                nargs = "*"
+                arg_type = str
             if str(v) == "<class 'bool'>":
                 parser.add_argument(
                     "--" + k,
