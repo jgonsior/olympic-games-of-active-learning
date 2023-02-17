@@ -3,9 +3,6 @@
 {% block body %}
 <h1>{{ experiment_name }}</h1>
 
-
-{% include "partials/exp_grid_selection_form.j2" %}
-
 {% for viz in visualizations_and_tables %}
 {{ viz.render() }}
 {% endfor %}

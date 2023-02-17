@@ -6,6 +6,7 @@ from interactive_results_browser.csv_helper_functions import (
     get_exp_grid_request_params,
 )
 from interactive_results_browser.visualizations import (
+    VISUALIZATION,
     vizualization_to_python_function_mapping,
 )
 
@@ -24,7 +25,6 @@ app.debug = True
 
 
 @app.route("/")
-# @cache.cached(timeout=50)
 def show_available_experiments():
     config = Config(no_cli_args={"WORKER_INDEX": None, "EXP_TITLE": "only_random"})
     config_names = get_exp_config_names(config)
@@ -61,7 +61,7 @@ def show_interactive_results(experiment_name: str):
 
     try:
         rendered_template = render_template(
-            "show_interactive_metrics.html.j2",
+            "show_interactive_viz.html.j2",
             experiment_name=experiment_name,
             config=config,
             full_exp_grid=full_exp_grid,
@@ -104,8 +104,8 @@ def show_interactive_results(experiment_name: str):
     return rendered_template
 
 
-@app.route("/pcm/<string:experiment_name>", methods=["GET"])
-def show_metrics_overview(experiment_name: str):
+@app.route("/viz_over/<string:experiment_name>", methods=["GET"])
+def show_viz_overview(experiment_name: str):
     config = Config(
         no_cli_args={"WORKER_INDEX": None, "EXP_TITLE": experiment_name},
     )
@@ -114,8 +114,23 @@ def show_metrics_overview(experiment_name: str):
         experiment_name, config
     )
 
+    full_exp_grid = {}
+    for viz in VISUALIZATION:
+        viz_name = viz.name
+        print(viz)
+        visualizer = vizualization_to_python_function_mapping[viz](
+            config, exp_grid_request_params, experiment_name
+        )
+
+        arp = visualizer.get_additional_request_params()
+        if len(arp) == 0:
+            arp = {"_dummy_param": ["No_param"]}
+
+        full_exp_grid[viz_name] = arp
+    print(full_exp_grid)
+
     rendered_template = render_template(
-        "precomputed_metrics_overview.html.j2",
+        "precomputed_viz_overview.html.j2",
         experiment_name=experiment_name,
         config=config,
         full_exp_grid=full_exp_grid,
@@ -129,8 +144,13 @@ def show_metrics_overview(experiment_name: str):
     return rendered_template
 
 
-@app.route("/sm/<string:experiment_name>/<string:metric_name>", methods=["GET"])
-def single_metric(experiment_name: str):
+@app.route(
+    "/sv/<string:experiment_name>/<string:viz_name>/<string:viz_parameter>/<string:viz_param_value>",
+    methods=["GET"],
+)
+def single_viz(
+    experiment_name: str, viz_name=str, viz_parameter=str, viz_param_value=str
+):
     config = Config(
         no_cli_args={"WORKER_INDEX": None, "EXP_TITLE": experiment_name},
     )
@@ -138,17 +158,56 @@ def single_metric(experiment_name: str):
     exp_grid_request_params, full_exp_grid = get_exp_grid_request_params(
         experiment_name, config
     )
+    exp_grid_request_params[viz_parameter] = [viz_param_value]
 
-    rendered_template = render_template(
-        "precomputed_metrics_overview.html.j2",
-        experiment_name=experiment_name,
-        config=config,
-        full_exp_grid=full_exp_grid,
-        isinstance=isinstance,
-        Iterable=Iterable,
-        Enum=Enum,
-        int=int,
-        str=str,
-        exp_grid_request_params=exp_grid_request_params,
-    )
+    visualizations_and_tables: List[Base_Visualizer] = [
+        vizualization_to_python_function_mapping[VISUALIZATION[viz_name]](
+            config, exp_grid_request_params, experiment_name
+        )
+    ]
+
+    plt.ioff()
+
+    try:
+        rendered_template = render_template(
+            "single_precomputed_viz.html.j2",
+            experiment_name=experiment_name,
+            config=config,
+            full_exp_grid=full_exp_grid,
+            visualizations_and_tables=visualizations_and_tables,
+            isinstance=isinstance,
+            Iterable=Iterable,
+            Enum=Enum,
+            int=int,
+            str=str,
+            exp_grid_request_params=exp_grid_request_params,
+        )
+    except Exception as ex:
+        if hasattr(ex, "message"):
+            ex = str(ex.message)
+        else:
+            ex = str(ex)
+
+        import traceback
+
+        ex = str(traceback.format_exc()) + "\n" + str(ex)
+        """print("###" * 50)
+        print(ex)
+        print("###" * 50)
+        print("\n" * 3)"""
+        rendered_template = render_template(
+            "error.html.j2",
+            experiment_name=experiment_name,
+            config=config,
+            full_exp_grid=full_exp_grid,
+            visualizations_and_tables=visualizations_and_tables,
+            isinstance=isinstance,
+            Iterable=Iterable,
+            Enum=Enum,
+            int=int,
+            str=str,
+            exp_grid_request_params=exp_grid_request_params,
+            exception=ex,
+        )
+
     return rendered_template

@@ -5,7 +5,7 @@
 <ul>
     {% for exp_name in config_names %}
     <li>
-        <a href="{{ url_for('show_metrics_overview', experiment_name=exp_name) }} ">{{ exp_name }}</a>
+        <a href="{{ url_for('show_viz_overview', experiment_name=exp_name) }} ">{{ exp_name }}</a>
     </li>
     {% endfor %}
 </ul>

@@ -6,7 +6,7 @@
         <th>{{col}}</th>
         {% else %}
         <th>
-            <a type="submit" href={{ url_for("show_results", experiment_name=experiment_name,
+            <a type="submit" href={{ url_for("show_interactive_results", experiment_name=experiment_name,
                 **update_get_params(EXP_STRATEGY=col.value)) }}>
                 {{ col.name }}
             </a>
@@ -19,7 +19,7 @@
         {% for col, row_ in zip(column_names, row) %}
         {% if col == link_column %}
         <td>
-            <a type="submit" href={{ url_for("show_results", experiment_name=experiment_name,
+            <a type="submit" href={{ url_for("show_interactive_results", experiment_name=experiment_name,
                 **update_get_params(EXP_DATASET=row_.value)) }}>
                 {{ row_.name }}
             </a>
