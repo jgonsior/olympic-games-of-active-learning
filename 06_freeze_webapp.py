@@ -1,11 +1,11 @@
 from pathlib import Path
 import requests
 
-
 from pandarallel import pandarallel
 from flask_frozen import Freezer
-
+import click
 from interactive_results_browser import app
+from interactive_results_browser.visualizations.runtimes import Runtimes
 
 pandarallel.initialize(progress_bar=False, use_memory_fs=True)
 # check if static external ressources exist
@@ -24,8 +24,16 @@ for sr_url, sr_local_path in static_resources.items():
 
 app.config.update(FREEZER_RELATIVE_URLS=True, FREEZER_IGNORE_MIMETYPE_WARNINGS=True)
 freezer = Freezer(app)
+"""
+@freezer.register_generator
+def useful_parameter_configurations():
+    for VIZ_RT_METRIC in Runtimes.get_additional_request_params()["VIZ_RT_METRIC"]:
+        print(VIZ_RT_METRIC)
+"""
 
-for url in freezer.all_urls():
-    print(url)
-
-freezer.freeze()
+with click.progressbar(
+    freezer.freeze_yield(), item_show_func=lambda p: p.url if p else "Done!"
+) as urls:
+    for url in urls:
+        print("\n")
+        print("Processing: ", url)

@@ -23,9 +23,6 @@ app = Flask(
 app.debug = True
 
 
-# cache.init_app(app)
-
-
 @app.route("/")
 # @cache.cached(timeout=50)
 def show_available_experiments():
@@ -34,8 +31,8 @@ def show_available_experiments():
     return render_template("available_experiments.html.j2", config_names=config_names)
 
 
-@app.route("/viz/<string:experiment_name>", methods=["GET"])
-def show_results(experiment_name: str):
+@app.route("/interactive/<string:experiment_name>", methods=["GET"])
+def show_interactive_results(experiment_name: str):
     config = Config(
         no_cli_args={"WORKER_INDEX": None, "EXP_TITLE": experiment_name},
     )
@@ -64,7 +61,7 @@ def show_results(experiment_name: str):
 
     try:
         rendered_template = render_template(
-            "viz.html.j2",
+            "show_interactive_metrics.html.j2",
             experiment_name=experiment_name,
             config=config,
             full_exp_grid=full_exp_grid,
@@ -104,4 +101,54 @@ def show_results(experiment_name: str):
             exception=ex,
         )
 
+    return rendered_template
+
+
+@app.route("/pcm/<string:experiment_name>", methods=["GET"])
+def show_metrics_overview(experiment_name: str):
+    config = Config(
+        no_cli_args={"WORKER_INDEX": None, "EXP_TITLE": experiment_name},
+    )
+
+    exp_grid_request_params, full_exp_grid = get_exp_grid_request_params(
+        experiment_name, config
+    )
+
+    rendered_template = render_template(
+        "precomputed_metrics_overview.html.j2",
+        experiment_name=experiment_name,
+        config=config,
+        full_exp_grid=full_exp_grid,
+        isinstance=isinstance,
+        Iterable=Iterable,
+        Enum=Enum,
+        int=int,
+        str=str,
+        exp_grid_request_params=exp_grid_request_params,
+    )
+    return rendered_template
+
+
+@app.route("/sm/<string:experiment_name>/<string:metric_name>", methods=["GET"])
+def single_metric(experiment_name: str):
+    config = Config(
+        no_cli_args={"WORKER_INDEX": None, "EXP_TITLE": experiment_name},
+    )
+
+    exp_grid_request_params, full_exp_grid = get_exp_grid_request_params(
+        experiment_name, config
+    )
+
+    rendered_template = render_template(
+        "precomputed_metrics_overview.html.j2",
+        experiment_name=experiment_name,
+        config=config,
+        full_exp_grid=full_exp_grid,
+        isinstance=isinstance,
+        Iterable=Iterable,
+        Enum=Enum,
+        int=int,
+        str=str,
+        exp_grid_request_params=exp_grid_request_params,
+    )
     return rendered_template

@@ -1,11 +1,20 @@
 {% extends "base.html.j2" %}
 {% block title %}Home{% endblock %}
 {% block body %}
-<h1>Available experiments</h1>
+<h1>Available experiments - precalculated metrics</h1>
 <ul>
     {% for exp_name in config_names %}
     <li>
-        <a href="{{ url_for('show_results', experiment_name=exp_name) }} ">{{ exp_name }}</a>
+        <a href="{{ url_for('show_metrics_overview', experiment_name=exp_name) }} ">{{ exp_name }}</a>
+    </li>
+    {% endfor %}
+</ul>
+
+<h1>Available experiments - interactive mode</h1>
+<ul>
+    {% for exp_name in config_names %}
+    <li>
+        <a href="{{ url_for('show_interactive_results', experiment_name=exp_name) }} ">{{ exp_name }}</a>
     </li>
     {% endfor %}
 </ul>
