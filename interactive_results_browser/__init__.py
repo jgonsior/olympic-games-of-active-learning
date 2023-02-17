@@ -78,13 +78,13 @@ def show_results(experiment_name: str):
         )
     except Exception as ex:
         if hasattr(ex, "message"):
-            ex = ex.message
+            ex = str(ex.message)
         else:
             ex = str(ex)
 
         import traceback
 
-        ex = traceback.format_exc() + "\n" + ex
+        ex = str(traceback.format_exc()) + "\n" + str(ex)
         """print("###" * 50)
         print(ex)
         print("###" * 50)
