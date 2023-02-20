@@ -35,6 +35,7 @@ def _plot_function(plot_df, metric, my_palette, my_markers):
     )
     rel.xaxis.set_major_formatter(FuncFormatter(lambda x, _: int(x)))
     rel.set(ylim=(0, 1))
+    rel.close()
     return rel
 
 

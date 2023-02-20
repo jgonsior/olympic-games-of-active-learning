@@ -114,9 +114,10 @@ def _cache_strategy_ranking(
 class Strategy_Ranking(Base_Visualizer):
     @staticmethod
     def get_additional_request_params() -> Dict[str, List[Any]]:
-        possible_metrics = Auc_Table.get_additional_request_params(with_basic=False)[
-            "VIZ_AUC_TABLE_METRIC"
-        ]
+        # possible_metrics = Auc_Table.get_additional_request_params(with_basic=False)[
+        #    "VIZ_AUC_TABLE_METRIC"
+        # ]
+        possible_metrics = []
         possible_metrics.append("all_rankings")
 
         return {"VIZ_RANKING_METHOD": possible_metrics}
