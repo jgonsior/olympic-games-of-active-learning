@@ -58,6 +58,9 @@ def _plot_strategy_ranking_heatmap(plot_df, my_palette, my_markers):
         by=["EXP_STRATEGY"],
     ).mean()
 
+    # normalize columns
+    plot_df = (plot_df - plot_df.min()) / (plot_df.max() - plot_df.min())
+
     fig, ax = plt.subplots(
         figsize=(
             len(plot_df.columns),
@@ -164,13 +167,10 @@ def _strategy_ranking_heatmap(done_workload_df, OUTPUT_PATH):
     datasets.append("mean")
     datasets.append("rank")
 
-    print(plot_df)
-    # convert
-
     return plot_df
 
 
-# @memory.cache()
+@memory.cache()
 def _cache_strategy_ranking(
     done_workload_df: pd.DataFrame,
     OUTPUT_PATH: Path,
