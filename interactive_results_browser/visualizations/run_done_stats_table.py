@@ -38,6 +38,8 @@ def _cache_run_done_stats_table(
     else:
         # only focus on the specified samples
         for k, v in exp_grid_request_params.items():
+            if k == "_dummy_param":
+                continue
             k = k.replace("_GRID", "")
 
             if k in ["VISUALIZATIONS"] or k.startswith("VIZ_"):
