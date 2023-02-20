@@ -17,7 +17,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-def _plot_function_strategy_ranking(plot_df, my_palette, my_markers):
+def _plot_correlation_analysis(plot_df, my_palette, my_markers):
     fig, ax = plt.subplots(
         figsize=(
             len(plot_df.columns),
@@ -30,6 +30,46 @@ def _plot_function_strategy_ranking(plot_df, my_palette, my_markers):
         # square=True,
         annot=True,
         cmap=sns.color_palette("coolwarm_r", as_cmap=True),
+        fmt=".2f",
+        ax=ax,
+        xticklabels=True,
+        yticklabels=True,
+        # vmin=0,
+        # vmax=100,
+        linewidth=0.5,
+    )
+    ax.set(ylabel=None)
+    ax.set(xlabel=None)
+
+    ax.xaxis.tick_top()
+
+    ax.set_xticklabels(
+        ax.get_xticklabels(),
+        rotation=20,
+        horizontalalignment="left",
+    )
+    return ax
+
+
+def _plot_strategy_ranking_heatmap(plot_df, my_palette, my_markers):
+    del plot_df["EXP_DATASET"]
+
+    plot_df = plot_df.groupby(
+        by=["EXP_STRATEGY"],
+    ).mean()
+
+    fig, ax = plt.subplots(
+        figsize=(
+            len(plot_df.columns),
+            math.ceil(len(plot_df) / 2),
+        )
+    )
+
+    ax = sns.heatmap(
+        data=plot_df,
+        # square=True,
+        annot=True,
+        cmap=sns.color_palette("Spectral", as_cmap=True),
         fmt=".2f",
         ax=ax,
         xticklabels=True,
@@ -89,10 +129,48 @@ def _correlation_analysis(done_workload_df, OUTPUT_PATH):
 
 def _strategy_ranking_heatmap(done_workload_df, OUTPUT_PATH):
     plot_df = pd.DataFrame()
+    metric_values = Auc_Table.get_additional_request_params(with_basic=False)[
+        "VIZ_AUC_TABLE_METRIC"
+    ]
+    for metric in metric_values:
+        single_metric_plot_df = Base_Visualizer.load_detailed_metric_files(
+            done_workload_df, metric, OUTPUT_PATH
+        )
+
+        if single_metric_plot_df["computed_metric"].max() <= 1.0:
+            single_metric_plot_df[metric] = single_metric_plot_df[
+                "computed_metric"
+            ].multiply(100)
+        else:
+            single_metric_plot_df[metric] = single_metric_plot_df["computed_metric"]
+        del single_metric_plot_df["computed_metric"]
+
+        if len(plot_df) == 0:
+            plot_df = single_metric_plot_df
+        else:
+            plot_df = plot_df.merge(
+                single_metric_plot_df,
+                on=["EXP_UNIQUE_ID", "EXP_DATASET", "EXP_STRATEGY"],
+                how="inner",
+            )
+            plot_df.drop_duplicates(inplace=True)
+
+    # per dataset
+    # averaged over all datasets
+    # ranking number
+    del plot_df["EXP_UNIQUE_ID"]
+
+    datasets = plot_df["EXP_DATASET"].unique().tolist()
+    datasets.append("mean")
+    datasets.append("rank")
+
+    print(plot_df)
+    # convert
+
     return plot_df
 
 
-@memory.cache()
+# @memory.cache()
 def _cache_strategy_ranking(
     done_workload_df: pd.DataFrame,
     OUTPUT_PATH: Path,
@@ -106,17 +184,27 @@ def _cache_strategy_ranking(
     # calculate over all selected metrics the rankings
     if metric_values == ["correlation_analysis"]:
         plot_df = _correlation_analysis(done_workload_df, OUTPUT_PATH)
+
+        plot_urls = Base_Visualizer._render_images(
+            plot_df=plot_df,
+            args={},
+            plot_function=_plot_correlation_analysis,
+            df_col_key=None,
+            legend_names=metric_values,
+            create_legend=False,
+        )
     elif metric_values == ["strategy_ranking_heatmap"]:
         plot_df = _strategy_ranking_heatmap(done_workload_df, OUTPUT_PATH)
 
-    plot_urls = Base_Visualizer._render_images(
-        plot_df=plot_df,
-        args={},
-        plot_function=_plot_function_strategy_ranking,
-        df_col_key=None,
-        legend_names=metric_values,
-        create_legend=False,
-    )
+        plot_urls = Base_Visualizer._render_images(
+            plot_df=plot_df,
+            args={},
+            plot_function=_plot_strategy_ranking_heatmap,
+            df_col_key="EXP_DATASET",
+            legend_names=metric_values,
+            create_legend=False,
+            combined_df_col_key_plot=True,
+        )
 
     return plot_urls
 

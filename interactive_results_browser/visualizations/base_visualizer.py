@@ -110,7 +110,7 @@ class Base_Visualizer(ABC):
 
         plt.legend([], [], frameon=False)
         img = io.BytesIO()
-        plt.savefig(img, format="png", bbox_inches="tight")
+        plt.savefig(img, format="jpg", bbox_inches="tight")
         img.seek(0)
         plot_url = base64.b64encode(img.getvalue()).decode("utf8")
         plt.clf()
@@ -184,7 +184,7 @@ class Base_Visualizer(ABC):
             )
 
             img = io.BytesIO()
-            plt.savefig(img, format="png", bbox_inches=bbox)
+            plt.savefig(img, format="jpg", bbox_inches=bbox)
             img.seek(0)
             plot_url = base64.b64encode(img.getvalue()).decode("utf8")
             figs = [plot_url, *figs]
