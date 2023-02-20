@@ -9,13 +9,10 @@ from interactive_results_browser.visualizations.auc_table import Auc_Table
 from interactive_results_browser.visualizations.base_visualizer import Base_Visualizer
 from typing import Any, List
 
-from typing import Any, Dict
-
 from interactive_results_browser.cache import memory
 
 from misc.config import Config
 
-# if TYPE_CHECKING:
 import seaborn as sns
 import matplotlib.pyplot as plt
 
@@ -54,23 +51,11 @@ def _plot_function_strategy_ranking(plot_df, my_palette, my_markers):
     return ax
 
 
-@memory.cache()
-def _cache_strategy_ranking(
-    done_workload_df: pd.DataFrame,
-    OUTPUT_PATH: Path,
-    config: Config,
-    metric_values: List[str],
-) -> List[str]:
-    done_workload_df = done_workload_df.loc[
-        :, ["EXP_UNIQUE_ID", "EXP_STRATEGY", "EXP_DATASET"]
-    ]
-
-    # calculate over all selected metrics the rankings
+def _correlation_analysis(done_workload_df, OUTPUT_PATH):
     plot_df = pd.DataFrame()
-    if metric_values == ["all_rankings"]:
-        metric_values = Auc_Table.get_additional_request_params(with_basic=False)[
-            "VIZ_AUC_TABLE_METRIC"
-        ]
+    metric_values = Auc_Table.get_additional_request_params(with_basic=False)[
+        "VIZ_AUC_TABLE_METRIC"
+    ]
     for metric in metric_values:
         single_metric_plot_df = Base_Visualizer.load_detailed_metric_files(
             done_workload_df, metric, OUTPUT_PATH
@@ -99,6 +84,31 @@ def _cache_strategy_ranking(
     plot_df = plot_df.reindex(sorted(plot_df.columns), axis=1)
     plot_df = plot_df.corr()
 
+    return plot_df
+
+
+def _strategy_ranking_heatmap(done_workload_df, OUTPUT_PATH):
+    plot_df = pd.DataFrame()
+    return plot_df
+
+
+@memory.cache()
+def _cache_strategy_ranking(
+    done_workload_df: pd.DataFrame,
+    OUTPUT_PATH: Path,
+    config: Config,
+    metric_values: List[str],
+) -> List[str]:
+    done_workload_df = done_workload_df.loc[
+        :, ["EXP_UNIQUE_ID", "EXP_STRATEGY", "EXP_DATASET"]
+    ]
+
+    # calculate over all selected metrics the rankings
+    if metric_values == ["correlation_analysis"]:
+        plot_df = _correlation_analysis(done_workload_df, OUTPUT_PATH)
+    elif metric_values == ["strategy_ranking_heatmap"]:
+        plot_df = _strategy_ranking_heatmap(done_workload_df, OUTPUT_PATH)
+
     plot_urls = Base_Visualizer._render_images(
         plot_df=plot_df,
         args={},
@@ -117,8 +127,10 @@ class Strategy_Ranking(Base_Visualizer):
         # possible_metrics = Auc_Table.get_additional_request_params(with_basic=False)[
         #    "VIZ_AUC_TABLE_METRIC"
         # ]
-        possible_metrics = []
-        possible_metrics.append("all_rankings")
+        possible_metrics = [
+            "correlation_analysis",
+            "strategy_ranking_heatmap",
+        ]
 
         return {"VIZ_RANKING_METHOD": possible_metrics}
 

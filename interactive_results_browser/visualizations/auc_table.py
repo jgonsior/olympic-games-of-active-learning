@@ -154,6 +154,10 @@ class Auc_Table(Base_Visualizer):
             "optimal_samples_order_acc_diff_absolute_addition",
             "optimal_samples_included_in_optimal_strategy",
         ]
+
+        for standard_metric_without_auc in basic_metrics:
+            if standard_metric_without_auc in metric_values:
+                metric_values.remove(standard_metric_without_auc)
         return {"VIZ_AUC_TABLE_METRIC": metric_values}
 
     def get_template_data(self) -> Dict[str, Any]:
