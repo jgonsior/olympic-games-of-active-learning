@@ -8,6 +8,8 @@ from typing import Any, List, TYPE_CHECKING
 
 from typing import Any, Dict
 
+from metrics.Standard_ML_Metrics import Standard_ML_Metrics
+
 
 if TYPE_CHECKING:
     pass
@@ -45,10 +47,13 @@ def _cache_create_plots(
     done_workload_df = done_workload_df.loc[
         :, ["EXP_UNIQUE_ID", "EXP_STRATEGY", "EXP_DATASET"]
     ]
-
+    print(metric)
     plot_df = Base_Visualizer.load_detailed_metric_files(
         done_workload_df, metric, OUTPUT_PATH
     )
+
+    if plot_df.empty:
+        return "Dataframe was empty"
 
     del plot_df["EXP_UNIQUE_ID"]
 
@@ -69,23 +74,8 @@ def _cache_create_plots(
 class Learning_Curves(Base_Visualizer):
     @staticmethod
     def get_additional_request_params() -> Dict[str, List[Any]]:
-        return {
-            "VIZ_LC_METRIC": [
-                "accuracy",
-                # "precision", TODO <- die metriken gibt es je einmal pro klasse -> wie darstellen?
-                # "f1-score",
-                # "support",
-                # "recall",
-                "macro avg_precision",
-                "macro avg_recall",
-                "macro avg_f1-score",
-                "macro avg_support",
-                "weighted avg_precision",
-                "weighted avg_recall",
-                "weighted avg_f1-score",
-                "weighted avg_support",
-            ]
-        }
+        smm = Standard_ML_Metrics()
+        return {"VIZ_LC_METRIC": smm.metrics}
 
     def get_template_data(self) -> Dict[str, Any]:
         if len(self._exp_grid_request_params["VIZ_LC_METRIC"]) != 1:
