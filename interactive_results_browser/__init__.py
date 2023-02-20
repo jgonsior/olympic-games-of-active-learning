@@ -82,10 +82,7 @@ def show_interactive_results(experiment_name: str):
         import traceback
 
         ex = str(traceback.format_exc()) + "\n" + str(ex)
-        """print("###" * 50)
-        print(ex)
-        print("###" * 50)
-        print("\n" * 3)"""
+
         rendered_template = render_template(
             "error.html.j2",
             experiment_name=experiment_name,
@@ -117,7 +114,6 @@ def show_viz_overview(experiment_name: str):
     full_exp_grid = {}
     for viz in VISUALIZATION:
         viz_name = viz.name
-        print(viz)
         visualizer = vizualization_to_python_function_mapping[viz](
             config, exp_grid_request_params, experiment_name
         )
@@ -127,7 +123,6 @@ def show_viz_overview(experiment_name: str):
             arp = {"_dummy_param": ["No_param"]}
 
         full_exp_grid[viz_name] = arp
-    print(full_exp_grid)
 
     rendered_template = render_template(
         "precomputed_viz_overview.html.j2",
@@ -191,10 +186,7 @@ def single_viz(
         import traceback
 
         ex = str(traceback.format_exc()) + "\n" + str(ex)
-        """print("###" * 50)
-        print(ex)
-        print("###" * 50)
-        print("\n" * 3)"""
+
         rendered_template = render_template(
             "error.html.j2",
             experiment_name=experiment_name,

@@ -24,12 +24,14 @@ for sr_url, sr_local_path in static_resources.items():
 
 app.config.update(FREEZER_RELATIVE_URLS=True, FREEZER_IGNORE_MIMETYPE_WARNINGS=True)
 freezer = Freezer(app)
+
 """
 @freezer.register_generator
 def useful_parameter_configurations():
     for VIZ_RT_METRIC in Runtimes.get_additional_request_params()["VIZ_RT_METRIC"]:
         print(VIZ_RT_METRIC)
 """
+
 
 with click.progressbar(
     freezer.freeze_yield(), item_show_func=lambda p: p.url if p else "Done!"
