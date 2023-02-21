@@ -125,7 +125,7 @@ def _correlation_analysis(done_workload_df, OUTPUT_PATH):
     del plot_df["EXP_DATASET"]
     plot_df = plot_df.groupby(by=["EXP_STRATEGY"]).mean()
     plot_df = plot_df.reindex(sorted(plot_df.columns), axis=1)
-    plot_df = plot_df.corr()
+    plot_df = plot_df.corr(method="spearman")
 
     return plot_df
 
