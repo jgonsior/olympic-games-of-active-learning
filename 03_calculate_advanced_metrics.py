@@ -11,7 +11,7 @@ pandarallel.initialize(progress_bar=True)
 config = Config()
 
 print("computung the following metrics: " + ",".join(config.COMPUTED_METRICS))
-
+print(config.EXP_GRID_STRATEGY)
 
 for computed_metric in config.COMPUTED_METRICS:
     computed_metric_class = getattr(
