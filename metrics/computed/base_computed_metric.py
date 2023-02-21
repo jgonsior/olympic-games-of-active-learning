@@ -127,13 +127,9 @@ class Base_Computed_Metric(ABC):
         new_metric_name: str,
         apply_to_row,
     ) -> None:
-        with parallel_backend("multiprocessing", n_jobs=multiprocessing.cpu_count()):
-            Parallel()(
-                delayed(self._per_dataset_hook)(EXP_DATASET)
-                for EXP_DATASET in self.config.EXP_GRID_DATASET
-            )
-
         for EXP_DATASET in self.config.EXP_GRID_DATASET:
+            self._per_dataset_hook(EXP_DATASET)
+
             with parallel_backend(
                 "multiprocessing", n_jobs=multiprocessing.cpu_count()
             ):
