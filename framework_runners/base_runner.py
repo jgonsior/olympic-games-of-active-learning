@@ -140,35 +140,52 @@ class AL_Experiment(ABC):
         self.get_AL_strategy()
 
         early_stopped_due_to_runtime_limit = False
+        error_was_being_raised = False
 
-        for iteration in range(0, total_amount_of_iterations):
-            if len(self.local_train_unlabeled_idx) == 0:
-                log_it("early stopping")
-                break
+        try:
+            for iteration in range(0, total_amount_of_iterations):
+                if len(self.local_train_unlabeled_idx) == 0:
+                    log_it("early stopping")
+                    break
 
-            self.al_cycle(iteration_counter=iteration)
+                self.al_cycle(iteration_counter=iteration)
 
-            # check if the RUNTIME LIMIT has been exceeded -> if yes -> early stopping!
-            if (
-                self.timing_metric_class.metric_values["query_selection_time"][-1]
-                > self.config.EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT
-            ):
-                log_it("early stopping -> runtime limit exceeded")
+                # check if the RUNTIME LIMIT has been exceeded -> if yes -> early stopping!
+                if (
+                    self.timing_metric_class.metric_values["query_selection_time"][-1]
+                    > self.config.EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT
+                ):
+                    log_it("early stopping -> runtime limit exceeded")
 
-                early_stopped_due_to_runtime_limit = True
-                break
+                    early_stopped_due_to_runtime_limit = True
+                    break
+        except Exception as err:
+            error_was_being_raised = True
+            import sys
 
-        if not early_stopped_due_to_runtime_limit:
-            for metric in self.metrics:
-                metric.save_metrics(self)
+            exc_type, value, traceback = sys.exc_info()
+            print(f"ERROR occured, but was catched: {exc_type}")
 
-        # global results
-        with open(self.config.OVERALL_DONE_WORKLOAD_PATH, "a") as f:
-            w = csv.DictWriter(f, fieldnames=self.config._original_workload.keys())
+            self.config._original_workload["error"] = str(exc_type)
+            with open(self.config.OVERALL_FAILED_WORKLOAD_PATH, "a") as f:
+                w = csv.DictWriter(f, fieldnames=self.config._original_workload.keys())
 
-            if self.config.OVERALL_DONE_WORKLOAD_PATH.stat().st_size == 0:
-                w.writeheader()
-            w.writerow(self.config._original_workload)
+                if self.config.OVERALL_FAILED_WORKLOAD_PATH.stat().st_size == 0:
+                    w.writeheader()
+                w.writerow(self.config._original_workload)
+
+        if not error_was_being_raised:
+            if not early_stopped_due_to_runtime_limit:
+                for metric in self.metrics:
+                    metric.save_metrics(self)
+
+            # global results
+            with open(self.config.OVERALL_DONE_WORKLOAD_PATH, "a") as f:
+                w = csv.DictWriter(f, fieldnames=self.config._original_workload.keys())
+
+                if self.config.OVERALL_DONE_WORKLOAD_PATH.stat().st_size == 0:
+                    w.writeheader()
+                w.writerow(self.config._original_workload)
 
     def al_cycle(self, iteration_counter: int) -> None:
         log_it(f"#{iteration_counter}")
