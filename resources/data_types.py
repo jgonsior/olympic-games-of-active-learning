@@ -270,6 +270,10 @@ learner_models_to_classes_mapping: Dict[
             "hidden_layer_sizes": (100,),
             "activation": "relu",
             "solver": "adam",
+            "learning_rate": "adaptive",
+            "max_iter": 1000,
+            "warm_start": False,
+            "early_stopping": True,
         },
     ),  # default values
     LEARNER_MODEL.LBFGS_MLP: (
