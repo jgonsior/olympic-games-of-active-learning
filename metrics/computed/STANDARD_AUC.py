@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import warnings
 import pandas as pd
 
 from metrics.computed.base_computed_metric import Base_Computed_Metric

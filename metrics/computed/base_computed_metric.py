@@ -1,6 +1,5 @@
 from __future__ import annotations
 from abc import ABC
-import multiprocessing
 from pathlib import Path
 from typing import List, TYPE_CHECKING
 from joblib import Parallel, delayed, parallel_backend
