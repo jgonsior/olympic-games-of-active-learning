@@ -113,7 +113,6 @@ class Greedy_Optimal(Base_AL_Strategy):
             )
         ]
 
-        print(pre_sampled_X_querie_indices)
         return self._compute_future_metrics_for_batches(
             pre_sampled_X_querie_indices, labeled_index, model
         )
