@@ -8,7 +8,7 @@ from framework_runners.optimal_runner import OPTIMAL_AL_Experiment
 from framework_runners.libact_runner import LIBACT_Experiment
 from framework_runners.playground_runner import PLAYGROUND_AL_Experiment
 from misc.config import Config
-from resources.data_types import AL_FRAMEWORK, LEARNER_MODEL
+from resources.data_types import AL_FRAMEWORK
 
 
 config = Config()
