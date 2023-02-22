@@ -152,6 +152,11 @@ def create_workload(config: Config) -> List[int]:
                 ].index
             )
 
+    print("Removing workloads using LBFGS_MLP")
+    open_workload_df = open_workload_df[
+        open_workload_df["EXP_LEARNER_MODEL"] != LEARNER_MODEL.LBFGS_MLP
+    ]
+
     open_workload_df.to_csv(config.WORKLOAD_FILE_PATH, index=None)
     config.save_to_file()
     log_it(f"Created workload of {len(open_workload_df)}")
