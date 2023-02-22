@@ -5,7 +5,6 @@ from pandarallel import pandarallel
 from flask_frozen import Freezer
 import click
 from interactive_results_browser import app
-from interactive_results_browser.visualizations.runtimes import Runtimes
 
 pandarallel.initialize(progress_bar=False, use_memory_fs=True)
 # check if static external ressources exist
