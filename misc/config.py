@@ -88,6 +88,8 @@ class Config:
     LOCAL_YAML_EXP_PATH: Path = "resources/exp_config.yaml"  # type: ignore
     CONFIG_FILE_PATH: Path = "00_config.yaml"  # type: ignore
     WORKLOAD_FILE_PATH: Path = "01_workload.csv"  # type: ignore
+    NON_HPC_WORKLOAD_FILE_PATH: Path = "01_non_hpc_workload.csv"  # type: ignore
+    SEPARATE_HPC_LOCAL_WORKLOAD: bool = False
     EXPERIMENT_INSTALL_SLURM_DEP_PATH = "0x_install_deps.slurm"
     EXPERIMENT_UPDATE_SLURM_DEP_PATH = "0x_update_deps.slurm"
     EXPERIMENT_SLURM_FILE_PATH: Path = "02_slurm.slurm"  # type: ignore
@@ -181,6 +183,9 @@ class Config:
         self.LOCAL_CONFIG_FILE_PATH = Path(self.LOCAL_CONFIG_FILE_PATH)
         self.CONFIG_FILE_PATH = Path(self.CONFIG_FILE_PATH)
         self.WORKLOAD_FILE_PATH = self.OUTPUT_PATH / self.WORKLOAD_FILE_PATH
+        self.NON_HPC_WORKLOAD_FILE_PATH = (
+            self.OUTPUT_PATH / self.NON_HPC_WORKLOAD_FILE_PATH
+        )
         self.EXPERIMENT_SLURM_FILE_PATH = (
             self.OUTPUT_PATH / self.EXPERIMENT_SLURM_FILE_PATH
         )

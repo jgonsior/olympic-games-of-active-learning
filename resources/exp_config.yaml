@@ -242,3 +242,34 @@ local_SynDs_Spiral: { EXP_GRID_DATASET: [Spiral], EXP_GRID_STRATEGY: [
                 ALIPY_LAL,
                 ALIPY_DENSITY_WEIGHTED,
             ], EXP_GRID_RANDOM_SEED: [0], EXP_GRID_START_POINT: [1-5], EXP_GRID_NUM_QUERIES: [20], EXP_GRID_BATCH_SIZE: [1, 5], EXP_GRID_LEARNER_MODEL: [RF], EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0, 1], METRICS: [Pickled_Learner_Model, Predicted_Samples, Selected_Indices, Standard_ML_Metrics, Timing_Metrics] } #, DT, MNB, GNB, RBF_SVM, LINEAR_SVM, POLY_SVM, MLP, LBFGS_MLP, LR],
+
+test_exp: {
+        EXP_GRID_DATASET: [Iris, Chess10],
+        EXP_GRID_STRATEGY:
+            [
+                ALIPY_RANDOM,
+                PLAYGROUND_MIXTURE,
+                ALIPY_UNCERTAINTY_LC,
+                ALIPY_UNCERTAINTY_MM,
+                ALIPY_UNCERTAINTY_ENTROPY,
+                ALIPY_EXPECTED_ERROR_REDUCTION,
+                ALIPY_BMDR,
+                ALIPY_SPAL,
+                ALIPY_LAL,
+                ALIPY_DENSITY_WEIGHTED,
+            ],
+        EXP_GRID_RANDOM_SEED: [0],
+        EXP_GRID_START_POINT: [1-5],
+        EXP_GRID_NUM_QUERIES: [5],
+        EXP_GRID_BATCH_SIZE: [1, 5],
+        EXP_GRID_LEARNER_MODEL: [RF, MLP],
+        EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0, 1],
+        METRICS:
+            [
+                Pickled_Learner_Model,
+                Predicted_Samples,
+                Selected_Indices,
+                Standard_ML_Metrics,
+                Timing_Metrics,
+            ],
+    } #, DT, MNB, GNB, RBF_SVM, LINEAR_SVM, POLY_SVM, MLP, LBFGS_MLP, LR],

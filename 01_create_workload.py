@@ -19,6 +19,7 @@ from resources.data_types import (
     LEARNER_MODEL,
     al_strategies_which_require_decision_boundary_model,
     learner_models_to_classes_mapping,
+    al_strategies_not_suitable_for_hpc,
 )
 
 from pandarallel import pandarallel
@@ -216,6 +217,19 @@ def create_workload(config: Config) -> List[int]:
     open_workload_df = open_workload_df[
         open_workload_df["EXP_LEARNER_MODEL"] != LEARNER_MODEL.LBFGS_MLP
     ]
+
+    if config.SEPARATE_HPC_LOCAL_WORKLOAD:
+        non_hpc_workload_df = open_workload_df[
+            open_workload_df["EXP_STRATEGY"].isin(al_strategies_not_suitable_for_hpc)
+        ]
+
+        # remove non_hpc_workloads
+        open_workload_df = open_workload_df[
+            ~open_workload_df["EXP_UNIQUE_ID"].isin(
+                non_hpc_workload_df["EXP_UNIQUE_ID"]
+            )
+        ]
+        non_hpc_workload_df.to_csv(config.NON_HPC_WORKLOAD_FILE_PATH, index=None)
 
     open_workload_df.to_csv(config.WORKLOAD_FILE_PATH, index=None)
     config.save_to_file()

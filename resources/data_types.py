@@ -201,6 +201,12 @@ al_strategies_which_require_decision_boundary_model: List[AL_STRATEGY] = [
     AL_STRATEGY.ALIPY_UNCERTAINTY_DTB,
 ]
 
+al_strategies_not_suitable_for_hpc: List[AL_STRATEGY] = [
+    AL_STRATEGY.LIBACT_VR,
+    AL_STRATEGY.LIBACT_HINTSVM,
+    AL_STRATEGY.ALIPY_LAL,
+]
+
 
 def _import_compiled_libact_strategies():
     from libact.query_strategies import (
