@@ -104,6 +104,8 @@ class Config:
     EXP_RESULT_EXTRACTED_ZIP_PATH: Path
     METRIC_RESULTS_FOLDER: Path
 
+    RERUN_FAILED_WORKLOADS: bool = False
+
     RESULTS_PATH: Path
 
     METRICS: List[Base_Metric]

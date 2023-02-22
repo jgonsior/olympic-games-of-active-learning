@@ -39,11 +39,24 @@ def _determine_exp_grid_parameters(config: Config) -> List[str]:
 def create_workload(config: Config) -> List[int]:
     exp_grid_params_names = _determine_exp_grid_parameters(config)
     if os.path.isfile(config.OVERALL_DONE_WORKLOAD_PATH):
-        # experiment has already been run, check which worsloads are still missing
+        # if new results exist -> recalculate hyperparameter grid
+        # remove existing workloads
+        # new ones get new experiment_ids
+        # done!
+
+        # experiment has already been run, check which workloads are still missing
         done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
 
         open_workload_df = pd.read_csv(config.WORKLOAD_FILE_PATH)
 
+        failed_workload_df = pd.read_csv(config.OVERALL_FAILED_WORKLOAD_PATH)
+
+        if not config.RERUN_FAILED_WORKLOADS:
+            open_workload_df = open_workload_df.loc[
+                ~open_workload_df.EXP_UNIQUE_ID.isin(failed_workload_df.EXP_UNIQUE_ID)
+            ]
+
+        # remove already run workloads
         open_workload_df = open_workload_df.loc[
             ~open_workload_df.EXP_UNIQUE_ID.isin(done_workload_df.EXP_UNIQUE_ID)
         ]
@@ -235,6 +248,7 @@ def create_run_files(config: Config) -> None:
 config = Config()
 
 unique_ids = create_workload(config)
+print(unique_ids)
 create_AL_experiment_slurm_files(config, len(unique_ids))
 create_AL_experiment_bash_files(config, unique_ids)
 create_run_files(config)
