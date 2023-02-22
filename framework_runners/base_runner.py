@@ -142,24 +142,24 @@ class AL_Experiment(ABC):
         early_stopped_due_to_runtime_limit = False
         error_was_being_raised = False
 
-        try:
-            for iteration in range(0, total_amount_of_iterations):
-                if len(self.local_train_unlabeled_idx) == 0:
-                    log_it("early stopping")
-                    break
+        # try:
+        for iteration in range(0, total_amount_of_iterations):
+            if len(self.local_train_unlabeled_idx) == 0:
+                log_it("early stopping")
+                break
 
-                self.al_cycle(iteration_counter=iteration)
+            self.al_cycle(iteration_counter=iteration)
 
-                # check if the RUNTIME LIMIT has been exceeded -> if yes -> early stopping!
-                if (
-                    self.timing_metric_class.metric_values["query_selection_time"][-1]
-                    > self.config.EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT
-                ):
-                    log_it("early stopping -> runtime limit exceeded")
+            # check if the RUNTIME LIMIT has been exceeded -> if yes -> early stopping!
+            if (
+                self.timing_metric_class.metric_values["query_selection_time"][-1]
+                > self.config.EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT
+            ):
+                log_it("early stopping -> runtime limit exceeded")
 
-                    early_stopped_due_to_runtime_limit = True
-                    break
-        except Exception as err:
+                early_stopped_due_to_runtime_limit = True
+                break
+        """except Exception as err:
             error_was_being_raised = True
             import sys
 
@@ -172,7 +172,7 @@ class AL_Experiment(ABC):
 
                 if self.config.OVERALL_FAILED_WORKLOAD_PATH.stat().st_size == 0:
                     w.writeheader()
-                w.writerow(self.config._original_workload)
+                w.writerow(self.config._original_workload)"""
 
         if not error_was_being_raised:
             if not early_stopped_due_to_runtime_limit:
@@ -223,6 +223,10 @@ class AL_Experiment(ABC):
         global_test_idx_set = set(self.global_test_idx)
 
         if iteration_counter > 0:
+            print(self.config.EXP_BATCH_SIZE)
+            print(self.local_train_unlabeled_idx)
+            print(self.local_selected_train_idx)
+            print(local_select_idx_set)
             if len(self.local_train_unlabeled_idx) >= self.config.EXP_BATCH_SIZE:
                 assert len(local_select_idx_set) == self.config.EXP_BATCH_SIZE
         assert local_select_idx_set.issubset(local_unlabeled_idx_set)
