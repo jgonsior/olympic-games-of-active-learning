@@ -20,7 +20,6 @@ class QUERIED_FROM_OPTIMAL(Base_Computed_Metric):
     optimal_samples_order_easy_hard_ambiguous: np.ndarray
 
     optimal_samples_order_acc_diff_addition: np.ndarray
-    optimal_samples_order_acc_diff_absolute_addition: np.ndarray
     optimal_samples_included_in_optimal_strategy: np.ndarray
 
     def _per_dataset_hook(self, EXP_DATASET: DATASET) -> None:
@@ -134,6 +133,7 @@ class QUERIED_FROM_OPTIMAL(Base_Computed_Metric):
                     selected_indices, on=["EXP_UNIQUE_ID", "al_cycle"], how="inner"
                 )
 
+                # we list per sample, how it changed the accuracy
                 for _, row in accs.iterrows():
                     acc_diff = row["accs"]
                     selected_indices = row["selected_indices"]
@@ -182,9 +182,7 @@ class QUERIED_FROM_OPTIMAL(Base_Computed_Metric):
             self.optimal_samples_order_easy_hard_ambiguous = np.zeros_like(
                 y, dtype=np.float16
             )
-            self.optimal_samples_order_acc_diff_absolute_addition = np.zeros_like(
-                y, dtype=np.float16
-            )
+
             self.optimal_samples_order_acc_diff_addition = np.zeros_like(
                 y, dtype=np.float16
             )
@@ -204,20 +202,17 @@ class QUERIED_FROM_OPTIMAL(Base_Computed_Metric):
                 )
 
                 optimal_samples_path.parent.mkdir(exist_ok=True)
-
+            print(self.optimal_samples_order_wrongness)
             for global_ix, values in acc_diff_per_indice_counts.items():
                 self.optimal_samples_order_acc_diff_addition[global_ix] = np.sum(values)
-                self.optimal_samples_order_acc_diff_absolute_addition[
-                    global_ix
-                ] = np.sum(np.absolute(values))
 
+            exit(-1)
             np.savez_compressed(
                 optimal_samples_path,
                 optimal_samples_order_wrongness=self.optimal_samples_order_wrongness,
                 optimal_samples_order_variability=self.optimal_samples_order_variability,
                 optimal_samples_order_easy_hard_ambiguous=self.optimal_samples_order_easy_hard_ambiguous,
                 optimal_samples_order_acc_diff_addition=self.optimal_samples_order_acc_diff_addition,
-                optimal_samples_order_acc_diff_absolute_addition=self.optimal_samples_order_acc_diff_absolute_addition,
                 optimal_samples_included_in_optimal_strategy=self.optimal_samples_included_in_optimal_strategy,
             )
         else:
@@ -225,9 +220,6 @@ class QUERIED_FROM_OPTIMAL(Base_Computed_Metric):
             self.optimal_samples_order_acc_diff_addition = np.load(
                 optimal_samples_path
             )["optimal_samples_order_acc_diff_addition"]
-            self.optimal_samples_order_acc_diff_absolute_addition = np.load(
-                optimal_samples_path
-            )["optimal_samples_order_acc_diff_absolute_addition"]
             self.optimal_samples_order_wrongness = np.load(optimal_samples_path)[
                 "optimal_samples_order_wrongness"
             ]
@@ -273,16 +265,6 @@ class QUERIED_FROM_OPTIMAL(Base_Computed_Metric):
             self.optimal_samples_order_acc_diff_addition[row["selected_indices"]]
         )
 
-    def _optimal_samples_order_acc_diff_absolute_addition(
-        self,
-        row: pd.Series,
-    ) -> pd.Series:
-        return -np.sum(
-            self.optimal_samples_order_acc_diff_absolute_addition[
-                row["selected_indices"]
-            ]
-        )
-
     def _optimal_samples_included_in_optimal_strategy(
         self,
         row: pd.Series,
@@ -312,11 +294,7 @@ class QUERIED_FROM_OPTIMAL(Base_Computed_Metric):
             new_metric_name="optimal_samples_order_acc_diff_addition",
             apply_to_row=self._optimal_samples_order_acc_diff_addition,
         )
-        self._take_single_metric_and_compute_new_one(
-            existing_metric_names=["selected_indices"],
-            new_metric_name="optimal_samples_order_acc_diff_absolute_addition",
-            apply_to_row=self._optimal_samples_order_acc_diff_absolute_addition,
-        )
+
         self._take_single_metric_and_compute_new_one(
             existing_metric_names=["selected_indices"],
             new_metric_name="optimal_samples_included_in_optimal_strategy",

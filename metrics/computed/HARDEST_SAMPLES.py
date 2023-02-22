@@ -108,9 +108,12 @@ class HARDEST_SAMPLES(Base_Computed_Metric):
 
                     maximum_possible_value += 1
 
+            print(self.wrong_classified_counter)
             for ix, value in enumerate(self.wrong_classified_counter):
                 self.wrong_classified_counter[ix] = value / maximum_possible_value
 
+            print(self.wrong_classified_counter)
+            exit(-1)
             hardest_samples_path.parent.mkdir(exist_ok=True)
             np.savez_compressed(
                 hardest_samples_path,

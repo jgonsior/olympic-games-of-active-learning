@@ -131,7 +131,7 @@ class Base_Computed_Metric(ABC):
             self._per_dataset_hook(EXP_DATASET)
 
             with parallel_backend(
-                "multiprocessing", n_jobs=multiprocessing.cpu_count()
+                "multiprocessing", n_jobs=1  # multiprocessing.cpu_count()
             ):
                 Parallel()(
                     delayed(_process_a_single_strategy)(
