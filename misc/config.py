@@ -105,6 +105,7 @@ class Config:
     METRIC_RESULTS_FOLDER: Path
 
     RERUN_FAILED_WORKLOADS: bool = False
+    RECALCULATE_UPDATED_EXP_GRID: bool = False
 
     RESULTS_PATH: Path
 

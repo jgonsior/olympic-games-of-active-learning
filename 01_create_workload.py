@@ -36,20 +36,123 @@ def _determine_exp_grid_parameters(config: Config) -> List[str]:
     return result_list
 
 
+def _generate_exp_param_grid(
+    config: Config, exp_grid_params_names, INDEX_OFFSET=0
+) -> pd.DataFrame:
+    exp_param_grid = {
+        exp_parameter: config.__getattribute__(exp_parameter)
+        for exp_parameter in exp_grid_params_names
+    }
+
+    all_workloads = ParameterGrid(exp_param_grid)
+
+    open_workload_df = pd.DataFrame(
+        data=all_workloads,  # type: ignore
+        columns=exp_grid_params_names,
+    )
+
+    open_workload_df.rename(
+        columns=lambda s: s.replace("EXP_GRID_", "EXP_"), inplace=True  # type: ignore
+    )
+
+    if config.INCLUDE_RESULTS_FROM is not None:
+        others_done_workload_df = None
+
+        for other_exp_results_name in config.INCLUDE_RESULTS_FROM:
+            # load done_workload_df from other results
+            other_done_workload = pd.read_csv(Path(other_exp_results_name))
+            if others_done_workload_df is None:
+                others_done_workload_df = other_done_workload
+            else:
+                others_done_workload_df = pd.concat(
+                    [others_done_workload_df, other_done_workload],
+                    ignore_index=True,
+                )
+        length_before_removal_of_already_run_experiments = len(open_workload_df)
+        hyperparameters = [
+            h for h in open_workload_df.columns.to_list() if h not in ["EXP_UNIQUE_ID"]
+        ]
+
+        open_workload_df["ORIGINAL_INDEX"] = open_workload_df.index
+
+        # merge dataframes
+        merged_df = open_workload_df.merge(
+            others_done_workload_df, how="inner", on=hyperparameters
+        )
+        merged_df.drop_duplicates(inplace=True)
+
+        open_workload_df = open_workload_df.loc[
+            ~open_workload_df.index.isin(merged_df["ORIGINAL_INDEX"])
+        ]
+        del open_workload_df["ORIGINAL_INDEX"]
+        print(
+            f"Reduced from {length_before_removal_of_already_run_experiments} to {len(open_workload_df)}"
+        )
+
+    # shuffle workload to ensure that really long jobs are not all running on the same node
+    open_workload_df = open_workload_df.sample(frac=1).reset_index(drop=True)
+
+    open_workload_df["EXP_UNIQUE_ID"] = open_workload_df.index + INDEX_OFFSET
+
+    return open_workload_df
+
+
 def create_workload(config: Config) -> List[int]:
     exp_grid_params_names = _determine_exp_grid_parameters(config)
     if os.path.isfile(config.OVERALL_DONE_WORKLOAD_PATH):
-        # if new results exist -> recalculate hyperparameter grid
-        # remove existing workloads
-        # new ones get new experiment_ids
-        # done!
-
         # experiment has already been run, check which workloads are still missing
         done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
 
         open_workload_df = pd.read_csv(config.WORKLOAD_FILE_PATH)
 
         failed_workload_df = pd.read_csv(config.OVERALL_FAILED_WORKLOAD_PATH)
+
+        # if new results exist -> recalculate hyperparameter grid
+        # remove existing workloads
+        # new ones get new experiment_ids
+        # done!
+        if config.RECALCULATE_UPDATED_EXP_GRID:
+            print("Using updated config")
+            new_open_workload_df = _generate_exp_param_grid(
+                config,
+                exp_grid_params_names,
+                max(
+                    open_workload_df["EXP_UNIQUE_ID"].max(),
+                    done_workload_df["EXP_UNIQUE_ID"].max(),
+                    failed_workload_df["EXP_UNIQUE_ID"].max(),
+                )
+                + 1,
+            )
+            new_open_workload_df.rename(
+                columns={"EXP_UNIQUE_ID": "ORIGINAL_INDEX_NEW"}, inplace=True
+            )
+
+            hyperparameters = [
+                h
+                for h in open_workload_df.columns.to_list()
+                if h not in ["EXP_UNIQUE_ID"]
+            ]
+            open_workload_df.rename(
+                columns={"EXP_UNIQUE_ID": "ORIGINAL_INDEX_OLD"}, inplace=True
+            )
+
+            # merge dataframes
+            merged_df = open_workload_df.merge(
+                new_open_workload_df, how="outer", on=hyperparameters
+            )
+            merged_df.drop_duplicates(
+                inplace=True,
+                subset=merged_df.columns.difference(
+                    ["ORIGINAL_INDEX_NEW", "ORIGINAL_INDEX_OLD"]
+                ),
+            )
+            merged_df["MERGED_INDEX"] = merged_df["ORIGINAL_INDEX_OLD"].fillna(
+                merged_df["ORIGINAL_INDEX_NEW"]
+            )
+            del merged_df["ORIGINAL_INDEX_NEW"]
+            del merged_df["ORIGINAL_INDEX_OLD"]
+            merged_df.rename(columns={"MERGED_INDEX": "EXP_UNIQUE_ID"}, inplace=True)
+            open_workload_df = merged_df
 
         if not config.RERUN_FAILED_WORKLOADS:
             open_workload_df = open_workload_df.loc[
@@ -60,64 +163,8 @@ def create_workload(config: Config) -> List[int]:
         open_workload_df = open_workload_df.loc[
             ~open_workload_df.EXP_UNIQUE_ID.isin(done_workload_df.EXP_UNIQUE_ID)
         ]
-
     else:
-        exp_param_grid = {
-            exp_parameter: config.__getattribute__(exp_parameter)
-            for exp_parameter in exp_grid_params_names
-        }
-
-        all_workloads = ParameterGrid(exp_param_grid)
-
-        open_workload_df = pd.DataFrame(
-            data=all_workloads,  # type: ignore
-            columns=exp_grid_params_names,
-        )
-
-        open_workload_df.rename(
-            columns=lambda s: s.replace("EXP_GRID_", "EXP_"), inplace=True  # type: ignore
-        )
-
-        if config.INCLUDE_RESULTS_FROM is not None:
-            others_done_workload_df = None
-
-            for other_exp_results_name in config.INCLUDE_RESULTS_FROM:
-                # load done_workload_df from other results
-                other_done_workload = pd.read_csv(Path(other_exp_results_name))
-                if others_done_workload_df is None:
-                    others_done_workload_df = other_done_workload
-                else:
-                    others_done_workload_df = pd.concat(
-                        [others_done_workload_df, other_done_workload],
-                        ignore_index=True,
-                    )
-            length_before_removal_of_already_run_experiments = len(open_workload_df)
-            hyperparameters = [
-                h
-                for h in open_workload_df.columns.to_list()
-                if h not in ["EXP_UNIQUE_ID"]
-            ]
-
-            open_workload_df["ORIGINAL_INDEX"] = open_workload_df.index
-
-            # merge dataframes
-            merged_df = open_workload_df.merge(
-                others_done_workload_df, how="inner", on=hyperparameters
-            )
-            merged_df.drop_duplicates(inplace=True)
-
-            open_workload_df = open_workload_df.loc[
-                ~open_workload_df.index.isin(merged_df["ORIGINAL_INDEX"])
-            ]
-            del open_workload_df["ORIGINAL_INDEX"]
-            print(
-                f"Reduced from {length_before_removal_of_already_run_experiments} to {len(open_workload_df)}"
-            )
-
-        # shuffle workload to ensure that really long jobs are not all running on the same node
-        open_workload_df = open_workload_df.sample(frac=1).reset_index(drop=True)
-
-        open_workload_df["EXP_UNIQUE_ID"] = open_workload_df.index
+        open_workload_df = _generate_exp_param_grid(config, exp_grid_params_names)
 
     print("Removing strategies which only work in binary case")
     # remove all workloads which do not work
@@ -248,7 +295,6 @@ def create_run_files(config: Config) -> None:
 config = Config()
 
 unique_ids = create_workload(config)
-print(unique_ids)
 create_AL_experiment_slurm_files(config, len(unique_ids))
 create_AL_experiment_bash_files(config, unique_ids)
 create_run_files(config)
