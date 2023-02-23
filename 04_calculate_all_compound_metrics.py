@@ -7,11 +7,22 @@ from misc.config import Config
 from pandarallel import pandarallel
 
 pandarallel.initialize(progress_bar=True)
-import sys
 
 config = Config()
 
 print("computung the following metrics: " + ",".join(config.COMPUTED_METRICS))
+
+
+for samples_categorizer in config.SAMPLES_CATEGORIZER:
+    print("#" * 100)
+    print("computed_metric: " + str(samples_categorizer))
+    samples_categorizer_class = getattr(
+        importlib.import_module("metrics.computed." + samples_categorizer),
+        samples_categorizer,
+    )
+    samples_categorizer_class = samples_categorizer_class(config)
+
+    samples_categorizer_class.categorize_samples()
 
 
 for computed_metric in config.COMPUTED_METRICS:

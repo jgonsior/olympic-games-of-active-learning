@@ -9,12 +9,62 @@ from metrics.computed.base_computed_metric import Base_Computed_Metric
 
 from typing import Dict, TYPE_CHECKING
 
+from metrics.computed.base_samples_categorizer import Base_Samples_Categorizer
+
 
 if TYPE_CHECKING:
     pass
 
 
-class QUERIED_FROM_OPTIMAL(Base_Computed_Metric):
+class COUNT_WRONG_CLASSIFICATIONS_CATEGORIZER(Base_Samples_Categorizer):
+    """
+    is often classified wrongly
+    """
+
+    ...
+
+
+class SWITCHES_CLASS_OFTEN_CATEGORIZER(Base_Samples_Categorizer):
+    """
+    for a single AL Strategy Run the predicted class changes often over the AL cycles
+    """
+
+    ...
+
+
+class CLOSENESS_TO_DECISION_BOUNDARY_CATEGORIZER(Base_Samples_Categorizer):
+    """
+    use SVM to calculate exact decision boundaries -> calculate, how far away from the next decision boundary a sample is
+    """
+
+    ...
+
+
+class REGION_DENSITY_CATEGORIZER(Base_Samples_Categorizer):
+    """
+    use kNN or so to calculate, what the average distance of a sample to its next neighbors is
+    """
+
+    ...
+
+
+class MELTING_POT_REGION_CATEGORIZER(Base_Samples_Categorizer):
+    """
+    counts how many other classes are present among the k=5 nearest neighbors
+    """
+
+    ...
+
+
+class INCLUDED_IN_OPTIMAL_STRATEGY(Base_Samples_Categorizer):
+    """
+    counts how often a sample is included in an optimal strategy
+    """
+
+    ...
+
+
+class EASY_TO_CLASSIFY_CATEGORIZER(Base_Samples_Categorizer):
     optimal_samples_order_variability: np.ndarray
     optimal_samples_order_wrongness: np.ndarray
     optimal_samples_order_easy_hard_ambiguous: np.ndarray
