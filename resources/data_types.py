@@ -56,7 +56,6 @@ from metrics.computed.DISTANCE_METRICS import DISTANCE_METRICS
 from metrics.computed.HARDEST_SAMPLES import HARDEST_SAMPLES
 from metrics.computed.METRIC_DROP import METRIC_DROP
 from metrics.computed.MISMATCH_TRAIN_TEST import MISMATCH_TRAIN_TEST
-from metrics.computed.QUERIED_FROM_OPTIMAL import QUERIED_FROM_OPTIMAL
 from metrics.computed.STANDARD_AUC import STANDARD_AUC
 from optimal_query_strategies.BSO_optimal import Beeam_Search_Optimal
 
@@ -323,7 +322,6 @@ class COMPUTED_METRIC(IntEnum):
     CLASS_DISTRIBUTIONS = 4
     METRIC_DROP = 5
     HARDEST_SAMPLES = 6
-    QUERIED_FROM_OPTIMAL = 7
 
 
 computed_metric_to_classes_mapping: Dict[COMPUTED_METRIC, Callable] = {
@@ -333,5 +331,4 @@ computed_metric_to_classes_mapping: Dict[COMPUTED_METRIC, Callable] = {
     COMPUTED_METRIC.CLASS_DISTRIBUTIONS: CLASS_DISTRIBUTIONS,
     COMPUTED_METRIC.METRIC_DROP: METRIC_DROP,
     COMPUTED_METRIC.HARDEST_SAMPLES: HARDEST_SAMPLES,
-    COMPUTED_METRIC.QUERIED_FROM_OPTIMAL: QUERIED_FROM_OPTIMAL,
 }

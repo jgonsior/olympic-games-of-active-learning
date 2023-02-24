@@ -16,15 +16,25 @@ if TYPE_CHECKING:
     pass
 
 
-class COUNT_WRONG_CLASSIFICATIONS_CATEGORIZER(Base_Samples_Categorizer):
+class COUNT_WRONG_CLASSIFICATIONS(Base_Samples_Categorizer):
     """
     is often classified wrongly
     """
 
-    ...
+    def categorize_single_dataset(self, dataset: DATASET) -> None:
+        X, Y_true = self.load_dataset(dataset)
+        samples_categorization = np.zeros_like(Y_true)
+
+        for Y_pred in self.get_all_Y_preds_iterator(dataset):
+            for ix, Y in enumerate(Y_pred):
+                samples_categorization[ix] += 1
+
+    def categorize_samples(self, dataset) -> None:
+        for dataset in self.config.EXP_GRID_DATASET:
+            self.categorize_single_dataset(dataset)
 
 
-class SWITCHES_CLASS_OFTEN_CATEGORIZER(Base_Samples_Categorizer):
+class SWITCHES_CLASS_OFTEN(Base_Samples_Categorizer):
     """
     for a single AL Strategy Run the predicted class changes often over the AL cycles
     """
@@ -32,7 +42,7 @@ class SWITCHES_CLASS_OFTEN_CATEGORIZER(Base_Samples_Categorizer):
     ...
 
 
-class CLOSENESS_TO_DECISION_BOUNDARY_CATEGORIZER(Base_Samples_Categorizer):
+class CLOSENESS_TO_DECISION_BOUNDARY(Base_Samples_Categorizer):
     """
     use SVM to calculate exact decision boundaries -> calculate, how far away from the next decision boundary a sample is
     """
@@ -40,7 +50,7 @@ class CLOSENESS_TO_DECISION_BOUNDARY_CATEGORIZER(Base_Samples_Categorizer):
     ...
 
 
-class REGION_DENSITY_CATEGORIZER(Base_Samples_Categorizer):
+class REGION_DENSITY(Base_Samples_Categorizer):
     """
     use kNN or so to calculate, what the average distance of a sample to its next neighbors is
     """
@@ -48,7 +58,7 @@ class REGION_DENSITY_CATEGORIZER(Base_Samples_Categorizer):
     ...
 
 
-class MELTING_POT_REGION_CATEGORIZER(Base_Samples_Categorizer):
+class MELTING_POT_REGION(Base_Samples_Categorizer):
     """
     counts how many other classes are present among the k=5 nearest neighbors
     """
@@ -59,6 +69,41 @@ class MELTING_POT_REGION_CATEGORIZER(Base_Samples_Categorizer):
 class INCLUDED_IN_OPTIMAL_STRATEGY(Base_Samples_Categorizer):
     """
     counts how often a sample is included in an optimal strategy
+    """
+
+    ...
+
+
+class CLOSENESS_TO_SAMPLES_OF_SAME_CLASS(Base_Samples_Categorizer):
+    """
+    first, cluster dataset
+    second, calculate distance of point to cluster border
+    """
+
+    ...
+
+
+class CLOSENESS_TO_SAMPLES_OF_OTHER_CLASS(Base_Samples_Categorizer):
+    """
+    first, cluster dataset
+    second, calculate distance of point to cluster border
+    """
+
+    ...
+
+
+class CLOSENES_TO_CLUSTER_BORDER(Base_Samples_Categorizer):
+    """
+    first, cluster dataset
+    second, calculate distance of point to cluster border
+    """
+
+    ...
+
+
+class IMPROVES_ACCURACY_BY(Base_Samples_Categorizer):
+    """
+    count how often this sample improves the accuracy, if it was part of a batch
     """
 
     ...
