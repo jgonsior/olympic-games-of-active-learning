@@ -96,9 +96,9 @@ class Base_Samples_Categorizer(ABC):
         print(_train_test_splits)
         for strat in self.config.EXP_GRID_STRATEGY:
             # hier drinnen merge ich train und test zusammen, damit es zum normalen Y passt
-            1. anhand von exp_unique_id das mapping von train/test indices zu originalen indices finden
-            2. dann ein generelles y_pred erstellen was zum normalen y passt
-            3. dann kann ich ja immer noch mit y_pred[train_indices] das ganze auf nur bestimmte dinger mappen
+            # 1. anhand von exp_unique_id das mapping von train/test indices zu originalen indices finden
+            # 2. dann ein generelles y_pred erstellen was zum normalen y passt
+            # 3. dann kann ich ja immer noch mit y_pred[train_indices] das ganze auf nur bestimmte dinger mappen
 
             y_pred_train_path = Path(
                 f"{self.config.OUTPUT_PATH}/{strat.name}/{dataset.name}/y_pred_train.csv.xz"
