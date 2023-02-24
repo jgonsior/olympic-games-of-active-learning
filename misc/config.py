@@ -16,6 +16,7 @@ from misc.logging import init_logger, log_it
 from resources.data_types import (
     AL_STRATEGY,
     COMPUTED_METRIC,
+    SAMPLES_CATEGORIZER,
     LEARNER_MODEL,
     _import_compiled_libact_strategies,
 )
@@ -114,6 +115,7 @@ class Config:
 
     METRICS: List[Base_Metric]
     COMPUTED_METRICS: List[COMPUTED_METRIC]
+    SAMPLES_CATEGORIZER: List[SAMPLES_CATEGORIZER]
 
     EVA_METRICS_TO_CORRELATE: List[Union[Base_Metric, COMPUTED_METRIC]]
 
@@ -385,7 +387,10 @@ class Config:
                 choices = [e.value for e in v_class]  # type: ignore
                 nargs = "*"
                 arg_type = int
-            elif str(v) == "typing.List[resources.data_types.COMPUTED_METRIC]":
+            elif (
+                str(v) == "typing.List[resources.data_types.COMPUTED_METRIC]"
+                or str(v) == "typing.List[resources.data_types.SAMPLES_CATEGORIZER]"
+            ):
                 full_str = str(v).split("[")[1][:-1].split(".")
                 module_str = ".".join(full_str[:-1])
                 class_str = full_str[-1]
@@ -393,6 +398,7 @@ class Config:
 
                 # allow all possible integer values from the enum classes
                 choices = [e.name for e in v_class]  # type: ignore
+                choices.append("_ALL")
                 nargs = "*"
                 arg_type = str
             elif str(v) == "typing.Union[str, pathlib.Path]":
