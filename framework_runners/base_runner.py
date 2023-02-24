@@ -85,6 +85,13 @@ class AL_Experiment(ABC):
         np.random.seed(self.config.EXP_RANDOM_SEED)
         random.seed(self.config.EXP_RANDOM_SEED)
 
+        with open(self.config.OVERALL_STARTED_OOM_WORKLOAD_PATH, "a") as f:
+            w = csv.DictWriter(f, fieldnames=self.config._original_workload.keys())
+
+            if self.config.OVERALL_STARTED_OOM_WORKLOAD_PATH.stat().st_size == 0:
+                w.writeheader()
+            w.writerow(self.config._original_workload)
+
         dataset = DATASET(self.config.EXP_DATASET)
         dataset_tuple = load_dataset(dataset, self.config)
 

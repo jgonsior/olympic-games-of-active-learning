@@ -11,8 +11,6 @@ sys.dont_write_bytecode = True
 from misc.config import Config
 from pandarallel import pandarallel
 
-# all batches which have been running longer than 10 minutes will be ignored
-
 pandarallel.initialize(progress_bar=True)
 config = Config()
 
