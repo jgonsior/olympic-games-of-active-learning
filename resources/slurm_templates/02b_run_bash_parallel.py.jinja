@@ -6,7 +6,7 @@ from joblib import Parallel, delayed, parallel_backend
 import stopit
 
 def run_code(i):
-    with stopit.ThreadingTimeout(5) as to_ctx_mgr:
+    with stopit.ThreadingTimeout(660) as to_ctx_mgr:
         cli = f"python {{PYTHON_FILE }} --EXP_TITLE {{EXP_TITLE}} --WORKER_INDEX {i}"
         print("#" * 100)
         print(i)
