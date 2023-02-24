@@ -3,17 +3,19 @@ import multiprocessing
 import os
 import sys
 from joblib import Parallel, delayed, parallel_backend
-
+import stopit
 
 def run_code(i):
-    cli = f"python {{PYTHON_FILE }} --EXP_TITLE {{EXP_TITLE}} --WORKER_INDEX {i}"
-    print("#" * 100)
-    print(i)
-    print(cli)
-    print("#" * 100)
-    print("\n")
-    os.system(cli)
-
+    with stopit.ThreadingTimeout(5) as to_ctx_mgr:
+        cli = f"python {{PYTHON_FILE }} --EXP_TITLE {{EXP_TITLE}} --WORKER_INDEX {i}"
+        print("#" * 100)
+        print(i)
+        print(cli)
+        print("#" * 100)
+        print("\n")
+        os.system(cli)
+    if to_ctx_mgr.state == to_ctx_mgr.INTERRUPTED:
+        print(f"Canceled {i}")
 
 with parallel_backend("loky", n_jobs=multiprocessing.cpu_count()):
     Parallel()(delayed(run_code)(i) for i in range({{START}},{{END}}))

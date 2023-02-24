@@ -69,10 +69,34 @@ class Base_Samples_Categorizer(ABC):
 
         return df
 
+    def _convert_(self, df: pd.DataFrame) -> pd.DataFrame:
+        column_names_which_are_al_cycles = list(df.columns)
+        column_names_which_are_al_cycles.remove("EXP_UNIQUE_ID")
+
+        df = df.fillna("")
+        df["selected_indices"] = df[column_names_which_are_al_cycles].apply(
+            lambda x: ast.literal_eval(
+                ("[" + ",".join(x).replace("[", "").replace("]", "") + "]").replace(
+                    ",,", ""
+                )
+            ),
+            axis=1,
+        )
+        for c in column_names_which_are_al_cycles:
+            del df[c]
+
+        return df
+
     def _get_Y_preds_iterator(
         self, dataset: DATASET
     ) -> Iterable[Tuple[pd.DataFrame, pd.DataFrame]]:
+        _train_test_splits = pd.read_csv(
+            f"{self.config.DATASETS_PATH}/{dataset.name}{self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX}"
+        )
+        print(_train_test_splits)
         for strat in self.config.EXP_GRID_STRATEGY:
+            # hier drinnen merge ich train und test zusammen, damit es zum normalen Y passt
+
             y_pred_train_path = Path(
                 f"{self.config.OUTPUT_PATH}/{strat.name}/{dataset.name}/y_pred_train.csv.xz"
             )
@@ -97,9 +121,13 @@ class COUNT_WRONG_CLASSIFICATIONS(Base_Samples_Categorizer):
     def categorize_samples(self, dataset: DATASET) -> None:
         X, Y_true = self._load_dataset(dataset)
         samples_categorization = np.zeros_like(Y_true)
-
+        print(np.shape(Y_true))
         for Y_pred_train, Y_pred_test in self._get_Y_preds_iterator(dataset):
+            print(Y_pred_train)
+            print(np.shape(Y_pred_train))
+            exit(-1)
             for ix, Y in enumerate(Y_pred_train):
+                print(np.shape(Y))
                 samples_categorization[ix] += 1
             for ix, Y in enumerate(Y_pred_test):
                 samples_categorization[ix] += 1

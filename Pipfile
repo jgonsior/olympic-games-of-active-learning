@@ -43,6 +43,7 @@ livereload = "==2.5.1"
 pyinotify = "*"
 pandarallel = "*"
 frozen-flask = "*"
+stopit = "*"
 
 [requires]
 python_version = "3.10"
