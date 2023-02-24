@@ -124,6 +124,7 @@ def create_workload(config: Config) -> List[int]:
                 )
                 + 1,
             )
+
             new_open_workload_df.rename(
                 columns={"EXP_UNIQUE_ID": "ORIGINAL_INDEX_NEW"}, inplace=True
             )
@@ -137,16 +138,19 @@ def create_workload(config: Config) -> List[int]:
                 columns={"EXP_UNIQUE_ID": "ORIGINAL_INDEX_OLD"}, inplace=True
             )
 
-            # merge dataframes
             merged_df = open_workload_df.merge(
-                new_open_workload_df, how="outer", on=hyperparameters
+                new_open_workload_df,
+                how="outer",
+                on=hyperparameters,
             )
+
             merged_df.drop_duplicates(
                 inplace=True,
                 subset=merged_df.columns.difference(
                     ["ORIGINAL_INDEX_NEW", "ORIGINAL_INDEX_OLD"]
                 ),
             )
+
             merged_df["MERGED_INDEX"] = merged_df["ORIGINAL_INDEX_OLD"].fillna(
                 merged_df["ORIGINAL_INDEX_NEW"]
             )
@@ -155,18 +159,40 @@ def create_workload(config: Config) -> List[int]:
             merged_df.rename(columns={"MERGED_INDEX": "EXP_UNIQUE_ID"}, inplace=True)
             open_workload_df = merged_df
 
+            open_workload_df["EXP_UNIQUE_ID"] = open_workload_df[
+                "EXP_UNIQUE_ID"
+            ].astype(int)
+
+        def _remove_right_from_left_workload(
+            left: pd.DataFrame, right: pd.DataFrame
+        ) -> pd.DataFrame:
+            if "error" in right.columns:
+                del right["error"]
+
+            merge = left.merge(
+                right,
+                on=[c for c in left.columns.difference(["EXP_UNIQUE_ID"])],
+                how="outer",
+                indicator="source",
+            )
+            result = merge[merge.source.eq("left_only")].drop("source", axis=1)
+            del result["EXP_UNIQUE_ID_y"]
+            result.rename(columns={"EXP_UNIQUE_ID_x": "EXP_UNIQUE_ID"}, inplace=True)
+            return result
+
         if not config.RERUN_FAILED_WORKLOADS:
-            open_workload_df = open_workload_df.loc[
-                ~open_workload_df.EXP_UNIQUE_ID.isin(failed_workload_df.EXP_UNIQUE_ID)
-            ]
+            open_workload_df = _remove_right_from_left_workload(
+                open_workload_df, failed_workload_df
+            )
 
         # remove already run workloads
-        open_workload_df = open_workload_df.loc[
-            ~open_workload_df.EXP_UNIQUE_ID.isin(done_workload_df.EXP_UNIQUE_ID)
-        ]
+        open_workload_df = _remove_right_from_left_workload(
+            open_workload_df, done_workload_df
+        )
     else:
         open_workload_df = _generate_exp_param_grid(config, exp_grid_params_names)
 
+    print(len(open_workload_df))
     print("Removing strategies which only work in binary case")
     # remove all workloads which do not work
     datasets_which_are_binary_only = []
@@ -185,6 +211,7 @@ def create_workload(config: Config) -> List[int]:
                 ].index
             )
 
+    print(len(open_workload_df))
     print(
         "Remove strategies and ml_model combinations which only work with decision boundary"
     )
@@ -213,11 +240,13 @@ def create_workload(config: Config) -> List[int]:
                 ].index
             )
 
+    print(len(open_workload_df))
     print("Removing workloads using LBFGS_MLP")
     open_workload_df = open_workload_df[
         open_workload_df["EXP_LEARNER_MODEL"] != LEARNER_MODEL.LBFGS_MLP
     ]
 
+    print(len(open_workload_df))
     if config.SEPARATE_HPC_LOCAL_WORKLOAD:
         non_hpc_workload_df = open_workload_df[
             open_workload_df["EXP_STRATEGY"].isin(al_strategies_not_suitable_for_hpc)
