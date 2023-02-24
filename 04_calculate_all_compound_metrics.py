@@ -1,11 +1,7 @@
-import functools
-import itertools
-import multiprocessing
+import functoolsimport itertools
 import sys
-import time
 from typing import Tuple
 
-import stopit
 
 sys.dont_write_bytecode = True
 import importlib
@@ -23,21 +19,6 @@ pandarallel.initialize(progress_bar=True)
 
 config = Config()
 
-
-def _test(i):
-    i
-        j = 0
-        while True:
-            print(f"{i}: {j}")
-            time.sleep(1)
-            j += 1
-    if to_ctx_mgr.state == to_ctx_mgr.INTERRUPTED:
-        print(f"Canceled {i}")
-
-
-with parallel_backend("loky", n_jobs=2):  # multiprocessing.cpu_count()):
-    Parallel()(delayed(_test)(i) for i in range(1, 10))
-exit(-1)
 print(
     "computung the following samples categories: "
     + ",".join(config.SAMPLES_CATEGORIZER)

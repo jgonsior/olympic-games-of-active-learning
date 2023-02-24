@@ -5,6 +5,8 @@ import csv
 import importlib
 import random
 from typing import TYPE_CHECKING, Any, Dict, List
+
+import stopit
 from datasets import DATASET, load_dataset, split_dataset
 from metrics.Timing_Metrics import Timing_Metrics
 from metrics.base_metric import Base_Metric
@@ -49,9 +51,6 @@ class AL_Experiment(ABC):
 
     def __init__(self, config: Config) -> None:
         self.config = config
-
-        if "Timing_Metrics" not in config.METRICS:
-            config.METRICS.append("Timing_Metrics")
 
         for metric_class in config.METRICS:
             metric_class = str(metric_class)
@@ -155,13 +154,12 @@ class AL_Experiment(ABC):
                     log_it("early stopping")
                     break
 
-                self.al_cycle(iteration_counter=iteration)
+                with stopit.ThreadingTimeout(
+                    self.config.EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT
+                ) as to_ctx_mgr:
+                    self.al_cycle(iteration_counter=iteration)
 
-                # check if the RUNTIME LIMIT has been exceeded -> if yes -> early stopping!
-                if (
-                    self.timing_metric_class.metric_values["query_selection_time"][-1]
-                    > self.config.EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT
-                ):
+                if to_ctx_mgr.state == to_ctx_mgr.INTERRUPTED:
                     log_it("early stopping -> runtime limit exceeded")
 
                     early_stopped_due_to_runtime_limit = True
