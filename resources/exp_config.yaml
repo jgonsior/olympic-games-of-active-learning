@@ -37,7 +37,7 @@ all_strategies_all_datasets_single_random_seed:
                 ALIPY_SPAL,
                 ALIPY_LAL,
                 ALIPY_DENSITY_WEIGHTED,
-            ], EXP_GRID_RANDOM_SEED: [0], EXP_GRID_START_POINT: [0], EXP_GRID_NUM_QUERIES: [5], EXP_GRID_BATCH_SIZE: [5], EXP_GRID_LEARNER_MODEL: [MLP], EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0], METRICS: [Predicted_Samples, Selected_Indices, Standard_ML_Metrics, Timing_Metrics] }
+            ], EXP_GRID_RANDOM_SEED: [0], EXP_GRID_START_POINT: [0], EXP_GRID_NUM_QUERIES: [5], EXP_GRID_BATCH_SIZE: [5], EXP_GRID_LEARNER_MODEL: [RF], EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0], METRICS: [Predicted_Samples, Selected_Indices, Standard_ML_Metrics, Timing_Metrics] }
 only_random: {
         EXP_GRID_DATASET: [1-39],
         EXP_GRID_STRATEGY:
