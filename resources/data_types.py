@@ -291,7 +291,7 @@ learner_models_to_classes_mapping: Dict[
             "learning_rate": "adaptive",
             "max_iter": 1000,
             "warm_start": False,
-            "early_stopping": True,
+            "early_stopping": False,
         },
     ),  # default values
     LEARNER_MODEL.LBFGS_MLP: (
