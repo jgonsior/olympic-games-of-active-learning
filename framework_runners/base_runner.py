@@ -148,30 +148,28 @@ class AL_Experiment(ABC):
         early_stopped_due_to_runtime_limit = False
         error_was_being_raised = False
 
-        # try:
-        for iteration in range(0, total_amount_of_iterations):
-            if len(self.local_train_unlabeled_idx) == 0:
-                log_it("early stopping")
-                break
+        try:
+            for iteration in range(0, total_amount_of_iterations):
+                if len(self.local_train_unlabeled_idx) == 0:
+                    log_it("early stopping")
+                    break
 
-            with stopit.SignalTimeout(
-                self.config.EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT
-            ) as to_ctx_mgr:
-                self.al_cycle(iteration_counter=iteration)
+                with stopit.SignalTimeout(
+                    self.config.EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT
+                ) as to_ctx_mgr:
+                    self.al_cycle(iteration_counter=iteration)
 
-            if to_ctx_mgr.state == to_ctx_mgr.TIMED_OUT:
-                log_it("early stopping -> runtime limit exceeded")
+                if to_ctx_mgr.state == to_ctx_mgr.TIMED_OUT:
+                    log_it("early stopping -> runtime limit exceeded")
 
-                early_stopped_due_to_runtime_limit = True
-                break
-        """except Exception as err:
+                    early_stopped_due_to_runtime_limit = True
+                    break
+        except Exception as err:
             error_was_being_raised = True
             import sys
 
             exc_type, value, traceback = sys.exc_info()
             print(f"ERROR occured, but was catched: {exc_type}")
-            print(value)
-            print(traceback)
 
             self.config._original_workload["error"] = str(exc_type)
             with open(self.config.OVERALL_FAILED_WORKLOAD_PATH, "a") as f:
@@ -179,8 +177,7 @@ class AL_Experiment(ABC):
 
                 if self.config.OVERALL_FAILED_WORKLOAD_PATH.stat().st_size == 0:
                     w.writeheader()
-                w.writerow(self.config._original_workload)"""
-        exit(-1)
+                w.writerow(self.config._original_workload)
 
         if not error_was_being_raised:
             if not early_stopped_due_to_runtime_limit:
