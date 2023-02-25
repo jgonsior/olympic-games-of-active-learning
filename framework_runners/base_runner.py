@@ -154,12 +154,12 @@ class AL_Experiment(ABC):
                     log_it("early stopping")
                     break
 
-                with stopit.ThreadingTimeout(
+                with stopit.SignalTimeout(
                     self.config.EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT
                 ) as to_ctx_mgr:
                     self.al_cycle(iteration_counter=iteration)
 
-                if to_ctx_mgr.state == to_ctx_mgr.INTERRUPTED:
+                if to_ctx_mgr.state == to_ctx_mgr.TIMED_OUT:
                     log_it("early stopping -> runtime limit exceeded")
 
                     early_stopped_due_to_runtime_limit = True

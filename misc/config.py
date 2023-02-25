@@ -60,7 +60,7 @@ class Config:
     EXP_TRAIN_TEST_BUCKET_SIZE: int
     EXP_GRID_TRAIN_TEST_BUCKET_SIZE: List[int] = list(range(0, 5))
     EXP_UNIQUE_ID: int
-    EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT: int = 600  # 10 minutes
+    EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT: int = 10  # 600  # 10 minutes
 
     WORKER_INDEX: int
 
@@ -341,6 +341,7 @@ class Config:
         for k in workload.keys():
             log_it(f"{k}\t\t\t{str(self.__getattribute__(k))}")
 
+        print(self.EXP_RANDOM_SEED)
         np.random.seed(self.EXP_RANDOM_SEED)
         random.seed(self.EXP_RANDOM_SEED)
 
