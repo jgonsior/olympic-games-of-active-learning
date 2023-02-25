@@ -20,7 +20,7 @@ lbfgs_mlp_exp_ids = []
 df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
 lbfgs_mlp_exp_ids = df[
     df["EXP_LEARNER_MODEL"].isin(
-        [LEARNER_MODEL.MLP.value, LEARNER_MODEL.LBFGS_MLP.value]
+        [LEARNER_MODEL.MLP.value, LEARNER_MODEL.LBFGS_MLP.valuesk]
     )
 ]["EXP_UNIQUE_ID"]
 

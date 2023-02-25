@@ -154,7 +154,7 @@ class AL_Experiment(ABC):
                     log_it("early stopping")
                     break
 
-                with stopit.SignalTimeout(
+                with stopit.ThreadingTimeout(
                     self.config.EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT
                 ) as to_ctx_mgr:
                     self.al_cycle(iteration_counter=iteration)
