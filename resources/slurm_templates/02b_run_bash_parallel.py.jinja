@@ -6,7 +6,7 @@ from joblib import Parallel, delayed, parallel_backend
 import stopit
 
 def run_code(i):
-    cli = f"python {{PYTHON_FILE }} --EXP_TITLE {{EXP_TITLE}} --WORKER_INDEX {i}"
+    cli = f"timeout {{timeout_duration}} python {{PYTHON_FILE }} --EXP_TITLE {{EXP_TITLE}} --WORKER_INDEX {i}"
     print("#" * 100)
     print(i)
     print(cli)

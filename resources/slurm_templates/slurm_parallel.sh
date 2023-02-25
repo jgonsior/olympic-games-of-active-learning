@@ -21,6 +21,6 @@ export PYTHONDONTWRITEBYTECODE=1
 #module load Python/3.8.6
 end=$(($i+{{ SLURM_ITERATIONS_PER_BATCH }}))
 for ((j = $i ; j < $end ; j++)); do
-    MPLCONFIGPATH={{HPC_WS_PATH}}cache {{HPC_PYTHON_PATH}} {{HPC_WS_PATH}}/code/{{PYTHON_FILE}} --EXP_TITLE {{EXP_TITLE}} {{ CLI_ARGS }} {% if APPEND_OUTPUT_PATH %} {{ OUTPUT_PATH }}/{{ EXP_TITLE }} {% endif %} --RUNNING_ENVIRONMENT hpc --LOG_FILE log.txt --WORKER_INDEX $j
+    MPLCONFIGPATH={{HPC_WS_PATH}}cache timeout {{timeout_duration}} {{HPC_PYTHON_PATH}} {{HPC_WS_PATH}}/code/{{PYTHON_FILE}} --EXP_TITLE {{EXP_TITLE}} {{ CLI_ARGS }} {% if APPEND_OUTPUT_PATH %} {{ OUTPUT_PATH }}/{{ EXP_TITLE }} {% endif %} --RUNNING_ENVIRONMENT hpc --LOG_FILE log.txt --WORKER_INDEX $j
 done
 exit 0

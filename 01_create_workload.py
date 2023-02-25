@@ -297,6 +297,8 @@ def create_AL_experiment_slurm_files(config: Config, workload_amount: int) -> No
         END=int(workload_amount / config.SLURM_ITERATIONS_PER_BATCH),
         CLI_ARGS="",
         APPEND_OUTPUT_PATH=False,
+        timeout_duration=config.EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT
+        * (config.EXP_GRID_NUM_QUERIES[0] + 1),
     )
 
     _write_template_file(
@@ -322,6 +324,8 @@ def create_AL_experiment_bash_files(config: Config, unique_ids: List[int]) -> No
         PYTHON_FILE="02_run_experiment.py",
         START=0,
         END=len(unique_ids),
+        timeout_duration=config.EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT
+        * (config.EXP_GRID_NUM_QUERIES[0] + 1),
     )
     _chmod_u_plus_x(config.EXPERIMENT_PYTHON_PARALLEL_BASH_FILE_PATH)
 
