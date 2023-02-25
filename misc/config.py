@@ -60,7 +60,7 @@ class Config:
     EXP_TRAIN_TEST_BUCKET_SIZE: int
     EXP_GRID_TRAIN_TEST_BUCKET_SIZE: List[int] = list(range(0, 5))
     EXP_UNIQUE_ID: int
-    EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT: int = 3  # 600  10 minutes
+    EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT: int = 600  # 600  10 minutes
 
     WORKER_INDEX: int
 
