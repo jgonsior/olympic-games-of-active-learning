@@ -87,15 +87,18 @@ class Base_Samples_Categorizer(ABC):
 
         return df
 
-    def _get_Y_preds_iterator(
-        self, dataset: DATASET
-    ) -> Iterable[Tuple[pd.DataFrame, pd.DataFrame]]:
-        _train_test_splits = pd.read_csv(
-            f"{self.config.DATASETS_PATH}/{dataset.name}{self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX}"
+    def _get_Y_preds_iterator(self, dataset: DATASET) -> Iterable[pd.DataFrame]:
+        _train_test_splits = (
+            pd.read_csv(
+                f"{self.config.DATASETS_PATH}/{dataset.name}{self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX}",
+                usecols=["train", "test"],
+            )
+            .applymap(lambda x: ast.literal_eval(x.replace(",,", "")))
+            .reset_index(level=0)
+            .rename(columns={"index": "EXP_TRAIN_TEST_BUCKET_SIZE"})
         )
-        print(_train_test_splits)
         for strat in self.config.EXP_GRID_STRATEGY:
-            # hier drinnen merge ich train und test zusammen, damit es zum normalen Y passt
+            # hier drinnen merge ich train und test zusammen, damit es zum normalen Y passt4
             # 1. anhand von exp_unique_id das mapping von train/test indices zu originalen indices finden
             # 2. dann ein generelles y_pred erstellen was zum normalen y passt
             # 3. dann kann ich ja immer noch mit y_pred[train_indices] das ganze auf nur bestimmte dinger mappen
@@ -106,14 +109,66 @@ class Base_Samples_Categorizer(ABC):
             if not y_pred_train_path.exists():
                 continue
             Y_pred_train = pd.read_csv(y_pred_train_path)
+            cols_with_indice_lists = Y_pred_train.columns.difference(["EXP_UNIQUE_ID"])
 
-            Y_pred_train = self._convert_selected_indices_to_ast(Y_pred_train)
-            Y_pred_test = pd.read_csv(
-                f"{self.config.OUTPUT_PATH}/{strat.name}/{dataset.name}/y_pred_train.csv.xz",
+            Y_pred_train[cols_with_indice_lists] = (
+                Y_pred_train[cols_with_indice_lists]
+                .fillna("[]")
+                .applymap(lambda x: ast.literal_eval(x))
             )
-            Y_pred_test = self._convert_selected_indices_to_ast(Y_pred_test)
+            Y_pred_test = pd.read_csv(
+                f"{self.config.OUTPUT_PATH}/{strat.name}/{dataset.name}/y_pred_test.csv.xz",
+            )
+            Y_pred_test[cols_with_indice_lists] = (
+                Y_pred_test[cols_with_indice_lists]
+                .fillna("[]")
+                .applymap(lambda x: ast.literal_eval(x))
+            )
 
-            yield Y_pred_train, Y_pred_test
+            # get train_test_splits based on EXP_UNIQUE_ID
+            exp_train_test_buckets = self.done_workload_df[
+                self.done_workload_df["EXP_UNIQUE_ID"].isin(Y_pred_train.EXP_UNIQUE_ID)
+            ]  # ["EXP_TRAIN_TEST_BUCKET_SIZE"].to_frame()
+
+            Y_pred = Y_pred_train.merge(
+                Y_pred_test,
+                how="inner",
+                on="EXP_UNIQUE_ID",
+                suffixes=["_train", "_test"],
+            )
+
+            exp_train_test_buckets = exp_train_test_buckets.merge(
+                _train_test_splits, how="left", on="EXP_TRAIN_TEST_BUCKET_SIZE"
+            )[["EXP_UNIQUE_ID", "train", "test"]]
+            Y_pred = Y_pred.merge(
+                exp_train_test_buckets, how="inner", on="EXP_UNIQUE_ID"
+            )
+
+            def _merge_indices(
+                row: pd.Series, cols_with_indice_lists: List[int]
+            ) -> List[np.ndarray]:
+                result = np.empty(
+                    (len(cols_with_indice_lists), len(row["train"]) + len(row["test"])),
+                    dtype=np.int8,
+                )
+                result.fill(np.nan)
+
+                for c in cols_with_indice_lists:
+                    if row[f"{c}_train"] == []:
+                        continue
+                    print(row[f"{c}_test"])
+                    result[c, row["train"]] = row[f"{c}_train"]
+                    result[c, row["test"]] = row[f"{c}_test"]
+
+                return [r for r in result]
+
+            Y_pred = Y_pred.apply(
+                lambda x: _merge_indices(x, [int(c) for c in cols_with_indice_lists]),
+                axis=1,
+                result_type="expand",
+            )
+
+            yield Y_pred
 
 
 class COUNT_WRONG_CLASSIFICATIONS(Base_Samples_Categorizer):
@@ -124,10 +179,11 @@ class COUNT_WRONG_CLASSIFICATIONS(Base_Samples_Categorizer):
     def categorize_samples(self, dataset: DATASET) -> None:
         X, Y_true = self._load_dataset(dataset)
         samples_categorization = np.zeros_like(Y_true)
-        print(np.shape(Y_true))
-        for Y_pred_train, Y_pred_test in self._get_Y_preds_iterator(dataset):
-            print(Y_pred_train)
-            print(np.shape(Y_pred_train))
+        for Y_pred in self._get_Y_preds_iterator(dataset):
+            print(Y_pred)
+            print(Y_true)
+
+            # calculate accuracy for each iteration step!
             exit(-1)
             for ix, Y in enumerate(Y_pred_train):
                 print(np.shape(Y))

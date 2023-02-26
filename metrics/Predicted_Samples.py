@@ -7,7 +7,6 @@ if TYPE_CHECKING:
     from framework_runners.base_runner import AL_Experiment
 
 
-# TODO ersetzt pickled learner, ersetzt
 class Predicted_Samples(Base_Metric):
     metrics = ["y_pred_train", "y_pred_test"]
 

@@ -1,4 +1,5 @@
-import functoolsimport itertools
+import functools
+import itertools
 import sys
 from typing import Tuple
 
