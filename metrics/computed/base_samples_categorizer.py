@@ -5,6 +5,7 @@ from typing import Iterable, List, TYPE_CHECKING, Tuple
 from joblib import Parallel, delayed, parallel_backend
 import ast
 import pandas as pd
+from sklearn.metrics import accuracy_score
 
 from datasets import DATASET
 import ast
@@ -31,13 +32,26 @@ categorizes each sample of the dataset into different categories
 class Base_Samples_Categorizer(ABC):
     metrics: List[str]
     done_workload_df: pd.DataFrame
+    _train_test_splits: Dict[DATASET, pd.DataFrame] = {}
 
     def __init__(self, config: Config) -> None:
         self.done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
         self.config = config
 
+    def calculate_samples_categorization(self, dataset: DATASET) -> np.ndarray:
+        ...
+
     def categorize_samples(self, dataset: DATASET) -> None:
-        pass
+        samples_categorization_path = Path(
+            f"{self.config.OUTPUT_PATH}/_{self.__class__.__name__}/{dataset.name}.npz"
+        )
+        samples_categorization_path.parent.mkdir(parents=True, exist_ok=True)
+
+        samples_categorization = self.calculate_samples_categorization(dataset)
+
+        np.savez_compressed(
+            samples_categorization_path, samples_categorization=samples_categorization
+        )
 
     def _load_dataset(self, dataset: DATASET) -> Tuple[FeatureVectors, LabelList]:
         X: FeatureVectors = pd.read_csv(
@@ -87,22 +101,22 @@ class Base_Samples_Categorizer(ABC):
 
         return df
 
-    def _get_Y_preds_iterator(self, dataset: DATASET) -> Iterable[pd.DataFrame]:
-        _train_test_splits = (
-            pd.read_csv(
-                f"{self.config.DATASETS_PATH}/{dataset.name}{self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX}",
-                usecols=["train", "test"],
+    def _get_train_test_splits(self, dataset) -> pd.DataFrame:
+        if dataset not in self._train_test_splits.keys():
+            self._train_test_splits[dataset] = (
+                pd.read_csv(
+                    f"{self.config.DATASETS_PATH}/{dataset.name}{self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX}",
+                    usecols=["train", "test"],
+                )
+                .applymap(lambda x: ast.literal_eval(x.replace(",,", "")))
+                .reset_index(level=0)
+                .rename(columns={"index": "EXP_TRAIN_TEST_BUCKET_SIZE"})
             )
-            .applymap(lambda x: ast.literal_eval(x.replace(",,", "")))
-            .reset_index(level=0)
-            .rename(columns={"index": "EXP_TRAIN_TEST_BUCKET_SIZE"})
-        )
-        for strat in self.config.EXP_GRID_STRATEGY:
-            # hier drinnen merge ich train und test zusammen, damit es zum normalen Y passt4
-            # 1. anhand von exp_unique_id das mapping von train/test indices zu originalen indices finden
-            # 2. dann ein generelles y_pred erstellen was zum normalen y passt
-            # 3. dann kann ich ja immer noch mit y_pred[train_indices] das ganze auf nur bestimmte dinger mappen
+        return self._train_test_splits[dataset]
 
+    def _get_Y_preds_iterator(self, dataset: DATASET) -> Iterable[pd.DataFrame]:
+        _train_test_splits = self._get_train_test_splits(dataset)
+        for strat in self.config.EXP_GRID_STRATEGY:
             y_pred_train_path = Path(
                 f"{self.config.OUTPUT_PATH}/{strat.name}/{dataset.name}/y_pred_train.csv.xz"
             )
@@ -156,17 +170,19 @@ class Base_Samples_Categorizer(ABC):
                 for c in cols_with_indice_lists:
                     if row[f"{c}_train"] == []:
                         continue
-                    print(row[f"{c}_test"])
                     result[c, row["train"]] = row[f"{c}_train"]
                     result[c, row["test"]] = row[f"{c}_test"]
 
                 return [r for r in result]
 
+            exp_unique_ids = Y_pred["EXP_UNIQUE_ID"]
             Y_pred = Y_pred.apply(
                 lambda x: _merge_indices(x, [int(c) for c in cols_with_indice_lists]),
                 axis=1,
                 result_type="expand",
             )
+
+            Y_pred.set_index(exp_unique_ids, inplace=True)
 
             yield Y_pred
 
@@ -176,21 +192,16 @@ class COUNT_WRONG_CLASSIFICATIONS(Base_Samples_Categorizer):
     is often classified wrongly
     """
 
-    def categorize_samples(self, dataset: DATASET) -> None:
-        X, Y_true = self._load_dataset(dataset)
+    def calculate_samples_categorization(self, dataset: DATASET) -> np.ndarray:
+        _, Y_true = self._load_dataset(dataset)
         samples_categorization = np.zeros_like(Y_true)
-        for Y_pred in self._get_Y_preds_iterator(dataset):
-            print(Y_pred)
-            print(Y_true)
+        for Y_preds in self._get_Y_preds_iterator(dataset):
+            for exp_unique_id, r in Y_preds.iterrows():
+                for al_cycle_iteration, Y_pred in enumerate(r):
+                    # calculate how often Y_pred and Y_true are not equal
+                    samples_categorization[np.where(Y_pred != Y_true)] += 1
 
-            # calculate accuracy for each iteration step!
-            exit(-1)
-            for ix, Y in enumerate(Y_pred_train):
-                print(np.shape(Y))
-                samples_categorization[ix] += 1
-            for ix, Y in enumerate(Y_pred_test):
-                samples_categorization[ix] += 1
-        print(samples_categorization)
+        return samples_categorization
 
 
 class SWITCHES_CLASS_OFTEN(Base_Samples_Categorizer):
