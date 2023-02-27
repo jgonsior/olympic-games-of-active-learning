@@ -53,7 +53,6 @@ from framework_runners.libact_runner import LIBACT_Experiment
 from framework_runners.playground_runner import PLAYGROUND_AL_Experiment
 from metrics.computed.CLASS_DISTRIBUTIONS import CLASS_DISTRIBUTIONS
 from metrics.computed.DISTANCE_METRICS import DISTANCE_METRICS
-from metrics.computed.HARDEST_SAMPLES import HARDEST_SAMPLES
 from metrics.computed.METRIC_DROP import METRIC_DROP
 from metrics.computed.MISMATCH_TRAIN_TEST import MISMATCH_TRAIN_TEST
 from metrics.computed.STANDARD_AUC import STANDARD_AUC
@@ -333,7 +332,6 @@ class COMPUTED_METRIC(IntEnum):
     MISMATCH_TRAIN_TEST = 3
     CLASS_DISTRIBUTIONS = 4
     METRIC_DROP = 5
-    HARDEST_SAMPLES = 6
 
 
 computed_metric_to_classes_mapping: Dict[COMPUTED_METRIC, Callable] = {
@@ -342,7 +340,6 @@ computed_metric_to_classes_mapping: Dict[COMPUTED_METRIC, Callable] = {
     COMPUTED_METRIC.MISMATCH_TRAIN_TEST: MISMATCH_TRAIN_TEST,
     COMPUTED_METRIC.CLASS_DISTRIBUTIONS: CLASS_DISTRIBUTIONS,
     COMPUTED_METRIC.METRIC_DROP: METRIC_DROP,
-    COMPUTED_METRIC.HARDEST_SAMPLES: HARDEST_SAMPLES,
 }
 
 

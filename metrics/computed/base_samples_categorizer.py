@@ -3,19 +3,14 @@ from abc import ABC
 import math
 from pathlib import Path
 from typing import Callable, Iterable, List, TYPE_CHECKING, Tuple
-from joblib import Parallel, delayed, parallel_backend
 import ast
 import pandas as pd
-import scipy
-from sklearn.cluster import Birch, KMeans, MiniBatchKMeans
-from sklearn.metrics import accuracy_score
+from sklearn.cluster import MiniBatchKMeans
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.preprocessing import minmax_scale
 
 from datasets import DATASET
 import ast
 from pathlib import Path
-from statistics import harmonic_mean
 import numpy as np
 import pandas as pd
 from datasets import DATASET
@@ -290,12 +285,42 @@ class SWITCHES_CLASS_OFTEN(Base_Samples_Categorizer):
         return samples_categorization
 
 
+# x
 class CLOSENESS_TO_DECISION_BOUNDARY(Base_Samples_Categorizer):
     """
     use SVM to calculate exact decision boundaries -> calculate, how far away from the next decision boundary a sample is
     """
 
-    ...
+    def calculate_samples_categorization(
+        self,
+        dataset: DATASET,
+    ) -> np.ndarray:
+        from resources.data_types import (
+            LEARNER_MODEL,
+            learner_models_to_classes_mapping,
+        )
+
+        X, Y_true = self._load_dataset(dataset)
+
+        learner_params = learner_models_to_classes_mapping[LEARNER_MODEL.RBF_SVM]
+        learner = learner_params[0](**learner_params[1], decision_function_shape="ovr")
+
+        learner.fit(X, Y_true)
+        decision_boundary_distances = np.abs(learner.decision_function(X))
+
+        if len(np.shape(decision_boundary_distances)) > 1:
+            min_distances = np.min(decision_boundary_distances, axis=1)
+        else:
+            min_distances = decision_boundary_distances
+
+        samples_categorization = min_distances
+
+        # normalize samples_categorization
+        samples_categorization = (
+            samples_categorization / np.sum(samples_categorization) * 1000
+        )
+
+        return samples_categorization
 
 
 # x
@@ -404,6 +429,7 @@ class CLOSENESS_TO_SAMPLES_OF_SAME_CLASS(Base_Samples_Categorizer):
         return self._closeness_to_k_nearest(dataset, mask_func=lambda a, b: a == b)
 
 
+# x
 class CLOSENESS_TO_SAMPLES_OF_OTHER_CLASS(Base_Samples_Categorizer):
     """
     first, cluster dataset
