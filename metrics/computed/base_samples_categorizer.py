@@ -66,6 +66,11 @@ class Base_Samples_Categorizer(ABC):
 
         return X, Y_true
 
+    def _get_distance_matrix(self, dataset: DATASET) -> np.ndarray:
+        return pd.read_csv(
+            f"{self.config.DATASETS_PATH}/{dataset.name}{self.config.DATASETS_DISTANCES_APPENDIX}",
+        ).to_numpy()
+
     def _convert_selected_indices_to_ast(self, df: pd.DataFrame) -> pd.DataFrame:
         column_names_which_are_al_cycles = list(df.columns)
         column_names_which_are_al_cycles.remove("EXP_UNIQUE_ID")
@@ -189,6 +194,13 @@ class Base_Samples_Categorizer(ABC):
 
             yield Y_pred
 
+    def _get_nearest_neighbours(
+        self, dataset: DATASET, sample_index: int, Y_class: int
+    ) -> List[int]:
+        distances = self._get_distance_matrix(dataset)
+
+        ...
+
 
 class COUNT_WRONG_CLASSIFICATIONS(Base_Samples_Categorizer):
     """
@@ -269,7 +281,28 @@ class CLOSENESS_TO_SAMPLES_OF_SAME_CLASS(Base_Samples_Categorizer):
     second, calculate distance of point to cluster border
     """
 
-    ...
+    def calculate_samples_categorization(self, dataset: DATASET) -> np.ndarray:
+        _, Y_true = self._load_dataset(dataset)
+
+        distance_matrix = self._get_distance_matrix(dataset)
+
+        samples_categorization = np.zeros_like(Y_true)
+
+        # iterate over all samples, and calculate the average distance to the n=5 neighbors of the same class
+        for sample_index, Y_class in enumerate(Y_true):
+            nearest_neighbors_of_same_class = self._get_nearest_neighbours(
+                sample_index, Y_class
+            )
+            avg_distance_to_same_class_neighbors = 0
+            samples_categorization[sample_index] = avg_distance_to_same_class_neighbors
+
+        # normalize samples_categorization
+        samples_categorization = (
+            samples_categorization / np.sum(samples_categorization) * 1000
+        )
+        print(samples_categorization)
+        exit(-1)
+        return samples_categorization
 
 
 class CLOSENESS_TO_SAMPLES_OF_OTHER_CLASS(Base_Samples_Categorizer):
