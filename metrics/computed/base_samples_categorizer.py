@@ -6,6 +6,7 @@ from joblib import Parallel, delayed, parallel_backend
 import ast
 import pandas as pd
 from sklearn.metrics import accuracy_score
+from sklearn.preprocessing import minmax_scale
 
 from datasets import DATASET
 import ast
@@ -114,6 +115,23 @@ class Base_Samples_Categorizer(ABC):
             )
         return self._train_test_splits[dataset]
 
+    def _merge_indices(
+        self, row: pd.Series, cols_with_indice_lists: List[int]
+    ) -> List[np.ndarray]:
+        result = np.empty(
+            (len(cols_with_indice_lists), len(row["train"]) + len(row["test"])),
+            dtype=np.int8,
+        )
+        result.fill(np.nan)
+
+        for c in cols_with_indice_lists:
+            if row[f"{c}_train"] == []:
+                continue
+            result[c, row["train"]] = row[f"{c}_train"]
+            result[c, row["test"]] = row[f"{c}_test"]
+
+        return [r for r in result]
+
     def _get_Y_preds_iterator(self, dataset: DATASET) -> Iterable[pd.DataFrame]:
         _train_test_splits = self._get_train_test_splits(dataset)
         for strat in self.config.EXP_GRID_STRATEGY:
@@ -158,26 +176,11 @@ class Base_Samples_Categorizer(ABC):
                 exp_train_test_buckets, how="inner", on="EXP_UNIQUE_ID"
             )
 
-            def _merge_indices(
-                row: pd.Series, cols_with_indice_lists: List[int]
-            ) -> List[np.ndarray]:
-                result = np.empty(
-                    (len(cols_with_indice_lists), len(row["train"]) + len(row["test"])),
-                    dtype=np.int8,
-                )
-                result.fill(np.nan)
-
-                for c in cols_with_indice_lists:
-                    if row[f"{c}_train"] == []:
-                        continue
-                    result[c, row["train"]] = row[f"{c}_train"]
-                    result[c, row["test"]] = row[f"{c}_test"]
-
-                return [r for r in result]
-
             exp_unique_ids = Y_pred["EXP_UNIQUE_ID"]
             Y_pred = Y_pred.apply(
-                lambda x: _merge_indices(x, [int(c) for c in cols_with_indice_lists]),
+                lambda x: self._merge_indices(
+                    x, [int(c) for c in cols_with_indice_lists]
+                ),
                 axis=1,
                 result_type="expand",
             )
@@ -200,16 +203,32 @@ class COUNT_WRONG_CLASSIFICATIONS(Base_Samples_Categorizer):
                 for al_cycle_iteration, Y_pred in enumerate(r):
                     # calculate how often Y_pred and Y_true are not equal
                     samples_categorization[np.where(Y_pred != Y_true)] += 1
-
+        samples_categorization = (
+            samples_categorization / np.sum(samples_categorization) * 1000
+        )
         return samples_categorization
 
 
 class SWITCHES_CLASS_OFTEN(Base_Samples_Categorizer):
     """
-    for a single AL Strategy Run the predicted class changes often over the AL cycles
+    calculates how often the predicted class changes often over the cours of an AL cycle
     """
 
-    ...
+    def calculate_samples_categorization(self, dataset: DATASET) -> np.ndarray:
+        _, Y_true = self._load_dataset(dataset)
+        samples_categorization = np.zeros_like(Y_true)
+        for Y_preds in self._get_Y_preds_iterator(dataset):
+            for exp_unique_id, r in Y_preds.iterrows():
+                for Y_pred_previous, Y_pred_current in zip(r[0:-1], r[1:]):
+                    samples_categorization[
+                        np.where(Y_pred_current != Y_pred_previous)
+                    ] += 1
+
+        # normalize samples_categorization
+        samples_categorization = (
+            samples_categorization / np.sum(samples_categorization) * 1000
+        )
+        return samples_categorization
 
 
 class CLOSENESS_TO_DECISION_BOUNDARY(Base_Samples_Categorizer):
