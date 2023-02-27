@@ -7,6 +7,7 @@ from joblib import Parallel, delayed, parallel_backend
 import ast
 import pandas as pd
 import scipy
+from sklearn.cluster import Birch, KMeans, MiniBatchKMeans
 from sklearn.metrics import accuracy_score
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import minmax_scale
@@ -403,7 +404,6 @@ class CLOSENESS_TO_SAMPLES_OF_SAME_CLASS(Base_Samples_Categorizer):
         return self._closeness_to_k_nearest(dataset, mask_func=lambda a, b: a == b)
 
 
-# x
 class CLOSENESS_TO_SAMPLES_OF_OTHER_CLASS(Base_Samples_Categorizer):
     """
     first, cluster dataset
@@ -414,13 +414,35 @@ class CLOSENESS_TO_SAMPLES_OF_OTHER_CLASS(Base_Samples_Categorizer):
         return self._closeness_to_k_nearest(dataset, mask_func=lambda a, b: a != b)
 
 
-class CLOSENES_TO_CLUSTER_BORDER(Base_Samples_Categorizer):
+# x
+class CLOSENESS_TO_CLUSTER_CENTER(Base_Samples_Categorizer):
     """
     first, cluster dataset
-    second, calculate distance of point to cluster border
+    second, calculate distance of point to cluster center
     """
 
-    ...
+    def calculate_samples_categorization(
+        self,
+        dataset: DATASET,
+    ) -> np.ndarray:
+        X, Y_true = self._load_dataset(dataset)
+
+        k = math.floor(math.sqrt(np.shape(Y_true)[0]) / 2)
+
+        print(f"{dataset.name} k= {k}")
+
+        clusterer = MiniBatchKMeans(
+            n_clusters=k,
+        )
+        distances_to_clusters_centers = np.min(clusterer.fit_transform(X), axis=1)
+        samples_categorization = distances_to_clusters_centers
+
+        # normalize samples_categorization
+        samples_categorization = (
+            samples_categorization / np.sum(samples_categorization) * 100 * k
+        )
+
+        return samples_categorization
 
 
 class IMPROVES_ACCURACY_BY(Base_Samples_Categorizer):
