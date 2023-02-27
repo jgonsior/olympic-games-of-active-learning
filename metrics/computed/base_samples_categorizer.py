@@ -1,11 +1,13 @@
 from __future__ import annotations
 from abc import ABC
+import math
 from pathlib import Path
-from typing import Iterable, List, TYPE_CHECKING, Tuple
+from typing import Callable, Iterable, List, TYPE_CHECKING, Tuple
 from joblib import Parallel, delayed, parallel_backend
 import ast
 import pandas as pd
 from sklearn.metrics import accuracy_score
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import minmax_scale
 
 from datasets import DATASET
@@ -194,14 +196,53 @@ class Base_Samples_Categorizer(ABC):
 
             yield Y_pred
 
-    def _get_nearest_neighbours(
-        self, dataset: DATASET, sample_index: int, Y_class: int
-    ) -> List[int]:
-        distances = self._get_distance_matrix(dataset)
+    def _closeness_to_k_nearest(
+        self,
+        dataset: DATASET,
+        mask_func: Callable[[np.ndarray, np.ndarray], np.ndarray],
+    ) -> np.ndarray:
+        _, Y_true = self._load_dataset(dataset)
 
-        ...
+        distance_matrix = self._get_distance_matrix(dataset)
+
+        k = math.floor(math.sqrt(np.shape(distance_matrix)[0]) / 2)
+        print(f"{dataset.name} k= {k}")
+
+        samples_categorization = np.zeros_like(Y_true, dtype=np.float16)
+
+        for Y_class in np.unique(Y_true):
+            samples_of_this_class_mask = np.where(mask_func(Y_true, Y_class))[0]
+
+            neigh = KNeighborsClassifier(
+                n_neighbors=k,
+                metric="precomputed",
+            )
+            neigh.fit(
+                distance_matrix[samples_of_this_class_mask][
+                    :, samples_of_this_class_mask
+                ],
+                Y_true[samples_of_this_class_mask],
+            )
+
+            nearest_neighbors_of_same_class_distances = neigh.kneighbors(
+                n_neighbors=k, return_distance=True
+            )[0]
+
+            avg_distance_to_same_class_neighbors = np.average(
+                nearest_neighbors_of_same_class_distances, axis=1
+            )
+            samples_categorization[
+                samples_of_this_class_mask
+            ] = avg_distance_to_same_class_neighbors
+
+        # normalize samples_categorization
+        samples_categorization = (
+            samples_categorization / np.sum(samples_categorization) * k
+        )
+        return samples_categorization
 
 
+# x
 class COUNT_WRONG_CLASSIFICATIONS(Base_Samples_Categorizer):
     """
     is often classified wrongly
@@ -221,6 +262,7 @@ class COUNT_WRONG_CLASSIFICATIONS(Base_Samples_Categorizer):
         return samples_categorization
 
 
+# x
 class SWITCHES_CLASS_OFTEN(Base_Samples_Categorizer):
     """
     calculates how often the predicted class changes often over the cours of an AL cycle
@@ -251,12 +293,45 @@ class CLOSENESS_TO_DECISION_BOUNDARY(Base_Samples_Categorizer):
     ...
 
 
+# x
 class REGION_DENSITY(Base_Samples_Categorizer):
     """
-    use kNN or so to calculate, what the average distance of a sample to its next neighbors is
+    use kNN or so to calculate, what the average distance of a sample to its k next neighbors is
     """
 
-    ...
+    def calculate_samples_categorization(
+        self,
+        dataset: DATASET,
+    ) -> np.ndarray:
+        _, Y_true = self._load_dataset(dataset)
+
+        distance_matrix = self._get_distance_matrix(dataset)
+
+        k = math.floor(math.sqrt(np.shape(distance_matrix)[0]) / 2)
+        print(f"{dataset.name} k= {k}")
+
+        neigh = KNeighborsClassifier(
+            n_neighbors=k,
+            metric="precomputed",
+        )
+        neigh.fit(
+            distance_matrix,
+            Y_true,
+        )
+
+        nearest_neighbors_of_each_point = neigh.kneighbors(
+            n_neighbors=k, return_distance=True
+        )[0]
+
+        avg_distance_to_neighbors = np.average(nearest_neighbors_of_each_point, axis=1)
+        samples_categorization = avg_distance_to_neighbors
+
+        # normalize samples_categorization
+        samples_categorization = (
+            samples_categorization / np.sum(samples_categorization) * 100 * k
+        )
+
+        return samples_categorization
 
 
 class MELTING_POT_REGION(Base_Samples_Categorizer):
@@ -264,7 +339,39 @@ class MELTING_POT_REGION(Base_Samples_Categorizer):
     counts how many other classes are present among the k=5 nearest neighbors
     """
 
-    ...
+    def calculate_samples_categorization(
+        self,
+        dataset: DATASET,
+    ) -> np.ndarray:
+        _, Y_true = self._load_dataset(dataset)
+
+        distance_matrix = self._get_distance_matrix(dataset)
+
+        k = math.floor(math.sqrt(np.shape(distance_matrix)[0]) / 2)
+        print(f"{dataset.name} k= {k}")
+
+        neigh = KNeighborsClassifier(
+            n_neighbors=k,
+            metric="precomputed",
+        )
+        neigh.fit(
+            distance_matrix,
+            Y_true,
+        )
+
+        nearest_neighbors_of_each_point = neigh.kneighbors(
+            n_neighbors=k, return_distance=True
+        )[0]
+
+        avg_distance_to_neighbors = np.average(nearest_neighbors_of_each_point, axis=1)
+        samples_categorization = avg_distance_to_neighbors
+
+        # normalize samples_categorization
+        samples_categorization = (
+            samples_categorization / np.sum(samples_categorization) * 100 * k
+        )
+
+        return samples_categorization
 
 
 class INCLUDED_IN_OPTIMAL_STRATEGY(Base_Samples_Categorizer):
@@ -275,6 +382,7 @@ class INCLUDED_IN_OPTIMAL_STRATEGY(Base_Samples_Categorizer):
     ...
 
 
+# x
 class CLOSENESS_TO_SAMPLES_OF_SAME_CLASS(Base_Samples_Categorizer):
     """
     first, cluster dataset
@@ -282,36 +390,18 @@ class CLOSENESS_TO_SAMPLES_OF_SAME_CLASS(Base_Samples_Categorizer):
     """
 
     def calculate_samples_categorization(self, dataset: DATASET) -> np.ndarray:
-        _, Y_true = self._load_dataset(dataset)
-
-        distance_matrix = self._get_distance_matrix(dataset)
-
-        samples_categorization = np.zeros_like(Y_true)
-
-        # iterate over all samples, and calculate the average distance to the n=5 neighbors of the same class
-        for sample_index, Y_class in enumerate(Y_true):
-            nearest_neighbors_of_same_class = self._get_nearest_neighbours(
-                sample_index, Y_class
-            )
-            avg_distance_to_same_class_neighbors = 0
-            samples_categorization[sample_index] = avg_distance_to_same_class_neighbors
-
-        # normalize samples_categorization
-        samples_categorization = (
-            samples_categorization / np.sum(samples_categorization) * 1000
-        )
-        print(samples_categorization)
-        exit(-1)
-        return samples_categorization
+        return self._closeness_to_k_nearest(dataset, mask_func=lambda a, b: a == b)
 
 
+# x
 class CLOSENESS_TO_SAMPLES_OF_OTHER_CLASS(Base_Samples_Categorizer):
     """
     first, cluster dataset
     second, calculate distance of point to cluster border
     """
 
-    ...
+    def calculate_samples_categorization(self, dataset: DATASET) -> np.ndarray:
+        return self._closeness_to_k_nearest(dataset, mask_func=lambda a, b: a != b)
 
 
 class CLOSENES_TO_CLUSTER_BORDER(Base_Samples_Categorizer):
