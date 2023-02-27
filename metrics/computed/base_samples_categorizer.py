@@ -6,6 +6,7 @@ from typing import Callable, Iterable, List, TYPE_CHECKING, Tuple
 from joblib import Parallel, delayed, parallel_backend
 import ast
 import pandas as pd
+import scipy
 from sklearn.metrics import accuracy_score
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import minmax_scale
@@ -334,6 +335,7 @@ class REGION_DENSITY(Base_Samples_Categorizer):
         return samples_categorization
 
 
+# x
 class MELTING_POT_REGION(Base_Samples_Categorizer):
     """
     counts how many other classes are present among the k=5 nearest neighbors
@@ -360,11 +362,16 @@ class MELTING_POT_REGION(Base_Samples_Categorizer):
         )
 
         nearest_neighbors_of_each_point = neigh.kneighbors(
-            n_neighbors=k, return_distance=True
-        )[0]
+            n_neighbors=k, return_distance=False
+        )
 
-        avg_distance_to_neighbors = np.average(nearest_neighbors_of_each_point, axis=1)
-        samples_categorization = avg_distance_to_neighbors
+        # calculate indices to classes using Y_true
+        nearest_neighbors_classes = np.apply_along_axis(
+            lambda x: Y_true[x], 1, nearest_neighbors_of_each_point
+        )
+
+        nearest_variance = np.var(nearest_neighbors_classes, axis=1)
+        samples_categorization = nearest_variance
 
         # normalize samples_categorization
         samples_categorization = (
