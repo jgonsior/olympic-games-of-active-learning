@@ -1,5 +1,6 @@
 from __future__ import annotations
 from abc import ABC
+import multiprocessing
 from pathlib import Path
 from typing import List, TYPE_CHECKING
 from joblib import Parallel, delayed, parallel_backend
@@ -21,6 +22,7 @@ def _process_a_single_strategy(
     convert_original_df,
     apply_to_row,
     new_metric_name,
+    additional_apply_to_row_kwargs,
 ):
     # iterate over all experiments/datasets defined for this experiment
     metric_result_files: List[Path] = []
@@ -57,6 +59,7 @@ def _process_a_single_strategy(
     new_df = convert_original_df(
         joined_df,
         apply_to_row=apply_to_row,
+        additional_apply_to_row_kwargs=additional_apply_to_row_kwargs,
     )
 
     new_df = new_df.loc[:, ["computed_metric"]]
@@ -86,13 +89,11 @@ class Base_Computed_Metric(ABC):
         pass
 
     def convert_original_df(
-        self,
-        original_df: pd.DataFrame,
-        apply_to_row,
+        self, original_df: pd.DataFrame, apply_to_row, additional_apply_to_row_kwargs
     ) -> pd.DataFrame:
         # do stuff using lambda etc
         original_df["computed_metric"] = original_df.apply(
-            lambda x: apply_to_row(x), axis=1
+            lambda x: apply_to_row(x, *additional_apply_to_row_kwargs), axis=1
         )
         return original_df
 
@@ -125,6 +126,7 @@ class Base_Computed_Metric(ABC):
         existing_metric_names: List[str],
         new_metric_name: str,
         apply_to_row,
+        additional_apply_to_row_kwargs={},
     ) -> None:
         for EXP_DATASET in self.config.EXP_GRID_DATASET:
             self._per_dataset_hook(EXP_DATASET)
@@ -142,6 +144,7 @@ class Base_Computed_Metric(ABC):
                         self.convert_original_df,
                         apply_to_row,
                         new_metric_name,
+                        additional_apply_to_row_kwargs,
                     )
                     for EXP_STRATEGY in self.config.EXP_GRID_STRATEGY
                 )

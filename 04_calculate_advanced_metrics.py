@@ -1,5 +1,7 @@
 import sys
 
+from resources.data_types import COMPUTED_METRIC
+
 sys.dont_write_bytecode = True
 import importlib
 
@@ -11,7 +13,10 @@ pandarallel.initialize(progress_bar=True)
 config = Config()
 
 print("computung the following metrics: " + ",".join(config.COMPUTED_METRICS))
-print(config.EXP_GRID_STRATEGY)
+
+
+if config.COMPUTED_METRICS == ["_ALL"]:
+    config.COMPUTED_METRICS = [sc.name for sc in COMPUTED_METRIC]
 
 for computed_metric in config.COMPUTED_METRICS:
     computed_metric_class = getattr(
