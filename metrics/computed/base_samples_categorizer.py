@@ -4,8 +4,11 @@ import math
 from pathlib import Path
 from typing import Callable, Iterable, List, TYPE_CHECKING, Tuple, Union
 import ast
+from matplotlib import pyplot as plt
 import pandas as pd
 from sklearn.cluster import MiniBatchKMeans
+from sklearn.ensemble import IsolationForest
+from sklearn.model_selection import KFold
 from sklearn.neighbors import KNeighborsClassifier
 
 from datasets import DATASET
@@ -577,6 +580,75 @@ class IMPROVES_ACCURACY_BY(Base_Samples_Categorizer):
         # normalize samples_categorization
         samples_categorization = (
             samples_categorization / np.sum(samples_categorization) * 1000
+        )
+
+        return samples_categorization
+
+
+class AVERAGE_UNCERTAINTY(Base_Samples_Categorizer):
+    """
+    assess the uncertainty of several models trained on a subset of labeled data -> point for which the model is often uncertain about -> these are uncertain points!
+    """
+
+    def calculate_samples_categorization(
+        self,
+        dataset: DATASET,
+    ) -> np.ndarray:
+        X, Y_true = self._load_dataset(dataset)
+        samples_categorization = np.zeros_like(Y_true, dtype=np.float32)
+
+        from resources.data_types import (
+            LEARNER_MODEL,
+            learner_models_to_classes_mapping,
+        )
+
+        learners: List[LEARNER_MODEL] = []
+
+        for lm in [LEARNER_MODEL.RBF_SVM, LEARNER_MODEL.RF, LEARNER_MODEL.MLP]:
+            learner_params = learner_models_to_classes_mapping[lm]
+            learner = learner_params[0](**learner_params[1])
+            learners.append(learner)
+
+        for i in range(0, 5):
+            kf = KFold(n_splits=10, shuffle=True, random_state=i)
+
+            for i, (train_index, test_index) in enumerate(kf.split(X, Y_true)):
+                for learner in learners:
+                    learner.fit(X[train_index], Y_true[train_index])
+
+                    Y_test_pred = np.max(learner.predict_proba(X[test_index]), axis=1)
+                    samples_categorization[test_index] += Y_test_pred
+
+        # normalize samples_categorization
+        samples_categorization = (
+            samples_categorization / np.sum(samples_categorization) * 100
+        )
+
+        return samples_categorization
+
+
+class OUTLIERNESS(Base_Samples_Categorizer):
+    """
+    calculates how much of an "outlier" each point is
+    """
+
+    def calculate_samples_categorization(
+        self,
+        dataset: DATASET,
+    ) -> np.ndarray:
+        X, Y_true = self._load_dataset(dataset)
+        samples_categorization = np.zeros_like(Y_true, dtype=np.float32)
+
+        for i in range(0, 5):
+            # -1 -> is outliers, 1 -> inliers
+            Y_pred = IsolationForest(random_state=i).fit_predict(X)
+            Y_pred[Y_pred == 1] = 0
+            Y_pred[Y_pred == -1] = 1
+            samples_categorization += Y_pred
+
+        # normalize samples_categorization
+        samples_categorization = (
+            samples_categorization / np.sum(samples_categorization) * 100
         )
 
         return samples_categorization
