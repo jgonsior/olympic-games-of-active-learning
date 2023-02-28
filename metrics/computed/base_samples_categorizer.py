@@ -2,7 +2,7 @@ from __future__ import annotations
 from abc import ABC
 import math
 from pathlib import Path
-from typing import Callable, Iterable, List, TYPE_CHECKING, Tuple
+from typing import Callable, Iterable, List, TYPE_CHECKING, Tuple, Union
 import ast
 import pandas as pd
 from sklearn.cluster import MiniBatchKMeans
@@ -69,7 +69,9 @@ class Base_Samples_Categorizer(ABC):
             f"{self.config.DATASETS_PATH}/{dataset.name}{self.config.DATASETS_DISTANCES_APPENDIX}",
         ).to_numpy()
 
-    def _convert_selected_indices_to_ast(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _combine_selected_indices_to_all_selected_indices_of_al_cycle(
+        self, df: pd.DataFrame
+    ) -> pd.DataFrame:
         column_names_which_are_al_cycles = df.columns.difference(["EXP_UNIQUE_ID"])
 
         df = df.fillna("")
@@ -86,21 +88,16 @@ class Base_Samples_Categorizer(ABC):
 
         return df
 
-    def _convert_(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _parse_selected_indices(self, df: pd.DataFrame) -> pd.DataFrame:
         column_names_which_are_al_cycles = list(df.columns)
         column_names_which_are_al_cycles.remove("EXP_UNIQUE_ID")
 
         df = df.fillna("")
-        df["selected_indices"] = df[column_names_which_are_al_cycles].apply(
-            lambda x: ast.literal_eval(
-                ("[" + ",".join(x).replace("[", "").replace("]", "") + "]").replace(
-                    ",,", ""
-                )
-            ),
-            axis=1,
+        df[column_names_which_are_al_cycles] = df[
+            column_names_which_are_al_cycles
+        ].applymap(
+            lambda x: ast.literal_eval(x),
         )
-        for c in column_names_which_are_al_cycles:
-            del df[c]
 
         return df
 
@@ -195,28 +192,32 @@ class Base_Samples_Categorizer(ABC):
 
             yield Y_pred
 
-    def _get_strategy_iterator(
+    def _get_metrics_iterator(
         self,
         dataset: DATASET,
         strategies: List[AL_STRATEGY],
-        metric: str,
-    ) -> Iterable[pd.DataFrame]:
+        metrics: List[str],
+    ) -> Iterable[List[pd.DataFrame]]:
         for strat in strategies:
-            metric_path = Path(
-                f"{self.config.OUTPUT_PATH}/{strat.name}/{dataset.name}/{metric}.csv.xz"
-            )
-            if not metric_path.exists():
+            metric_dfs = []
+            for metric in metrics:
+                metric_path = Path(
+                    f"{self.config.OUTPUT_PATH}/{strat.name}/{dataset.name}/{metric}.csv.xz"
+                )
+                if not metric_path.exists():
+                    continue
+
+                metric_df = pd.read_csv(metric_path)
+
+                if len(metric_df) == 0:
+                    continue
+
+                metric_dfs.append(metric_df)
+
+            if len(metric_dfs) == 0:
                 continue
 
-            metric_df = pd.read_csv(metric_path)
-
-            if len(metric_df) == 0:
-                continue
-
-            if metric == "selected_indices":
-                metric_df = self._convert_selected_indices_to_ast(metric_df)
-
-            yield metric_df
+            yield metric_dfs
 
     def _closeness_to_k_nearest(
         self,
@@ -230,7 +231,7 @@ class Base_Samples_Categorizer(ABC):
         k = math.floor(math.sqrt(np.shape(distance_matrix)[0]) / 2)
         print(f"{dataset.name} k= {k}")
 
-        samples_categorization = np.zeros_like(Y_true, dtype=np.float16)
+        samples_categorization = np.zeros_like(Y_true, dtype=np.float32)
 
         for Y_class in np.unique(Y_true):
             samples_of_this_class_mask = np.where(mask_func(Y_true, Y_class))[0]
@@ -290,7 +291,7 @@ class SWITCHES_CLASS_OFTEN(Base_Samples_Categorizer):
 
     def calculate_samples_categorization(self, dataset: DATASET) -> np.ndarray:
         _, Y_true = self._load_dataset(dataset)
-        samples_categorization = np.zeros_like(Y_true, dtype=np.float64)
+        samples_categorization = np.zeros_like(Y_true, dtype=np.float32)
         for Y_preds in self._get_Y_preds_iterator(dataset):
             a = Y_preds.to_numpy()
 
@@ -440,7 +441,7 @@ class INCLUDED_IN_OPTIMAL_STRATEGY(Base_Samples_Categorizer):
         dataset: DATASET,
     ) -> np.ndarray:
         _, Y_true = self._load_dataset(dataset)
-        samples_categorization = np.zeros_like(Y_true, dtype=np.float16)
+        samples_categorization = np.zeros_like(Y_true, dtype=np.float32)
 
         from resources.data_types import AL_STRATEGY
 
@@ -451,9 +452,14 @@ class INCLUDED_IN_OPTIMAL_STRATEGY(Base_Samples_Categorizer):
             AL_STRATEGY.OPTIMAL_TRUE,
         ]
 
-        for optimally_selected_indices_df in self._get_strategy_iterator(
-            dataset=dataset, strategies=optimal_strategies, metric="selected_indices"
+        for optimally_selected_indices_df in self._get_metrics_iterator(
+            dataset=dataset, strategies=optimal_strategies, metrics=["selected_indices"]
         ):
+            optimally_selected_indices_df = (
+                self._combine_selected_indices_to_all_selected_indices_of_al_cycle(
+                    optimally_selected_indices_df[0]
+                )
+            )
             for selected_indices in optimally_selected_indices_df.selected_indices:
                 samples_categorization[selected_indices] += 1
 
@@ -520,4 +526,57 @@ class IMPROVES_ACCURACY_BY(Base_Samples_Categorizer):
     count how often this sample improves the accuracy, if it was part of a batch
     """
 
-    ...
+    def calculate_samples_categorization(
+        self,
+        dataset: DATASET,
+    ) -> np.ndarray:
+        _, Y_true = self._load_dataset(dataset)
+        samples_categorization = np.zeros_like(Y_true, dtype=np.float32)
+
+        from resources.data_types import AL_STRATEGY
+
+        strategies_to_consider = self.config.EXP_GRID_STRATEGY
+
+        for accuracy_df, selected_indices_df in self._get_metrics_iterator(
+            dataset=dataset,
+            strategies=strategies_to_consider,
+            metrics=["accuracy", "selected_indices"],
+        ):
+            selected_indices_df = self._parse_selected_indices(selected_indices_df)
+
+            new_accuracy_df = accuracy_df[
+                accuracy_df.columns.difference(["EXP_UNIQUE_ID", "0"])
+            ]
+            past_accuracy_df = accuracy_df[
+                accuracy_df.columns.difference(["EXP_UNIQUE_ID"])
+            ].rename(
+                columns={
+                    str(i): str(i + 1)
+                    for i in range(0, self.config.EXP_GRID_NUM_QUERIES[0])
+                }
+            )
+            del past_accuracy_df[str(self.config.EXP_GRID_NUM_QUERIES[0])]
+            del selected_indices_df["0"]
+
+            diff_accuracy_df = new_accuracy_df - past_accuracy_df
+
+            diff_accuracy_df = diff_accuracy_df.reindex(
+                sorted(diff_accuracy_df.columns), axis=1
+            )
+            selected_indices_df = selected_indices_df.reindex(
+                sorted(selected_indices_df.columns), axis=1
+            )
+
+            for accuraccy_row, selected_indices_row in zip(
+                diff_accuracy_df.iterrows(),
+                selected_indices_df.iterrows(),
+            ):
+                for acc, sel_ind in zip(accuraccy_row[1], selected_indices_row[1]):
+                    samples_categorization[sel_ind] += acc
+
+        # normalize samples_categorization
+        samples_categorization = (
+            samples_categorization / np.sum(samples_categorization) * 1000
+        )
+
+        return samples_categorization
