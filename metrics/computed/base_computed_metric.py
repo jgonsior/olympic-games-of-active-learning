@@ -96,7 +96,7 @@ class Base_Computed_Metric(ABC):
         )
         return original_df
 
-    def _convert_selected_indices_to_ast(self, df: pad.DataFrame) -> pd.DataFrame:
+    def _convert_selected_indices_to_ast(self, df: pd.DataFrame) -> pd.DataFrame:
         column_names_which_are_al_cycles = list(df.columns)
         column_names_which_are_al_cycles.remove("EXP_UNIQUE_ID")
 

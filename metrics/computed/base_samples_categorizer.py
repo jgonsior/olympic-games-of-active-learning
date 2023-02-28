@@ -17,10 +17,9 @@ from datasets import DATASET
 
 from typing import Dict, TYPE_CHECKING
 
-
 if TYPE_CHECKING:
     from misc.config import Config
-    from resources.data_types import FeatureVectors, LabelList
+    from resources.data_types import FeatureVectors, LabelList, AL_STRATEGY
 
 
 """
@@ -71,8 +70,7 @@ class Base_Samples_Categorizer(ABC):
         ).to_numpy()
 
     def _convert_selected_indices_to_ast(self, df: pd.DataFrame) -> pd.DataFrame:
-        column_names_which_are_al_cycles = list(df.columns)
-        column_names_which_are_al_cycles.remove("EXP_UNIQUE_ID")
+        column_names_which_are_al_cycles = df.columns.difference(["EXP_UNIQUE_ID"])
 
         df = df.fillna("")
         df["selected_indices"] = df[column_names_which_are_al_cycles].apply(
@@ -145,6 +143,10 @@ class Base_Samples_Categorizer(ABC):
             if not y_pred_train_path.exists():
                 continue
             Y_pred_train = pd.read_csv(y_pred_train_path)
+
+            if len(Y_pred_train) == 0:
+                continue
+
             cols_with_indice_lists = Y_pred_train.columns.difference(["EXP_UNIQUE_ID"])
 
             Y_pred_train[cols_with_indice_lists] = (
@@ -192,6 +194,29 @@ class Base_Samples_Categorizer(ABC):
             Y_pred.set_index(exp_unique_ids, inplace=True)
 
             yield Y_pred
+
+    def _get_strategy_iterator(
+        self,
+        dataset: DATASET,
+        strategies: List[AL_STRATEGY],
+        metric: str,
+    ) -> Iterable[pd.DataFrame]:
+        for strat in strategies:
+            metric_path = Path(
+                f"{self.config.OUTPUT_PATH}/{strat.name}/{dataset.name}/{metric}.csv.xz"
+            )
+            if not metric_path.exists():
+                continue
+
+            metric_df = pd.read_csv(metric_path)
+
+            if len(metric_df) == 0:
+                continue
+
+            if metric == "selected_indices":
+                metric_df = self._convert_selected_indices_to_ast(metric_df)
+
+            yield metric_df
 
     def _closeness_to_k_nearest(
         self,
@@ -415,7 +440,34 @@ class INCLUDED_IN_OPTIMAL_STRATEGY(Base_Samples_Categorizer):
     counts how often a sample is included in an optimal strategy
     """
 
-    ...
+    def calculate_samples_categorization(
+        self,
+        dataset: DATASET,
+    ) -> np.ndarray:
+        _, Y_true = self._load_dataset(dataset)
+        samples_categorization = np.zeros_like(Y_true, dtype=np.float16)
+
+        from resources.data_types import AL_STRATEGY
+
+        optimal_strategies = [
+            AL_STRATEGY.OPTIMAL_GREEDY_10,
+            AL_STRATEGY.OPTIMAL_GREEDY_20,
+            AL_STRATEGY.OPTIMAL_BSO,
+            AL_STRATEGY.OPTIMAL_TRUE,
+        ]
+
+        for optimally_selected_indices_df in self._get_strategy_iterator(
+            dataset=dataset, strategies=optimal_strategies, metric="selected_indices"
+        ):
+            for selected_indices in optimally_selected_indices_df.selected_indices:
+                samples_categorization[selected_indices] += 1
+
+        # normalize samples_categorization
+        samples_categorization = (
+            samples_categorization / np.sum(samples_categorization) * 100
+        )
+
+        return samples_categorization
 
 
 # x
