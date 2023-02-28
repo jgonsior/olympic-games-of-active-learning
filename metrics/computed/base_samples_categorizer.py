@@ -264,7 +264,6 @@ class Base_Samples_Categorizer(ABC):
         return samples_categorization
 
 
-# x
 class COUNT_WRONG_CLASSIFICATIONS(Base_Samples_Categorizer):
     """
     is often classified wrongly
@@ -284,7 +283,6 @@ class COUNT_WRONG_CLASSIFICATIONS(Base_Samples_Categorizer):
         return samples_categorization
 
 
-# x
 class SWITCHES_CLASS_OFTEN(Base_Samples_Categorizer):
     """
     calculates how often the predicted class changes over the course of an AL cycls by calculating the variance of the predicted classes over the course of the AL cycles
@@ -310,7 +308,6 @@ class SWITCHES_CLASS_OFTEN(Base_Samples_Categorizer):
         return samples_categorization
 
 
-# x
 class CLOSENESS_TO_DECISION_BOUNDARY(Base_Samples_Categorizer):
     """
     use SVM to calculate exact decision boundaries -> calculate, how far away from the next decision boundary a sample is
@@ -348,7 +345,6 @@ class CLOSENESS_TO_DECISION_BOUNDARY(Base_Samples_Categorizer):
         return samples_categorization
 
 
-# x
 class REGION_DENSITY(Base_Samples_Categorizer):
     """
     use kNN or so to calculate, what the average distance of a sample to its k next neighbors is
@@ -389,7 +385,6 @@ class REGION_DENSITY(Base_Samples_Categorizer):
         return samples_categorization
 
 
-# x
 class MELTING_POT_REGION(Base_Samples_Categorizer):
     """
     counts how many other classes are present among the k=5 nearest neighbors
@@ -470,7 +465,6 @@ class INCLUDED_IN_OPTIMAL_STRATEGY(Base_Samples_Categorizer):
         return samples_categorization
 
 
-# x
 class CLOSENESS_TO_SAMPLES_OF_SAME_CLASS(Base_Samples_Categorizer):
     """
     first, cluster dataset
@@ -481,7 +475,6 @@ class CLOSENESS_TO_SAMPLES_OF_SAME_CLASS(Base_Samples_Categorizer):
         return self._closeness_to_k_nearest(dataset, mask_func=lambda a, b: a == b)
 
 
-# x
 class CLOSENESS_TO_SAMPLES_OF_OTHER_CLASS(Base_Samples_Categorizer):
     """
     first, cluster dataset
@@ -492,7 +485,6 @@ class CLOSENESS_TO_SAMPLES_OF_OTHER_CLASS(Base_Samples_Categorizer):
         return self._closeness_to_k_nearest(dataset, mask_func=lambda a, b: a != b)
 
 
-# x
 class CLOSENESS_TO_CLUSTER_CENTER(Base_Samples_Categorizer):
     """
     first, cluster dataset
