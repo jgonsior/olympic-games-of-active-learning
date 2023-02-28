@@ -18,22 +18,21 @@ if TYPE_CHECKING:
 class DATASET_CATEGORIZATION(Base_Computed_Metric):
     dataset_categorizations: Dict[SAMPLES_CATEGORIZER, np.ndarray] = {}
 
-    def _per_dataset_hook(self, EXP_DATASET: DATASET) -> None:
+    def _per_dataset_hook(
+        self, EXP_DATASET: DATASET, samples_categorizer: SAMPLES_CATEGORIZER
+    ) -> bool:
         print("parsing ", EXP_DATASET)
-        from resources.data_types import SAMPLES_CATEGORIZER
+        samples_categorization_path = Path(
+            f"{self.config.OUTPUT_PATH}/_{samples_categorizer.name}/{EXP_DATASET.name}.npz"
+        )
 
-        for samples_categorizer in SAMPLES_CATEGORIZER:
-            samples_categorization_path = Path(
-                f"{self.config.OUTPUT_PATH}/_{samples_categorizer.name}/{EXP_DATASET.name}.npz"
-            )
+        if not samples_categorization_path.exists():
+            print("Please compute ", samples_categorization_path, " first")
+            return False
 
-            if not samples_categorization_path.exists():
-                print("Please compute ", samples_categorization_path, " first")
-                continue
+        data = np.load(samples_categorization_path)["samples_categorization"]
 
-            data = np.load(samples_categorization_path)["samples_categorization"]
-
-            self.dataset_categorizations[samples_categorizer] = data
+        self.dataset_categorizations[samples_categorizer] = data
 
     def _pre_appy_to_row_hook(self, df: pd.DataFrame) -> pd.DataFrame:
         return self._convert_selected_indices_to_ast(df)
@@ -41,10 +40,10 @@ class DATASET_CATEGORIZATION(Base_Computed_Metric):
     def count_batch_sample_categories(
         self, row: pd.Series, samples_categorizer: SAMPLES_CATEGORIZER
     ) -> pd.Series:
-        print(row)
-        print(self.dataset_categorizations[samples_categorizer])
-        exit(-1)
-        return self._class_distributions(row, metric="chebyshev")
+        values = self.dataset_categorizations[samples_categorizer][
+            row["selected_indices"]
+        ]
+        return values
 
     def compute(self) -> None:
         from resources.data_types import SAMPLES_CATEGORIZER

@@ -93,7 +93,7 @@ class Base_Computed_Metric(ABC):
     ) -> pd.DataFrame:
         # do stuff using lambda etc
         original_df["computed_metric"] = original_df.apply(
-            lambda x: apply_to_row(x, *additional_apply_to_row_kwargs), axis=1
+            lambda x: apply_to_row(x, **additional_apply_to_row_kwargs), axis=1
         )
         return original_df
 
@@ -129,10 +129,13 @@ class Base_Computed_Metric(ABC):
         additional_apply_to_row_kwargs={},
     ) -> None:
         for EXP_DATASET in self.config.EXP_GRID_DATASET:
-            self._per_dataset_hook(EXP_DATASET)
+            ret = self._per_dataset_hook(EXP_DATASET, **additional_apply_to_row_kwargs)
+
+            if ret == False:
+                continue
 
             with parallel_backend(
-                "multiprocessing", n_jobs=1  # multiprocessing.cpu_count()
+                "multiprocessing", n_jobs=multiprocessing.cpu_count()
             ):
                 Parallel()(
                     delayed(_process_a_single_strategy)(
