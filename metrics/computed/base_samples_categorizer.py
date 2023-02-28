@@ -28,6 +28,8 @@ if TYPE_CHECKING:
 """
 operates on a per dataset basis
 categorizes each sample of the dataset into different categories
+
+some metrics inspired by https://dl.acm.org/doi/pdf/10.1145/3439333 property measures
 """
 
 
