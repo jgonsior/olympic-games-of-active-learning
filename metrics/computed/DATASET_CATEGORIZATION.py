@@ -43,7 +43,7 @@ class DATASET_CATEGORIZATION(Base_Computed_Metric):
         values = self.dataset_categorizations[samples_categorizer][
             row["selected_indices"]
         ]
-        return values
+        return np.sum(values)
 
     def compute(self) -> None:
         from resources.data_types import SAMPLES_CATEGORIZER
