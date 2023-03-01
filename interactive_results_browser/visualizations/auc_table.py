@@ -128,9 +128,17 @@ class Auc_Table(Base_Visualizer):
     def get_additional_request_params(with_basic=True) -> Dict[str, List[Any]]:
         sacmc = STANDARD_AUC(Config())
         basic_metrics = sacmc.metrics
-        auc_metrics = [
-            sacmc.computed_metric_appendix() + "_" + sss for sss in basic_metrics
+        auc_metrics = []
+        auc_ranges = [
+            "ramp_up_quality_",
+            "middle_quality_",
+            "end_quality_",
+            "learning_stability_",
+            "auc_",
         ]
+        for ar in auc_ranges:
+            auc_metrics = [*auc_metrics, *[ar + sss for sss in basic_metrics]]
+
         metric_values = copy.deepcopy(auc_metrics)
 
         for basic_metric in basic_metrics:
