@@ -20,12 +20,13 @@ pandarallel.initialize(progress_bar=True)
 
 config = Config()
 
+if config.SAMPLES_CATEGORIZER == ["_ALL"]:
+    config.SAMPLES_CATEGORIZER = [sc.name for sc in SAMPLES_CATEGORIZER]
+
 print(
     "computung the following samples categories: "
     + ",".join(config.SAMPLES_CATEGORIZER)
 )
-if config.SAMPLES_CATEGORIZER == ["_ALL"]:
-    config.SAMPLES_CATEGORIZER = [sc.name for sc in SAMPLES_CATEGORIZER]
 
 
 def _run_samples_categorizer(sc: str, ds: DATASET):

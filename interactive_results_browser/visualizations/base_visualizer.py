@@ -3,9 +3,10 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 import base64
 import io
+import itertools
 import multiprocessing
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, List
+from typing import TYPE_CHECKING, Any, Callable, List, Tuple
 
 from typing import Any, Dict
 
@@ -202,6 +203,28 @@ class Base_Visualizer(ABC):
         )
 
     @staticmethod
+    def _parse_single_local_metric_file(
+        OUTPUT_PATH, EXP_STRATEGY, EXP_DATASET, metric, done_workload_df
+    ) -> pd.DataFrame:
+        detailed_metrics_path = Path(
+            f"{OUTPUT_PATH}/{EXP_STRATEGY}/{EXP_DATASET}/{metric}.csv.xz"
+        )
+        print(detailed_metrics_path)
+
+        if detailed_metrics_path.exists():
+            # read in each csv file to get learning curve data for plot
+            detailed_metrics_df = pd.read_csv(detailed_metrics_path)
+
+            detailed_metrics_df = detailed_metrics_df.merge(
+                done_workload_df, on="EXP_UNIQUE_ID", how="inner"
+            )
+            detailed_metrics_df.drop_duplicates(inplace=True)
+            return detailed_metrics_df
+        else:
+            return None
+
+    @staticmethod
+    @memory.cache()
     def load_detailed_metric_files(
         done_workload_df: pd.DataFrame,
         metric: str,
@@ -209,22 +232,21 @@ class Base_Visualizer(ABC):
     ) -> pd.DataFrame:
         result_df = pd.DataFrame()
 
-        for EXP_STRATEGY in done_workload_df["EXP_STRATEGY"].unique():
-            for EXP_DATASET in done_workload_df["EXP_DATASET"].unique():
-                detailed_metrics_path = Path(
-                    f"{OUTPUT_PATH}/{EXP_STRATEGY}/{EXP_DATASET}/{metric}.csv.xz"
+        strat_dataset_combinations: List[Tuple[DATASET, AL_STRATEGY]] = list(
+            itertools.product(
+                done_workload_df["EXP_DATASET"].unique(),
+                done_workload_df["EXP_STRATEGY"].unique(),
+            )
+        )
+
+        with parallel_backend("loky", n_jobs=multiprocessing.cpu_count()):
+            detailed_metric_joins: List[pd.DataFrame] = Parallel()(
+                delayed(Base_Visualizer._parse_single_local_metric_file)(
+                    OUTPUT_PATH, strat, ds, metric, done_workload_df
                 )
+                for (ds, strat) in strat_dataset_combinations
+            )  # type: ignore
 
-                if detailed_metrics_path.exists():
-                    # read in each csv file to get learning curve data for plot
-                    detailed_metrics_df = pd.read_csv(detailed_metrics_path)
-
-                    detailed_metrics_df = detailed_metrics_df.merge(
-                        done_workload_df, on="EXP_UNIQUE_ID", how="inner"
-                    )
-                    detailed_metrics_df.drop_duplicates(inplace=True)
-
-                    result_df = pd.concat(
-                        [result_df, detailed_metrics_df], ignore_index=True
-                    )
+        detailed_metric_joins = [df for df in detailed_metric_joins if df is not None]
+        result_df = pd.concat(detailed_metric_joins, ignore_index=True)
         return result_df

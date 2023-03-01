@@ -35,7 +35,6 @@ def _plot_function(plot_df, metric, my_palette, my_markers):
     )
     rel.xaxis.set_major_formatter(FuncFormatter(lambda x, _: int(x)))
     rel.set(ylim=(0, 1))
-    rel.close()
     return rel
 
 
@@ -48,7 +47,6 @@ def _cache_create_plots(
     done_workload_df = done_workload_df.loc[
         :, ["EXP_UNIQUE_ID", "EXP_STRATEGY", "EXP_DATASET"]
     ]
-    print(metric)
     plot_df = Base_Visualizer.load_detailed_metric_files(
         done_workload_df, metric, OUTPUT_PATH
     )

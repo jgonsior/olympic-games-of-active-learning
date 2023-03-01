@@ -10,7 +10,6 @@ from interactive_results_browser.visualizations.base_visualizer import Base_Visu
 from typing import Any, List
 
 from interactive_results_browser.cache import memory
-
 from misc.config import Config
 
 import seaborn as sns
@@ -103,6 +102,9 @@ def _correlation_analysis(done_workload_df, OUTPUT_PATH):
         single_metric_plot_df = Base_Visualizer.load_detailed_metric_files(
             done_workload_df, metric, OUTPUT_PATH
         )
+        if len(single_metric_plot_df) == 0:
+            print(f"No data for  metric {metric} found")
+            continue
 
         if single_metric_plot_df["computed_metric"].max() <= 1.0:
             single_metric_plot_df[metric] = single_metric_plot_df[
@@ -139,6 +141,9 @@ def _strategy_ranking_heatmap(done_workload_df, OUTPUT_PATH):
         single_metric_plot_df = Base_Visualizer.load_detailed_metric_files(
             done_workload_df, metric, OUTPUT_PATH
         )
+        if len(single_metric_plot_df) == 0:
+            print(f"No data for  metric {metric} found.")
+            continue
 
         if single_metric_plot_df["computed_metric"].max() <= 1.0:
             single_metric_plot_df[metric] = single_metric_plot_df[

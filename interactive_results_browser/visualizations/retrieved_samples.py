@@ -77,9 +77,12 @@ def _cache_retrieved_samples(
     column_names_which_are_al_cycles.remove("EXP_STRATEGY")
     column_names_which_are_al_cycles.remove("EXP_DATASET")
 
+    plot_df = plot_df.fillna("")
     plot_df["selected_indices"] = plot_df[column_names_which_are_al_cycles].apply(
         lambda x: ast.literal_eval(
-            "[" + ",".join(x).replace("[", "").replace("]", "") + "]"
+            ("[" + ",".join(x).replace("[", "").replace("]", "") + "]").replace(
+                ",,", ""
+            )
         ),
         axis=1,
     )

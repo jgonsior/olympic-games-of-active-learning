@@ -19,10 +19,11 @@ if __name__ == "__main__":
         "https://cdn.jsdelivr.net/npm/tom-select@2.2.1/dist/js/tom-select.complete.min.js": "_tom_min.js",
     }
 
-    for sr_url, sr_local_path in static_resources.items():
-        sr_local_path = Path(f"interactive_results_browser/static/{sr_local_path}")
+    for sr_url, sr_local in static_resources.items():
+        sr_local_path: Path = Path(f"interactive_results_browser/static/{sr_local}")
         if not sr_local_path.exists():
             sr_local_path.write_bytes(requests.get(sr_url).content)
 
-    server = Server(app.wsgi_app, watcher=INotifyWatcher())
-    server.serve()
+    server = Server(app.wsgi_app)
+    server.watch("**/*.py", ignore=True)
+    server.serve(host="0.0.0.0")

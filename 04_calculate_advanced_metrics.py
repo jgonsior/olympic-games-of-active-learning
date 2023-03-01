@@ -12,11 +12,11 @@ pandarallel.initialize(progress_bar=True)
 
 config = Config()
 
-print("computung the following metrics: " + ",".join(config.COMPUTED_METRICS))
-
 
 if config.COMPUTED_METRICS == ["_ALL"]:
     config.COMPUTED_METRICS = [sc.name for sc in COMPUTED_METRIC]
+
+print("computung the following metrics: " + ",".join(config.COMPUTED_METRICS))
 
 for computed_metric in config.COMPUTED_METRICS:
     computed_metric_class = getattr(

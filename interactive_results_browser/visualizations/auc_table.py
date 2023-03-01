@@ -86,6 +86,9 @@ def _cache_create_auc_table(
         single_metric_plot_df = Base_Visualizer.load_detailed_metric_files(
             done_workload_df, metric, OUTPUT_PATH
         )
+        if len(single_metric_plot_df) == 0:
+            print(f"No data for  metric {metric} found")
+            continue
 
         if single_metric_plot_df["computed_metric"].max() <= 1.0:
             single_metric_plot_df[metric] = single_metric_plot_df[
@@ -104,6 +107,9 @@ def _cache_create_auc_table(
                 how="inner",
             )
             plot_df.drop_duplicates(inplace=True)
+
+    if len(plot_df) == 0:
+        return "No data found to plot"
 
     del plot_df["EXP_UNIQUE_ID"]
     plot_df = plot_df.melt(
