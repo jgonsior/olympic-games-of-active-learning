@@ -155,7 +155,7 @@ class Base_Dataset_Loader(ABC):
 
                 start_points.append(_starting_points)
 
-            splits_df.iloc[ix]["start_points"] = start_points
+            splits_df.loc[ix, "start_points"] = str(start_points)
 
         # quick check that everything wored as intented
         for split in range(0, 5):
