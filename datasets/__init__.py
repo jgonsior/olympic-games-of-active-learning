@@ -70,7 +70,6 @@ def split_dataset(
     test_idx: SampleIndiceList = ast.literal_eval(
         train_test_split.iloc[config.EXP_TRAIN_TEST_BUCKET_SIZE]["test"]
     )
-    print(train_test_split.iloc[config.EXP_TRAIN_TEST_BUCKET_SIZE]["start_points"])
     initially_labeled_indices: SampleIndiceList = ast.literal_eval(
         train_test_split.iloc[config.EXP_TRAIN_TEST_BUCKET_SIZE]["start_points"]
     )[config.EXP_START_POINT]
