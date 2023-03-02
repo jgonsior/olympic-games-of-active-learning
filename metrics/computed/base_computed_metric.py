@@ -22,8 +22,19 @@ def _process_a_single_strategy(
     convert_original_df,
     apply_to_row,
     new_metric_name,
+    OVERWRITE_EXISTING_METRIC_FILES,
     additional_apply_to_row_kwargs,
 ):
+    new_metric_path = (
+        OUTPUT_PATH
+        / EXP_STRATEGY.name
+        / EXP_DATASET.name
+        / str(new_metric_name + ".csv.xz")
+    )
+
+    if not OVERWRITE_EXISTING_METRIC_FILES and new_metric_path.exists():
+        return
+
     # iterate over all experiments/datasets defined for this experiment
     metric_result_files: List[Path] = []
     for existing_metric_name in existing_metric_names:
@@ -65,10 +76,9 @@ def _process_a_single_strategy(
     new_df = new_df.loc[:, ["computed_metric"]]
     new_df["EXP_UNIQUE_ID"] = exp_unique_id_column
 
-    print(metric_result_files[0].parent / str(new_metric_name + ".csv.xz"))
     # save new df somehow
     new_df.to_csv(
-        Path(metric_result_files[0].parent / str(new_metric_name + ".csv.xz")),
+        new_metric_path,
         compression="infer",
         index=False,
     )
@@ -147,6 +157,7 @@ class Base_Computed_Metric(ABC):
                         self.convert_original_df,
                         apply_to_row,
                         new_metric_name,
+                        self.config.OVERWRITE_EXISTING_METRIC_FILES,
                         additional_apply_to_row_kwargs,
                     )
                     for EXP_STRATEGY in self.config.EXP_GRID_STRATEGY
