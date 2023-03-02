@@ -110,6 +110,7 @@ class Config:
 
     RERUN_FAILED_WORKLOADS: bool = False
     RECALCULATE_UPDATED_EXP_GRID: bool = False
+    OVERWRITE_EXISTING_METRIC_FILES: bool = False
 
     RESULTS_PATH: Path
 
