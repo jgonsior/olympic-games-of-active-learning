@@ -5,8 +5,19 @@ from pandarallel import pandarallel
 from flask_frozen import Freezer
 import click
 from interactive_results_browser import app
+from misc.config import Config
 
 pandarallel.initialize(progress_bar=False, use_memory_fs=True)
+
+
+config = Config()
+
+if config.OVERWRITE_EXISTING_METRIC_FILES:
+    Path(config.LOCAL_CACHE_DIR).rmdir()
+
+    interactive_build_path = Path("interactive_results_browser/build")
+    interactive_build_path.rmdir()
+
 # check if static external ressources exist
 # if not: download them
 static_resources = {
