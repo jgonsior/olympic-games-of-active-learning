@@ -34,16 +34,19 @@ class DATASET_CATEGORIZATION(Base_Computed_Metric):
 
         self.dataset_categorizations[samples_categorizer] = data
 
+        return True
+
     def _pre_appy_to_row_hook(self, df: pd.DataFrame) -> pd.DataFrame:
-        return self._convert_selected_indices_to_ast(df)
+        df = self._convert_selected_indices_to_ast(df, merge=False)
+        del df["EXP_UNIQUE_ID"]
+        return df
 
     def count_batch_sample_categories(
         self, row: pd.Series, samples_categorizer: SAMPLES_CATEGORIZER
     ) -> pd.Series:
-        values = self.dataset_categorizations[samples_categorizer][
-            row["selected_indices"]
-        ]
-        return np.sum(values)
+        for ix, r in row.items():
+            row[ix] = self.dataset_categorizations[samples_categorizer][r].tolist()
+        return row
 
     def compute(self) -> None:
         from resources.data_types import SAMPLES_CATEGORIZER

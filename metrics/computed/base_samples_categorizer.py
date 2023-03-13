@@ -99,17 +99,14 @@ class Base_Samples_Categorizer(ABC):
 
         return df
 
-    def _parse_selected_indices(self, df: pd.DataFrame) -> pd.DataFrame:
-        column_names_which_are_al_cycles = list(df.columns)
-        column_names_which_are_al_cycles.remove("EXP_UNIQUE_ID")
+    def _convert_df_to_python_types(self, df: pd.DataFrame) -> pd.DataFrame:
+        cols_with_indice_lists = df.columns.difference(["EXP_UNIQUE_ID"])
 
-        df = df.fillna("")
-        df[column_names_which_are_al_cycles] = df[
-            column_names_which_are_al_cycles
-        ].applymap(
-            lambda x: ast.literal_eval(x),
+        df[cols_with_indice_lists] = (
+            df[cols_with_indice_lists]
+            .fillna("[]")
+            .applymap(lambda x: ast.literal_eval(x))
         )
-
         return df
 
     def _get_train_test_splits(self, dataset) -> pd.DataFrame:
@@ -553,7 +550,7 @@ class IMPROVES_ACCURACY_BY(Base_Samples_Categorizer):
             strategies=strategies_to_consider,
             metrics=["accuracy", "selected_indices"],
         ):
-            selected_indices_df = self._parse_selected_indices(selected_indices_df)
+            selected_indices_df = self._convert_df_to_python_types(selected_indices_df)
 
             new_accuracy_df = accuracy_df[
                 accuracy_df.columns.difference(["EXP_UNIQUE_ID", "0"])

@@ -51,7 +51,6 @@ class DISTANCE_METRICS(Base_Computed_Metric):
     ) -> pd.Series:
         row = row.loc[row.index != "EXP_UNIQUE_ID"]
 
-        results = 0
         for ix, x in row.items():
             if ix == 0:
                 continue
@@ -60,17 +59,16 @@ class DISTANCE_METRICS(Base_Computed_Metric):
                 distances.append(self._precomputed_distances[s1][s2])
 
             if len(distances) == 0:
-                results += 0
+                row[ix] = 0
             else:
-                results += sum(distances) / len(distances)
-        return results
+                row[ix] = sum(distances) / len(distances)
+        return row
 
     def avg_dist_labeled(
         self,
         row: pd.Series,
     ) -> pd.Series:
         row = row.loc[row.index != "EXP_UNIQUE_ID"]
-        results = 0
         labeled_so_far = []
         for ix, x in row.items():
             if ix == 0:
@@ -84,10 +82,10 @@ class DISTANCE_METRICS(Base_Computed_Metric):
             labeled_so_far += x
 
             if len(distances) == 0:
-                results += 0
+                row[ix] = 0
             else:
-                results += sum(distances) / len(distances)
-        return results
+                row[ix] = sum(distances) / len(distances)
+        return row
 
     def _get_train_set(self, unique_id: int) -> List[int]:
         details = self.done_workload_df.loc[
@@ -106,8 +104,6 @@ class DISTANCE_METRICS(Base_Computed_Metric):
     ) -> pd.Series:
         unique_id = row["EXP_UNIQUE_ID"]
         row = row.loc[row.index != "EXP_UNIQUE_ID"]
-        results = 0
-
         train_set = self._get_train_set(unique_id)
         unlabeled_so_far = set(train_set)
         for ix, x in row.items():
@@ -125,10 +121,10 @@ class DISTANCE_METRICS(Base_Computed_Metric):
                 unlabeled_so_far.remove(s1)
 
             if len(distances) == 0:
-                results += 0
+                row[ix] = 0
             else:
-                results += sum(distances) / len(distances)
-        return results
+                row[ix] = sum(distances) / len(distances)
+        return row
 
     def compute(self) -> None:
         self._take_single_metric_and_compute_new_one(

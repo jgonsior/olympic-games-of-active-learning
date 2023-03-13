@@ -42,59 +42,87 @@ class CLASS_DISTRIBUTIONS(Base_Computed_Metric):
         print("done loading")
 
     def _pre_appy_to_row_hook(self, df: pd.DataFrame) -> pd.DataFrame:
-        del df["0"]
-        return self._convert_selected_indices_to_ast(df)
+        df = self._convert_selected_indices_to_ast(df, merge=False)
+        return df
 
+    # two variants
+    # variant a: per batch
+    # variant b: for all selected indices up until this point
     def _class_distributions(
-        self, row: pd.Series, metric: Literal["manhattan", "chebyshev"]
+        self, row: pd.Series, batch: bool, metric: Literal["manhattan", "chebyshev"]
     ) -> pd.Series:
         unique_id = row["EXP_UNIQUE_ID"]
         train_test_split_number = self.done_workload_df.loc[
             self.done_workload_df["EXP_UNIQUE_ID"] == unique_id
         ]["EXP_TRAIN_TEST_BUCKET_SIZE"].to_list()[0]
 
-        selected_indices = row.loc[row.index != "EXP_UNIQUE_ID"]["selected_indices"]
-        selected_classes = self.y_true[selected_indices]
-        k, class_distributions = np.unique(selected_classes, return_counts=True)
+        col_names_without_exp_unique_id = [i for i in row.index if i != "EXP_UNIQUE_ID"]
 
-        if len(k) != len(self.true_distribution[train_test_split_number]):
-            new_class_distributions = [0 for _ in self.classes]
-            for key, value in zip(k, class_distributions):
-                new_class_distributions[self.classes.index(key)] = value
-            class_distributions = new_class_distributions
+        selected_indices_up_until_now = []
+        for ix, r in row[col_names_without_exp_unique_id].items():
+            if batch == False:
+                selected_indices_up_until_now.append(r)
+                selected_indices = [a for b in selected_indices_up_until_now for a in b]
+            else:
+                selected_indices = r
+            selected_classes = self.y_true[selected_indices]
+            k, class_distributions = np.unique(selected_classes, return_counts=True)
 
-        class_distributions = [
-            x / sum(class_distributions) for x in class_distributions
-        ]
+            if len(k) != len(self.true_distribution[train_test_split_number]):
+                new_class_distributions = [0 for _ in self.classes]
+                for key, value in zip(k, class_distributions):
+                    new_class_distributions[self.classes.index(key)] = value
+                class_distributions = new_class_distributions
 
-        true_counts = self.true_distribution[train_test_split_number]
-        pred_counts = class_distributions
+            class_distributions = [
+                x / sum(class_distributions) for x in class_distributions
+            ]
 
-        if metric == "manhattan":
-            total_diff = 0
-            for true_count, pred_count in zip(true_counts, pred_counts):
-                # distance metrics: https://stats.stackexchange.com/a/151362
-                total_diff += abs(true_count - pred_count)
-            result = total_diff
-        elif metric == "chebyshev":
-            result = distance.chebyshev(true_counts, pred_counts)
+            true_counts = self.true_distribution[train_test_split_number]
+            pred_counts = class_distributions
 
-        return -result
+            if metric == "manhattan":
+                total_diff = 0
+                for true_count, pred_count in zip(true_counts, pred_counts):
+                    # distance metrics: https://stats.stackexchange.com/a/151362
+                    total_diff += abs(true_count - pred_count)
+                result = total_diff
+            elif metric == "chebyshev":
+                result = distance.chebyshev(true_counts, pred_counts)
 
-    def class_distributions_manhattan(self, row: pd.Series) -> pd.Series:
-        return self._class_distributions(row, metric="manhattan")
+            row[ix] = -result
+        return row
 
-    def unifclass_distributions_chebyshev(self, row: pd.Series) -> pd.Series:
-        return self._class_distributions(row, metric="chebyshev")
+    def class_distributions_manhattan_batch(self, row: pd.Series) -> pd.Series:
+        return self._class_distributions(row, metric="manhattan", batch=True)
+
+    def unifclass_distributions_chebyshev_batch(self, row: pd.Series) -> pd.Series:
+        return self._class_distributions(row, metric="chebyshev", batch=True)
+
+    def class_distributions_manhattan_added_up(self, row: pd.Series) -> pd.Series:
+        return self._class_distributions(row, metric="manhattan", batch=False)
+
+    def unifclass_distributions_chebyshev_added_up(self, row: pd.Series) -> pd.Series:
+        return self._class_distributions(row, metric="chebyshev", batch=False)
 
     def compute(self) -> None:
         self._take_single_metric_and_compute_new_one(
             existing_metric_names=["selected_indices"],
-            new_metric_name="class_distributions_chebyshev",
-            apply_to_row=self.unifclass_distributions_chebyshev,
+            new_metric_name="class_distributions_chebyshev_batch",
+            apply_to_row=self.unifclass_distributions_chebyshev_batch,
         )
         self._take_single_metric_and_compute_new_one(
             existing_metric_names=["selected_indices"],
-            new_metric_name="class_distributions_manhattan",
-            apply_to_row=self.class_distributions_manhattan,
+            new_metric_name="class_distributions_manhattan_batch",
+            apply_to_row=self.class_distributions_manhattan_batch,
+        )
+        self._take_single_metric_and_compute_new_one(
+            existing_metric_names=["selected_indices"],
+            new_metric_name="class_distributions_chebyshev_added_up",
+            apply_to_row=self.unifclass_distributions_chebyshev_added_up,
+        )
+        self._take_single_metric_and_compute_new_one(
+            existing_metric_names=["selected_indices"],
+            new_metric_name="class_distributions_manhattan_added_up",
+            apply_to_row=self.class_distributions_manhattan_added_up,
         )

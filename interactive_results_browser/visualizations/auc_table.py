@@ -158,15 +158,6 @@ class Auc_Table(Base_Visualizer):
             "avg_dist_labeled",
             "avg_dist_unlabeled",
             "mismatch_train_test",
-            "class_distributions_chebyshev",
-            "class_distributions_manhattan",
-            "hardest_samples",
-            "optimal_samples_order_wrongness",
-            "optimal_samples_order_variability",
-            "optimal_samples_order_easy_hard_ambiguous",
-            "optimal_samples_order_acc_diff_addition",
-            "optimal_samples_order_acc_diff_absolute_addition",
-            "optimal_samples_included_in_optimal_strategy",
         ]
 
         for standard_metric_without_auc in basic_metrics:

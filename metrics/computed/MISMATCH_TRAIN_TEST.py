@@ -6,7 +6,7 @@ from datasets import DATASET
 
 from metrics.computed.base_computed_metric import Base_Computed_Metric
 
-from typing import Dict, TYPE_CHECKING
+from typing import Dict, TYPE_CHECKING, List
 
 
 if TYPE_CHECKING:
@@ -64,8 +64,8 @@ class MISMATCH_TRAIN_TEST(Base_Computed_Metric):
         # differenz ist dann das ergebnis
         amount_of_al_iterations = int(len(row) / 2)
 
-        results = 0
-        for al_iteration in range(1, amount_of_al_iterations):
+        results: Dict[int, int] = {}
+        for al_iteration in range(0, amount_of_al_iterations):
             y_pred_train = row[f"{al_iteration}_x"]
             y_pred_test = row[f"{al_iteration}_y"]
             amount_of_correct_predicted_train = np.sum(
@@ -74,10 +74,12 @@ class MISMATCH_TRAIN_TEST(Base_Computed_Metric):
             amount_of_correct_predicted_test = np.sum(
                 y_pred_test == self.y_test_true[train_test_split_number]
             ) / len(y_pred_test)
-            results += (
-                amount_of_correct_predicted_test - amount_of_correct_predicted_train
+
+            results[al_iteration] = (
+                amount_of_correct_predicted_test / amount_of_correct_predicted_train
             )
-        return -results
+
+        return pd.Series(results)
 
     def compute(self) -> None:
         self._take_single_metric_and_compute_new_one(

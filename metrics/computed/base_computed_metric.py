@@ -5,8 +5,9 @@ from pathlib import Path
 from typing import List, TYPE_CHECKING
 from joblib import Parallel, delayed, parallel_backend
 import ast
+import numpy as np
 import pandas as pd
-
+from collections.abc import Iterable
 from datasets import DATASET
 
 if TYPE_CHECKING:
@@ -46,7 +47,7 @@ def _process_a_single_strategy(
         )
         if not METRIC_RESULTS_FILE.exists():
             continue
-        # print(METRIC_RESULTS_FILE)
+        print(METRIC_RESULTS_FILE)
         metric_result_files.append(METRIC_RESULTS_FILE)
 
     joined_df = pd.DataFrame()
@@ -72,8 +73,9 @@ def _process_a_single_strategy(
         apply_to_row=apply_to_row,
         additional_apply_to_row_kwargs=additional_apply_to_row_kwargs,
     )
+    if isinstance(new_df, pd.Series):
+        new_df = new_df.to_frame()
 
-    new_df = new_df.loc[:, ["computed_metric"]]
     new_df["EXP_UNIQUE_ID"] = exp_unique_id_column
 
     # save new df somehow
@@ -98,30 +100,61 @@ class Base_Computed_Metric(ABC):
     def apply_to_row(self, row: pd.Series) -> pd.Series:
         pass
 
-    def convert_original_df(
-        self, original_df: pd.DataFrame, apply_to_row, additional_apply_to_row_kwargs
+    def _parse_selected_indices(
+        self, df: pd.DataFrame, calculate_mean_too=False
     ) -> pd.DataFrame:
-        # do stuff using lambda etc
-        original_df["computed_metric"] = original_df.apply(
-            lambda x: apply_to_row(x, **additional_apply_to_row_kwargs), axis=1
-        )
-        return original_df
-
-    def _convert_selected_indices_to_ast(self, df: pd.DataFrame) -> pd.DataFrame:
         column_names_which_are_al_cycles = list(df.columns)
         column_names_which_are_al_cycles.remove("EXP_UNIQUE_ID")
 
         df = df.fillna("")
-        df["selected_indices"] = df[column_names_which_are_al_cycles].apply(
-            lambda x: ast.literal_eval(
-                ("[" + ",".join(x).replace("[", "").replace("]", "") + "]").replace(
-                    ",,", ""
-                )
-            ),
-            axis=1,
+
+        df[column_names_which_are_al_cycles] = df[
+            column_names_which_are_al_cycles
+        ].applymap(
+            lambda x: ast.literal_eval(str(x)),
         )
-        for c in column_names_which_are_al_cycles:
-            del df[c]
+
+        if calculate_mean_too:
+            df[column_names_which_are_al_cycles] = df[
+                column_names_which_are_al_cycles
+            ].applymap(lambda x: sum(x) / len(x) if isinstance(x, Iterable) else x)
+
+        return df
+
+    def convert_original_df(
+        self, original_df: pd.DataFrame, apply_to_row, additional_apply_to_row_kwargs
+    ) -> pd.DataFrame:
+        # do stuff using lambda etc
+        original_df = original_df.apply(
+            lambda x: apply_to_row(x, **additional_apply_to_row_kwargs), axis=1
+        )
+        return original_df
+
+    def _convert_selected_indices_to_ast(
+        self, df: pd.DataFrame, merge=True
+    ) -> pd.DataFrame:
+        column_names_which_are_al_cycles = list(df.columns)
+        column_names_which_are_al_cycles.remove("EXP_UNIQUE_ID")
+
+        df = df.fillna("")
+
+        if merge:
+            df["selected_indices"] = df[column_names_which_are_al_cycles].apply(
+                lambda x: ast.literal_eval(
+                    ("[" + ",".join(x).replace("[", "").replace("]", "") + "]").replace(
+                        ",,", ""
+                    )
+                ),
+                axis=1,
+            )
+
+            for c in column_names_which_are_al_cycles:
+                del df[c]
+
+        else:
+            df[column_names_which_are_al_cycles] = df[
+                column_names_which_are_al_cycles
+            ].applymap(lambda x: ast.literal_eval(x))
 
         return df
 
@@ -145,7 +178,7 @@ class Base_Computed_Metric(ABC):
                 continue
 
             with parallel_backend(
-                "multiprocessing", n_jobs=multiprocessing.cpu_count()
+                "multiprocessing", n_jobs=multiprocessing.cpu_count() - 1
             ):
                 Parallel()(
                     delayed(_process_a_single_strategy)(
