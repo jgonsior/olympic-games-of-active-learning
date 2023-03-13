@@ -227,6 +227,37 @@ class Base_Samples_Categorizer(ABC):
 
             yield metric_dfs
 
+    def _closeness_to_all_nearest(
+        self,
+        dataset: DATASET,
+        mask_func: Callable[[np.ndarray, np.ndarray], np.ndarray],
+    ) -> np.ndarray:
+        _, Y_true = self._load_dataset(dataset)
+
+        distance_matrix = self._get_distance_matrix(dataset)
+
+        samples_categorization = np.zeros_like(Y_true, dtype=np.float32)
+
+        for Y_class in np.unique(Y_true):
+            samples_of_this_class_mask = np.where(mask_func(Y_true, Y_class))[0]
+
+            nearest_neighbors_of_same_class_distances = distance_matrix[
+                samples_of_this_class_mask
+            ]
+
+            avg_distance_to_same_class_neighbors = np.average(
+                nearest_neighbors_of_same_class_distances, axis=1
+            )
+
+            samples_categorization[
+                samples_of_this_class_mask
+            ] = avg_distance_to_same_class_neighbors
+
+        # normalize samples_categorization
+        samples_categorization = samples_categorization / np.sum(samples_categorization)
+
+        return samples_categorization
+
     def _closeness_to_k_nearest(
         self,
         dataset: DATASET,
@@ -476,10 +507,12 @@ class INCLUDED_IN_OPTIMAL_STRATEGY(Base_Samples_Categorizer):
             samples_categorization / np.sum(samples_categorization) * 100
         )
 
+        samples_categorization = np.nan_to_num(samples_categorization)
+
         return samples_categorization
 
 
-class CLOSENESS_TO_SAMPLES_OF_SAME_CLASS(Base_Samples_Categorizer):
+class CLOSENESS_TO_SAMPLES_OF_SAME_CLASS_kNN(Base_Samples_Categorizer):
     """
     first, cluster dataset
     second, calculate distance of point to cluster border
@@ -489,7 +522,7 @@ class CLOSENESS_TO_SAMPLES_OF_SAME_CLASS(Base_Samples_Categorizer):
         return self._closeness_to_k_nearest(dataset, mask_func=lambda a, b: a == b)
 
 
-class CLOSENESS_TO_SAMPLES_OF_OTHER_CLASS(Base_Samples_Categorizer):
+class CLOSENESS_TO_SAMPLES_OF_OTHER_CLASS_kNN(Base_Samples_Categorizer):
     """
     first, cluster dataset
     second, calculate distance of point to cluster border
@@ -497,6 +530,26 @@ class CLOSENESS_TO_SAMPLES_OF_OTHER_CLASS(Base_Samples_Categorizer):
 
     def calculate_samples_categorization(self, dataset: DATASET) -> np.ndarray:
         return self._closeness_to_k_nearest(dataset, mask_func=lambda a, b: a != b)
+
+
+class CLOSENESS_TO_SAMPLES_OF_SAME_CLASS(Base_Samples_Categorizer):
+    """
+    first, cluster dataset
+    second, calculate distance of point to cluster border
+    """
+
+    def calculate_samples_categorization(self, dataset: DATASET) -> np.ndarray:
+        return self._closeness_to_all_nearest(dataset, mask_func=lambda a, b: a == b)
+
+
+class CLOSENESS_TO_SAMPLES_OF_OTHER_CLASS(Base_Samples_Categorizer):
+    """
+    first, cluster dataset
+    second, calculate distance of point to cluster border
+    """
+
+    def calculate_samples_categorization(self, dataset: DATASET) -> np.ndarray:
+        return self._closeness_to_all_nearest(dataset, mask_func=lambda a, b: a != b)
 
 
 class CLOSENESS_TO_CLUSTER_CENTER(Base_Samples_Categorizer):

@@ -178,7 +178,7 @@ class Base_Computed_Metric(ABC):
                 continue
 
             with parallel_backend(
-                "multiprocessing", n_jobs=multiprocessing.cpu_count() - 1
+                "multiprocessing", n_jobs=multiprocessing.cpu_count()
             ):
                 Parallel()(
                     delayed(_process_a_single_strategy)(
