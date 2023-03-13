@@ -323,6 +323,13 @@ class COUNT_WRONG_CLASSIFICATIONS(Base_Samples_Categorizer):
         return samples_categorization
 
 
+# source: https://stackoverflow.com/a/57268344
+# see:https://stats.stackexchange.com/questions/115453/how-to-express-inequality-of-a-distribution-in-one-number
+def herfindahl_index(x: np.ndarray) -> np.number:
+    _, cnt = np.unique(x, return_counts=True)
+    return np.square(cnt / cnt.sum()).sum()
+
+
 class SWITCHES_CLASS_OFTEN(Base_Samples_Categorizer):
     """
     calculates how often the predicted class changes over the course of an AL cycls by calculating the variance of the predicted classes over the course of the AL cycles
@@ -338,7 +345,7 @@ class SWITCHES_CLASS_OFTEN(Base_Samples_Categorizer):
                 continue
 
             a = np.apply_along_axis(lambda x: [x[0], x[1], x[2]], axis=1, arr=a)
-            a = np.var(a, axis=1)
+            a = np.apply_along_axis(herfindahl_index, axis=1, arr=a)
             a = np.sum(a, axis=0)
             samples_categorization += a
         # normalize samples_categorization
@@ -459,7 +466,9 @@ class MELTING_POT_REGION(Base_Samples_Categorizer):
             lambda x: Y_true[x], 1, nearest_neighbors_of_each_point
         )
 
-        nearest_variance = np.var(nearest_neighbors_classes, axis=1)
+        nearest_variance = np.apply_along_axis(
+            herfindahl_index, axis=1, arr=nearest_neighbors_classes
+        )
         samples_categorization = nearest_variance
 
         # normalize samples_categorization
