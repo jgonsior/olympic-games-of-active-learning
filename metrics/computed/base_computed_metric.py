@@ -161,7 +161,7 @@ class Base_Computed_Metric(ABC):
     def _pre_appy_to_row_hook(self, df: pd.DataFrame) -> pd.DataFrame:
         return df
 
-    def _per_dataset_hook(self, EXP_DATASET: DATASET) -> None:
+    def _per_dataset_hook(self, EXP_DATASET: DATASET, **kwargs) -> None:
         ...
 
     def _take_single_metric_and_compute_new_one(

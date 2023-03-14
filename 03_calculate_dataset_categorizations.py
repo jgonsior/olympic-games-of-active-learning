@@ -41,7 +41,7 @@ def _run_samples_categorizer(sc: str, ds: DATASET):
 
 dataset_categorizer_combinations: List[Tuple[DATASET, SAMPLES_CATEGORIZER]] = list(
     itertools.product(config.SAMPLES_CATEGORIZER, config.EXP_GRID_DATASET)
-)
+)dri
 
 with parallel_backend("threading", n_jobs=multiprocessing.cpu_count()):
     Parallel()(
