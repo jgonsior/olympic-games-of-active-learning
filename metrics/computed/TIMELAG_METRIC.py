@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 class TIMELAG_METRIC(Base_Computed_Metric):
-    # takes in standard metric, and calculates the timelag difference
+    # takes in standard metric, and calculates the timelag difference -> removes trend from learning curve time series
     def _pre_appy_to_row_hook(self, df: pd.DataFrame) -> pd.DataFrame:
         df = self._parse_using_ast_literal_eval(df, calculate_mean_too=True)
         return df
