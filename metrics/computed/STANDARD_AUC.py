@@ -13,8 +13,9 @@ if TYPE_CHECKING:
 
 class STANDARD_AUC(Base_Computed_Metric):
     def _pre_appy_to_row_hook(self, df: pd.DataFrame) -> pd.DataFrame:
-        del df["0"]
-        df = self._parse_selected_indices(df, calculate_mean_too=True)
+        if "0" in df.columns:
+            del df["0"]
+        df = self._parse_using_ast_literal_eval(df, calculate_mean_too=True)
         return df
 
     def range_auc(self, row: pd.Series, range_start: int, range_end: int) -> pd.Series:

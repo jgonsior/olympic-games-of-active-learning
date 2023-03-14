@@ -57,6 +57,7 @@ from metrics.computed.DISTANCE_METRICS import DISTANCE_METRICS
 from metrics.computed.METRIC_DROP import METRIC_DROP
 from metrics.computed.MISMATCH_TRAIN_TEST import MISMATCH_TRAIN_TEST
 from metrics.computed.STANDARD_AUC import STANDARD_AUC
+from metrics.computed.TIMELAG_METRIC import TIMELAG_METRIC
 from metrics.computed.base_samples_categorizer import (
     AVERAGE_UNCERTAINTY,
     CLOSENESS_TO_CLUSTER_CENTER,
@@ -338,6 +339,7 @@ class COMPUTED_METRIC(IntEnum):
     CLASS_DISTRIBUTIONS = 4
     METRIC_DROP = 5
     DATASET_CATEGORIZATION = 6
+    TIMELAG_METRIC = 7
 
 
 computed_metric_to_classes_mapping: Dict[COMPUTED_METRIC, Callable] = {
@@ -347,6 +349,7 @@ computed_metric_to_classes_mapping: Dict[COMPUTED_METRIC, Callable] = {
     COMPUTED_METRIC.CLASS_DISTRIBUTIONS: CLASS_DISTRIBUTIONS,
     COMPUTED_METRIC.METRIC_DROP: METRIC_DROP,
     COMPUTED_METRIC.DATASET_CATEGORIZATION: DATASET_CATEGORIZATION,
+    COMPUTED_METRIC.TIMELAG_METRIC: TIMELAG_METRIC,
 }
 
 

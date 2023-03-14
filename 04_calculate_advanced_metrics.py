@@ -16,8 +16,10 @@ config = Config()
 if config.COMPUTED_METRICS == ["_ALL"]:
     # ensure that STANDARD_AUC is run last so that all other metrics are already precomputed
     config.COMPUTED_METRICS = [
-        sc.name for sc in COMPUTED_METRIC if sc != COMPUTED_METRIC.STANDARD_AUC
-    ] + [COMPUTED_METRIC.STANDARD_AUC.name]
+        sc.name
+        for sc in COMPUTED_METRIC
+        if sc != COMPUTED_METRIC.STANDARD_AUC and sc != COMPUTED_METRIC.TIMELAG_METRIC
+    ] + [COMPUTED_METRIC.TIMELAG_METRIC, COMPUTED_METRIC.STANDARD_AUC.name]
 
 
 print("computung the following metrics: " + ",".join(config.COMPUTED_METRICS))

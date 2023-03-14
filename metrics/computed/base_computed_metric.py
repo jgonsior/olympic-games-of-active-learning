@@ -100,7 +100,7 @@ class Base_Computed_Metric(ABC):
     def apply_to_row(self, row: pd.Series) -> pd.Series:
         pass
 
-    def _parse_selected_indices(
+    def _parse_using_ast_literal_eval(
         self, df: pd.DataFrame, calculate_mean_too=False
     ) -> pd.DataFrame:
         column_names_which_are_al_cycles = list(df.columns)
