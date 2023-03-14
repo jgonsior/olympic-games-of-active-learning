@@ -63,7 +63,9 @@ def _cache_runtimes(
 
 class Runtimes(Base_Visualizer):
     @staticmethod
-    def get_additional_request_params() -> Dict[str, List[Any]]:
+    def get_additional_request_params(
+        OUTPUT_PATH: Path, with_basic=True
+    ) -> Dict[str, List[Any]]:
         return {
             "VIZ_RT_METRIC": [
                 "learner_training_time",

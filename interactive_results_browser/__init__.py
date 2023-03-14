@@ -118,7 +118,7 @@ def show_viz_overview(experiment_name: str):
             config, exp_grid_request_params, experiment_name
         )
 
-        arp = visualizer.get_additional_request_params()
+        arp = visualizer.get_additional_request_params(config.OUTPUT_PATH)
         if len(arp) == 0:
             arp = {"_dummy_param": ["No_param"]}
 

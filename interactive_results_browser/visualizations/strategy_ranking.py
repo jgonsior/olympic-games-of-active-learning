@@ -7,7 +7,7 @@ from interactive_results_browser.visualizations.auc_table import Auc_Table
 
 
 from interactive_results_browser.visualizations.base_visualizer import Base_Visualizer
-from typing import Any, List
+from typing import Any, Dict, List
 
 from interactive_results_browser.cache import memory
 from misc.config import Config
@@ -95,9 +95,9 @@ def _plot_strategy_ranking_heatmap(plot_df, my_palette, my_markers):
 
 def _correlation_analysis(done_workload_df, OUTPUT_PATH):
     plot_df = pd.DataFrame()
-    metric_values = Auc_Table.get_additional_request_params(with_basic=False)[
-        "VIZ_AUC_TABLE_METRIC"
-    ]
+    metric_values = Auc_Table.get_additional_request_params(
+        OUTPUT_PATH, with_basic=True
+    )["VIZ_AUC_TABLE_METRIC"]
     for metric in metric_values:
         single_metric_plot_df = Base_Visualizer.load_detailed_metric_files(
             done_workload_df, metric, OUTPUT_PATH
@@ -134,9 +134,9 @@ def _correlation_analysis(done_workload_df, OUTPUT_PATH):
 
 def _strategy_ranking_heatmap(done_workload_df, OUTPUT_PATH):
     plot_df = pd.DataFrame()
-    metric_values = Auc_Table.get_additional_request_params(with_basic=False)[
-        "VIZ_AUC_TABLE_METRIC"
-    ]
+    metric_values = Auc_Table.get_additional_request_params(
+        OUTPUT_PATH, with_basic=True
+    )["VIZ_AUC_TABLE_METRIC"]
     for metric in metric_values:
         single_metric_plot_df = Base_Visualizer.load_detailed_metric_files(
             done_workload_df, metric, OUTPUT_PATH
@@ -216,10 +216,9 @@ def _cache_strategy_ranking(
 
 class Strategy_Ranking(Base_Visualizer):
     @staticmethod
-    def get_additional_request_params() -> Dict[str, List[Any]]:
-        # possible_metrics = Auc_Table.get_additional_request_params(with_basic=False)[
-        #    "VIZ_AUC_TABLE_METRIC"
-        # ]
+    def get_additional_request_params(
+        OUTPUT_PATH: Path, with_basic=True
+    ) -> Dict[str, List[Any]]:
         possible_metrics = [
             "correlation_analysis",
             "strategy_ranking_heatmap",

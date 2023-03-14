@@ -64,7 +64,9 @@ class Base_Visualizer(ABC):
         self._exp_grid_request_params = exp_grid_request_params
         self._experiment_name = experiment_name
 
-        additional_request_params = self.__class__.get_additional_request_params()
+        additional_request_params = self.__class__.get_additional_request_params(
+            self._config.OUTPUT_PATH
+        )
 
         for k in additional_request_params.keys():
             if not k in self._NON_WORKLOAD_KEYS:
@@ -87,7 +89,9 @@ class Base_Visualizer(ABC):
         return result
 
     @staticmethod
-    def get_additional_request_params() -> Dict[str, List[Any]]:
+    def get_additional_request_params(
+        OUTPUT_PATH: Path, with_basic=True
+    ) -> Dict[str, List[Any]]:
         return {}
 
     @staticmethod

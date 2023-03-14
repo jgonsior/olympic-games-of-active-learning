@@ -1,5 +1,6 @@
 from __future__ import annotations
 import copy
+import glob
 import math
 from pathlib import Path
 
@@ -131,39 +132,21 @@ def _cache_create_auc_table(
 
 class Auc_Table(Base_Visualizer):
     @staticmethod
-    def get_additional_request_params(with_basic=True) -> Dict[str, List[Any]]:
-        sacmc = STANDARD_AUC(Config())
-        basic_metrics = sacmc.metrics
-        auc_metrics = []
-        auc_ranges = [
-            "ramp_up_quality_",
-            "middle_quality_",
-            "end_quality_",
-            "learning_stability_",
-            "auc_",
-        ]
-        for ar in auc_ranges:
-            auc_metrics = [*auc_metrics, *[ar + sss for sss in basic_metrics]]
-
-        metric_values = copy.deepcopy(auc_metrics)
-
-        for basic_metric in basic_metrics:
-            metric_values.append("biggest_drop_per_" + basic_metric)
-            metric_values.append("nr_decreasing_al_cycles_per_" + basic_metric)
-            if with_basic:
-                metric_values.append(basic_metric)
-
-        metric_values += [
-            "avg_dist_batch",
-            "avg_dist_labeled",
-            "avg_dist_unlabeled",
-            "mismatch_train_test",
+    def get_additional_request_params(
+        OUTPUT_PATH: Path, with_basic=True
+    ) -> Dict[str, List[Any]]:
+        all_existing_metric_names = set(
+            [Path(a).name for a in glob.glob(str(OUTPUT_PATH / "*/*/*.csv.xz"))]
+        )
+        all_existing_metric_names = [
+            a.split(".")[0]
+            for a in all_existing_metric_names
+            if not a.startswith("auc_")
+            and not a.startswith("learning_stability_")
+            and not a.startswith("pickled_learner_model")
         ]
 
-        for standard_metric_without_auc in basic_metrics:
-            if standard_metric_without_auc in metric_values:
-                metric_values.remove(standard_metric_without_auc)
-        return {"VIZ_AUC_TABLE_METRIC": metric_values}
+        return {"VIZ_AUC_TABLE_METRIC": sorted(all_existing_metric_names)}
 
     def get_template_data(self) -> Dict[str, Any]:
         if len(self._exp_grid_request_params["VIZ_AUC_TABLE_METRIC"]) == 0:

@@ -72,7 +72,9 @@ def _cache_create_plots(
 
 class Learning_Curves(Base_Visualizer):
     @staticmethod
-    def get_additional_request_params() -> Dict[str, List[Any]]:
+    def get_additional_request_params(
+        OUTPUT_PATH: Path, with_basic=True
+    ) -> Dict[str, List[Any]]:
         smm = Standard_ML_Metrics()
         return {"VIZ_LC_METRIC": smm.metrics}
 
