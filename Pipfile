@@ -44,6 +44,8 @@ pyinotify = "*"
 pandarallel = "*"
 frozen-flask = "*"
 stopit = "*"
+small-text="*"
+skactiveml="*"
 
 [requires]
 python_version = "3.10"

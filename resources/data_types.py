@@ -51,6 +51,9 @@ from framework_runners.alipy_runner import ALIPY_AL_Experiment
 from framework_runners.optimal_runner import OPTIMAL_AL_Experiment
 from framework_runners.libact_runner import LIBACT_Experiment
 from framework_runners.playground_runner import PLAYGROUND_AL_Experiment
+from framework_runners.smalltext_runner import SMALLTEXT_AL_Experiment
+from framework_runners.skactiveml_runner import SKACTIVEML_AL_Experiment
+
 from metrics.computed.CLASS_DISTRIBUTIONS import CLASS_DISTRIBUTIONS
 from metrics.computed.DATASET_CATEGORIZATION import DATASET_CATEGORIZATION
 from metrics.computed.DISTANCE_METRICS import DISTANCE_METRICS
@@ -75,6 +78,40 @@ from metrics.computed.base_samples_categorizer import (
     CLOSENESS_TO_SAMPLES_OF_SAME_CLASS_kNN,
 )
 from optimal_query_strategies.BSO_optimal import Beeam_Search_Optimal
+
+from small_text import (
+    LeastConfidence,
+    PredictionEntropy,
+    BreakingTies,
+    EmbeddingKMeans,
+    GreedyCoreset,
+    LightweightCoreset,
+    ContrastiveActiveLearning,
+    DiscriminativeActiveLearning,
+    CategoryVectorInconsistencyAndRanking,
+    SEALS,
+    #BALD,
+    RandomSampling
+)
+
+from skactiveml.pool import (
+    ExpectedModelOutputChange,
+    ExpectedModelVarianceReduction,
+    KLDivergenceMaximization,
+    MonteCarloEER,
+    ValueOfInformationEER,
+    ExpectedModelChangeMaximization,
+    QueryByCommittee as SK_QueryByCommittee,
+    EpistemicUncertaintySampling,
+    FourDs,
+    UncertaintySampling as SK_UncertaintySampling,
+    CostEmbeddingAL,
+    DiscriminativeAL,
+    GreedySamplingTarget,
+    GreedySamplingX,
+    ProbabilisticAL,
+    Quire
+)
 
 from optimal_query_strategies.greedy_optimal import (
     FuturePeakEvalMetric,
@@ -132,6 +169,44 @@ class AL_STRATEGY(IntEnum):
     LIBACT_UNCERTAINTY_SM = 36
     LIBACT_UNCERTAINTY_ENT = 37
     OPTIMAL_GREEDY_20 = 38
+    SMALLTEXT_LEASTCONFIDENCE = 39
+    SMALLTEXT_PREDICTIONENTROPY = 40
+    SMALLTEXT_BREAKINGTIES = 41
+    #SMALLTEXT_BALD = 42
+    SMALLTEXT_EMBEDDINGKMEANS = 43
+    SMALLTEXT_GREEDYCORESET = 44
+    SMALLTEXT_LIGHTWEIGHTCORESET = 45
+    SMALLTEXT_CONTRASTIVEAL = 46
+    SMALLTEXT_DISCRIMINATIVEAL = 47
+    SMALLTEXT_CVIAR = 48 # Category Vector Inconsistency and Ranking
+    SMALLTEXT_SEALS = 49
+    SMALLTEXT_RANDOM = 50
+    SKACTIVEML_EXPECTED_MODEL_OUTPUT_CHANGE = 51
+    SKACTIVEML_EXPECTED_MODEL_VARIANCE_REDUCTION = 52
+    SKACTIVEML_KL_DIVERGENCE_MAXIMIZATION = 53
+    SKACTIVEML_MC_EER_LOG_LOSS = 54
+    SKACTIVEML_MC_EER_MISCLASS_LOSS = 55
+    SKACTIVEML_VOI_UNLABELED = 56
+    SKACTIVEML_VOI_LABELED = 57
+    SKACTIVEML_VOI = 58
+    SKACTIVEML_EXPECTED_MODEL_CHANGE = 59
+    SKACTIVEML_QBC = 60
+    SKACTIVEML_EPISTEMIC_US = 61
+    SKACTIVEML_DDDD = 62
+    SKACTIVEML_US_MARGIN = 63
+    SKACTIVEML_US_LC = 64
+    SKACTIVEML_US_ENTROPY = 65
+    SKACTIVEML_EXPECTED_AVERAGE_PRECISION = 66
+    SKACTIVEML_DWUS = 67
+    SKACTIVEML_DUAL_STRAT = 68
+    SKACTIVEML_COST_EMBEDDING = 69
+    SKACTIVEML_DAL = 70
+    SKACTIVEML_GREEDY_TARGET_SPACE = 71
+    SKACTIVEML_GREEDY_IMPROVED = 72
+    SKACTIVEML_GREEDY_FEATURE_SPACE = 73
+    SKACTIVEML_MCPAL = 74
+    SKACTIVEML_QBC_VOTE_ENTROPY = 75
+    SKACTIVEML_QUIRE = 76
 
 
 al_strategy_to_python_classes_mapping: Dict[
@@ -201,6 +276,44 @@ al_strategy_to_python_classes_mapping: Dict[
     AL_STRATEGY.PLAYGROUND_HIERARCHICAL_CLUSTER: (HierarchicalClusterAL, {}),
     AL_STRATEGY.PLAYGROUND_INFORMATIVE_DIVERSE: (InformativeClusterDiverseSampler, {}),
     AL_STRATEGY.PLAYGROUND_BANDIT: (BanditDiscreteSampler, {}),
+    AL_STRATEGY.SMALLTEXT_LEASTCONFIDENCE: (LeastConfidence, {}),
+    AL_STRATEGY.SMALLTEXT_PREDICTIONENTROPY: (PredictionEntropy, {}),
+    AL_STRATEGY.SMALLTEXT_BREAKINGTIES: (BreakingTies, {}),
+    #AL_STRATEGY.SMALLTEXT_BALD: (BALD, {}),
+    AL_STRATEGY.SMALLTEXT_EMBEDDINGKMEANS: (EmbeddingKMeans, {}),
+    AL_STRATEGY.SMALLTEXT_GREEDYCORESET: (GreedyCoreset, {}),
+    AL_STRATEGY.SMALLTEXT_LIGHTWEIGHTCORESET: (LightweightCoreset, {}),
+    AL_STRATEGY.SMALLTEXT_CONTRASTIVEAL: (ContrastiveActiveLearning, {}),
+    AL_STRATEGY.SMALLTEXT_DISCRIMINATIVEAL: (DiscriminativeActiveLearning, {}),
+    AL_STRATEGY.SMALLTEXT_CVIAR: (CategoryVectorInconsistencyAndRanking, {}),
+    AL_STRATEGY.SMALLTEXT_SEALS: (SEALS, {}),
+    AL_STRATEGY.SMALLTEXT_RANDOM: (RandomSampling, {}),
+    AL_STRATEGY.SKACTIVEML_EXPECTED_MODEL_OUTPUT_CHANGE: (ExpectedModelOutputChange, {"integration_dict": {"method": "gauss_hermite", "n_integration_samples": 5}}),
+    AL_STRATEGY.SKACTIVEML_EXPECTED_MODEL_VARIANCE_REDUCTION: (ExpectedModelVarianceReduction, {}),
+    AL_STRATEGY.SKACTIVEML_KL_DIVERGENCE_MAXIMIZATION: (KLDivergenceMaximization, {"integration_dict": {"method": "gauss_hermite", "n_integration_samples": 5}}),
+    AL_STRATEGY.SKACTIVEML_MC_EER_LOG_LOSS: (MonteCarloEER, {"method": "log_loss"}),
+    AL_STRATEGY.SKACTIVEML_MC_EER_MISCLASS_LOSS: (MonteCarloEER, {}),
+    AL_STRATEGY.SKACTIVEML_VOI_UNLABELED: (ValueOfInformationEER, {"consider_labeled": False, "subtract_current": True, "normalize": True}),
+    AL_STRATEGY.SKACTIVEML_VOI_LABELED: (ValueOfInformationEER, {"consider_unlabeled": False, "candidate_to_labeled": False}),
+    AL_STRATEGY.SKACTIVEML_VOI: (ValueOfInformationEER, {"subtract_current": True}),
+    AL_STRATEGY.SKACTIVEML_EXPECTED_MODEL_CHANGE: (ExpectedModelChangeMaximization, {}),
+    AL_STRATEGY.SKACTIVEML_QBC: (SK_QueryByCommittee, {}),
+    AL_STRATEGY.SKACTIVEML_EPISTEMIC_US: (EpistemicUncertaintySampling, {}),
+    AL_STRATEGY.SKACTIVEML_DDDD: (FourDs, {}),
+    AL_STRATEGY.SKACTIVEML_US_MARGIN: (SK_UncertaintySampling, {"method": "margin_sampling"}),
+    AL_STRATEGY.SKACTIVEML_US_LC: (SK_UncertaintySampling, {}),
+    AL_STRATEGY.SKACTIVEML_US_ENTROPY: (SK_UncertaintySampling, {"method": "entropy"}),
+    AL_STRATEGY.SKACTIVEML_EXPECTED_AVERAGE_PRECISION: (SK_UncertaintySampling, {"method": "expected_average_precision"}),
+    AL_STRATEGY.SKACTIVEML_DWUS: (SK_UncertaintySampling, {}),
+    AL_STRATEGY.SKACTIVEML_DUAL_STRAT: (SK_UncertaintySampling, {}),
+    AL_STRATEGY.SKACTIVEML_COST_EMBEDDING: (CostEmbeddingAL, {}),
+    AL_STRATEGY.SKACTIVEML_DAL: (DiscriminativeAL, {}),
+    AL_STRATEGY.SKACTIVEML_GREEDY_TARGET_SPACE: (GreedySamplingTarget, {"method": "GSy"}),
+    AL_STRATEGY.SKACTIVEML_GREEDY_IMPROVED: (GreedySamplingTarget, {}),
+    AL_STRATEGY.SKACTIVEML_GREEDY_FEATURE_SPACE: (GreedySamplingX, {}),
+    AL_STRATEGY.SKACTIVEML_MCPAL: (ProbabilisticAL, {}),
+    AL_STRATEGY.SKACTIVEML_QBC_VOTE_ENTROPY: (SK_QueryByCommittee, {"method": "vote_entropy"}),
+    AL_STRATEGY.SKACTIVEML_QUIRE: (Quire, {"classes": [0, 1], "metric_dict": {'gamma': 0.1}})
 }
 
 
@@ -321,6 +434,8 @@ class AL_FRAMEWORK(IntEnum):
     OPTIMAL = 2
     LIBACT = 3
     PLAYGROUND = 4
+    SMALLTEXT = 5
+    SKACTIVEML = 6
 
 
 AL_framework_to_classes_mapping: Dict[AL_FRAMEWORK, Tuple[Callable, Dict[Any, Any]]] = {
@@ -328,6 +443,8 @@ AL_framework_to_classes_mapping: Dict[AL_FRAMEWORK, Tuple[Callable, Dict[Any, An
     AL_FRAMEWORK.OPTIMAL: (OPTIMAL_AL_Experiment, {}),
     AL_FRAMEWORK.LIBACT: (LIBACT_Experiment, {}),
     AL_FRAMEWORK.PLAYGROUND: (PLAYGROUND_AL_Experiment, {}),
+    AL_FRAMEWORK.SMALLTEXT: (SMALLTEXT_AL_Experiment, {}),
+    AL_FRAMEWORK.SKACTIVEML: (SKACTIVEML_AL_Experiment, {})
 }
 
 
