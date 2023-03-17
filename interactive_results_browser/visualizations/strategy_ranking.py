@@ -144,7 +144,8 @@ def _strategy_ranking_heatmap(done_workload_df, OUTPUT_PATH):
         if len(single_metric_plot_df) == 0:
             print(f"No data for  metric {metric} found.")
             continue
-
+        print(metric)
+        print(single_metric_plot_df)
         if single_metric_plot_df["computed_metric"].max() <= 1.0:
             single_metric_plot_df[metric] = single_metric_plot_df[
                 "computed_metric"
@@ -175,7 +176,7 @@ def _strategy_ranking_heatmap(done_workload_df, OUTPUT_PATH):
     return plot_df
 
 
-@memory.cache()
+# @memory.cache()
 def _cache_strategy_ranking(
     done_workload_df: pd.DataFrame,
     OUTPUT_PATH: Path,
