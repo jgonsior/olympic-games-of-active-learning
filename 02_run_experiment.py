@@ -1,4 +1,7 @@
 import sys
+from framework_runners.skactiveml_runner import SKACTIVEML_AL_Experiment
+
+from framework_runners.smalltext_runner import SMALLTEXT_AL_Experiment
 
 sys.dont_write_bytecode = True
 
@@ -23,6 +26,10 @@ elif str(config.EXP_STRATEGY)[12:].startswith(str(AL_FRAMEWORK.LIBACT.name)):
     al_experiment = LIBACT_Experiment(config)
 elif str(config.EXP_STRATEGY)[12:].startswith(str(AL_FRAMEWORK.PLAYGROUND.name)):
     al_experiment = PLAYGROUND_AL_Experiment(config)
+elif str(config.EXP_STRATEGY)[12:].startswith(str(AL_FRAMEWORK.SMALLTEXT.name)):
+    al_experiment = SMALLTEXT_AL_Experiment(config)
+elif str(config.EXP_STRATEGY)[12:].startswith(str(AL_FRAMEWORK.SKACTIVEML.name)):
+    al_experiment = SKACTIVEML_AL_Experiment(config)
 else:
     raise ValueError(
         "Error, could not find the specified AL Strategy or the framework does not exist"

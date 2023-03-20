@@ -19,6 +19,7 @@ if TYPE_CHECKING:
         SampleIndiceList,
         FeatureVectors,
         LabelList,
+        LEARNER_MODEL,
     )
 
 import numpy as np
@@ -32,6 +33,8 @@ class AL_Experiment(ABC):
     metrics: List[Base_Metric] = []
     y_pred_train_calculated: bool = False
     y_pred_test_calculated: bool = False
+
+    model: LEARNER_MODEL
 
     X: FeatureVectors
     Y: LabelList
@@ -148,6 +151,9 @@ class AL_Experiment(ABC):
         early_stopped_due_to_runtime_limit = False
         error_was_being_raised = False
 
+        class NonExistentDummyException(Exception):
+            ...
+
         try:
             for iteration in range(0, total_amount_of_iterations):
                 if len(self.local_train_unlabeled_idx) == 0:
@@ -164,7 +170,7 @@ class AL_Experiment(ABC):
 
                     early_stopped_due_to_runtime_limit = True
                     break
-        except Exception as err:
+        except NonExistentDummyException as err:
             error_was_being_raised = True
             import sys
 

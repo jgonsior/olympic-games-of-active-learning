@@ -189,6 +189,11 @@ def create_workload(config: Config) -> List[int]:
         open_workload_df = _remove_right_from_left_workload(
             open_workload_df, done_workload_df
         )
+
+        oom_workload_df = pd.read_csv(config.OVERALL_STARTED_OOM_WORKLOAD_PATH)
+        open_workload_df = _remove_right_from_left_workload(
+            open_workload_df, oom_workload_df
+        )
     else:
         open_workload_df = _generate_exp_param_grid(config, exp_grid_params_names)
 

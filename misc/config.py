@@ -335,14 +335,13 @@ class Config:
             elif k == "EXP_LEARNER_MODEL":
                 v = LEARNER_MODEL(int(v))
 
-            if str(self.__annotations__[k]).endswith("int]"):
+            if str(self.__annotations__[k]).endswith("class 'int'>"):
                 v = int(v)
             self.__setattr__(k, v)
 
         for k in workload.keys():
             log_it(f"{k}\t\t\t{str(self.__getattribute__(k))}")
 
-        print(self.EXP_RANDOM_SEED)
         np.random.seed(self.EXP_RANDOM_SEED)
         random.seed(self.EXP_RANDOM_SEED)
 
@@ -368,7 +367,8 @@ class Config:
                 choices = get_args(v)
                 arg_type = str
             elif (
-                str(v) == "typing.List[int]" or str(v) == "typing.Union[typing.List[int"
+                str(v) == "typing.List[<class 'int'>]"
+                or str(v) == "typing.Union[typing.List[int"
             ):
                 nargs = "*"
                 arg_type = int
