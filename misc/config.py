@@ -326,7 +326,6 @@ class Config:
         )
         workload = workload_df.iloc[0].to_dict()
         for k, v in workload.items():
-            # log_it(f"{k}\t\t\t{str(v)}")
             # convert str/ints to enum data types first
             if k == "EXP_STRATEGY":
                 v = AL_STRATEGY(int(v))

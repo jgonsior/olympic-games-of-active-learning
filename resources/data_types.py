@@ -102,7 +102,7 @@ from skactiveml.pool import (
     ValueOfInformationEER,
     ExpectedModelChangeMaximization,
     QueryByCommittee as SK_QueryByCommittee,
-    EpistemicUncertaintySampling,
+    # EpistemicUncertaintySampling,
     FourDs,
     UncertaintySampling as SK_UncertaintySampling,
     CostEmbeddingAL,
@@ -191,7 +191,7 @@ class AL_STRATEGY(IntEnum):
     SKACTIVEML_VOI = 58
     # = 59
     SKACTIVEML_QBC = 60
-    SKACTIVEML_EPISTEMIC_US = 61
+    # SKACTIVEML_EPISTEMIC_US = 61
     SKACTIVEML_DDDD = 62
     SKACTIVEML_US_MARGIN = 63
     SKACTIVEML_US_LC = 64
@@ -318,7 +318,7 @@ al_strategy_to_python_classes_mapping: Dict[
     AL_STRATEGY.SKACTIVEML_VOI: (ValueOfInformationEER, {"subtract_current": True}),
     # AL_STRATEGY.SKACTIVEML_EXPECTED_MODEL_CHANGE: (ExpectedModelChangeMaximization, {}),
     AL_STRATEGY.SKACTIVEML_QBC: (SK_QueryByCommittee, {}),
-    AL_STRATEGY.SKACTIVEML_EPISTEMIC_US: (EpistemicUncertaintySampling, {}),
+    # AL_STRATEGY.SKACTIVEML_EPISTEMIC_US: (EpistemicUncertaintySampling, {}),
     AL_STRATEGY.SKACTIVEML_DDDD: (FourDs, {}),
     AL_STRATEGY.SKACTIVEML_US_MARGIN: (
         SK_UncertaintySampling,

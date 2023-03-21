@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy
+import numpy as np
 
 from framework_runners.base_runner import AL_Experiment
 from skactiveml.classifier import SklearnClassifier
@@ -35,9 +36,6 @@ class SKACTIVEML_AL_Experiment(AL_Experiment):
         strategy = AL_STRATEGY(self.config.EXP_STRATEGY)
         additional_params = al_strategy_to_python_classes_mapping[strategy][1]
         additional_params["random_state"] = self.config.RANDOM_SEED
-        self.al_strategy = al_strategy_to_python_classes_mapping[strategy][0](
-            **additional_params
-        )
         if self.config.EXP_STRATEGY in (
             AL_STRATEGY.SKACTIVEML_DWUS,
             AL_STRATEGY.SKACTIVEML_DUAL_STRAT,
@@ -47,7 +45,7 @@ class SKACTIVEML_AL_Experiment(AL_Experiment):
             gmm = GaussianMixture(init_params="kmeans", n_components=5)
             gmm.fit(self.local_X_train)
             self.density = numpy.exp(gmm.score_samples(self.local_X_train))
-        elif self.config.EXP_STRATEGY == AL_STRATEGY.SMALLTEXT_DISCRIMINATIVEAL:
+        elif self.config.EXP_STRATEGY == AL_STRATEGY.SKACTIVEML_DAL:
             from sklearn import clone
 
             self.discriminator = clone(self.model)
@@ -56,6 +54,12 @@ class SKACTIVEML_AL_Experiment(AL_Experiment):
                 self.local_X_train, numpy.zeros(len(self.local_X_train))
             )
             self.density = self.model.predict_freq(self.local_X_train)[:, 0]
+        elif self.config.EXP_STRATEGY == AL_STRATEGY.SKACTIVEML_QUIRE:
+            additional_params["classes"] = np.unique(self.Y)
+
+        self.al_strategy = al_strategy_to_python_classes_mapping[strategy][0](
+            **additional_params
+        )
 
     def query_AL_strategy(self) -> SampleIndiceList:
         from resources.data_types import AL_STRATEGY
@@ -104,8 +108,7 @@ class SKACTIVEML_AL_Experiment(AL_Experiment):
                     batch_size=self.config.EXP_BATCH_SIZE,
                 )
             case (
-                AL_STRATEGY.SKACTIVEML_EPISTEMIC_US
-                | AL_STRATEGY.SKACTIVEML_DDDD
+                AL_STRATEGY.SKACTIVEML_DDDD
                 | AL_STRATEGY.SKACTIVEML_US_MARGIN
                 | AL_STRATEGY.SKACTIVEML_US_LC
                 | AL_STRATEGY.SKACTIVEML_US_ENTROPY
@@ -152,14 +155,19 @@ class SKACTIVEML_AL_Experiment(AL_Experiment):
                     utilities = (1 - err) * utils_US + err * self.density
                     ret = simple_batch(utilities, self.config.RANDOM_SEED)
             case (AL_STRATEGY.SKACTIVEML_COST_EMBEDDING | AL_STRATEGY.SKACTIVEML_QUIRE):
-                ret = self.al_strategy.query(X=self.local_X_train, y=y_with_nans)
-            case AL_STRATEGY.SMALLTEXT_DISCRIMINATIVEAL:
+                ret = self.al_strategy.query(
+                    X=self.local_X_train,
+                    y=y_with_nans,
+                    batch_size=self.config.EXP_BATCH_SIZE,
+                )
+            case AL_STRATEGY.SKACTIVEML_DAL:
                 ret = self.al_strategy.query(
                     X=self.local_X_train,
                     y=y_with_nans,
                     discriminator=self.discriminator,
                     batch_size=self.config.EXP_BATCH_SIZE,
                 )
+
         return ret.tolist()
 
     def prepare_dataset(self):
