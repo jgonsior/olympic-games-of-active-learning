@@ -3,7 +3,6 @@ import requests
 
 from livereload import Server
 
-from livereload.watcher import INotifyWatcher
 from pandarallel import pandarallel
 
 

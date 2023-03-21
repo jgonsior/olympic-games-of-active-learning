@@ -51,7 +51,9 @@ class LIBACT_Experiment(AL_Experiment):
         if self.config.EXP_STRATEGY == AL_STRATEGY.LIBACT_ALBL:
             from libact.query_strategies import HintSVM
 
-            additional_params["T"] = self.config.EXP_NUM_QUERIES * self.config.EXP_BATCH_SIZE
+            additional_params["T"] = (
+                self.config.EXP_NUM_QUERIES * self.config.EXP_BATCH_SIZE
+            )
             additional_params["query_strategies"] = [
                 UncertaintySampling(self.trn_ds, model=LogisticRegression(C=1.0)),
                 UncertaintySampling(self.trn_ds, model=LogisticRegression(C=0.01)),
@@ -60,11 +62,18 @@ class LIBACT_Experiment(AL_Experiment):
         elif self.config.EXP_STRATEGY == AL_STRATEGY.LIBACT_HIERARCHICAL_SAMPLING:
             del additional_params["model"]
             additional_params["classes"] = np.unique(self.local_Y_train).tolist()
-            additional_params["subsample_qs"] = UncertaintySampling(self.trn_ds, model=LogisticRegression(C=1.0))
+            additional_params["subsample_qs"] = UncertaintySampling(
+                self.trn_ds, model=LogisticRegression(C=1.0)
+            )
         elif self.config.EXP_STRATEGY == AL_STRATEGY.LIBACT_QBC:
             del additional_params["model"]
-            additional_params["disagreement"] = "vote" # or k1_divergence if all models proba
-            additional_params["models"] = [LogisticRegression(C=1.0), LogisticRegression(C=0.1)]
+            additional_params[
+                "disagreement"
+            ] = "vote"  # or k1_divergence if all models proba
+            additional_params["models"] = [
+                LogisticRegression(C=1.0),
+                LogisticRegression(C=0.1),
+            ]
 
         self.al_strategy = al_strategy_to_python_classes_mapping[strategy][0](
             self.trn_ds, **additional_params

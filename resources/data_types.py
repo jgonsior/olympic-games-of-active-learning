@@ -192,7 +192,7 @@ class AL_STRATEGY(IntEnum):
     # = 59
     SKACTIVEML_QBC = 60
     # SKACTIVEML_EPISTEMIC_US = 61
-    SKACTIVEML_DDDD = 62
+    # SKACTIVEML_DDDD = 62
     SKACTIVEML_US_MARGIN = 63
     SKACTIVEML_US_LC = 64
     SKACTIVEML_US_ENTROPY = 65
@@ -319,7 +319,7 @@ al_strategy_to_python_classes_mapping: Dict[
     # AL_STRATEGY.SKACTIVEML_EXPECTED_MODEL_CHANGE: (ExpectedModelChangeMaximization, {}),
     AL_STRATEGY.SKACTIVEML_QBC: (SK_QueryByCommittee, {}),
     # AL_STRATEGY.SKACTIVEML_EPISTEMIC_US: (EpistemicUncertaintySampling, {}),
-    AL_STRATEGY.SKACTIVEML_DDDD: (FourDs, {}),
+    # AL_STRATEGY.SKACTIVEML_DDDD: (FourDs, {}),
     AL_STRATEGY.SKACTIVEML_US_MARGIN: (
         SK_UncertaintySampling,
         {"method": "margin_sampling"},

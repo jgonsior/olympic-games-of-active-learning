@@ -1,5 +1,4 @@
 from __future__ import annotations
-import ast
 from pathlib import Path
 import numpy as np
 import pandas as pd
@@ -7,8 +6,7 @@ from datasets import DATASET
 
 from metrics.computed.base_computed_metric import Base_Computed_Metric
 
-from typing import Dict, List, TYPE_CHECKING, Literal
-from scipy.spatial import distance
+from typing import Dict, TYPE_CHECKING
 
 
 if TYPE_CHECKING:

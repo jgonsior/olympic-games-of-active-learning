@@ -6,7 +6,7 @@ from datasets import DATASET
 
 from metrics.computed.base_computed_metric import Base_Computed_Metric
 
-from typing import Dict, TYPE_CHECKING, List
+from typing import Dict, TYPE_CHECKING
 
 
 if TYPE_CHECKING:

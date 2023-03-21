@@ -2,9 +2,8 @@ from __future__ import annotations
 from abc import ABC
 import math
 from pathlib import Path
-from typing import Callable, Iterable, List, TYPE_CHECKING, Tuple, Union
+from typing import Callable, Iterable, List, TYPE_CHECKING, Tuple
 import ast
-from matplotlib import pyplot as plt
 import pandas as pd
 from sklearn.cluster import MiniBatchKMeans
 from sklearn.ensemble import IsolationForest
@@ -603,7 +602,6 @@ class IMPROVES_ACCURACY_BY(Base_Samples_Categorizer):
         _, Y_true = self._load_dataset(dataset)
         samples_categorization = np.zeros_like(Y_true, dtype=np.float32)
 
-        from resources.data_types import AL_STRATEGY
 
         strategies_to_consider = self.config.EXP_GRID_STRATEGY
 

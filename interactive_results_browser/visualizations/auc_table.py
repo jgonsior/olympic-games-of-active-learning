@@ -1,5 +1,4 @@
 from __future__ import annotations
-import copy
 import glob
 import math
 from pathlib import Path
@@ -13,7 +12,6 @@ from typing import Any, List
 from typing import Any, Dict
 
 from interactive_results_browser.cache import memory
-from metrics.computed.STANDARD_AUC import STANDARD_AUC
 
 from misc.config import Config
 
