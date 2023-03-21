@@ -130,32 +130,6 @@ class SKACTIVEML_AL_Experiment(AL_Experiment):
                     utility_weight=self.density,
                     batch_size=self.config.EXP_BATCH_SIZE,
                 )
-            case AL_STRATEGY.SKACTIVEML_DUAL_STRAT:
-                from skactiveml.utils import simple_batch
-
-                if not self.switching_point:
-                    ret, utils = self.al_strategy.query(
-                        X=self.local_X_train,
-                        y=y_with_nans,
-                        clf=self.model,
-                        utility_weight=self.density,
-                        return_utilities=True,
-                        batch_size=self.config.EXP_BATCH_SIZE,
-                    )
-                    utilities = utils[0]
-                    self.switching_point = utilities[ret[0]] - self.u_max < self.delta
-                    self.u_max = utilities[ret[0]]
-                else:
-                    utils_US = self.al_strategy.query(
-                        X=self.local_X_train,
-                        y=y_with_nans,
-                        clf=self.model,
-                        return_utilities=True,
-                        batch_size=self.config.EXP_BATCH_SIZE,
-                    )[1][0]
-                    err = numpy.nanmean(utils_US)
-                    utilities = (1 - err) * utils_US + err * self.density
-                    ret = simple_batch(utilities, self.config.RANDOM_SEED)
             case (AL_STRATEGY.SKACTIVEML_COST_EMBEDDING | AL_STRATEGY.SKACTIVEML_QUIRE):
                 ret = self.al_strategy.query(
                     X=self.local_X_train,

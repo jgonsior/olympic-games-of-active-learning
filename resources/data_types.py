@@ -198,7 +198,7 @@ class AL_STRATEGY(IntEnum):
     SKACTIVEML_US_ENTROPY = 65
     SKACTIVEML_EXPECTED_AVERAGE_PRECISION = 66
     SKACTIVEML_DWUS = 67
-    SKACTIVEML_DUAL_STRAT = 68
+    # SKACTIVEML_DUAL_STRAT = 68
     SKACTIVEML_COST_EMBEDDING = 69
     SKACTIVEML_DAL = 70
     # SKACTIVEML_GREEDY_TARGET_SPACE = 71
@@ -331,7 +331,7 @@ al_strategy_to_python_classes_mapping: Dict[
         {"method": "expected_average_precision"},
     ),
     AL_STRATEGY.SKACTIVEML_DWUS: (SK_UncertaintySampling, {}),
-    AL_STRATEGY.SKACTIVEML_DUAL_STRAT: (SK_UncertaintySampling, {}),
+    # AL_STRATEGY.SKACTIVEML_DUAL_STRAT: (SK_UncertaintySampling, {}),
     AL_STRATEGY.SKACTIVEML_COST_EMBEDDING: (CostEmbeddingAL, {}),
     AL_STRATEGY.SKACTIVEML_DAL: (DiscriminativeAL, {}),
     # AL_STRATEGY.SKACTIVEML_GREEDY_TARGET_SPACE: (
