@@ -95,7 +95,7 @@ from small_text import (
 )
 
 from skactiveml.pool import (
-    ExpectedModelOutputChange,
+    # tChange,
     ExpectedModelVarianceReduction,
     KLDivergenceMaximization,
     MonteCarloEER,
@@ -181,15 +181,15 @@ class AL_STRATEGY(IntEnum):
     SMALLTEXT_CVIAR = 48  # Category Vector Inconsistency and Ranking
     # SMALLTEXT_SEALS = 49
     SMALLTEXT_RANDOM = 50
-    SKACTIVEML_EXPECTED_MODEL_OUTPUT_CHANGE = 51
-    SKACTIVEML_EXPECTED_MODEL_VARIANCE_REDUCTION = 52
-    SKACTIVEML_KL_DIVERGENCE_MAXIMIZATION = 53
+    # SKACTIVEML_EXPECTED_MODEL_OUTPUT_CHANGE = 51
+    # SKACTIVEML_EXPECTED_MODEL_VARIANCE_REDUCTION = 52
+    # SKACTIVEML_KL_DIVERGENCE_MAXIMIZATION = 53
     SKACTIVEML_MC_EER_LOG_LOSS = 54
     SKACTIVEML_MC_EER_MISCLASS_LOSS = 55
     SKACTIVEML_VOI_UNLABELED = 56
     SKACTIVEML_VOI_LABELED = 57
     SKACTIVEML_VOI = 58
-    SKACTIVEML_EXPECTED_MODEL_CHANGE = 59
+    # = 59
     SKACTIVEML_QBC = 60
     SKACTIVEML_EPISTEMIC_US = 61
     SKACTIVEML_DDDD = 62
@@ -201,9 +201,9 @@ class AL_STRATEGY(IntEnum):
     SKACTIVEML_DUAL_STRAT = 68
     SKACTIVEML_COST_EMBEDDING = 69
     SKACTIVEML_DAL = 70
-    SKACTIVEML_GREEDY_TARGET_SPACE = 71
-    SKACTIVEML_GREEDY_IMPROVED = 72
-    SKACTIVEML_GREEDY_FEATURE_SPACE = 73
+    # SKACTIVEML_GREEDY_TARGET_SPACE = 71
+    # SKACTIVEML_GREEDY_IMPROVED = 72
+    # SKACTIVEML_GREEDY_FEATURE_SPACE = 73
     SKACTIVEML_MCPAL = 74
     SKACTIVEML_QBC_VOTE_ENTROPY = 75
     SKACTIVEML_QUIRE = 76
@@ -288,18 +288,23 @@ al_strategy_to_python_classes_mapping: Dict[
     AL_STRATEGY.SMALLTEXT_CVIAR: (CategoryVectorInconsistencyAndRanking, {}),
     # AL_STRATEGY.SMALLTEXT_SEALS: (SEALS, {}),
     AL_STRATEGY.SMALLTEXT_RANDOM: (RandomSampling, {}),
-    AL_STRATEGY.SKACTIVEML_EXPECTED_MODEL_OUTPUT_CHANGE: (
-        ExpectedModelOutputChange,
-        {"integration_dict": {"method": "gauss_hermite", "n_integration_samples": 5}},
-    ),
-    AL_STRATEGY.SKACTIVEML_EXPECTED_MODEL_VARIANCE_REDUCTION: (
-        ExpectedModelVarianceReduction,
-        {},
-    ),
-    AL_STRATEGY.SKACTIVEML_KL_DIVERGENCE_MAXIMIZATION: (
-        KLDivergenceMaximization,
-        {"integration_dict": {"method": "gauss_hermite", "n_integration_samples": 5}},
-    ),
+    # AL_STRATEGY.SKACTIVEML_EXPECTED_MODEL_OUTPUT_CHANGE: (
+    #    ExpectedModelOutputChange,
+    #    {"integration_dict": {"method": "gauss_hermite", "n_integration_samples": 5}},
+    # ),
+    # AL_STRATEGY.SKACTIVEML_EXPECTED_MODEL_VARIANCE_REDUCTION: (
+    #    ExpectedModelVarianceReduction,
+    #    {},
+    # ),
+    # AL_STRATEGY.SKACTIVEML_KL_DIVERGENCE_MAXIMIZATION: (
+    #    KLDivergenceMaximization,
+    #    {
+    #        "integration_dict_target_val": {
+    #            "method": "gauss_hermite",
+    #            "n_integration_samples": 5,
+    #        }
+    #    },
+    # ),
     AL_STRATEGY.SKACTIVEML_MC_EER_LOG_LOSS: (MonteCarloEER, {"method": "log_loss"}),
     AL_STRATEGY.SKACTIVEML_MC_EER_MISCLASS_LOSS: (MonteCarloEER, {}),
     AL_STRATEGY.SKACTIVEML_VOI_UNLABELED: (
@@ -311,7 +316,7 @@ al_strategy_to_python_classes_mapping: Dict[
         {"consider_unlabeled": False, "candidate_to_labeled": False},
     ),
     AL_STRATEGY.SKACTIVEML_VOI: (ValueOfInformationEER, {"subtract_current": True}),
-    AL_STRATEGY.SKACTIVEML_EXPECTED_MODEL_CHANGE: (ExpectedModelChangeMaximization, {}),
+    # AL_STRATEGY.SKACTIVEML_EXPECTED_MODEL_CHANGE: (ExpectedModelChangeMaximization, {}),
     AL_STRATEGY.SKACTIVEML_QBC: (SK_QueryByCommittee, {}),
     AL_STRATEGY.SKACTIVEML_EPISTEMIC_US: (EpistemicUncertaintySampling, {}),
     AL_STRATEGY.SKACTIVEML_DDDD: (FourDs, {}),
@@ -329,12 +334,12 @@ al_strategy_to_python_classes_mapping: Dict[
     AL_STRATEGY.SKACTIVEML_DUAL_STRAT: (SK_UncertaintySampling, {}),
     AL_STRATEGY.SKACTIVEML_COST_EMBEDDING: (CostEmbeddingAL, {}),
     AL_STRATEGY.SKACTIVEML_DAL: (DiscriminativeAL, {}),
-    AL_STRATEGY.SKACTIVEML_GREEDY_TARGET_SPACE: (
-        GreedySamplingTarget,
-        {"method": "GSy"},
-    ),
-    AL_STRATEGY.SKACTIVEML_GREEDY_IMPROVED: (GreedySamplingTarget, {}),
-    AL_STRATEGY.SKACTIVEML_GREEDY_FEATURE_SPACE: (GreedySamplingX, {}),
+    # AL_STRATEGY.SKACTIVEML_GREEDY_TARGET_SPACE: (
+    #    GreedySamplingTarget,
+    #    {"method": "GSy"},
+    # ),
+    # AL_STRATEGY.SKACTIVEML_GREEDY_IMPROVED: (GreedySamplingTarget, {}),
+    # AL_STRATEGY.SKACTIVEML_GREEDY_FEATURE_SPACE: (GreedySamplingX, {}),
     AL_STRATEGY.SKACTIVEML_MCPAL: (ProbabilisticAL, {}),
     AL_STRATEGY.SKACTIVEML_QBC_VOTE_ENTROPY: (
         SK_QueryByCommittee,

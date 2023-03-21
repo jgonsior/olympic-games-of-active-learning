@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING
 import numpy
 
 from framework_runners.base_runner import AL_Experiment
+from skactiveml.classifier import SklearnClassifier
+from skactiveml.utils import MISSING_LABEL
 
 if TYPE_CHECKING:
     from misc.config import Config
@@ -27,6 +29,8 @@ class SKACTIVEML_AL_Experiment(AL_Experiment):
     def get_AL_strategy(self):
         from resources.data_types import AL_STRATEGY
         from resources.data_types import al_strategy_to_python_classes_mapping
+
+        self.model = SklearnClassifier(self.model, classes=numpy.unique(self.Y))
 
         strategy = AL_STRATEGY(self.config.EXP_STRATEGY)
         additional_params = al_strategy_to_python_classes_mapping[strategy][1]
@@ -61,18 +65,17 @@ class SKACTIVEML_AL_Experiment(AL_Experiment):
 
             raise NoStrategyError("get_AL_strategy() has to be called before querying")
         ret = []
+
+        y_with_nans = numpy.full(
+            shape=self.local_Y_train.shape, fill_value=MISSING_LABEL
+        )
+        y_with_nans[self.local_train_labeled_idx] = self.local_Y_train[
+            self.local_train_labeled_idx
+        ]
+
+        # self.model.fit(self.local_X_train, y_with_nans)
+
         match self.config.EXP_STRATEGY:
-            case (
-                AL_STRATEGY.SKACTIVEML_EXPECTED_MODEL_OUTPUT_CHANGE
-                | AL_STRATEGY.SKACTIVEML_EXPECTED_MODEL_VARIANCE_REDUCTION
-                | AL_STRATEGY.SKACTIVEML_KL_DIVERGENCE_MAXIMIZATION
-                | AL_STRATEGY.SKACTIVEML_EXPECTED_MODEL_CHANGE
-                | AL_STRATEGY.SKACTIVEML_GREEDY_TARGET_SPACE
-                | AL_STRATEGY.SKACTIVEML_GREEDY_IMPROVED
-            ):
-                ret = self.al_strategy.query(
-                    X=self.local_X_train, Y=self.local_Y_train, reg=self.model
-                )
             case (
                 AL_STRATEGY.SKACTIVEML_MC_EER_LOG_LOSS
                 | AL_STRATEGY.SKACTIVEML_MC_EER_MISCLASS_LOSS
@@ -82,14 +85,15 @@ class SKACTIVEML_AL_Experiment(AL_Experiment):
             ):
                 ret = self.al_strategy.query(
                     X=self.local_X_train,
-                    Y=self.local_Y_train,
+                    y=y_with_nans,
                     clf=self.model,
                     ignore_partial_fit=True,
+                    batch_size=self.config.EXP_BATCH_SIZE,
                 )
             case (AL_STRATEGY.SKACTIVEML_QBC | AL_STRATEGY.SKACTIVEML_QBC_VOTE_ENTROPY):
                 ret = self.al_strategy.query(
                     X=self.local_X_train,
-                    y=self.local_Y_train,
+                    y=y_with_nans,
                     ensemble=[
                         self.model,
                         self.model,
@@ -97,6 +101,7 @@ class SKACTIVEML_AL_Experiment(AL_Experiment):
                         self.model,
                         self.model,
                     ],
+                    batch_size=self.config.EXP_BATCH_SIZE,
                 )
             case (
                 AL_STRATEGY.SKACTIVEML_EPISTEMIC_US
@@ -107,14 +112,18 @@ class SKACTIVEML_AL_Experiment(AL_Experiment):
                 | AL_STRATEGY.SKACTIVEML_EXPECTED_AVERAGE_PRECISION
             ):
                 ret = self.al_strategy.query(
-                    X=self.local_X_train, Y=self.local_Y_train, clf=self.model
+                    X=self.local_X_train,
+                    y=y_with_nans,
+                    clf=self.model,
+                    batch_size=self.config.EXP_BATCH_SIZE,
                 )
             case (AL_STRATEGY.SKACTIVEML_DWUS | AL_STRATEGY.SKACTIVEML_MCPAL):
                 ret = self.al_strategy.query(
                     X=self.local_X_train,
-                    Y=self.local_Y_train,
+                    y=y_with_nans,
                     clf=self.model,
                     utility_weight=self.density,
+                    batch_size=self.config.EXP_BATCH_SIZE,
                 )
             case AL_STRATEGY.SKACTIVEML_DUAL_STRAT:
                 from skactiveml.utils import simple_batch
@@ -122,10 +131,11 @@ class SKACTIVEML_AL_Experiment(AL_Experiment):
                 if not self.switching_point:
                     ret, utils = self.al_strategy.query(
                         X=self.local_X_train,
-                        Y=self.local_Y_train,
+                        y=y_with_nans,
                         clf=self.model,
                         utility_weight=self.density,
                         return_utilities=True,
+                        batch_size=self.config.EXP_BATCH_SIZE,
                     )
                     utilities = utils[0]
                     self.switching_point = utilities[ret[0]] - self.u_max < self.delta
@@ -133,26 +143,24 @@ class SKACTIVEML_AL_Experiment(AL_Experiment):
                 else:
                     utils_US = self.al_strategy.query(
                         X=self.local_X_train,
-                        Y=self.local_Y_train,
+                        y=y_with_nans,
                         clf=self.model,
                         return_utilities=True,
+                        batch_size=self.config.EXP_BATCH_SIZE,
                     )[1][0]
                     err = numpy.nanmean(utils_US)
                     utilities = (1 - err) * utils_US + err * self.density
                     ret = simple_batch(utilities, self.config.RANDOM_SEED)
-            case (
-                AL_STRATEGY.SKACTIVEML_COST_EMBEDDING
-                | AL_STRATEGY.SKACTIVEML_GREEDY_FEATURE_SPACE
-                | AL_STRATEGY.SKACTIVEML_QUIRE
-            ):
-                ret = self.al_strategy.query(X=self.local_X_train, Y=self.local_Y_train)
+            case (AL_STRATEGY.SKACTIVEML_COST_EMBEDDING | AL_STRATEGY.SKACTIVEML_QUIRE):
+                ret = self.al_strategy.query(X=self.local_X_train, y=y_with_nans)
             case AL_STRATEGY.SMALLTEXT_DISCRIMINATIVEAL:
                 ret = self.al_strategy.query(
                     X=self.local_X_train,
-                    Y=self.local_Y_train,
+                    y=y_with_nans,
                     discriminator=self.discriminator,
+                    batch_size=self.config.EXP_BATCH_SIZE,
                 )
-        return None
+        return ret.tolist()
 
     def prepare_dataset(self):
         pass
