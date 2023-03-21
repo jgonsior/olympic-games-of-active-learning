@@ -54,7 +54,10 @@ class SKACTIVEML_AL_Experiment(AL_Experiment):
                 self.local_X_train, numpy.zeros(len(self.local_X_train))
             )
             self.density = self.model.predict_freq(self.local_X_train)[:, 0]
-        elif self.config.EXP_STRATEGY == AL_STRATEGY.SKACTIVEML_QUIRE:
+        elif (
+            self.config.EXP_STRATEGY == AL_STRATEGY.SKACTIVEML_QUIRE
+            or self.config.EXP_STRATEGY == AL_STRATEGY.SKACTIVEML_COST_EMBEDDING
+        ):
             additional_params["classes"] = np.unique(self.Y)
 
         self.al_strategy = al_strategy_to_python_classes_mapping[strategy][0](
