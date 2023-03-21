@@ -47,7 +47,7 @@ all_strategies_all_datasets_single_random_seed: {
                 SMALLTEXT_LIGHTWEIGHTCORESET,
                 SMALLTEXT_CONTRASTIVEAL,
                 SMALLTEXT_DISCRIMINATIVEAL,
-                SMALLTEXT_CVIAR,
+                #SMALLTEXT_CVIAR,
                 # SMALLTEXT_SEALS,
                 SMALLTEXT_RANDOM,
             ],

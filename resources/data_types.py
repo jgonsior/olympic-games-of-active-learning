@@ -178,7 +178,7 @@ class AL_STRATEGY(IntEnum):
     SMALLTEXT_LIGHTWEIGHTCORESET = 45
     SMALLTEXT_CONTRASTIVEAL = 46
     SMALLTEXT_DISCRIMINATIVEAL = 47
-    SMALLTEXT_CVIAR = 48  # Category Vector Inconsistency and Ranking
+    # SMALLTEXT_CVIAR = 48  # Category Vector Inconsistency and Ranking
     # SMALLTEXT_SEALS = 49
     SMALLTEXT_RANDOM = 50
     # SKACTIVEML_EXPECTED_MODEL_OUTPUT_CHANGE = 51
@@ -285,7 +285,7 @@ al_strategy_to_python_classes_mapping: Dict[
     AL_STRATEGY.SMALLTEXT_LIGHTWEIGHTCORESET: (LightweightCoreset, {}),
     AL_STRATEGY.SMALLTEXT_CONTRASTIVEAL: (ContrastiveActiveLearning, {}),
     AL_STRATEGY.SMALLTEXT_DISCRIMINATIVEAL: (DiscriminativeActiveLearning, {}),
-    AL_STRATEGY.SMALLTEXT_CVIAR: (CategoryVectorInconsistencyAndRanking, {}),
+    # AL_STRATEGY.SMALLTEXT_CVIAR: (CategoryVectorInconsistencyAndRanking, {}),
     # AL_STRATEGY.SMALLTEXT_SEALS: (SEALS, {}),
     AL_STRATEGY.SMALLTEXT_RANDOM: (RandomSampling, {}),
     # AL_STRATEGY.SKACTIVEML_EXPECTED_MODEL_OUTPUT_CHANGE: (

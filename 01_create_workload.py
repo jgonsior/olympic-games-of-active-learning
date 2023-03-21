@@ -159,6 +159,8 @@ def create_workload(config: Config) -> List[int]:
             merged_df.rename(columns={"MERGED_INDEX": "EXP_UNIQUE_ID"}, inplace=True)
             open_workload_df = merged_df
 
+            print(open_workload_df["EXP_UNIQUE_ID"])
+
             open_workload_df["EXP_UNIQUE_ID"] = open_workload_df[
                 "EXP_UNIQUE_ID"
             ].astype(int)
