@@ -36,7 +36,7 @@ class SKACTIVEML_AL_Experiment(AL_Experiment):
         strategy = AL_STRATEGY(self.config.EXP_STRATEGY)
         additional_params = al_strategy_to_python_classes_mapping[strategy][1]
         additional_params["random_state"] = self.config.RANDOM_SEED
-        if self.config.EXP_STRATEGY in (AL_STRATEGY.SKACTIVEML_DWUS):
+        if self.config.EXP_STRATEGY == AL_STRATEGY.SKACTIVEML_DWUS:
             from sklearn.mixture import GaussianMixture
 
             gmm = GaussianMixture(init_params="kmeans", n_components=5)
