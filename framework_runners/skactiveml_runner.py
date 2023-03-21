@@ -111,8 +111,7 @@ class SKACTIVEML_AL_Experiment(AL_Experiment):
                     batch_size=self.config.EXP_BATCH_SIZE,
                 )
             case (
-                AL_STRATEGY.SKACTIVEML_DDDD
-                | AL_STRATEGY.SKACTIVEML_US_MARGIN
+                AL_STRATEGY.SKACTIVEML_US_MARGIN
                 | AL_STRATEGY.SKACTIVEML_US_LC
                 | AL_STRATEGY.SKACTIVEML_US_ENTROPY
                 | AL_STRATEGY.SKACTIVEML_EXPECTED_AVERAGE_PRECISION
