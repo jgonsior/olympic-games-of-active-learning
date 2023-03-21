@@ -84,9 +84,9 @@ from small_text import (
     PredictionEntropy,
     BreakingTies,
     EmbeddingKMeans,
-    # GreedyCoreset,
-    # YLightweightCoreset,
-    # ContrastiveActiveLearning,
+    GreedyCoreset,
+    LightweightCoreset,
+    ContrastiveActiveLearning,
     DiscriminativeActiveLearning,
     CategoryVectorInconsistencyAndRanking,
     # SEALS,
@@ -174,9 +174,9 @@ class AL_STRATEGY(IntEnum):
     SMALLTEXT_BREAKINGTIES = 41
     # SMALLTEXT_BALD = 42
     SMALLTEXT_EMBEDDINGKMEANS = 43
-    # SMALLTEXT_GREEDYCORESET = 44
-    # SMALLTEXT_LIGHTWEIGHTCORESET = 45
-    # SMALLTEXT_CONTRASTIVEAL = 46
+    SMALLTEXT_GREEDYCORESET = 44
+    SMALLTEXT_LIGHTWEIGHTCORESET = 45
+    SMALLTEXT_CONTRASTIVEAL = 46
     SMALLTEXT_DISCRIMINATIVEAL = 47
     SMALLTEXT_CVIAR = 48  # Category Vector Inconsistency and Ranking
     # SMALLTEXT_SEALS = 49
@@ -281,9 +281,9 @@ al_strategy_to_python_classes_mapping: Dict[
     AL_STRATEGY.SMALLTEXT_BREAKINGTIES: (BreakingTies, {}),
     # AL_STRATEGY.SMALLTEXT_BALD: (BALD, {}),
     AL_STRATEGY.SMALLTEXT_EMBEDDINGKMEANS: (EmbeddingKMeans, {}),
-    # AL_STRATEGY.SMALLTEXT_GREEDYCORESET: (GreedyCoreset, {}),
-    # AL_STRATEGY.SMALLTEXT_LIGHTWEIGHTCORESET: (LightweightCoreset, {}),
-    # AL_STRATEGY.SMALLTEXT_CONTRASTIVEAL: (ContrastiveActiveLearning, {}),
+    AL_STRATEGY.SMALLTEXT_GREEDYCORESET: (GreedyCoreset, {}),
+    AL_STRATEGY.SMALLTEXT_LIGHTWEIGHTCORESET: (LightweightCoreset, {}),
+    AL_STRATEGY.SMALLTEXT_CONTRASTIVEAL: (ContrastiveActiveLearning, {}),
     AL_STRATEGY.SMALLTEXT_DISCRIMINATIVEAL: (DiscriminativeActiveLearning, {}),
     AL_STRATEGY.SMALLTEXT_CVIAR: (CategoryVectorInconsistencyAndRanking, {}),
     # AL_STRATEGY.SMALLTEXT_SEALS: (SEALS, {}),
