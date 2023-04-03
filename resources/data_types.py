@@ -389,7 +389,6 @@ def _import_compiled_libact_strategies():
     )
 
 
-# TODO parameter wie für AL strats in exp_config.yaml
 @unique
 class LEARNER_MODEL(IntEnum):
     RF = 1
