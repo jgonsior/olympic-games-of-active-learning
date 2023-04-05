@@ -124,7 +124,7 @@ class Base_Computed_Metric(ABC):
             )
             df[column_names_which_are_al_cycles] = df[
                 column_names_which_are_al_cycles
-            ].replace(list(), np.nan)
+            ].applymap(lambda x: np.nan if x == [] else x)
 
         return df
 
@@ -184,7 +184,7 @@ class Base_Computed_Metric(ABC):
                 continue
 
             with parallel_backend(
-                "multiprocessing", n_jobs=multiprocessing.cpu_count()
+                "multiprocessing", n_jobs= multiprocessing.cpu_count()
             ):
                 Parallel()(
                     delayed(_process_a_single_strategy)(

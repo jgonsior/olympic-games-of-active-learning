@@ -17,6 +17,7 @@ class TIMELAG_METRIC(Base_Computed_Metric):
         # check if lists are existent in df, if so, calculate mean etc.
         if isinstance(df["0"].dtypes, object):
             df = self._parse_using_ast_literal_eval(df, calculate_mean_too=True)
+
         return df
 
     def time_lag(self, row: pd.Series) -> pd.Series:
