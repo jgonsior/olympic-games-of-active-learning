@@ -14,7 +14,7 @@ class STANDARD_AUC(Base_Computed_Metric):
     def _pre_appy_to_row_hook(self, df: pd.DataFrame) -> pd.DataFrame:
         if "0" in df.columns:
             del df["0"]
-        df = self._parse_using_ast_literal_eval(df, calculate_mean_too=True)
+        # df = self._parse_using_ast_literal_eval(df, calculate_mean_too=True)
         return df
 
     def range_auc(self, row: pd.Series, range_start: int, range_end: int) -> pd.Series:
@@ -52,6 +52,9 @@ class STANDARD_AUC(Base_Computed_Metric):
             if not a.startswith("auc_")
             and not a.startswith("learning_stability_")
             and not a.startswith("pickled_learner_model")
+            and not a.startswith("y_pred_train")
+            and not a.startswith("y_pred_test")
+            and not a.startswith("selected_indices")
         ]
 
         for metric in all_existing_metric_names:
