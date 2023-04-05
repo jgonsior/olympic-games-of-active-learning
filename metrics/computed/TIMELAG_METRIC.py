@@ -13,6 +13,11 @@ if TYPE_CHECKING:
 
 class TIMELAG_METRIC(Base_Computed_Metric):
     # takes in standard metric, and calculates the timelag difference -> removes trend from learning curve time series
+    def _pre_appy_to_row_hook(self, df: pd.DataFrame) -> pd.DataFrame:
+        # check if lists are existent in df, if so, calculate mean etc.
+        if isinstance(df["0"].dtypes, object):
+            df = self._parse_using_ast_literal_eval(df, calculate_mean_too=True)
+        return df
 
     def time_lag(self, row: pd.Series) -> pd.Series:
         row = row.loc[row.index != "EXP_UNIQUE_ID"]

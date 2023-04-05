@@ -122,6 +122,9 @@ class Base_Computed_Metric(ABC):
                 if isinstance(x, Iterable) and len(x) > 0
                 else x
             )
+            df[column_names_which_are_al_cycles] = df[
+                column_names_which_are_al_cycles
+            ].replace(list(), np.nan)
 
         return df
 
@@ -181,7 +184,7 @@ class Base_Computed_Metric(ABC):
                 continue
 
             with parallel_backend(
-                "multiprocessing", n_jobs=1  # multiprocessing.cpu_count()
+                "multiprocessing", n_jobs=multiprocessing.cpu_count()
             ):
                 Parallel()(
                     delayed(_process_a_single_strategy)(
