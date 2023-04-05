@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import List, TYPE_CHECKING
 from joblib import Parallel, delayed, parallel_backend
 import ast
+import numpy as np
 import pandas as pd
 from collections.abc import Iterable
 from datasets import DATASET
@@ -105,8 +106,8 @@ class Base_Computed_Metric(ABC):
         column_names_which_are_al_cycles = list(df.columns)
         column_names_which_are_al_cycles.remove("EXP_UNIQUE_ID")
 
-        df = df.fillna("")
-
+        df = df.fillna(pd.nan)
+        print(df)
         df[column_names_which_are_al_cycles] = df[
             column_names_which_are_al_cycles
         ].applymap(
@@ -116,7 +117,11 @@ class Base_Computed_Metric(ABC):
         if calculate_mean_too:
             df[column_names_which_are_al_cycles] = df[
                 column_names_which_are_al_cycles
-            ].applymap(lambda x: sum(x) / len(x) if isinstance(x, Iterable) else x)
+            ].applymap(
+                lambda x: sum(x) / len(x)
+                if isinstance(x, Iterable) and len(x) > 0
+                else x
+            )
 
         return df
 
@@ -135,7 +140,7 @@ class Base_Computed_Metric(ABC):
         column_names_which_are_al_cycles = list(df.columns)
         column_names_which_are_al_cycles.remove("EXP_UNIQUE_ID")
 
-        df = df.fillna("")
+        df = df.fillna("[]")
 
         if merge:
             df["selected_indices"] = df[column_names_which_are_al_cycles].apply(
@@ -154,7 +159,6 @@ class Base_Computed_Metric(ABC):
             df[column_names_which_are_al_cycles] = df[
                 column_names_which_are_al_cycles
             ].applymap(lambda x: ast.literal_eval(x))
-
         return df
 
     def _pre_appy_to_row_hook(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -177,7 +181,7 @@ class Base_Computed_Metric(ABC):
                 continue
 
             with parallel_backend(
-                "multiprocessing", n_jobs=multiprocessing.cpu_count()
+                "multiprocessing", n_jobs=1  # multiprocessing.cpu_count()
             ):
                 Parallel()(
                     delayed(_process_a_single_strategy)(

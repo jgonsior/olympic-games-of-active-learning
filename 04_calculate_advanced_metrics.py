@@ -19,12 +19,18 @@ if config.COMPUTED_METRICS == ["_ALL"]:
         sc.name
         for sc in COMPUTED_METRIC
         if sc != COMPUTED_METRIC.STANDARD_AUC and sc != COMPUTED_METRIC.TIMELAG_METRIC
-    ] + [COMPUTED_METRIC.TIMELAG_METRIC, COMPUTED_METRIC.STANDARD_AUC.name]
+    ] + [COMPUTED_METRIC.TIMELAG_METRIC.name, COMPUTED_METRIC.STANDARD_AUC.name]
 
 
 print("computung the following metrics: " + ",".join(config.COMPUTED_METRICS))
 
 for computed_metric in config.COMPUTED_METRICS:
+    print()
+    print()
+    print()
+    print("###" * 100)
+    print(computed_metric)
+    print("###" * 100)
     computed_metric_class = getattr(
         importlib.import_module("metrics.computed." + computed_metric),
         computed_metric,

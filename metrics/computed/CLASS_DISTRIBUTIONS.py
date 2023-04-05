@@ -65,6 +65,10 @@ class CLASS_DISTRIBUTIONS(Base_Computed_Metric):
                 selected_indices = [a for b in selected_indices_up_until_now for a in b]
             else:
                 selected_indices = r
+
+            if len(selected_indices) == 0:
+                continue
+
             selected_classes = self.y_true[selected_indices]
             k, class_distributions = np.unique(selected_classes, return_counts=True)
 
