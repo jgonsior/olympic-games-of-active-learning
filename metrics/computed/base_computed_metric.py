@@ -106,8 +106,8 @@ class Base_Computed_Metric(ABC):
         column_names_which_are_al_cycles = list(df.columns)
         column_names_which_are_al_cycles.remove("EXP_UNIQUE_ID")
 
-        df = df.fillna(pd.nan)
-        print(df)
+        df = df.fillna("[]")
+
         df[column_names_which_are_al_cycles] = df[
             column_names_which_are_al_cycles
         ].applymap(
@@ -181,7 +181,7 @@ class Base_Computed_Metric(ABC):
                 continue
 
             with parallel_backend(
-                "multiprocessing", n_jobs=1  # multiprocessing.cpu_count()
+                "multiprocessing", n_jobs=multiprocessing.cpu_count()
             ):
                 Parallel()(
                     delayed(_process_a_single_strategy)(

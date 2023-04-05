@@ -36,6 +36,7 @@ class TIMELAG_METRIC(Base_Computed_Metric):
             and not a.endswith("_time_lag.csv.xz")
             and not a.endswith("y_pred_test.csv.xz")
             and not a.endswith("y_pred_train.csv.xz")
+            and not a.endswith("selected_indices.csv.xz")
         ]
 
         for metric in all_existing_metric_names:
