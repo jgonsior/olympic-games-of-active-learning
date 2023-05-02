@@ -483,6 +483,57 @@ local_SynDs_Spiral: { EXP_GRID_DATASET: [Spiral], EXP_GRID_STRATEGY: [
                 ALIPY_DENSITY_WEIGHTED,
             ], EXP_GRID_RANDOM_SEED: [0], EXP_GRID_START_POINT: [1-5], EXP_GRID_NUM_QUERIES: [20], EXP_GRID_BATCH_SIZE: [1, 5], EXP_GRID_LEARNER_MODEL: [RF], EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0, 1], METRICS: [Pickled_Learner_Model, Predicted_Samples, Selected_Indices, Standard_ML_Metrics, Timing_Metrics] } #, DT, MNB, GNB, RBF_SVM, LINEAR_SVM, POLY_SVM, MLP, LBFGS_MLP, LR],
 
+local_SynDs_4: {
+        EXP_GRID_DATASET: [BigChess60],
+        EXP_GRID_STRATEGY: [ALIPY_CORESET_GREEDY, ALIPY_RANDOM],
+        EXP_GRID_RANDOM_SEED: [0],
+        EXP_GRID_START_POINT: [1-5],
+        EXP_GRID_NUM_QUERIES: [100],
+        EXP_GRID_BATCH_SIZE: [5, 25],
+        EXP_GRID_LEARNER_MODEL: [RF],
+        EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0, 1],
+        METRICS:
+            [
+                Pickled_Learner_Model,
+                Predicted_Samples,
+                Selected_Indices,
+                Standard_ML_Metrics,
+                Timing_Metrics,
+            ],
+    } #, DT, MNB, GNB, RBF_SVM, LINEAR_SVM, POLY_SVM, MLP, LBFGS_MLP, LR],
+
+local_SynDs_5: {
+        EXP_GRID_DATASET:
+            [
+                Chess10,
+                Chess100,
+                Chess250,
+                Spiral,
+                SmallCircle,
+                EvenCircle,
+                BigCircle,
+                BigCross,
+                ThinCross,
+                BigChess60,
+                BigChess10,
+            ],
+        EXP_GRID_STRATEGY: [OPTIMAL_GREEDY_20],
+        EXP_GRID_RANDOM_SEED: [0],
+        EXP_GRID_START_POINT: [1-5],
+        EXP_GRID_NUM_QUERIES: [100],
+        EXP_GRID_BATCH_SIZE: [5, 25],
+        EXP_GRID_LEARNER_MODEL: [RF],
+        EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0, 1],
+        METRICS:
+            [
+                Pickled_Learner_Model,
+                Predicted_Samples,
+                Selected_Indices,
+                Standard_ML_Metrics,
+                Timing_Metrics,
+            ],
+    } #, DT, MNB, GNB, RBF_SVM, LINEAR_SVM, POLY_SVM, MLP, LBFGS_MLP, LR],
+
 test_exp: {
         EXP_GRID_DATASET: [Iris, Chess10],
         EXP_GRID_STRATEGY:
