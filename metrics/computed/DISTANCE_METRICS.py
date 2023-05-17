@@ -1,4 +1,5 @@
 from __future__ import annotations
+import math
 import ast
 import itertools
 import numpy as np
@@ -37,13 +38,15 @@ class DISTANCE_METRICS(Base_Computed_Metric):
         return "dist"
 
     def _pre_appy_to_row_hook(self, df: pd.DataFrame) -> pd.DataFrame:
-        print(df)
-        df.loc[:, df.columns != "EXP_UNIQUE_ID"] = df.loc[
-            :, df.columns != "EXP_UNIQUE_ID"
-        ].apply(
-            lambda x: [ast.literal_eval(iii) if iii is not np.nan else [] for iii in x],
-            axis=0,
-        )
+        column_names_which_are_al_cycles = list(df.columns)
+        column_names_which_are_al_cycles.remove("EXP_UNIQUE_ID")
+
+        df[column_names_which_are_al_cycles] = df[
+            column_names_which_are_al_cycles
+        ].applymap(lambda x: "[]" if pd.isna(x) else x)
+        df.loc[:, column_names_which_are_al_cycles] = df.loc[
+            :, column_names_which_are_al_cycles
+        ].apply(lambda x: [ast.literal_eval(iii) for iii in x], axis=0)
         return df
 
     def avg_dist_batch(self, row: pd.Series,) -> pd.Series:
