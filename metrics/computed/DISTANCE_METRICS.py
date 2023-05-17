@@ -37,6 +37,7 @@ class DISTANCE_METRICS(Base_Computed_Metric):
         return "dist"
 
     def _pre_appy_to_row_hook(self, df: pd.DataFrame) -> pd.DataFrame:
+        print(df)
         df.loc[:, df.columns != "EXP_UNIQUE_ID"] = df.loc[
             :, df.columns != "EXP_UNIQUE_ID"
         ].apply(
@@ -45,10 +46,7 @@ class DISTANCE_METRICS(Base_Computed_Metric):
         )
         return df
 
-    def avg_dist_batch(
-        self,
-        row: pd.Series,
-    ) -> pd.Series:
+    def avg_dist_batch(self, row: pd.Series,) -> pd.Series:
         row = row.loc[row.index != "EXP_UNIQUE_ID"]
 
         for ix, x in row.items():
@@ -64,10 +62,7 @@ class DISTANCE_METRICS(Base_Computed_Metric):
                 row[ix] = sum(distances) / len(distances)
         return row
 
-    def avg_dist_labeled(
-        self,
-        row: pd.Series,
-    ) -> pd.Series:
+    def avg_dist_labeled(self, row: pd.Series,) -> pd.Series:
         row = row.loc[row.index != "EXP_UNIQUE_ID"]
         labeled_so_far = []
         for ix, x in row.items():
@@ -98,10 +93,7 @@ class DISTANCE_METRICS(Base_Computed_Metric):
         )
         return train_set
 
-    def avg_dist_unlabeled(
-        self,
-        row: pd.Series,
-    ) -> pd.Series:
+    def avg_dist_unlabeled(self, row: pd.Series,) -> pd.Series:
         unique_id = row["EXP_UNIQUE_ID"]
         row = row.loc[row.index != "EXP_UNIQUE_ID"]
         train_set = self._get_train_set(unique_id)

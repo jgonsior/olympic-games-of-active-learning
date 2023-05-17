@@ -31,7 +31,7 @@ print(
 
 def _run_samples_categorizer(sc: str, ds: DATASET):
     print("#" * 100)
-    print("computed_metric: " + str(sc))
+    print("computed_metric: " + str(sc) + str(ds))
     samples_categorizer_class = samples_categorizer_to_classes_mapping[
         SAMPLES_CATEGORIZER[sc]
     ](config)
