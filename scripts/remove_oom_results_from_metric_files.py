@@ -1,7 +1,7 @@
 import sys
 import glob
 import pandas as pd
-
+from tqdm import tqdm
 
 sys.dont_write_bytecode = True
 
@@ -30,11 +30,13 @@ oom_workload_unique_ids = oom_workload["EXP_UNIQUE_ID"]
 # 1349284
 print(len(oom_workload_unique_ids))
 
-for file_name in glob.glob(str(config.OUTPUT_PATH) + "/**/*.csv.xz", recursive=True):
-    print(file_name)
+for file_name in (
+    pbar := tqdm(glob.glob(str(config.OUTPUT_PATH) + "/**/*.csv.xz", recursive=True))
+) :
+    pbar.set_description(file_name)
     df = pd.read_csv(file_name)
     a = len(df)
     df = df[~df["EXP_UNIQUE_ID"].isin(oom_workload_unique_ids)]
     if len(df) < a:
-        print(f"{len(df)}<{a}: {file_name}")
+        pbar.set_description(f"{len(df)}<{a}: {file_name}")
         df.to_csv(file_name, index=False)
