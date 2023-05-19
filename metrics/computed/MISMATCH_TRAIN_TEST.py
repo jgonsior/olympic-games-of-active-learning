@@ -53,13 +53,6 @@ class MISMATCH_TRAIN_TEST(Base_Computed_Metric):
 
     def mismatch_train_test(self, row: pd.Series,) -> pd.Series:
         unique_id = row["EXP_UNIQUE_ID"]
-        print(row)
-        print(unique_id)
-        print(
-            self.done_workload_df.loc[
-                self.done_workload_df["EXP_UNIQUE_ID"] == unique_id
-            ]
-        )
         train_test_split_number = self.done_workload_df.loc[
             self.done_workload_df["EXP_UNIQUE_ID"] == unique_id
         ]["EXP_TRAIN_TEST_BUCKET_SIZE"].to_list()[0]
