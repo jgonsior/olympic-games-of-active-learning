@@ -54,6 +54,8 @@ from framework_runners.playground_runner import PLAYGROUND_AL_Experiment
 from framework_runners.smalltext_runner import SMALLTEXT_AL_Experiment
 from framework_runners.skactiveml_runner import SKACTIVEML_AL_Experiment
 
+from KerasWrapper import MLPClassifierWrapped
+
 from metrics.computed.CLASS_DISTRIBUTIONS import CLASS_DISTRIBUTIONS
 from metrics.computed.DATASET_CATEGORIZATION import DATASET_CATEGORIZATION
 from metrics.computed.DISTANCE_METRICS import DISTANCE_METRICS
@@ -403,6 +405,7 @@ class LEARNER_MODEL(IntEnum):
     LOG_REG = 10
     SVM_LIBACT = 11
     LR = 12
+    KERAS = 13
 
 
 learner_models_to_classes_mapping: Dict[
@@ -459,6 +462,7 @@ learner_models_to_classes_mapping: Dict[
         {"kernal": "linear", "decision_function_shape": "ovr"},
     ),
     LEARNER_MODEL.LR: (LogisticRegression, {}),
+    LEARNER_MODEL.KERAS: (MLPClassifierWrapped,{"target_type_": "multiclass"}),
 }
 
 
