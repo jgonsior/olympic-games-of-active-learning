@@ -60,7 +60,7 @@ class STANDARD_AUC(Base_Computed_Metric):
         ]
 
         for metric in all_existing_metric_names:
-            """self._take_single_metric_and_compute_new_one(
+            self._take_single_metric_and_compute_new_one(
                 existing_metric_names=[metric],
                 new_metric_name="auc_0_5_" + metric,
                 apply_to_row=self.range_auc,
@@ -100,7 +100,7 @@ class STANDARD_AUC(Base_Computed_Metric):
                 existing_metric_names=[metric],
                 new_metric_name="learning_stability_" + metric,
                 apply_to_row=self.learning_stability,
-            )"""
+            )
             self._take_single_metric_and_compute_new_one(
                 existing_metric_names=[metric],
                 new_metric_name="auc_full_" + metric,

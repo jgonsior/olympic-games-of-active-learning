@@ -35,6 +35,8 @@ for grouping in groupings:
         .rename(columns={0: "count"})
         .sort_values("count")
     )
+    print("\n" * 3)
+    print(f"Group by {grouping} and sorted after count")
     print(df2)
 
 
@@ -90,3 +92,4 @@ for grouping in groupings:
     )
     df2 = df2[[*grouping, *["total_time"]]]
     print(df2)
+    df2.to_csv(f"test/{groupings}.csv")
