@@ -31,7 +31,7 @@ print(
 
 def _run_samples_categorizer(sc: str, ds: DATASET):
     print("#" * 100)
-    print("computed_metric: " + str(sc))
+    print("computed_metric: " + str(sc) + str(ds))
     samples_categorizer_class = samples_categorizer_to_classes_mapping[
         SAMPLES_CATEGORIZER[sc]
     ](config)
@@ -44,7 +44,7 @@ dataset_categorizer_combinations: List[Tuple[DATASET, SAMPLES_CATEGORIZER]] = li
 )
 
 with parallel_backend("threading", n_jobs=multiprocessing.cpu_count()):
-    Parallel()(
+    Parallel(verbose=10)(
         delayed(_run_samples_categorizer)(sc, ds)
         for (sc, ds) in dataset_categorizer_combinations
     )

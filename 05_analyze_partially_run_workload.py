@@ -13,6 +13,8 @@ import sys
 from datasets import DATASET
 from resources.data_types import AL_STRATEGY
 
+pd.options.display.float_format = "{:20,.2f}".format
+
 config = Config()
 
 
@@ -67,15 +69,12 @@ for EXP_DATASET in df["EXP_DATASET"].unique():
             result_df = inner_product_df
         else:
             result_df = pd.concat([result_df, inner_product_df])
-
+print("result_df is ready")
 
 groupings = [
     ["EXP_DATASET", "EXP_STRATEGY"],
     ["EXP_DATASET"],
     ["EXP_STRATEGY"],
-]
-
-groupings = [
     ["EXP_LEARNER_MODEL"],
     ["EXP_START_POINT"],
     ["EXP_BATCH_SIZE"],
@@ -86,10 +85,10 @@ groupings = [
 for grouping in groupings:
     df2 = (
         result_df.groupby(grouping)
-        .sum("total_time")
+        .mean("total_time")
         .reset_index()
         .sort_values("total_time")
     )
     df2 = df2[[*grouping, *["total_time"]]]
     print(df2)
-    df2.to_csv(f"test/{groupings}.csv")
+    df2.to_csv(f"test/{grouping}.csv")

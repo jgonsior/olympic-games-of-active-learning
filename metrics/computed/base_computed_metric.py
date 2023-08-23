@@ -80,9 +80,7 @@ def _process_a_single_strategy(
 
     # save new df somehow
     new_df.to_csv(
-        new_metric_path,
-        compression="infer",
-        index=False,
+        new_metric_path, compression="infer", index=False,
     )
 
 
@@ -110,9 +108,7 @@ class Base_Computed_Metric(ABC):
 
         df[column_names_which_are_al_cycles] = df[
             column_names_which_are_al_cycles
-        ].applymap(
-            lambda x: ast.literal_eval(str(x)),
-        )
+        ].applymap(lambda x: ast.literal_eval(str(x)),)
 
         if calculate_mean_too:
             df[column_names_which_are_al_cycles] = df[
@@ -184,9 +180,9 @@ class Base_Computed_Metric(ABC):
                 continue
 
             with parallel_backend(
-                "multiprocessing", n_jobs= multiprocessing.cpu_count()
+                "multiprocessing", n_jobs=multiprocessing.cpu_count()
             ):
-                Parallel()(
+                Parallel(verbose=10)(
                     delayed(_process_a_single_strategy)(
                         EXP_STRATEGY,
                         EXP_DATASET,

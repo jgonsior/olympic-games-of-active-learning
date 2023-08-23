@@ -103,7 +103,7 @@ class STANDARD_AUC(Base_Computed_Metric):
             )
             self._take_single_metric_and_compute_new_one(
                 existing_metric_names=[metric],
-                new_metric_name="auc_full_" + metric,
+                new_metric_name="auc_" + metric,
                 apply_to_row=self.range_auc,
                 additional_apply_to_row_kwargs={"range_start": 0, "range_end": -1},
             )
