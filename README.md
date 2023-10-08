@@ -5,35 +5,6 @@ Requierements:
 
 [anaconda](https://docs.anaconda.com/anaconda/install/index.html) installed.
 
-```bash
-# to be run in the root directory of this project
-conda init
-conda create --name al_olympics_conda python=3.10
-conda activate al_olympics_conda
-conda install -c anaconda cython -y
-conda install -c conda-forge cvxpy pipenv liblapacke libsvm -y
-conda env export
-python -m pipenv --python=$(conda run which python) --site-packages install --dev
-python -m pipenv shell
- # has to be run everytime anything is being changed by pipenv
-pip install git+https://github.com/jgonsior/libact.git
-```
-
-
-HPC:
-```bash
-module load Anaconda3
-sh $EBROOTANACONDA3/etc/profile.d/conda.sh
-conda create --prefix $WS_URL/al_olympics/conda-env python=3.10
-conda activate $WS_URL/al_olympics/conda-env
-conda install -c anaconda cython -y
-conda install -y -c conda-forge cvxpy pipenv liblapacke
-python -m pipenv --python=$(conda run which python) --site-packages install --dev
-python -m pipenv shell
-LIBACT_BUILD_VARIANCE_REDUCTION=0 pip install git+https://github.com/jgonsior/libact.git
-```
-
-
 HPC poetry
 # to be run in the root directory of this project
 ```bash
@@ -49,6 +20,7 @@ poetry install
 
 Local poetry
 ```bash
+# to be run in the root directory of this project
 conda create --name al_olympics_env --file conda-linux-64.lock
 conda activate al_olympics_env
 poetry install

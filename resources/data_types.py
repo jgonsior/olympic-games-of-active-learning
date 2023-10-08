@@ -143,8 +143,6 @@ class AL_STRATEGY(IntEnum):
     LIBACT_QBC = 10
     LIBACT_DWUS = 11
     LIBACT_QUIRE = 12
-    LIBACT_VR = 13
-    LIBACT_HINTSVM = 14
     PLAYGROUND_GRAPH_DENSITY = 15
     PLAYGROUND_HIERARCHICAL_CLUSTER = 16
     PLAYGROUND_INFORMATIVE_DIVERSE = 17
@@ -366,27 +364,8 @@ al_strategies_which_require_decision_boundary_model: List[AL_STRATEGY] = [
 ]
 
 al_strategies_not_suitable_for_hpc: List[AL_STRATEGY] = [
-    AL_STRATEGY.LIBACT_VR,
-    AL_STRATEGY.LIBACT_HINTSVM,
     AL_STRATEGY.ALIPY_LAL,
 ]
-
-
-def _import_compiled_libact_strategies():
-    from libact.query_strategies import (
-        HintSVM,
-        VarianceReduction,
-    )
-
-    al_strategy_to_python_classes_mapping[AL_STRATEGY.LIBACT_VR] = (
-        VarianceReduction,
-        {},
-    )
-
-    al_strategy_to_python_classes_mapping[AL_STRATEGY.LIBACT_HINTSVM] = (
-        HintSVM,
-        {},
-    )
 
 
 @unique

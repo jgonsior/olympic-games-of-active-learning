@@ -134,12 +134,6 @@ class Config:
     def _setup_everything(self):
         self._load_server_setup_from_file(Path(self.LOCAL_CONFIG_FILE_PATH))
 
-        if not Path(self.HPC_CODE_PATH).exists():
-            self.RUNNING_ENVIRONMENT = "local"
-            _import_compiled_libact_strategies()
-        else:
-            self.RUNNING_ENVIRONMENT = "hpc"
-
         self._pathes_magic()
 
         # load yaml and overwrite everything, except for the stuff which was explicitly defined
