@@ -1,4 +1,4 @@
-name: al_olympics_env
+name: al_olympics
 channels:
     - conda-forge
 dependencies:
