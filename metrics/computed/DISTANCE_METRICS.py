@@ -49,7 +49,10 @@ class DISTANCE_METRICS(Base_Computed_Metric):
         ].apply(lambda x: [ast.literal_eval(iii) for iii in x], axis=0)
         return df
 
-    def avg_dist_batch(self, row: pd.Series,) -> pd.Series:
+    def avg_dist_batch(
+        self,
+        row: pd.Series,
+    ) -> pd.Series:
         row = row.loc[row.index != "EXP_UNIQUE_ID"]
 
         for ix, x in row.items():
@@ -65,7 +68,10 @@ class DISTANCE_METRICS(Base_Computed_Metric):
                 row[ix] = sum(distances) / len(distances)
         return row
 
-    def avg_dist_labeled(self, row: pd.Series,) -> pd.Series:
+    def avg_dist_labeled(
+        self,
+        row: pd.Series,
+    ) -> pd.Series:
         row = row.loc[row.index != "EXP_UNIQUE_ID"]
         labeled_so_far = []
         for ix, x in row.items():
@@ -96,7 +102,10 @@ class DISTANCE_METRICS(Base_Computed_Metric):
         )
         return train_set
 
-    def avg_dist_unlabeled(self, row: pd.Series,) -> pd.Series:
+    def avg_dist_unlabeled(
+        self,
+        row: pd.Series,
+    ) -> pd.Series:
         unique_id = row["EXP_UNIQUE_ID"]
         row = row.loc[row.index != "EXP_UNIQUE_ID"]
         train_set = self._get_train_set(unique_id)

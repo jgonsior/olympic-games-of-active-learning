@@ -602,7 +602,6 @@ class IMPROVES_ACCURACY_BY(Base_Samples_Categorizer):
         _, Y_true = self._load_dataset(dataset)
         samples_categorization = np.zeros_like(Y_true, dtype=np.float32)
 
-
         strategies_to_consider = self.config.EXP_GRID_STRATEGY
 
         for accuracy_df, selected_indices_df in self._get_metrics_iterator(

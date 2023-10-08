@@ -31,10 +31,6 @@ class LIBACT_Experiment(AL_Experiment):
         )
 
         strategy = AL_STRATEGY(self.config.EXP_STRATEGY)
-        if strategy in [AL_STRATEGY.LIBACT_VR]:
-            from resources.data_types import _import_compiled_libact_strategies
-
-            _import_compiled_libact_strategies()
 
         additional_params = al_strategy_to_python_classes_mapping[strategy][1]
 
@@ -49,15 +45,12 @@ class LIBACT_Experiment(AL_Experiment):
         additional_params["random_state"] = self.config.EXP_RANDOM_SEED
 
         if self.config.EXP_STRATEGY == AL_STRATEGY.LIBACT_ALBL:
-            from libact.query_strategies import HintSVM
-
             additional_params["T"] = (
                 self.config.EXP_NUM_QUERIES * self.config.EXP_BATCH_SIZE
             )
             additional_params["query_strategies"] = [
                 UncertaintySampling(self.trn_ds, model=LogisticRegression(C=1.0)),
                 UncertaintySampling(self.trn_ds, model=LogisticRegression(C=0.01)),
-                HintSVM(self.trn_ds),
             ]
         elif self.config.EXP_STRATEGY == AL_STRATEGY.LIBACT_HIERARCHICAL_SAMPLING:
             del additional_params["model"]
@@ -90,14 +83,6 @@ class LIBACT_Experiment(AL_Experiment):
         batch_size = self.config.EXP_BATCH_SIZE
 
         match self.config.EXP_STRATEGY:
-            case AL_STRATEGY.LIBACT_VR:
-                ret = self.al_strategy.make_n_queries(
-                    batch_size=self.config.EXP_BATCH_SIZE
-                )
-            case AL_STRATEGY.LIBACT_HINTSVM:
-                ret = self.al_strategy.make_n_queries(
-                    batch_size=self.config.EXP_BATCH_SIZE
-                )
             case AL_STRATEGY.LIBACT_DWUS:
                 ret = self.al_strategy.make_n_queries(
                     batch_size=self.config.EXP_BATCH_SIZE

@@ -355,7 +355,6 @@ al_strategies_which_only_support_binary_classification: List[AL_STRATEGY] = [
     AL_STRATEGY.ALIPY_UNCERTAINTY_DTB,
     AL_STRATEGY.ALIPY_BMDR,
     AL_STRATEGY.ALIPY_SPAL,
-    AL_STRATEGY.LIBACT_HINTSVM,
 ]
 
 al_strategies_which_require_decision_boundary_model: List[AL_STRATEGY] = [

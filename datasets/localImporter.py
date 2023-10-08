@@ -22,10 +22,12 @@ class Local_Importer(Base_Dataset_Loader):
             self.parameter_dict: Dict[str, Any] = yaml.safe_load(
                 config.LOCAL_DATASETS_YAML_CONFIG_PATH.read_text()
             )
-
-        for k in self.parameter_dict.keys():
-            self.parameter_dict[k]["id"] = None
-            self.parameter_dict[k]["drop_columns"] = None
+        if self.parameter_dict != None:
+            for k in self.parameter_dict.keys():
+                self.parameter_dict[k]["id"] = None
+                self.parameter_dict[k]["drop_columns"] = None
+        else:
+            self.parameter_dict = {}
 
     def load_single_dataset(
         self, dataset_name: str, dataset_raw_path: Path

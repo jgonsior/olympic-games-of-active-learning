@@ -18,7 +18,6 @@ from resources.data_types import (
     COMPUTED_METRIC,
     SAMPLES_CATEGORIZER,
     LEARNER_MODEL,
-    _import_compiled_libact_strategies,
 )
 
 
@@ -280,10 +279,12 @@ class Config:
             local_datasets_yaml_config = yaml.safe_load(
                 self.LOCAL_DATASETS_YAML_CONFIG_PATH.read_text()
             )
-
-            for k in local_datasets_yaml_config.keys():
-                if k not in [d.name for d in DATASET]:
-                    extend_enum(DATASET, k, local_datasets_yaml_config[k]["enum_id"])
+            if local_datasets_yaml_config != None:
+                for k in local_datasets_yaml_config.keys():
+                    if k not in [d.name for d in DATASET]:
+                        extend_enum(
+                            DATASET, k, local_datasets_yaml_config[k]["enum_id"]
+                        )
 
         for k, v in yaml_config_params.items():
             if k in explicitly_defined_cli_args:

@@ -80,6 +80,20 @@ class Base_Dataset_Loader(ABC):
         X = df.loc[:, df.columns != "LABEL_TARGET"].to_numpy()  # type: ignore
         Y = df["LABEL_TARGET"].to_numpy()  # type: ignore
 
+        # check if potential id column exists
+        # if so -> remove id!
+
+        if parsing_args["id"] != None:
+            df = df.drop(parsing_args["id"], axis=1)
+
+        potential_id_columns = df.diff().fillna(0).abs().sum() / (len(df) - 1)
+        potential_id_columns = potential_id_columns[potential_id_columns == 1.0].keys()
+
+        if len(potential_id_columns) > 0:
+            print(
+                f"Attention! Potential Id column for dataset {dataset_name} in column {potential_id_columns}"
+            )
+
         scaler = RobustScaler()
         X = scaler.fit_transform(X)
 

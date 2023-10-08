@@ -17,8 +17,6 @@ all_strategies_all_datasets_single_random_seed:
                 #LIBACT_QBC,
                 LIBACT_DWUS,
                 LIBACT_QUIRE,
-                LIBACT_VR,
-                LIBACT_HINTSVM,
                 LIBACT_EER,
                 #LIBACT_ALBL,
                 #LIBACT_HIERARCHICAL_SAMPLING,
@@ -150,8 +148,6 @@ full_exp: { EXP_GRID_DATASET: [1-39], EXP_GRID_STRATEGY: [
                 #LIBACT_QBC,
                 LIBACT_DWUS,
                 LIBACT_QUIRE,
-                LIBACT_VR,
-                LIBACT_HINTSVM,
                 LIBACT_EER,
                 #LIBACT_ALBL,
                 #LIBACT_HIERARCHICAL_SAMPLING,
@@ -228,8 +224,6 @@ fuller_exp: { EXP_GRID_DATASET: [1-39], EXP_GRID_STRATEGY: [
                 #LIBACT_QBC,
                 LIBACT_DWUS,
                 LIBACT_QUIRE,
-                LIBACT_VR,
-                LIBACT_HINTSVM,
                 LIBACT_EER,
                 #LIBACT_ALBL,
                 #LIBACT_HIERARCHICAL_SAMPLING,
@@ -289,7 +283,7 @@ fuller_exp: { EXP_GRID_DATASET: [1-39], EXP_GRID_STRATEGY: [
             ], METRICS: [Predicted_Samples, Selected_Indices, Standard_ML_Metrics, Timing_Metrics], EXP_GRID_RANDOM_SEED: [0], EXP_GRID_START_POINT: [0-19], EXP_GRID_NUM_QUERIES: [100], EXP_GRID_BATCH_SIZE: [1, 5, 10], EXP_GRID_LEARNER_MODEL: [MLP, RBF_SVM, RF], EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0-4] } #, DT, MNB, GNB, RBF_SVM, LINEAR_SVM, POLY_SVM, MLP, LBFGS_MLP, LR],
 
 test_exp: {
-        EXP_GRID_DATASET: [Iris, Chess10],
+        EXP_GRID_DATASET: [Iris],
         EXP_GRID_STRATEGY:
             [
                 ALIPY_RANDOM,

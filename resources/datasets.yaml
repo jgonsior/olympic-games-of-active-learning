@@ -4,7 +4,7 @@ Iris:
         kaggle_file: "Iris.csv",
         target: "Species",
         drop_columns: null,
-        id: "id",
+        id: "Id",
     }
 
 wine_origin:
@@ -31,7 +31,7 @@ parkinsons:
         kaggle_file: "datasets_410614_786211_parkinsons.csv",
         target: "status",
         drop_columns: null,
-        id: null,
+        id: "name",
     }
 
 sonar:
@@ -155,9 +155,9 @@ statlog_vehicle:
 
 tic_tac_toe:
     {
-        kaggle_name: "aungpyaeap/tictactoe-endgame-dataset-uci",
-        kaggle_file: "tic-tac-toe-endgame.csv",
-        target: "V10",
+        kaggle_name: "ulrikthygepedersen/tic-tac-toe",
+        kaggle_file: "tic_tac_toc.csv",
+        target: "Class",
         drop_columns: null,
         id: null,
     }
