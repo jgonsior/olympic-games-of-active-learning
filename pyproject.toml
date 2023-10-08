@@ -8,8 +8,6 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "~3.11"
-cython = "3.0.3"
-cvxpy = "1.3.2"
 conda-lock = "^2.3.0"
 pandas = "^2.1.1"
 matplotlib = "^3.8.0"
@@ -43,6 +41,7 @@ pycln = "^2.2.2"
 alipy = {git = "https://github.com/jgonsior/ALiPy.git"}
 playground = {git = "https://github.com/jgonsior/active-learning.git"}
 scikit-activeml = {git = "https://github.com/jgonsior/scikit-activeml"}
+libact = {git= "https://github.com/jgonsior/libact"}
 scikit-learn = "<1.3"
 
 

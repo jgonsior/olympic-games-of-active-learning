@@ -35,6 +35,7 @@ LIBACT_BUILD_VARIANCE_REDUCTION=0 pip install git+https://github.com/jgonsior/li
 
 
 HPC poetry
+# to be run in the root directory of this project
 ```bash
 # https://stackoverflow.com/a/71110028
 # replace $WS_URL with the url of the workspace
