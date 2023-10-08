@@ -34,6 +34,27 @@ LIBACT_BUILD_VARIANCE_REDUCTION=0 pip install git+https://github.com/jgonsior/li
 ```
 
 
+HPC poetry
+```bash
+# https://stackoverflow.com/a/71110028
+# replace $WS_URL with the url of the workspace
+module load Anaconda3
+sh $EBROOTANACONDA3/etc/profile.d/conda.sh
+conda env create --prefix $WS_URL/conda-env --file=environment.yml
+conda create --prefix $WS_URL/conda-env --file conda-linux-64.lock
+conda activate my_project_env
+poetry install
+```
+
+
+Local poetry
+```bash
+conda create --name al_olympics_env --file conda-linux-64.lock
+conda activate my_project_env
+poetry install
+```
+
+
 ## Usage
 
 ```bash
