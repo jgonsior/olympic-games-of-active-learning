@@ -350,5 +350,5 @@ gaussian_unbalanced:
         kaggle_file: "gaussian_unbalanced.csv",
         target: "Y",
         drop_columns: "Unnamed: 0",
-        id: 0,
+        id: null,
     }
