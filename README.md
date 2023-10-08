@@ -40,7 +40,6 @@ HPC poetry
 # replace $WS_URL with the url of the workspace
 module load Anaconda3
 sh $EBROOTANACONDA3/etc/profile.d/conda.sh
-conda env create --prefix $WS_URL/conda-env --file=environment.yml
 conda create --prefix $WS_URL/conda-env --file conda-linux-64.lock
 conda activate my_project_env
 poetry install
@@ -50,7 +49,7 @@ poetry install
 Local poetry
 ```bash
 conda create --name al_olympics_env --file conda-linux-64.lock
-conda activate my_project_env
+conda activate al_olympics_env
 poetry install
 ```
 

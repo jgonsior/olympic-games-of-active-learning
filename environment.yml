@@ -1,0 +1,14 @@
+name: al_olympics_env
+channels:
+    - conda-forge
+dependencies:
+    - python=3.11.*
+    - pip
+    - poetry=1.*
+    - cython=3.0.3
+    - cvxpy=1.3.2
+    - liblapacke=3.9.0
+    - libsvm=332
+    - conda-lock
+platforms:
+    - linux-64
