@@ -1,6 +1,6 @@
 import multiprocessing
 from pathlib import Path
-from datasets.kaggle import Kaggle
+from datasets.kaggle import Kaggle_Loader
 from datasets.localImporter import Local_Importer
 from misc.config import Config
 import glob
@@ -10,7 +10,7 @@ from sklearn.metrics import pairwise_distances
 
 config = Config()
 
-kaggle = Kaggle(config)
+kaggle = Kaggle_Loader(config)
 kaggle.load_datasets()
 
 local_importer = Local_Importer(config)

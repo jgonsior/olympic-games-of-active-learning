@@ -12,7 +12,7 @@ from misc.config import Config
 from misc.logging import log_it
 
 
-class Kaggle(Base_Dataset_Loader):
+class Kaggle_Loader(Base_Dataset_Loader):
     def __init__(self, config: Config) -> None:
         super().__init__(config)
         self.parameter_dict: Dict[str, Any] = yaml.safe_load(
@@ -42,10 +42,18 @@ class Kaggle(Base_Dataset_Loader):
         if potential_zip_file.exists():
             with zipfile.ZipFile(potential_zip_file, "r") as zip_ref:
                 zip_ref.extractall(dataset_raw_path.parent)
+            potential_zip_file.unlink()
 
         shutil.move(
             dataset_raw_path.parent / self.parameter_dict[dataset_name]["kaggle_file"],
             dataset_raw_path,
         )
-        df = pd.read_csv(dataset_raw_path, sep=",")
+
+
+        if "separator" in self.parameter_dict[dataset_name].keys():
+            sep = self.parameter_dict[dataset_name]["separator"]
+        else:
+            sep = ","
+
+        df = pd.read_csv(dataset_raw_path, sep=sep)
         return df

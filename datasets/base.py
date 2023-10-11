@@ -60,10 +60,33 @@ class Base_Dataset_Loader(ABC):
                     df, splits, dataset_name, dataset_clean_path
                 )
 
+    def _map_float_to_int_categorical(self, df: pd.DataFrame, feature: str):
+        feature_col = df[feature].dropna()
+        unique_values = feature_col.unique()
+        mapping_dict = {c: i for i, c in enumerate(unique_values)}
+
+        return df[feature].map(mapping_dict)
+
     def preprocess_dataframe(self, df: pd.DataFrame, dataset_name: str) -> pd.DataFrame:
         parsing_args = self.parameter_dict[dataset_name]
         if parsing_args["drop_columns"] is not None:
             df.drop(parsing_args["drop_columns"], axis=1, inplace=True)
+
+
+
+        # map float categoricals into int categoricals
+        for feature in df.columns:
+            if df[feature].dtype != float:
+                continue
+            feature_col = df[feature].dropna()
+            diffs = np.unique(np.diff(np.sort(feature_col.unique())))
+            if len(diffs) == 1 and (diffs[0] % 1) != 0:
+                df[feature] = self._map_float_to_int_categorical(df, feature)
+
+        # Special cases of float categoricals
+        if "float_categorical_cols" in parsing_args:
+            for feature in parsing_args["float_categorical_cols"]:
+                df[feature] = self._map_float_to_int_categorical(df, feature)
 
         for column, dtype in df.dtypes.items():  # type: ignore
             if dtype not in ["int64", "float64"]:
@@ -72,6 +95,8 @@ class Base_Dataset_Loader(ABC):
                 df[column] = df[column].cat.codes  # type: ignore
 
         label_column = parsing_args["target"]
+        assert label_column in df.columns
+
         df.rename(columns={label_column: "LABEL_TARGET"}, inplace=True)
 
         # remove rows having NaN values
