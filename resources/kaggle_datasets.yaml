@@ -350,5 +350,15 @@ gaussian_unbalanced:
         kaggle_file: "gaussian_unbalanced.csv",
         target: "Y",
         drop_columns: "Unnamed: 0",
+        id: "0",
+    }
+
+annthyroid:
+    {
+        kaggle_name: "zhonglifr/thyroid-disease-unsupervised-anomaly-detection",
+        kaggle_file: "annthyroid_unsupervised_anomaly_detection.csv",
+        target: "Outlier_label ",
+        drop_columns: ["Unnamed: 22", "Unnamed: 23"],
         id: null,
+        separator: ";",
     }

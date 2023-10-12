@@ -82,7 +82,8 @@ class Config:
     DATASETS_COMPUTE_DISTANCES: bool = True
     DATASETS_DISTANCES_APPENDIX: str = "_distances.csv.gzip"
 
-    KAGGLE_DATASETS_YAML_CONFIG_PATH: Path = "resources/datasets.yaml"  # type: ignore
+    KAGGLE_DATASETS_YAML_CONFIG_PATH: Path = "resources/kaggle_datasets.yaml"  # type: ignore
+    OPENML_DATASETS_YAML_CONFIG_PATH: Path = "resources/openml_datasets.yaml"  # type: ignore
     LOCAL_DATASETS_YAML_CONFIG_PATH: Path = "resources/local_datasets.yaml"  # type: ignore
     LOCAL_CONFIG_FILE_PATH: Path = ".server_access_credentials.cfg"  # type: ignore
     LOCAL_YAML_EXP_PATH: Path = "resources/exp_config.yaml"  # type: ignore
@@ -216,6 +217,9 @@ class Config:
 
         self.KAGGLE_DATASETS_YAML_CONFIG_PATH = Path(
             self.KAGGLE_DATASETS_YAML_CONFIG_PATH
+        )
+        self.OPENML_DATASETS_YAML_CONFIG_PATH = Path(
+            self.OPENML_DATASETS_YAML_CONFIG_PATH
         )
         self.LOCAL_DATASETS_YAML_CONFIG_PATH = Path(
             self.LOCAL_DATASETS_YAML_CONFIG_PATH

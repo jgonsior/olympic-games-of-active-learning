@@ -17,18 +17,18 @@ from resources.data_types import AL_FRAMEWORK
 config = Config()
 
 al_experiment: AL_Experiment
-print(str(config.EXP_STRATEGY)[12:])
-if str(config.EXP_STRATEGY)[12:].startswith(str(AL_FRAMEWORK.ALIPY.name)):
+print(str(config.EXP_STRATEGY.name))
+if str(config.EXP_STRATEGY.name).startswith(str(AL_FRAMEWORK.ALIPY.name)):
     al_experiment = ALIPY_AL_Experiment(config)
-elif str(config.EXP_STRATEGY)[12:].startswith(str(AL_FRAMEWORK.OPTIMAL.name)):
+elif str(config.EXP_STRATEGY.name).startswith(str(AL_FRAMEWORK.OPTIMAL.name)):
     al_experiment = OPTIMAL_AL_Experiment(config)
-elif str(config.EXP_STRATEGY)[12:].startswith(str(AL_FRAMEWORK.LIBACT.name)):
+elif str(config.EXP_STRATEGY.name).startswith(str(AL_FRAMEWORK.LIBACT.name)):
     al_experiment = LIBACT_Experiment(config)
-elif str(config.EXP_STRATEGY)[12:].startswith(str(AL_FRAMEWORK.PLAYGROUND.name)):
+elif str(config.EXP_STRATEGY.name).startswith(str(AL_FRAMEWORK.PLAYGROUND.name)):
     al_experiment = PLAYGROUND_AL_Experiment(config)
-elif str(config.EXP_STRATEGY)[12:].startswith(str(AL_FRAMEWORK.SMALLTEXT.name)):
+elif str(config.EXP_STRATEGY.name).startswith(str(AL_FRAMEWORK.SMALLTEXT.name)):
     al_experiment = SMALLTEXT_AL_Experiment(config)
-elif str(config.EXP_STRATEGY)[12:].startswith(str(AL_FRAMEWORK.SKACTIVEML.name)):
+elif str(config.EXP_STRATEGY.name).startswith(str(AL_FRAMEWORK.SKACTIVEML.name)):
     al_experiment = SKACTIVEML_AL_Experiment(config)
 else:
     raise ValueError(

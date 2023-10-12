@@ -72,8 +72,6 @@ class Base_Dataset_Loader(ABC):
         if parsing_args["drop_columns"] is not None:
             df.drop(parsing_args["drop_columns"], axis=1, inplace=True)
 
-
-
         # map float categoricals into int categoricals
         for feature in df.columns:
             if df[feature].dtype != float:

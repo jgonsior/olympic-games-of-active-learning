@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from misc.config import Config
 
 
-class Local_Importer(Base_Dataset_Loader):
+class Local_Loader(Base_Dataset_Loader):
     def __init__(self, config: Config) -> None:
         super().__init__(config)
 

@@ -1,7 +1,8 @@
 import multiprocessing
 from pathlib import Path
-from datasets.kaggle import Kaggle_Loader
-from datasets.localImporter import Local_Importer
+from datasets.kaggle_loader import Kaggle_Loader
+from datasets.local_loader import Local_Loader
+from datasets.openml_loader import OpenML_Loader
 from misc.config import Config
 import glob
 import pandas as pd
@@ -10,11 +11,14 @@ from sklearn.metrics import pairwise_distances
 
 config = Config()
 
-kaggle = Kaggle_Loader(config)
-kaggle.load_datasets()
+openml_loader = OpenML_Loader(config)
+openml_loader.load_datasets()
 
-local_importer = Local_Importer(config)
-local_importer.load_datasets()
+kaggle_loader = Kaggle_Loader(config)
+kaggle_loader.load_datasets()
+
+local_loader = Local_Loader(config)
+local_loader.load_datasets()
 
 # compute distances
 for dataset_csv in list(glob.glob(str(config.DATASETS_PATH) + "/*.csv")):
