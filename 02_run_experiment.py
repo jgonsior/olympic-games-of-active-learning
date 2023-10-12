@@ -17,7 +17,7 @@ from resources.data_types import AL_FRAMEWORK
 config = Config()
 
 al_experiment: AL_Experiment
-print(str(config.EXP_STRATEGY.name))
+
 if str(config.EXP_STRATEGY.name).startswith(str(AL_FRAMEWORK.ALIPY.name)):
     al_experiment = ALIPY_AL_Experiment(config)
 elif str(config.EXP_STRATEGY.name).startswith(str(AL_FRAMEWORK.OPTIMAL.name)):
