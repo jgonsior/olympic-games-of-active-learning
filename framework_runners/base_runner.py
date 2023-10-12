@@ -87,7 +87,8 @@ class AL_Experiment(ABC):
         np.random.seed(self.config.EXP_RANDOM_SEED)
         random.seed(self.config.EXP_RANDOM_SEED)
 
-        if self.config.OVERALL_FAILED_WORKLOAD_PATH.stat().st_size == 0:
+        if not self.config.OVERALL_FAILED_WORKLOAD_PATH.exists():
+            print(self.config.OVERALL_FAILED_WORKLOAD_PATH)
             with open(self.config.OVERALL_FAILED_WORKLOAD_PATH, "a") as f:
                 w = csv.DictWriter(f, fieldnames=self.config._original_workload.keys())
                 w.writeheader()
