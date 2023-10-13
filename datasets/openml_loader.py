@@ -34,7 +34,4 @@ class OpenML_Loader(Base_Dataset_Loader):
             data_id=self.parameter_dict[dataset_name]["data_id"], parser="auto"
         )["frame"]
 
-        print(df)
-        exit(-1)
-
         return df

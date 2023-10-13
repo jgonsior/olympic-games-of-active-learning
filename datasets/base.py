@@ -194,7 +194,7 @@ class Base_Dataset_Loader(ABC):
 
             splits_df.loc[ix, "start_points"] = str(start_points)
 
-        # quick check that everything wored as intented
+        # quick check that everything worked as intented
         for split in range(0, 5):
             print(len(splits_df.iloc[split]["train"]) / len(X))
             print(len(splits_df.iloc[split]["test"]) / len(X))
