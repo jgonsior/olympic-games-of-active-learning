@@ -52,7 +52,7 @@ def show_interactive_results(experiment_name: str):
         visualizations_and_tables.append(visualizer)
 
     for viz in visualizations_and_tables:
-        additional_request_params = viz.get_additional_request_params()
+        additional_request_params = viz.get_additional_request_params(config.OUTPUT_PATH)
         if additional_request_params != {}:
             full_exp_grid = {
                 **full_exp_grid,

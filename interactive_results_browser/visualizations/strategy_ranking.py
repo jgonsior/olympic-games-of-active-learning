@@ -97,10 +97,16 @@ def _correlation_analysis(done_workload_df, OUTPUT_PATH):
     metric_values = Auc_Table.get_additional_request_params(
         OUTPUT_PATH, with_basic=True
     )["VIZ_AUC_TABLE_METRIC"]
+
     for metric in metric_values:
         single_metric_plot_df = Base_Visualizer.load_detailed_metric_files(
             done_workload_df, metric, OUTPUT_PATH
         )
+        print(done_workload_df)
+        print(metric_values)
+        print(metric)
+        print(single_metric_plot_df)
+
         if len(single_metric_plot_df) == 0:
             print(f"No data for  metric {metric} found")
             continue

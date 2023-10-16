@@ -1,7 +1,7 @@
 from pathlib import Path
 import requests
 
-from livereload import Server
+#from livereload import Server
 
 from pandarallel import pandarallel
 
@@ -23,6 +23,8 @@ if __name__ == "__main__":
         if not sr_local_path.exists():
             sr_local_path.write_bytes(requests.get(sr_url).content)
 
-    server = Server(app.wsgi_app)
-    server.watch("**/*.py", ignore=True)
-    server.serve(host="0.0.0.0")
+    app.run(host="localhost")
+    
+    #server = Server(app.wsgi_app)
+    #server.watch("**/*.py", ignore=True)
+    #server.serve(host="0.0.0.0")

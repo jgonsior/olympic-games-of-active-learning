@@ -1,5 +1,6 @@
 from pathlib import Path
 import sys
+from typing import List
 
 
 sys.dont_write_bytecode = True
@@ -18,77 +19,102 @@ pd.options.display.float_format = "{:20,.2f}".format
 config = Config()
 
 
-df: pd.DataFrame = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
-df["EXP_DATASET"] = df["EXP_DATASET"].apply(lambda x: DATASET(int(x)).name)
-df["EXP_STRATEGY"] = df["EXP_STRATEGY"].apply(lambda x: AL_STRATEGY(int(x)).name)
-
-groupings = [
-    ["EXP_DATASET", "EXP_STRATEGY"],
-    ["EXP_DATASET"],
-    ["EXP_STRATEGY"],
-]
+done_df: pd.DataFrame = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
+done_df["EXP_DATASET"] = done_df["EXP_DATASET"].apply(lambda x: DATASET(int(x)).name)
+done_df["EXP_STRATEGY"] = done_df["EXP_STRATEGY"].apply(lambda x: AL_STRATEGY(int(x)).name)
 
 
-for grouping in groupings:
-    df2 = (
-        df.groupby(grouping)
-        .size()
-        .reset_index()
-        .rename(columns={0: "count"})
-        .sort_values("count")
-    )
-    print("\n" * 3)
-    print(f"Group by {grouping} and sorted after count")
-    print(df2)
+def _analyze_run_param_combinations(df:pd.DataFrame):
+    groupings = [
+        ["EXP_DATASET", "EXP_STRATEGY"],
+        ["EXP_DATASET"],
+        ["EXP_STRATEGY"],
+    ]
 
 
-result_df = None
-
-# compute how long the already run strategies needed
-for EXP_DATASET in df["EXP_DATASET"].unique():
-    for EXP_STRATEGY in df["EXP_STRATEGY"].unique():
-        METRIC_RESULTS_FILE = Path(
-            config.OUTPUT_PATH
-            / EXP_STRATEGY
-            / EXP_DATASET
-            / str("query_selection_time.csv.xz")
+    for grouping in groupings:
+        df2 = (
+            df.groupby(grouping)
+            .size()
+            .reset_index()
+            .rename(columns={0: "count"})
+            .sort_values("count")
         )
-        if not METRIC_RESULTS_FILE.exists():
-            continue
+        print("\n" * 3)
+        print(f"Group by {grouping} and sorted after count")
+        print(df2)
 
-        metric_df = pd.read_csv(METRIC_RESULTS_FILE, header=0, delimiter=",")
-        metric_df["total_time"] = metric_df[
-            [str(i) for i in range(0, len(metric_df.columns) - 1)]
-        ].sum(axis=1)
-        metric_df = metric_df[["total_time", "EXP_UNIQUE_ID"]]
 
-        inner_product_df = df.merge(
-            metric_df, how="inner", on="EXP_UNIQUE_ID", suffixes=(None, "r")
+    result_df = None
+
+    # compute how long the already run strategies needed
+    for EXP_DATASET in df["EXP_DATASET"].unique():
+        for EXP_STRATEGY in df["EXP_STRATEGY"].unique():
+            METRIC_RESULTS_FILE = Path(
+                config.OUTPUT_PATH
+                / EXP_STRATEGY
+                / EXP_DATASET
+                / str("query_selection_time.csv.xz")
+            )
+            if not METRIC_RESULTS_FILE.exists():
+                continue
+
+            metric_df = pd.read_csv(METRIC_RESULTS_FILE, header=0, delimiter=",")
+            metric_df["total_time"] = metric_df[
+                [str(i) for i in range(0, len(metric_df.columns) - 1)]
+            ].sum(axis=1)
+            metric_df = metric_df[["total_time", "EXP_UNIQUE_ID"]]
+
+            inner_product_df = df.merge(
+                metric_df, how="inner", on="EXP_UNIQUE_ID", suffixes=(None, "r")
+            )
+            if result_df is None:
+                result_df = inner_product_df
+            else:
+                result_df = pd.concat([result_df, inner_product_df])
+    print("result_df is ready")
+
+    groupings = [
+        ["EXP_DATASET", "EXP_STRATEGY"],
+        ["EXP_DATASET"],
+        ["EXP_STRATEGY"],
+        ["EXP_LEARNER_MODEL"],
+        ["EXP_START_POINT"],
+        ["EXP_BATCH_SIZE"],
+        ["EXP_TRAIN_TEST_BUCKET_SIZE"],
+    ]
+
+
+    print("Analyzing which param combinations have been run")
+
+
+    for grouping in groupings:
+        df2 = (
+            result_df.groupby(grouping)
+            .mean("total_time")
+            .reset_index()
+            .sort_values("total_time")
         )
-        if result_df is None:
-            result_df = inner_product_df
-        else:
-            result_df = pd.concat([result_df, inner_product_df])
-print("result_df is ready")
-
-groupings = [
-    ["EXP_DATASET", "EXP_STRATEGY"],
-    ["EXP_DATASET"],
-    ["EXP_STRATEGY"],
-    ["EXP_LEARNER_MODEL"],
-    ["EXP_START_POINT"],
-    ["EXP_BATCH_SIZE"],
-    ["EXP_TRAIN_TEST_BUCKET_SIZE"],
-]
+        df2 = df2[[*grouping, *["total_time"]]]
+        print(df2)
+        df2.to_csv(f"test/{grouping}.csv")
 
 
-for grouping in groupings:
-    df2 = (
-        result_df.groupby(grouping)
-        .mean("total_time")
-        .reset_index()
-        .sort_values("total_time")
-    )
-    df2 = df2[[*grouping, *["total_time"]]]
-    print(df2)
-    df2.to_csv(f"test/{grouping}.csv")
+def _find_out_best_strategies(df:pd.DataFrame, evaluation_metric:List[str]=["acc"], metrics_which_should_evaluated_separately:List[str]=[], group_by_method:str="mean", interpolation:bool=False):
+    # naive solution: simply average the metrics
+    print(df)
+
+
+
+def _elo_like_evaluation(df:pd.DataFrame):
+    # alternative solution: add +1 in a ranking table, where each strategy competes against each other in different competitions -> each competition is the same parameter combination
+    # see how I can compute the result based on the fact that some strategies had more, and others had less fights -> ELO ranking??
+    print(df)
+
+def _find_out_correlations_between_parameters(df:pd.DataFrame):
+    print(df)
+
+print(done_df)
+
+# _analyze_run_param_combinations(done_df)
+_find_out_best_strategies(done_df, metrics_which_should_evaluated_separately=["EXP_DATASET", "EXP_BATCH_SIZE"])
