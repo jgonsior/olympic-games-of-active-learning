@@ -6,14 +6,6 @@ PenDigits: { data_id: 32, target: "class", drop_columns: null, id: null }
 
 shuttle: { data_id: 40685, target: "class", drop_columns: null, id: null }
 
-methane: {
-        data_id: 42701,
-        target: "MM263", # MM264, MM256
-        drop_columns: null,
-        id: null,
-        float_categorical_cols: ["MM263", "F_SIDE"],
-    }
-
 waveform: { data_id: 60, target: "class", drop_columns: null, id: null }
 
 scale: { data_id: 11, target: "class", drop_columns: null, id: null }
@@ -111,8 +103,6 @@ analcatdata_authorship:
 analcatdata_dmft:
     { data_id: 469, target: "Prevention", drop_columns: null, id: null }
 
-mnist_784: { data_id: 554, target: "class", drop_columns: null, id: null }
-
 pc4: { data_id: 1049, target: "c", drop_columns: null, id: null }
 
 pc3: { data_id: 1050, target: "c", drop_columns: null, id: null }
@@ -165,18 +155,6 @@ numerai28-6:
 connect-4: { data_id: 40668, target: "class", drop_columns: null, id: null }
 
 churn: { data_id: 40701, target: "class", drop_columns: null, id: null }
-
-Devnagari-Script:
-    { data_id: 40923, target: "character", drop_columns: null, id: null }
-
-# 3000 features take too long
-#CIFAR_10:
-#    {
-#        data_id: 40927,
-#        target: "class",
-#        drop_columns: null,
-#        id: null,
-#    }
 
 MiceProtein: { data_id: 40966, target: "class", drop_columns: null, id: null }
 
