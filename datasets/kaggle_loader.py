@@ -49,7 +49,6 @@ class Kaggle_Loader(Base_Dataset_Loader):
             dataset_raw_path,
         )
 
-
         if "separator" in self.parameter_dict[dataset_name].keys():
             sep = self.parameter_dict[dataset_name]["separator"]
         else:

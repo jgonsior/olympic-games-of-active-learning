@@ -21,16 +21,17 @@ config = Config()
 
 done_df: pd.DataFrame = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
 done_df["EXP_DATASET"] = done_df["EXP_DATASET"].apply(lambda x: DATASET(int(x)).name)
-done_df["EXP_STRATEGY"] = done_df["EXP_STRATEGY"].apply(lambda x: AL_STRATEGY(int(x)).name)
+done_df["EXP_STRATEGY"] = done_df["EXP_STRATEGY"].apply(
+    lambda x: AL_STRATEGY(int(x)).name
+)
 
 
-def _analyze_run_param_combinations(df:pd.DataFrame):
+def _analyze_run_param_combinations(df: pd.DataFrame):
     groupings = [
         ["EXP_DATASET", "EXP_STRATEGY"],
         ["EXP_DATASET"],
         ["EXP_STRATEGY"],
     ]
-
 
     for grouping in groupings:
         df2 = (
@@ -43,7 +44,6 @@ def _analyze_run_param_combinations(df:pd.DataFrame):
         print("\n" * 3)
         print(f"Group by {grouping} and sorted after count")
         print(df2)
-
 
     result_df = None
 
@@ -84,9 +84,7 @@ def _analyze_run_param_combinations(df:pd.DataFrame):
         ["EXP_TRAIN_TEST_BUCKET_SIZE"],
     ]
 
-
     print("Analyzing which param combinations have been run")
-
 
     for grouping in groupings:
         df2 = (
@@ -100,21 +98,30 @@ def _analyze_run_param_combinations(df:pd.DataFrame):
         df2.to_csv(f"test/{grouping}.csv")
 
 
-def _find_out_best_strategies(df:pd.DataFrame, evaluation_metric:List[str]=["acc"], metrics_which_should_evaluated_separately:List[str]=[], group_by_method:str="mean", interpolation:bool=False):
+def _find_out_best_strategies(
+    df: pd.DataFrame,
+    evaluation_metric: List[str] = ["acc"],
+    metrics_which_should_evaluated_separately: List[str] = [],
+    group_by_method: str = "mean",
+    interpolation: bool = False,
+):
     # naive solution: simply average the metrics
     print(df)
 
 
-
-def _elo_like_evaluation(df:pd.DataFrame):
+def _elo_like_evaluation(df: pd.DataFrame):
     # alternative solution: add +1 in a ranking table, where each strategy competes against each other in different competitions -> each competition is the same parameter combination
     # see how I can compute the result based on the fact that some strategies had more, and others had less fights -> ELO ranking??
     print(df)
 
-def _find_out_correlations_between_parameters(df:pd.DataFrame):
+
+def _find_out_correlations_between_parameters(df: pd.DataFrame):
     print(df)
+
 
 print(done_df)
 
 # _analyze_run_param_combinations(done_df)
-_find_out_best_strategies(done_df, metrics_which_should_evaluated_separately=["EXP_DATASET", "EXP_BATCH_SIZE"])
+_find_out_best_strategies(
+    done_df, metrics_which_should_evaluated_separately=["EXP_DATASET", "EXP_BATCH_SIZE"]
+)
