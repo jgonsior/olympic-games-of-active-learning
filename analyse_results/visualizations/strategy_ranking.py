@@ -100,7 +100,10 @@ def _correlation_analysis(done_workload_df, OUTPUT_PATH):
 
     for metric in metric_values:
         single_metric_plot_df = Base_Visualizer.load_detailed_metric_files(
-            done_workload_df, metric, OUTPUT_PATH
+            done_workload_df,
+            metric,
+            OUTPUT_PATH,
+            merge_al_cycle_metrics=MERGE_AL_CYCLE_METRIC_STRATEGY.LIST_MEAN,
         )
         print(done_workload_df)
         print(metric_values)

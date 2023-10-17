@@ -40,7 +40,7 @@ def get_exp_config_names(config: Config) -> List[str]:
     return yaml_config_params.keys()
 
 
-def url_for(type: str = "static", filename: str = ""):
+def url_for(type: str = "static", filename: str = "", **params):
     return f"analyse_results/static/{filename}"
 
 

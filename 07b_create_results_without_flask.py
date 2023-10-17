@@ -37,13 +37,16 @@ pd.options.display.float_format = "{:20,.2f}".format
 
 config = Config()
 
-print(config.EXP_TITLE)
-
-
 _download_static_ressources()
 
-
+# @TODO das hier irgendwie anders definieren per CLI params oder json string input oder was weiß ich
 exp_grid_request_params, full_exp_grid = get_exp_grid_without_flask_params(config)
+
+print(exp_grid_request_params)
+print("\n" * 3)
+print(full_exp_grid)
+print("\n" * 3)
+
 
 visualizations_and_tables: List[Base_Visualizer] = []
 
@@ -54,6 +57,9 @@ for viz in exp_grid_request_params["VISUALIZATIONS"]:
         config, exp_grid_request_params, config.EXP_TITLE
     )
     visualizations_and_tables.append(visualizer)
+
+print(visualizations_and_tables)
+
 
 for viz in visualizations_and_tables:
     additional_request_params = viz.get_additional_request_params(config.OUTPUT_PATH)

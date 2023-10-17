@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, List, Tuple, Union
 
 from typing import Any, Dict
+from aenum import IntEnum, unique
 
 from joblib import Parallel, delayed, parallel_backend
 import matplotlib.pyplot as plt
@@ -21,6 +22,14 @@ from seaborn._core.properties import Marker
 
 if TYPE_CHECKING:
     from misc.config import Config
+
+
+@unique
+class MERGE_AL_CYCLE_METRIC_STRATEGY(IntEnum):
+    ORIGINAL = 1
+    LIST = 2
+    MEAN_LIST = 3
+    MEDIAN_LIST = 4
 
 
 @memory.cache
@@ -214,7 +223,7 @@ class Base_Visualizer(ABC):
         EXP_DATASET,
         metric,
         done_workload_df,
-        merge_al_cycle_metrics: Union[None, "mean", "avg"] = None,
+        merge_al_cycle_metrics: MERGE_AL_CYCLE_METRIC_STRATEGY,
     ) -> pd.DataFrame:
         detailed_metrics_path = Path(
             f"{OUTPUT_PATH}/{EXP_STRATEGY}/{EXP_DATASET}/{metric}.csv.xz"
@@ -229,9 +238,11 @@ class Base_Visualizer(ABC):
             )
             detailed_metrics_df.drop_duplicates(inplace=True)
 
+            print("wir sind hier")
             print(detailed_metrics_df)
+            print(merge_al_cycle_metrics)
 
-            if merge_al_cycle_metrics is not None:
+            if merge_al_cycle_metrics != MERGE_AL_CYCLE_METRIC_STRATEGY.ORIGINAL:
                 column_names_which_are_al_cycles = (
                     merge_al_cycle_metrics.columns.to_list()
                 )
@@ -243,7 +254,7 @@ class Base_Visualizer(ABC):
                 # return the list
 
                 detailed_metrics_df = None
-
+            exit(-1)
             # TODO hier sollte jetzt für die ganzen spalten welche aktuell alle eine Listev on Metriken enthalten etc. zusammen gemerged werden damit nur noch eine zahl da steht
             # TODO und dann braucht learning curve diese metrik werte im original, aber andere brauchen die schon zusammen gemeregd, dass aber dann lieber in den metrikdateien ausamchen, oder?
             return detailed_metrics_df
@@ -251,12 +262,12 @@ class Base_Visualizer(ABC):
             return None
 
     @staticmethod
-    @memory.cache()
+    # @memory.cache()
     def load_detailed_metric_files(
         done_workload_df: pd.DataFrame,
         metric: str,
         OUTPUT_PATH: Path,
-        merge_al_cycle_metrics: Union[None, "mean", "avg"] = None,
+        merge_al_cycle_metrics: MERGE_AL_CYCLE_METRIC_STRATEGY,
     ) -> pd.DataFrame:
         result_df = pd.DataFrame()
         strat_dataset_combinations: List[Tuple[DATASET, AL_STRATEGY]] = list(

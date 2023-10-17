@@ -136,8 +136,6 @@ wall-robot-navigation:
 
 semeion: { data_id: 1501, target: "Class", drop_columns: null, id: null }
 
-adult: { data_id: 1590, target: "class", drop_columns: null, id: null }
-
 Bioresponse: { data_id: 4134, target: "target", drop_columns: null, id: null }
 
 GesturePhaseSegmentationProcessed:
