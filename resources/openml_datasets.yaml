@@ -1,7 +1,5 @@
 soybean: { data_id: 42, target: "class", drop_columns: null, id: null }
 
-KDDCup99: { data_id: 1113, target: "label", drop_columns: null, id: null }
-
 PenDigits: { data_id: 32, target: "class", drop_columns: null, id: null }
 
 shuttle: { data_id: 40685, target: "class", drop_columns: null, id: null }
