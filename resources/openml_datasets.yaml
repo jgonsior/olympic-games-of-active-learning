@@ -113,8 +113,6 @@ kc1: { data_id: 1067, target: "defects", drop_columns: null, id: null }
 
 pc1: { data_id: 1068, target: "defects", drop_columns: null, id: null }
 
-bank-marketing: { data_id: 1461, target: "Class", drop_columns: null, id: null }
-
 banknote-authentication:
     { data_id: 1462, target: "Class", drop_columns: null, id: null }
 

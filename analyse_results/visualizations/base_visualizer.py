@@ -219,7 +219,6 @@ class Base_Visualizer(ABC):
         detailed_metrics_path = Path(
             f"{OUTPUT_PATH}/{EXP_STRATEGY}/{EXP_DATASET}/{metric}.csv.xz"
         )
-        # print(detailed_metrics_path)
 
         if detailed_metrics_path.exists():
             # read in each csv file to get learning curve data for plot
@@ -233,8 +232,17 @@ class Base_Visualizer(ABC):
             print(detailed_metrics_df)
 
             if merge_al_cycle_metrics is not None:
+                column_names_which_are_al_cycles = (
+                    merge_al_cycle_metrics.columns.to_list()
+                )
+                print(column_names_which_are_al_cycles)
+                exit(-1)
+
+                # merge into list
+
+                # return the list
+
                 detailed_metrics_df = None
-            exit(-1)
 
             # TODO hier sollte jetzt für die ganzen spalten welche aktuell alle eine Listev on Metriken enthalten etc. zusammen gemerged werden damit nur noch eine zahl da steht
             # TODO und dann braucht learning curve diese metrik werte im original, aber andere brauchen die schon zusammen gemeregd, dass aber dann lieber in den metrikdateien ausamchen, oder?
