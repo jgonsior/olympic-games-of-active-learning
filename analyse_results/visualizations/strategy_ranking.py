@@ -6,7 +6,10 @@ import pandas as pd
 from analyse_results.visualizations.auc_table import Auc_Table
 
 
-from analyse_results.visualizations.base_visualizer import Base_Visualizer
+from analyse_results.visualizations.base_visualizer import (
+    MERGE_AL_CYCLE_METRIC_STRATEGY,
+    Base_Visualizer,
+)
 from typing import Any, Dict, List
 
 from misc.config import Config
@@ -103,7 +106,7 @@ def _correlation_analysis(done_workload_df, OUTPUT_PATH):
             done_workload_df,
             metric,
             OUTPUT_PATH,
-            merge_al_cycle_metrics=MERGE_AL_CYCLE_METRIC_STRATEGY.LIST_MEAN,
+            merge_al_cycle_metrics=MERGE_AL_CYCLE_METRIC_STRATEGY.MEAN_LIST,
         )
         print(done_workload_df)
         print(metric_values)

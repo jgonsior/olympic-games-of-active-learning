@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+import ast
 import base64
 import io
 import itertools
@@ -243,17 +244,41 @@ class Base_Visualizer(ABC):
             print(merge_al_cycle_metrics)
 
             if merge_al_cycle_metrics != MERGE_AL_CYCLE_METRIC_STRATEGY.ORIGINAL:
-                column_names_which_are_al_cycles = (
-                    merge_al_cycle_metrics.columns.to_list()
+                column_names_which_are_al_cycles = detailed_metrics_df.columns.to_list()
+                column_names_which_are_al_cycles = [
+                    c
+                    for c in column_names_which_are_al_cycles
+                    if not c.startswith("EXP_")
+                ]
+
+                detailed_metrics_df[column_names_which_are_al_cycles] = (
+                    detailed_metrics_df[column_names_which_are_al_cycles]
+                    .fillna("[]")
+                    .map(lambda x: ast.literal_eval(x))
                 )
-                print(column_names_which_are_al_cycles)
-                exit(-1)
+
+                for column_name_which_is_al_cycle in column_names_which_are_al_cycles:
+                    if (
+                        merge_al_cycle_metrics
+                        == MERGE_AL_CYCLE_METRIC_STRATEGY.MEAN_LIST
+                    ):
+                        detailed_metrics_df[
+                            column_name_which_is_al_cycle
+                        ] = detailed_metrics_df[column_name_which_is_al_cycle].mean()
+                    elif (
+                        merge_al_cycle_metrics
+                        == MERGE_AL_CYCLE_METRIC_STRATEGY.MEDIAN_LIST
+                    ):
+                        detailed_metrics_df[
+                            column_name_which_is_al_cycle
+                        ] = detailed_metrics_df[column_name_which_is_al_cycle].median()
 
                 # merge into list
+                detailed_metrics_df["computed"] = detailed_metrics_df[
+                    column_names_which_are_al_cycles
+                ].values.tolist()
+                print(detailed_metrics_df)
 
-                # return the list
-
-                detailed_metrics_df = None
             exit(-1)
             # TODO hier sollte jetzt für die ganzen spalten welche aktuell alle eine Listev on Metriken enthalten etc. zusammen gemerged werden damit nur noch eine zahl da steht
             # TODO und dann braucht learning curve diese metrik werte im original, aber andere brauchen die schon zusammen gemeregd, dass aber dann lieber in den metrikdateien ausamchen, oder?
@@ -277,7 +302,7 @@ class Base_Visualizer(ABC):
             )
         )
 
-        with parallel_backend("loky", n_jobs=multiprocessing.cpu_count()):
+        with parallel_backend("loky", n_jobs=1):  # multiprocessing.cpu_count()):
             detailed_metric_joins: List[pd.DataFrame] = Parallel()(
                 delayed(Base_Visualizer._parse_single_local_metric_file)(
                     OUTPUT_PATH,

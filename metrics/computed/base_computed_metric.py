@@ -108,23 +108,21 @@ class Base_Computed_Metric(ABC):
 
         df = df.fillna("[]")
 
-        df[column_names_which_are_al_cycles] = df[
-            column_names_which_are_al_cycles
-        ].applymap(
+        df[column_names_which_are_al_cycles] = df[column_names_which_are_al_cycles].map(
             lambda x: ast.literal_eval(str(x)),
         )
 
         if calculate_mean_too:
             df[column_names_which_are_al_cycles] = df[
                 column_names_which_are_al_cycles
-            ].applymap(
+            ].map(
                 lambda x: sum(x) / len(x)
                 if isinstance(x, Iterable) and len(x) > 0
                 else x
             )
             df[column_names_which_are_al_cycles] = df[
                 column_names_which_are_al_cycles
-            ].applymap(lambda x: np.nan if x == [] else x)
+            ].map(lambda x: np.nan if x == [] else x)
 
         return df
 
@@ -161,7 +159,7 @@ class Base_Computed_Metric(ABC):
         else:
             df[column_names_which_are_al_cycles] = df[
                 column_names_which_are_al_cycles
-            ].applymap(lambda x: ast.literal_eval(x))
+            ].map(lambda x: ast.literal_eval(x))
         return df
 
     def _pre_appy_to_row_hook(self, df: pd.DataFrame) -> pd.DataFrame:

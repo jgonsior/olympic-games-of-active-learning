@@ -102,9 +102,7 @@ class Base_Samples_Categorizer(ABC):
         cols_with_indice_lists = df.columns.difference(["EXP_UNIQUE_ID"])
 
         df[cols_with_indice_lists] = (
-            df[cols_with_indice_lists]
-            .fillna("[]")
-            .applymap(lambda x: ast.literal_eval(x))
+            df[cols_with_indice_lists].fillna("[]").map(lambda x: ast.literal_eval(x))
         )
         return df
 
@@ -115,7 +113,7 @@ class Base_Samples_Categorizer(ABC):
                     f"{self.config.DATASETS_PATH}/{dataset.name}{self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX}",
                     usecols=["train", "test"],
                 )
-                .applymap(lambda x: ast.literal_eval(x.replace(",,", "")))
+                .map(lambda x: ast.literal_eval(x.replace(",,", "")))
                 .reset_index(level=0)
                 .rename(columns={"index": "EXP_TRAIN_TEST_BUCKET_SIZE"})
             )
@@ -156,7 +154,7 @@ class Base_Samples_Categorizer(ABC):
             Y_pred_train[cols_with_indice_lists] = (
                 Y_pred_train[cols_with_indice_lists]
                 .fillna("[]")
-                .applymap(lambda x: ast.literal_eval(x))
+                .map(lambda x: ast.literal_eval(x))
             )
             Y_pred_test = pd.read_csv(
                 f"{self.config.OUTPUT_PATH}/{strat.name}/{dataset.name}/y_pred_test.csv.xz",
@@ -164,7 +162,7 @@ class Base_Samples_Categorizer(ABC):
             Y_pred_test[cols_with_indice_lists] = (
                 Y_pred_test[cols_with_indice_lists]
                 .fillna("[]")
-                .applymap(lambda x: ast.literal_eval(x))
+                .map(lambda x: ast.literal_eval(x))
             )
 
             # get train_test_splits based on EXP_UNIQUE_ID

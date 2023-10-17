@@ -41,9 +41,9 @@ class DISTANCE_METRICS(Base_Computed_Metric):
         column_names_which_are_al_cycles = list(df.columns)
         column_names_which_are_al_cycles.remove("EXP_UNIQUE_ID")
 
-        df[column_names_which_are_al_cycles] = df[
-            column_names_which_are_al_cycles
-        ].applymap(lambda x: "[]" if pd.isna(x) else x)
+        df[column_names_which_are_al_cycles] = df[column_names_which_are_al_cycles].map(
+            lambda x: "[]" if pd.isna(x) else x
+        )
         df.loc[:, column_names_which_are_al_cycles] = df.loc[
             :, column_names_which_are_al_cycles
         ].apply(lambda x: [ast.literal_eval(iii) for iii in x], axis=0)
