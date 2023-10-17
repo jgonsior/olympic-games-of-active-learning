@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from interactive_results_browser.visualizations.base_visualizer import Base_Visualizer
+from analyse_results.visualizations.base_visualizer import Base_Visualizer
 from typing import Any, List, TYPE_CHECKING
 
 from typing import Any, Dict
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     pass
 import seaborn as sns
 import matplotlib.pyplot as plt
-from interactive_results_browser.cache import memory
+from analyse_results.cache import memory
 
 
 def _plot_function(plot_df, my_palette, my_markers):

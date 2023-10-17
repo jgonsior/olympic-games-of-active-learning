@@ -6,12 +6,12 @@ from pathlib import Path
 import pandas as pd
 
 
-from interactive_results_browser.visualizations.base_visualizer import Base_Visualizer
+from analyse_results.visualizations.base_visualizer import Base_Visualizer
 from typing import Any, List
 
 from typing import Any, Dict
 
-from interactive_results_browser.cache import memory
+from analyse_results.cache import memory
 
 from misc.config import Config
 

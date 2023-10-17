@@ -10,12 +10,11 @@ from typing import TYPE_CHECKING, Any, Callable, List, Tuple, Union
 
 from typing import Any, Dict
 
-from flask import render_template
 from joblib import Parallel, delayed, parallel_backend
 import matplotlib.pyplot as plt
 import pandas as pd
 from datasets import DATASET
-from interactive_results_browser.cache import memory
+from analyse_results.cache import memory
 from resources.data_types import AL_STRATEGY, LEARNER_MODEL
 import seaborn as sns
 from seaborn._core.properties import Marker
@@ -84,6 +83,8 @@ class Base_Visualizer(ABC):
         return {}
 
     def render(self) -> str:
+        from analyse_results.helper_functions import render_template
+
         result = render_template(self.get_template_name(), **self.get_template_data())
         plt.clf()
         return result
@@ -208,8 +209,12 @@ class Base_Visualizer(ABC):
 
     @staticmethod
     def _parse_single_local_metric_file(
-        OUTPUT_PATH, EXP_STRATEGY, EXP_DATASET, metric, done_workload_df,
-        merge_al_cycle_metrics:Union[None, "mean", "avg"]=None
+        OUTPUT_PATH,
+        EXP_STRATEGY,
+        EXP_DATASET,
+        metric,
+        done_workload_df,
+        merge_al_cycle_metrics: Union[None, "mean", "avg"] = None,
     ) -> pd.DataFrame:
         detailed_metrics_path = Path(
             f"{OUTPUT_PATH}/{EXP_STRATEGY}/{EXP_DATASET}/{metric}.csv.xz"
@@ -228,10 +233,11 @@ class Base_Visualizer(ABC):
             print(detailed_metrics_df)
 
             if merge_al_cycle_metrics is not None:
-                detailed_metrics_df =
+                detailed_metrics_df = None
+            exit(-1)
 
-                # TODO hier sollte jetzt für die ganzen spalten welche aktuell alle eine Listev on Metriken enthalten etc. zusammen gemerged werden damit nur noch eine zahl da steht
-                # TODO und dann braucht learning curve diese metrik werte im original, aber andere brauchen die schon zusammen gemeregd, dass aber dann lieber in den metrikdateien ausamchen, oder?
+            # TODO hier sollte jetzt für die ganzen spalten welche aktuell alle eine Listev on Metriken enthalten etc. zusammen gemerged werden damit nur noch eine zahl da steht
+            # TODO und dann braucht learning curve diese metrik werte im original, aber andere brauchen die schon zusammen gemeregd, dass aber dann lieber in den metrikdateien ausamchen, oder?
             return detailed_metrics_df
         else:
             return None
@@ -242,7 +248,7 @@ class Base_Visualizer(ABC):
         done_workload_df: pd.DataFrame,
         metric: str,
         OUTPUT_PATH: Path,
-        merge_al_cycle_metrics:Union[None, "mean", "avg"]=None
+        merge_al_cycle_metrics: Union[None, "mean", "avg"] = None,
     ) -> pd.DataFrame:
         result_df = pd.DataFrame()
         strat_dataset_combinations: List[Tuple[DATASET, AL_STRATEGY]] = list(
@@ -255,7 +261,12 @@ class Base_Visualizer(ABC):
         with parallel_backend("loky", n_jobs=multiprocessing.cpu_count()):
             detailed_metric_joins: List[pd.DataFrame] = Parallel()(
                 delayed(Base_Visualizer._parse_single_local_metric_file)(
-                    OUTPUT_PATH, strat, ds, metric, done_workload_df, merge_al_cycle_metrics
+                    OUTPUT_PATH,
+                    strat,
+                    ds,
+                    metric,
+                    done_workload_df,
+                    merge_al_cycle_metrics,
                 )
                 for (ds, strat) in strat_dataset_combinations
             )  # type: ignore
