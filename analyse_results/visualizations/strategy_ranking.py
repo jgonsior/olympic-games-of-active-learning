@@ -117,13 +117,15 @@ def _correlation_analysis(done_workload_df, OUTPUT_PATH):
             print(f"No data for  metric {metric} found")
             continue
 
-        if single_metric_plot_df["computed_metric"].max() <= 1.0:
+        if single_metric_plot_df["al_cycles_metric_list"].max() <= 1.0:
             single_metric_plot_df[metric] = single_metric_plot_df[
-                "computed_metric"
+                "al_cycles_metric_list"
             ].multiply(100)
         else:
-            single_metric_plot_df[metric] = single_metric_plot_df["computed_metric"]
-        del single_metric_plot_df["computed_metric"]
+            single_metric_plot_df[metric] = single_metric_plot_df[
+                "al_cycles_metric_list"
+            ]
+        del single_metric_plot_df["al_cycles_metric_list"]
 
         if len(plot_df) == 0:
             plot_df = single_metric_plot_df
@@ -157,13 +159,15 @@ def _strategy_ranking_heatmap(done_workload_df, OUTPUT_PATH):
             continue
         print(metric)
         print(single_metric_plot_df)
-        if single_metric_plot_df["computed_metric"].max() <= 1.0:
+        if single_metric_plot_df["al_cycles_metric_list"].max() <= 1.0:
             single_metric_plot_df[metric] = single_metric_plot_df[
-                "computed_metric"
+                "al_cycles_metric_list"
             ].multiply(100)
         else:
-            single_metric_plot_df[metric] = single_metric_plot_df["computed_metric"]
-        del single_metric_plot_df["computed_metric"]
+            single_metric_plot_df[metric] = single_metric_plot_df[
+                "al_cycles_metric_list"
+            ]
+        del single_metric_plot_df["al_cycles_metric_list"]
 
         if len(plot_df) == 0:
             plot_df = single_metric_plot_df

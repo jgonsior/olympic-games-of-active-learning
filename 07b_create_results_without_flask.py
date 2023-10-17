@@ -33,7 +33,7 @@ import sys
 from datasets import DATASET
 from resources.data_types import AL_STRATEGY
 
-pd.options.display.float_format = "{:20,.2f}".format
+# pd.options.display.float_format = "{:100,.2f}".format
 
 config = Config()
 

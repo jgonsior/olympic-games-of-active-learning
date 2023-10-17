@@ -14,6 +14,7 @@ from aenum import IntEnum, unique
 
 from joblib import Parallel, delayed, parallel_backend
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 from datasets import DATASET
 from analyse_results.cache import memory
@@ -239,10 +240,6 @@ class Base_Visualizer(ABC):
             )
             detailed_metrics_df.drop_duplicates(inplace=True)
 
-            print("wir sind hier")
-            print(detailed_metrics_df)
-            print(merge_al_cycle_metrics)
-
             if merge_al_cycle_metrics != MERGE_AL_CYCLE_METRIC_STRATEGY.ORIGINAL:
                 column_names_which_are_al_cycles = detailed_metrics_df.columns.to_list()
                 column_names_which_are_al_cycles = [
@@ -255,39 +252,37 @@ class Base_Visualizer(ABC):
                     detailed_metrics_df[column_names_which_are_al_cycles]
                     .fillna("[]")
                     .map(lambda x: ast.literal_eval(x))
-                )
+                )  # type: ignore
 
-                for column_name_which_is_al_cycle in column_names_which_are_al_cycles:
-                    if (
-                        merge_al_cycle_metrics
-                        == MERGE_AL_CYCLE_METRIC_STRATEGY.MEAN_LIST
-                    ):
-                        detailed_metrics_df[
-                            column_name_which_is_al_cycle
-                        ] = detailed_metrics_df[column_name_which_is_al_cycle].mean()
-                    elif (
-                        merge_al_cycle_metrics
-                        == MERGE_AL_CYCLE_METRIC_STRATEGY.MEDIAN_LIST
-                    ):
-                        detailed_metrics_df[
-                            column_name_which_is_al_cycle
-                        ] = detailed_metrics_df[column_name_which_is_al_cycle].median()
+                if merge_al_cycle_metrics == MERGE_AL_CYCLE_METRIC_STRATEGY.MEAN_LIST:
+                    detailed_metrics_df[
+                        column_names_which_are_al_cycles
+                    ] = detailed_metrics_df[column_names_which_are_al_cycles].map(
+                        lambda x: np.mean(x)
+                    )  # type: ignore
+                elif (
+                    merge_al_cycle_metrics == MERGE_AL_CYCLE_METRIC_STRATEGY.MEDIAN_LIST
+                ):
+                    detailed_metrics_df[
+                        column_names_which_are_al_cycles
+                    ] = detailed_metrics_df[column_names_which_are_al_cycles].map(
+                        lambda x: np.median(x)
+                    )  # type: ignore
 
                 # merge into list
-                detailed_metrics_df["computed"] = detailed_metrics_df[
+                detailed_metrics_df["al_cycles_metric_list"] = detailed_metrics_df[
                     column_names_which_are_al_cycles
                 ].values.tolist()
-                print(detailed_metrics_df)
+                detailed_metrics_df = detailed_metrics_df.drop(
+                    columns=column_names_which_are_al_cycles
+                )
 
-            exit(-1)
-            # TODO hier sollte jetzt für die ganzen spalten welche aktuell alle eine Listev on Metriken enthalten etc. zusammen gemerged werden damit nur noch eine zahl da steht
-            # TODO und dann braucht learning curve diese metrik werte im original, aber andere brauchen die schon zusammen gemeregd, dass aber dann lieber in den metrikdateien ausamchen, oder?
             return detailed_metrics_df
         else:
             return None
 
     @staticmethod
-    # @memory.cache()
+    @memory.cache()
     def load_detailed_metric_files(
         done_workload_df: pd.DataFrame,
         metric: str,

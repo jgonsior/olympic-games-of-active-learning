@@ -168,6 +168,3 @@ segment: { data_id: 40984, target: "class", drop_columns: null, id: null }
 
 climate-model-simulation-crashes:
     { data_id: 40994, target: "outcome", drop_columns: null, id: null }
-
-jungle_chess_2pcs_raw_endgame_complete:
-    { data_id: 41027, target: "class", drop_columns: null, id: null }
