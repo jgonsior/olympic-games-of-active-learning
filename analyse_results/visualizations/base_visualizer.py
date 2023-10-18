@@ -7,7 +7,7 @@ import io
 import itertools
 import multiprocessing
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, List, Tuple, Union
+from typing import TYPE_CHECKING, Any, Callable, List, Tuple, Type, Union
 
 from typing import Any, Dict
 from aenum import IntEnum, unique
@@ -287,7 +287,7 @@ class Base_Visualizer(ABC):
         done_workload_df: pd.DataFrame,
         metric: str,
         OUTPUT_PATH: Path,
-        merge_al_cycle_metrics: MERGE_AL_CYCLE_METRIC_STRATEGY,
+        merge_al_cycle_metrics: Type[MERGE_AL_CYCLE_METRIC_STRATEGY],
     ) -> pd.DataFrame:
         result_df = pd.DataFrame()
         strat_dataset_combinations: List[Tuple[DATASET, AL_STRATEGY]] = list(

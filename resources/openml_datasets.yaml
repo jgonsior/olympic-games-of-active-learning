@@ -2,8 +2,6 @@ soybean: { data_id: 42, target: "class", drop_columns: null, id: null }
 
 PenDigits: { data_id: 32, target: "class", drop_columns: null, id: null }
 
-shuttle: { data_id: 40685, target: "class", drop_columns: null, id: null }
-
 waveform: { data_id: 60, target: "class", drop_columns: null, id: null }
 
 scale: { data_id: 11, target: "class", drop_columns: null, id: null }
@@ -127,8 +125,6 @@ ilpd: { data_id: 1480, target: "Class", drop_columns: null, id: null }
 
 madelon: { data_id: 1485, target: "Class", drop_columns: null, id: null }
 
-nomao: { data_id: 1486, target: "Class", drop_columns: null, id: null }
-
 qsar-biodeg: { data_id: 1494, target: "Class", drop_columns: null, id: null }
 
 wall-robot-navigation:
@@ -142,11 +138,6 @@ GesturePhaseSegmentationProcessed:
     { data_id: 4538, target: "Phase", drop_columns: null, id: null }
 
 dresses-sales: { data_id: 23381, target: "Class", drop_columns: null, id: null }
-
-numerai28-6:
-    { data_id: 23517, target: "attribute_21", drop_columns: null, id: null }
-
-connect-4: { data_id: 40668, target: "class", drop_columns: null, id: null }
 
 churn: { data_id: 40701, target: "class", drop_columns: null, id: null }
 

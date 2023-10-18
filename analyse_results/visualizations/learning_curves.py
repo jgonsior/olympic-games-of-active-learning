@@ -3,7 +3,10 @@ from pathlib import Path
 
 import pandas as pd
 
-from analyse_results.visualizations.base_visualizer import Base_Visualizer
+from analyse_results.visualizations.base_visualizer import (
+    MERGE_AL_CYCLE_METRIC_STRATEGY,
+    Base_Visualizer,
+)
 from typing import Any, List, TYPE_CHECKING
 
 from typing import Any, Dict
@@ -48,7 +51,10 @@ def _cache_create_plots(
         :, ["EXP_UNIQUE_ID", "EXP_STRATEGY", "EXP_DATASET"]
     ]
     plot_df = Base_Visualizer.load_detailed_metric_files(
-        done_workload_df, metric, OUTPUT_PATH
+        done_workload_df,
+        metric,
+        OUTPUT_PATH,
+        merge_al_cycle_metrics=MERGE_AL_CYCLE_METRIC_STRATEGY.ORIGINAL,
     )
 
     if plot_df.empty:
