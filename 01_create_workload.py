@@ -118,8 +118,8 @@ def create_workload(config: Config) -> List[int]:
                 config,
                 exp_grid_params_names,
                 max(
-                    open_workload_df["EXP_UNIQUE_ID"].max(),
                     done_workload_df["EXP_UNIQUE_ID"].max(),
+                    open_workload_df["EXP_UNIQUE_ID"].max(),
                     failed_workload_df["EXP_UNIQUE_ID"].max(),
                 )
                 + 1,
