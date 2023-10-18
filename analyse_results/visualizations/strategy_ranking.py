@@ -108,16 +108,15 @@ def _correlation_analysis(done_workload_df, OUTPUT_PATH):
             OUTPUT_PATH,
             merge_al_cycle_metrics=MERGE_AL_CYCLE_METRIC_STRATEGY.MEAN_LIST,
         )
-        print(done_workload_df)
-        print(metric_values)
-        print(metric)
-        print(single_metric_plot_df)
 
         if len(single_metric_plot_df) == 0:
             print(f"No data for  metric {metric} found")
             continue
-    HIER ÜBERLEGEN OB HIER EIN MERGE MEHR HÄTTE PASSIEREN SOLLEN ODER EBEN NICHT
-        print(single_metric_plot_df["al_cycles_metric_list"].max())
+        # HIER ÜBERLEGEN OB HIER EIN MERGE MEHR HÄTTE PASSIEREN SOLLEN ODER EBEN NICHT
+        single_metric_plot_df["al_cycles_metric_list"] = single_metric_plot_df[
+            "al_cycles_metric_list"
+        ].apply(lambda x: x[-1])
+
         if single_metric_plot_df["al_cycles_metric_list"].max() <= 1.0:
             single_metric_plot_df[metric] = single_metric_plot_df[
                 "al_cycles_metric_list"

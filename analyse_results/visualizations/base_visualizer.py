@@ -83,7 +83,10 @@ class Base_Visualizer(ABC):
                 self._NON_WORKLOAD_KEYS.append(k)
 
             # in case nothing has been selected in the gui just take the first parameter as default
-            if k not in self._exp_grid_request_params.keys():
+            if (
+                k not in self._exp_grid_request_params.keys()
+                and len(additional_request_params[k]) > 0
+            ):
                 self._exp_grid_request_params[k] = [additional_request_params[k][0]]
 
     def get_template_name(self) -> str:
@@ -248,6 +251,7 @@ class Base_Visualizer(ABC):
                     if not c.startswith("EXP_")
                 ]
 
+                print(detailed_metrics_df[column_names_which_are_al_cycles])
                 detailed_metrics_df[column_names_which_are_al_cycles] = (
                     detailed_metrics_df[column_names_which_are_al_cycles]
                     .fillna("[]")
@@ -273,6 +277,7 @@ class Base_Visualizer(ABC):
                 detailed_metrics_df["al_cycles_metric_list"] = detailed_metrics_df[
                     column_names_which_are_al_cycles
                 ].values.tolist()
+
                 detailed_metrics_df = detailed_metrics_df.drop(
                     columns=column_names_which_are_al_cycles
                 )

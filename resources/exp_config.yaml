@@ -105,7 +105,7 @@ skactiveml: { EXP_GRID_DATASET: [1-39], EXP_GRID_STRATEGY: [
             ], EXP_GRID_RANDOM_SEED: [0], EXP_GRID_START_POINT: [0], EXP_GRID_NUM_QUERIES: [5], EXP_GRID_BATCH_SIZE: [5], EXP_GRID_LEARNER_MODEL: [MLP, RF, RBF_SVM], EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0], METRICS: [Predicted_Samples, Selected_Indices, Standard_ML_Metrics, Timing_Metrics] }
 
 only_random: {
-        EXP_GRID_DATASET: [1-39],
+        EXP_GRID_DATASET: [1-104],
         EXP_GRID_STRATEGY:
             [
                 ALIPY_RANDOM,

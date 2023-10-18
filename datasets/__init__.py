@@ -32,6 +32,12 @@ class DATASET(IntEnum):
 with open("resources/kaggle_datasets.yaml", "r") as params_file:
     datasets_yaml_parameter_dict: Dict[str, Any] = yaml.safe_load(params_file)
 
+
+with open("resources/openml_datasets.yaml", "r") as params_file:
+    datasets_yaml_parameter_dict = datasets_yaml_parameter_dict | yaml.safe_load(
+        params_file
+    )
+
 for dataset_name in datasets_yaml_parameter_dict:
     extend_enum(DATASET, dataset_name)
 
