@@ -83,8 +83,6 @@ credit-g: { data_id: 31, target: "class", drop_columns: null, id: null }
 
 sick: { data_id: 38, target: "Class", drop_columns: ["TBG"], id: null }
 
-electricity: { data_id: 151, target: "class", drop_columns: null, id: null }
-
 satimage: { data_id: 182, target: "class", drop_columns: null, id: null }
 
 eucalyptus: { data_id: 188, target: "Utility", drop_columns: null, id: null }
