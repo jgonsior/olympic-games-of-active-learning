@@ -7,5 +7,5 @@ cachedir = config_parser.get("LOCAL", "CACHE_DIR")
 
 from joblib import Memory
 
-# memory = Memory(cachedir, verbose=1)
-memory = Memory(None)
+memory = Memory(cachedir, verbose=1)
+# memory = Memory(None)
