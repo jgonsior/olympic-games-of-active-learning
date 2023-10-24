@@ -1,31 +1,33 @@
 # OGAL - Olympic Games of Active Learning
 
 ## Installation
+
 Requierements:
 
 [anaconda](https://docs.anaconda.com/anaconda/install/index.html) installed.
 
 HPC poetry
+
 # to be run in the root directory of this project
+
 ```bash
 # https://stackoverflow.com/a/71110028
 # replace $WS_URL with the url of the workspace
 module load Anaconda3
 sh $EBROOTANACONDA3/etc/profile.d/conda.sh
 conda create --prefix $WS_URL/conda-env --file conda-linux-64.lock
-conda activate my_project_env
+conda activate $WS_URL/conda-env
 poetry install
 ```
 
-
 Local poetry
+
 ```bash
 # to be run in the root directory of this project
 conda create --name al_olympics_env --file conda-linux-64.lock
 conda activate al_olympics_env
 poetry install
 ```
-
 
 ## Usage
 
@@ -36,7 +38,6 @@ python 01_create_workload.py --EXP_TITLE test_experiment --IGNORE_CONFIG_FILE --
 python 01_create_workload.py --USE_EXP_YAML test_experiment
 python 02_run_experiment.py --EXP_TITLE test_experiment --WORKER_INDEX 100
 ```
-
 
 ## Example `.server_access_credentials.cfg` (part of `.gitignore` for obvious reasons)
 
