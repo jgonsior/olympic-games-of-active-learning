@@ -124,7 +124,7 @@ class Base_Samples_Categorizer(ABC):
     ) -> List[np.ndarray]:
         result = np.empty(
             (len(cols_with_indice_lists), len(row["train"]) + len(row["test"])),
-            dtype=np.int8,
+            dtype=np.float16,
         )
         result.fill(np.nan)
 

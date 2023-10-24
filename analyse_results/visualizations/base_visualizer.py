@@ -234,6 +234,8 @@ class Base_Visualizer(ABC):
             f"{OUTPUT_PATH}/{EXP_STRATEGY}/{EXP_DATASET}/{metric}.csv.xz"
         )
 
+        print(detailed_metrics_path)
+
         if detailed_metrics_path.exists():
             # read in each csv file to get learning curve data for plot
             detailed_metrics_df = pd.read_csv(detailed_metrics_path)
@@ -251,27 +253,44 @@ class Base_Visualizer(ABC):
                     if not c.startswith("EXP_")
                 ]
 
-                print(detailed_metrics_df[column_names_which_are_al_cycles])
-                detailed_metrics_df[column_names_which_are_al_cycles] = (
-                    detailed_metrics_df[column_names_which_are_al_cycles]
-                    .fillna("[]")
-                    .map(lambda x: ast.literal_eval(x))
-                )  # type: ignore
-
-                if merge_al_cycle_metrics == MERGE_AL_CYCLE_METRIC_STRATEGY.MEAN_LIST:
+                # check if metric even contains a list that needs to be normalized!
+                print(
                     detailed_metrics_df[
                         column_names_which_are_al_cycles
-                    ] = detailed_metrics_df[column_names_which_are_al_cycles].map(
-                        lambda x: np.mean(x)
-                    )  # type: ignore
-                elif (
-                    merge_al_cycle_metrics == MERGE_AL_CYCLE_METRIC_STRATEGY.MEDIAN_LIST
+                    ].dtypes.to_list()
+                )
+                if all(
+                    dt == np.float64
+                    for dt in detailed_metrics_df[
+                        column_names_which_are_al_cycles
+                    ].dtypes.to_list()
                 ):
-                    detailed_metrics_df[
-                        column_names_which_are_al_cycles
-                    ] = detailed_metrics_df[column_names_which_are_al_cycles].map(
-                        lambda x: np.median(x)
+                    print("oha")
+                else:
+                    detailed_metrics_df[column_names_which_are_al_cycles] = (
+                        detailed_metrics_df[column_names_which_are_al_cycles]
+                        .fillna("[]")
+                        .map(lambda x: ast.literal_eval(x))
                     )  # type: ignore
+
+                    if (
+                        merge_al_cycle_metrics
+                        == MERGE_AL_CYCLE_METRIC_STRATEGY.MEAN_LIST
+                    ):
+                        detailed_metrics_df[
+                            column_names_which_are_al_cycles
+                        ] = detailed_metrics_df[column_names_which_are_al_cycles].map(
+                            lambda x: np.mean(x)
+                        )  # type: ignore
+                    elif (
+                        merge_al_cycle_metrics
+                        == MERGE_AL_CYCLE_METRIC_STRATEGY.MEDIAN_LIST
+                    ):
+                        detailed_metrics_df[
+                            column_names_which_are_al_cycles
+                        ] = detailed_metrics_df[column_names_which_are_al_cycles].map(
+                            lambda x: np.median(x)
+                        )  # type: ignore
 
                 # merge into list
                 detailed_metrics_df["al_cycles_metric_list"] = detailed_metrics_df[

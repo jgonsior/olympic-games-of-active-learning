@@ -368,3 +368,5 @@ _write_template_file(
     Path("resources/slurm_templates/02c_gzip_results.sh.slurm"),
     config.EXPERIMENT_SLURM_GZIP_RESULTS_PATH,
 )
+
+_chmod_u_plus_x(config.EXPERIMENT_SLURM_GZIP_RESULTS_PATH)
