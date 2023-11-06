@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 @unique
 class MERGE_AL_CYCLE_METRIC_STRATEGY(IntEnum):
     ORIGINAL = 1
-    LIST = 2
+    ORIGINAL_MEAN = 2
     MEAN_LIST = 3
     MEDIAN_LIST = 4
 
@@ -254,29 +254,23 @@ class Base_Visualizer(ABC):
                 ]
 
                 # check if metric even contains a list that needs to be normalized!
-                print(
-                    detailed_metrics_df[
-                        column_names_which_are_al_cycles
-                    ].dtypes.to_list()
-                )
-                if all(
-                    dt == np.float64
+
+                if not all(
+                    dt == np.float64 or dt == np.int64  # or dt == object
                     for dt in detailed_metrics_df[
                         column_names_which_are_al_cycles
                     ].dtypes.to_list()
                 ):
-                    print("oha")
-                else:
                     detailed_metrics_df[column_names_which_are_al_cycles] = (
                         detailed_metrics_df[column_names_which_are_al_cycles]
                         .fillna("[]")
                         .map(lambda x: ast.literal_eval(x))
                     )  # type: ignore
 
-                    if (
-                        merge_al_cycle_metrics
-                        == MERGE_AL_CYCLE_METRIC_STRATEGY.MEAN_LIST
-                    ):
+                    if merge_al_cycle_metrics in [
+                        MERGE_AL_CYCLE_METRIC_STRATEGY.MEAN_LIST,
+                        MERGE_AL_CYCLE_METRIC_STRATEGY.ORIGINAL_MEAN,
+                    ]:
                         detailed_metrics_df[
                             column_names_which_are_al_cycles
                         ] = detailed_metrics_df[column_names_which_are_al_cycles].map(
@@ -292,14 +286,18 @@ class Base_Visualizer(ABC):
                             lambda x: np.median(x)
                         )  # type: ignore
 
-                # merge into list
-                detailed_metrics_df["al_cycles_metric_list"] = detailed_metrics_df[
-                    column_names_which_are_al_cycles
-                ].values.tolist()
+                if merge_al_cycle_metrics in [
+                    MERGE_AL_CYCLE_METRIC_STRATEGY.MEAN_LIST,
+                    MERGE_AL_CYCLE_METRIC_STRATEGY.MEDIAN_LIST,
+                ]:
+                    # merge into list
+                    detailed_metrics_df["al_cycles_metric_list"] = detailed_metrics_df[
+                        column_names_which_are_al_cycles
+                    ].values.tolist()
 
-                detailed_metrics_df = detailed_metrics_df.drop(
-                    columns=column_names_which_are_al_cycles
-                )
+                    detailed_metrics_df = detailed_metrics_df.drop(
+                        columns=column_names_which_are_al_cycles
+                    )
 
             return detailed_metrics_df
         else:

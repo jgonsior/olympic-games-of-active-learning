@@ -176,7 +176,7 @@ class AL_Experiment(ABC):
 
                     early_stopped_due_to_runtime_limit = True
                     break
-        except NonExistentDummyException as err:
+        except Exception as err:
             error_was_being_raised = True
             import sys
 

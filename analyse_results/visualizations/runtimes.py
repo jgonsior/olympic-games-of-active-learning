@@ -1,8 +1,12 @@
 from __future__ import annotations
 from pathlib import Path
+from re import M
 
 import pandas as pd
-from analyse_results.visualizations.base_visualizer import Base_Visualizer
+from analyse_results.visualizations.base_visualizer import (
+    MERGE_AL_CYCLE_METRIC_STRATEGY,
+    Base_Visualizer,
+)
 from typing import TYPE_CHECKING, Any, List
 
 from typing import Any, Dict
@@ -16,7 +20,7 @@ from analyse_results.cache import memory
 
 
 def _plot_function(plot_df, metric, my_palette, my_markers):
-    fig, ax = plt.subplots(figsize=(8, 4))
+    _, ax = plt.subplots(figsize=(8, 4))
     ax = sns.barplot(
         data=plot_df,
         y="EXP_STRATEGY",
@@ -40,7 +44,10 @@ def _cache_runtimes(
     ]
 
     plot_df = Base_Visualizer.load_detailed_metric_files(
-        done_workload_df, metric, OUTPUT_PATH
+        done_workload_df,
+        metric,
+        OUTPUT_PATH,
+        merge_al_cycle_metrics=MERGE_AL_CYCLE_METRIC_STRATEGY.ORIGINAL,
     )
 
     del plot_df["EXP_UNIQUE_ID"]

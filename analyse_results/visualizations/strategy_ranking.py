@@ -6,6 +6,7 @@ import pandas as pd
 from analyse_results.visualizations.auc_table import Auc_Table
 
 
+from analyse_results.cache import memory
 from analyse_results.visualizations.base_visualizer import (
     MERGE_AL_CYCLE_METRIC_STRATEGY,
     Base_Visualizer,
@@ -117,6 +118,7 @@ def _correlation_analysis(done_workload_df, OUTPUT_PATH):
             "al_cycles_metric_list"
         ].apply(lambda x: x[-1])
 
+        print(single_metric_plot_df["al_cycles_metric_list"])
         if single_metric_plot_df["al_cycles_metric_list"].max() <= 1.0:
             single_metric_plot_df[metric] = single_metric_plot_df[
                 "al_cycles_metric_list"
@@ -157,8 +159,6 @@ def _strategy_ranking_heatmap(done_workload_df, OUTPUT_PATH):
         if len(single_metric_plot_df) == 0:
             print(f"No data for  metric {metric} found.")
             continue
-        print(metric)
-        print(single_metric_plot_df)
         if single_metric_plot_df["al_cycles_metric_list"].max() <= 1.0:
             single_metric_plot_df[metric] = single_metric_plot_df[
                 "al_cycles_metric_list"
@@ -191,7 +191,7 @@ def _strategy_ranking_heatmap(done_workload_df, OUTPUT_PATH):
     return plot_df
 
 
-# @memory.cache()
+@memory.cache()
 def _cache_strategy_ranking(
     done_workload_df: pd.DataFrame,
     OUTPUT_PATH: Path,

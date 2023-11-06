@@ -6,7 +6,10 @@ from pathlib import Path
 import pandas as pd
 
 
-from analyse_results.visualizations.base_visualizer import Base_Visualizer
+from analyse_results.visualizations.base_visualizer import (
+    MERGE_AL_CYCLE_METRIC_STRATEGY,
+    Base_Visualizer,
+)
 from typing import Any, List
 
 from typing import Any, Dict
@@ -83,19 +86,36 @@ def _cache_create_auc_table(
 
     for metric in metric_values:
         single_metric_plot_df = Base_Visualizer.load_detailed_metric_files(
-            done_workload_df, metric, OUTPUT_PATH
+            done_workload_df,
+            metric,
+            OUTPUT_PATH,
+            merge_al_cycle_metrics=MERGE_AL_CYCLE_METRIC_STRATEGY.ORIGINAL_MEAN,
         )
+
+        column_names_which_are_al_cycles = [
+            c
+            for c in single_metric_plot_df.columns.to_list()
+            if not c.startswith("EXP_")
+        ]
+
         if len(single_metric_plot_df) == 0:
             print(f"No data for  metric {metric} found")
             continue
 
-        if single_metric_plot_df["computed_metric"].max() <= 1.0:
-            single_metric_plot_df[metric] = single_metric_plot_df[
-                "computed_metric"
-            ].multiply(100)
-        else:
-            single_metric_plot_df[metric] = single_metric_plot_df["computed_metric"]
-        del single_metric_plot_df["computed_metric"]
+        if (
+            max(
+                [
+                    a[0]
+                    for a in single_metric_plot_df[
+                        column_names_which_are_al_cycles
+                    ].values
+                ]
+            )
+            <= 1.0
+        ):
+            single_metric_plot_df[
+                column_names_which_are_al_cycles
+            ] = single_metric_plot_df[column_names_which_are_al_cycles].multiply(100)
 
         if len(plot_df) == 0:
             plot_df = single_metric_plot_df
@@ -111,17 +131,18 @@ def _cache_create_auc_table(
         return "No data found to plot"
 
     del plot_df["EXP_UNIQUE_ID"]
+
     plot_df = plot_df.melt(
         id_vars=["EXP_STRATEGY", "EXP_DATASET"],
         var_name="metric",
-        value_vars=metric_values,
+        value_vars=column_names_which_are_al_cycles,
     )
     plot_urls = Base_Visualizer._render_images(
         plot_df=plot_df,
         args={},
         plot_function=_plot_function_auc,
         df_col_key="metric",
-        legend_names=metric_values,
+        legend_names=column_names_which_are_al_cycles,
         create_legend=False,
     )
 

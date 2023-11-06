@@ -12,6 +12,7 @@ from analyse_results.visualizations.base_visualizer import Base_Visualizer
 from typing import List
 from enum import Enum
 from analyse_results.visualizations import (
+    VISUALIZATION,
     vizualization_to_python_function_mapping,
 )
 from jinja2 import Template
@@ -42,6 +43,16 @@ _download_static_ressources()
 # @TODO das hier irgendwie anders definieren per CLI params oder json string input oder was weiß ich
 exp_grid_request_params, full_exp_grid = get_exp_grid_without_flask_params(config)
 
+"""exp_grid_request_params["VISUALIZATIONS"] = [
+    # VISUALIZATION.STRATEGY_RANKING,
+    VISUALIZATION.AUC_TABLE,
+    # VISUALIZATION.LEARNING_CURVES,
+    # VISUALIZATION.RETRIEVED_SAMPLES,
+    # VISUALIZATION.RUN_DONE_STATS,
+    # VISUALIZATION.RUNTIMES,
+]"""
+
+
 print(exp_grid_request_params)
 print("\n" * 3)
 print(full_exp_grid)
@@ -57,9 +68,6 @@ for viz in exp_grid_request_params["VISUALIZATIONS"]:
         config, exp_grid_request_params, config.EXP_TITLE
     )
     visualizations_and_tables.append(visualizer)
-
-print(visualizations_and_tables)
-
 
 for viz in visualizations_and_tables:
     additional_request_params = viz.get_additional_request_params(config.OUTPUT_PATH)
@@ -83,4 +91,5 @@ rendered_template = render_template(
     exp_grid_request_params=exp_grid_request_params,
 )
 
-print(rendered_template)
+with open("test.html", "w") as f:
+    f.write(rendered_template)
