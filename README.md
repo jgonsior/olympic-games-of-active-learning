@@ -5,10 +5,11 @@ Requierements:
 
 [anaconda](https://docs.anaconda.com/anaconda/install/index.html) installed.
 
-HPC poetry
 # to be run in the root directory of this project
-```bash
-# https://stackoverflow.com/a/71110028
+
+HPC Cluster installation instructions:
+
+```bash# https://stackoverflow.com/a/71110028
 # replace $WS_URL with the url of the workspace
 module load Anaconda3
 sh $EBROOTANACONDA3/etc/profile.d/conda.sh
@@ -18,7 +19,7 @@ poetry install
 ```
 
 
-Local poetry
+Local installation instructions:
 ```bash
 # to be run in the root directory of this project
 conda create --name al_olympics_env --file conda-linux-64.lock
