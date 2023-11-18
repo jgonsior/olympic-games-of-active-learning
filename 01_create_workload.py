@@ -182,20 +182,29 @@ def create_workload(config: Config) -> List[int]:
             result.rename(columns={"EXP_UNIQUE_ID_x": "EXP_UNIQUE_ID"}, inplace=True)
             return result
 
+        print(f"{len(open_workload_df)} - before removal")
         if not config.RERUN_FAILED_WORKLOADS:
             open_workload_df = _remove_right_from_left_workload(
                 open_workload_df, failed_workload_df
             )
+            print(f"{len(open_workload_df)} - removed failed")
+
+        print(open_workload_df.iloc[0].to_list())
+        print(failed_workload_df.iloc[0].to_list())
+        # exit(-1)
 
         # remove already run workloads
         open_workload_df = _remove_right_from_left_workload(
             open_workload_df, done_workload_df
         )
+        print(f"{len(open_workload_df)} - removed already run")
 
+        # remove workloads resulting in oom
         oom_workload_df = pd.read_csv(config.OVERALL_STARTED_OOM_WORKLOAD_PATH)
         open_workload_df = _remove_right_from_left_workload(
             open_workload_df, oom_workload_df
         )
+        print(f"{len(open_workload_df)} - removed oom")
     else:
         open_workload_df = _generate_exp_param_grid(config, exp_grid_params_names)
 
