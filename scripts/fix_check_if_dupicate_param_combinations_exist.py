@@ -45,7 +45,9 @@ for file_name in glob.glob(
     df = pd.read_csv(file_name)
     a = len(df)
     df = df[~df["EXP_UNIQUE_ID"].isin(duplicate_exp_unique_ids)]
-    if len(df) < a:
+    if len(df[~df["EXP_UNIQUE_ID"].isin(duplicate_exp_unique_ids)]) < a:
+        print(file_name)
+        print(df[df["EXP_UNIQUE_ID"].isin(duplicate_exp_unique_ids)])
         # df.to_csv(file_name, index=False)
         print("would delete")
 
