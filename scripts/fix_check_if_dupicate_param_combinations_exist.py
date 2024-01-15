@@ -50,7 +50,7 @@ combined_df = combined_df[combined_df["EXP_UNIQUE_ID"].isin(exp_ids_present)]
 
 a = len(combined_df)
 
-combined_df.drop(colmns="EXP_UNIQUE_ID", inplace=True)
+combined_df.drop(columns="EXP_UNIQUE_ID", inplace=True)
 
 duplicates = combined_df.duplicated()
 
