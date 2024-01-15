@@ -89,8 +89,10 @@ class AL_Experiment(ABC):
 
         if not self.config.OVERALL_FAILED_WORKLOAD_PATH.exists():
             print(self.config.OVERALL_FAILED_WORKLOAD_PATH)
+            _keys = list(self.config._original_workload.keys())
+            _keys.append("error")
             with open(self.config.OVERALL_FAILED_WORKLOAD_PATH, "a") as f:
-                w = csv.DictWriter(f, fieldnames=self.config._original_workload.keys())
+                w = csv.DictWriter(f, fieldnames=_keys)
                 w.writeheader()
 
         with open(self.config.OVERALL_STARTED_OOM_WORKLOAD_PATH, "a") as f:
