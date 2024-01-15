@@ -22,6 +22,8 @@ config = Config()
 # remove exp_unique_ids
 # check for duplicates
 
+
+# create set of all prestent exp_ids
 done_workload = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
 failed_workload = pd.read_csv(config.OVERALL_FAILED_WORKLOAD_PATH)
 started_oom_workloads = pd.read_csv(config.OVERALL_STARTED_OOM_WORKLOAD_PATH)
@@ -29,7 +31,33 @@ started_oom_workloads = pd.read_csv(config.OVERALL_STARTED_OOM_WORKLOAD_PATH)
 
 failed_workload.drop(columns="error", inplace=True)
 
+exp_ids_present = set()
+
+for file_name in glob.glob(str(config.OUTPUT_PATH) + "/**/*.csv", recursive=True):
+    # print(file_name)
+    df = pd.read_csv(file_name, usecols=["EXP_UNIQUE_ID"])
+
+    exp_ids_present = exp_ids_present.union(df["EXP_UNIQUE_ID"].to_list())
+
+# print(exp_ids_present)
+
+
+# check which params exist in these exp_ids
+# check for duplicates there
+
 combined_df = pd.concat([done_workload, failed_workload, started_oom_workloads])
+combined_df = combined_df[combined_df["EXP_UNIQUE_ID"].isin(exp_ids_present)]
+
+a = len(combined_df)
+
+combined_df.drop(colmns="EXP_UNIQUE_ID", inplace=True)
+
+duplicates = combined_df.duplicated()
+
+dupl_counter = Counter(duplicates.to_list())
+print(dupl_counter)
+
+exit(-1)
 
 
 duplicates = combined_df.duplicated()
