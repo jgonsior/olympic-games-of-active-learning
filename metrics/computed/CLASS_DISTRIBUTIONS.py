@@ -6,7 +6,7 @@ from datasets import DATASET
 
 from metrics.computed.base_computed_metric import Base_Computed_Metric
 
-from typing import Dict, List, TYPE_CHECKING, Literal
+from typing import Any, Callable, Dict, List, TYPE_CHECKING, Literal, Tuple
 from scipy.spatial import distance
 
 if TYPE_CHECKING:
@@ -97,36 +97,46 @@ class CLASS_DISTRIBUTIONS(Base_Computed_Metric):
             row[ix] = -result
         return row
 
-    def class_distributions_manhattan_batch(self, row: pd.Series) -> pd.Series:
+    def class_distributions_manhattan_batch(
+        self, row: pd.Series, EXP_DATASET: DATASET
+    ) -> pd.Series:
         return self._class_distributions(row, metric="manhattan", batch=True)
 
-    def unifclass_distributions_chebyshev_batch(self, row: pd.Series) -> pd.Series:
+    def unifclass_distributions_chebyshev_batch(
+        self, row: pd.Series, EXP_DATASET: DATASET
+    ) -> pd.Series:
         return self._class_distributions(row, metric="chebyshev", batch=True)
 
-    def class_distributions_manhattan_added_up(self, row: pd.Series) -> pd.Series:
+    def class_distributions_manhattan_added_up(
+        self, row: pd.Series, EXP_DATASET: DATASET
+    ) -> pd.Series:
         return self._class_distributions(row, metric="manhattan", batch=False)
 
-    def unifclass_distributions_chebyshev_added_up(self, row: pd.Series) -> pd.Series:
+    def unifclass_distributions_chebyshev_added_up(
+        self, row: pd.Series, EXP_DATASET: DATASET
+    ) -> pd.Series:
         return self._class_distributions(row, metric="chebyshev", batch=False)
 
-    def compute(self) -> None:
-        self._take_single_metric_and_compute_new_one(
-            existing_metric_names=["selected_indices"],
-            new_metric_name="class_distributions_chebyshev_batch",
-            apply_to_row=self.unifclass_distributions_chebyshev_batch,
-        )
-        self._take_single_metric_and_compute_new_one(
-            existing_metric_names=["selected_indices"],
-            new_metric_name="class_distributions_manhattan_batch",
-            apply_to_row=self.class_distributions_manhattan_batch,
-        )
-        self._take_single_metric_and_compute_new_one(
-            existing_metric_names=["selected_indices"],
-            new_metric_name="class_distributions_chebyshev_added_up",
-            apply_to_row=self.unifclass_distributions_chebyshev_added_up,
-        )
-        self._take_single_metric_and_compute_new_one(
-            existing_metric_names=["selected_indices"],
-            new_metric_name="class_distributions_manhattan_added_up",
-            apply_to_row=self.class_distributions_manhattan_added_up,
-        )
+    def compute(self) -> List[Tuple[Callable, List[Any]]]:
+        return [
+            *self._take_single_metric_and_compute_new_one(
+                existing_metric_names=["selected_indices"],
+                new_metric_name="class_distributions_chebyshev_batch",
+                apply_to_row=self.unifclass_distributions_chebyshev_batch,
+            ),
+            *self._take_single_metric_and_compute_new_one(
+                existing_metric_names=["selected_indices"],
+                new_metric_name="class_distributions_manhattan_batch",
+                apply_to_row=self.class_distributions_manhattan_batch,
+            ),
+            *self._take_single_metric_and_compute_new_one(
+                existing_metric_names=["selected_indices"],
+                new_metric_name="class_distributions_chebyshev_added_up",
+                apply_to_row=self.unifclass_distributions_chebyshev_added_up,
+            ),
+            *self._take_single_metric_and_compute_new_one(
+                existing_metric_names=["selected_indices"],
+                new_metric_name="class_distributions_manhattan_added_up",
+                apply_to_row=self.class_distributions_manhattan_added_up,
+            ),
+        ]

@@ -2,7 +2,7 @@ from __future__ import annotations
 from abc import ABC
 import multiprocessing
 from pathlib import Path
-from typing import List, TYPE_CHECKING
+from typing import Any, Callable, List, TYPE_CHECKING, Tuple
 from joblib import Parallel, delayed, parallel_backend
 import ast
 import numpy as np
@@ -67,6 +67,8 @@ def _process_a_single_strategy(
     exp_unique_id_column = joined_df["EXP_UNIQUE_ID"]
 
     joined_df = _pre_appy_to_row_hook(joined_df)
+
+    additional_apply_to_row_kwargs["EXP_DATASET"] = EXP_DATASET
 
     new_df = convert_original_df(
         joined_df,
@@ -174,18 +176,19 @@ class Base_Computed_Metric(ABC):
         new_metric_name: str,
         apply_to_row,
         additional_apply_to_row_kwargs={},
-    ) -> None:
+    ) -> List[Tuple[Callable, List[str]]]:
+        to_run_list = []
         for EXP_DATASET in self.config.EXP_GRID_DATASET:
             ret = self._per_dataset_hook(EXP_DATASET, **additional_apply_to_row_kwargs)
 
             if ret == False:
                 continue
 
-            with parallel_backend(
-                "multiprocessing", n_jobs=multiprocessing.cpu_count()
-            ):
-                Parallel(verbose=10)(
-                    delayed(_process_a_single_strategy)(
+            to_run_list = [
+                *to_run_list,
+                *[
+                    (
+                        _process_a_single_strategy,
                         EXP_STRATEGY,
                         EXP_DATASET,
                         existing_metric_names,
@@ -198,12 +201,19 @@ class Base_Computed_Metric(ABC):
                         additional_apply_to_row_kwargs,
                     )
                     for EXP_STRATEGY in self.config.EXP_GRID_STRATEGY
-                )
+                ],
+            ]
+        return to_run_list
 
-    def compute(self) -> None:
+    def compute(self) -> List[Tuple[Callable, List[Any]]]:
+        to_run_stuff = []
         for metric in self.metrics:
-            self._take_single_metric_and_compute_new_one(
-                existing_metric_names=[metric],
-                new_metric_name=self.computed_metric_appendix() + "_" + metric,
-                apply_to_row=self.apply_to_row,
-            )
+            to_run_stuff = [
+                *to_run_stuff,
+                *self._take_single_metric_and_compute_new_one(
+                    existing_metric_names=[metric],
+                    new_metric_name=self.computed_metric_appendix() + "_" + metric,
+                    apply_to_row=self.apply_to_row,
+                ),
+            ]
+        return to_run_stuff

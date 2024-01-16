@@ -1,4 +1,7 @@
+import multiprocessing
 import sys
+
+from joblib import Parallel, delayed
 
 from resources.data_types import COMPUTED_METRIC
 
@@ -24,16 +27,26 @@ if config.COMPUTED_METRICS == ["_ALL"]:
 
 print("computung the following metrics: " + ",".join(config.COMPUTED_METRICS))
 
+
+# -> hier erstmal eine liste mit den combinations von metriken etc. erstellen --> dann schön gepflegt aufrufen das ganze
+print(config.COMPUTED_METRICS)
+
+metrics_to_compute = list()
 for computed_metric in config.COMPUTED_METRICS:
-    print()
-    print()
-    print()
-    print("###" * 100)
-    print(computed_metric)
-    print("###" * 100)
+    # print(computed_metric)
     computed_metric_class = getattr(
         importlib.import_module("metrics.computed." + computed_metric),
         computed_metric,
     )
     computed_metric_class = computed_metric_class(config)
-    computed_metric_class.compute()
+    metrics_to_compute = [*metrics_to_compute, *computed_metric_class.compute()]
+
+
+def _run_single_metric(m):
+    m[0](*m[1:])
+
+
+# with parallel_backend("threading", n_jobs=multiprocessing.cpu_count()):
+Parallel(n_jobs=1)(  # multiprocessing.cpu_count(), verbose=10)(
+    delayed(_run_single_metric)(m) for (m) in metrics_to_compute
+)

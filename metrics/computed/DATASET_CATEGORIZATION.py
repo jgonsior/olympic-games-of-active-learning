@@ -6,7 +6,7 @@ from datasets import DATASET
 
 from metrics.computed.base_computed_metric import Base_Computed_Metric
 
-from typing import Dict, TYPE_CHECKING
+from typing import Any, Callable, Dict, TYPE_CHECKING, List, Tuple
 
 
 if TYPE_CHECKING:
@@ -46,15 +46,20 @@ class DATASET_CATEGORIZATION(Base_Computed_Metric):
             row[ix] = self.dataset_categorizations[samples_categorizer][r].tolist()
         return row
 
-    def compute(self) -> None:
+    def compute(self) -> List[Tuple[Callable, List[Any]]]:
         from resources.data_types import SAMPLES_CATEGORIZER
 
+        result = []
         for samples_categorizer in SAMPLES_CATEGORIZER:
-            self._take_single_metric_and_compute_new_one(
-                existing_metric_names=["selected_indices"],
-                new_metric_name=f"{samples_categorizer.name}",
-                apply_to_row=self.count_batch_sample_categories,
-                additional_apply_to_row_kwargs={
-                    "samples_categorizer": samples_categorizer
-                },
-            )
+            results = [
+                *result,
+                *self._take_single_metric_and_compute_new_one(
+                    existing_metric_names=["selected_indices"],
+                    new_metric_name=f"{samples_categorizer.name}",
+                    apply_to_row=self.count_batch_sample_categories,
+                    additional_apply_to_row_kwargs={
+                        "samples_categorizer": samples_categorizer
+                    },
+                ),
+            ]
+        return result

@@ -1,7 +1,7 @@
 from __future__ import annotations
 import glob
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Callable, List, Tuple
 import numpy as np
 import pandas as pd
 
@@ -26,7 +26,7 @@ class TIMELAG_METRIC(Base_Computed_Metric):
         row.drop(labels=["0"], inplace=True)
         return row
 
-    def compute(self) -> None:
+    def compute(self) -> List[Tuple[Callable, List[Any]]]:
         all_existing_metric_names = set(
             [
                 Path(a).name
@@ -44,10 +44,14 @@ class TIMELAG_METRIC(Base_Computed_Metric):
             and not a.endswith("y_pred_train.csv.xz")
             and not a.endswith("selected_indices.csv.xz")
         ]
-
+        results = []
         for metric in all_existing_metric_names:
-            self._take_single_metric_and_compute_new_one(
-                existing_metric_names=[metric],
-                new_metric_name=metric + "_time_lag",
-                apply_to_row=self.time_lag,
-            )
+            results = [
+                *results,
+                *self._take_single_metric_and_compute_new_one(
+                    existing_metric_names=[metric],
+                    new_metric_name=metric + "_time_lag",
+                    apply_to_row=self.time_lag,
+                ),
+            ]
+        return results

@@ -71,23 +71,6 @@ print(dup_exp_id_rename_counter)
 
 exit(-1)
 
-
-a = len(combined_df)
-
-combined_df2 = combined_df.drop(columns="EXP_UNIQUE_ID")
-print(combined_df2)
-
-duplicates = combined_df2.duplicated()
-
-dupl_counter = Counter(duplicates.to_list())
-print(dupl_counter)
-
-# if there are duplicates -> find out which exp_unique_ids these were
-# TODO false durch TRUE ersetzen
-if dupl_counter[False] > 0:
-    combined_df_duplicates = combined_df.iloc[duplicates[duplicates == False].index]
-
-
 # and then rename all lines in the metric files with them
 # and then rename the exp_unique_ids in done_workload
 # and then remove duplicates in the metric files

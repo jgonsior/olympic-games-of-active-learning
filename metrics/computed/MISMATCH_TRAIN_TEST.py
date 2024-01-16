@@ -6,7 +6,7 @@ from datasets import DATASET
 
 from metrics.computed.base_computed_metric import Base_Computed_Metric
 
-from typing import Dict, TYPE_CHECKING
+from typing import Any, Callable, Dict, TYPE_CHECKING, List, Tuple
 
 
 if TYPE_CHECKING:
@@ -14,8 +14,8 @@ if TYPE_CHECKING:
 
 
 class MISMATCH_TRAIN_TEST(Base_Computed_Metric):
-    y_train_true: Dict[int, np.ndarray] = {}
-    y_test_true: Dict[int, np.ndarray] = {}
+    y_train_true: Dict[DATASET, Dict[int, np.ndarray]] = {}
+    y_test_true: Dict[DATASET, Dict[int, np.ndarray]] = {}
 
     def _per_dataset_hook(self, EXP_DATASET: DATASET) -> None:
         print("loading", EXP_DATASET)
@@ -31,8 +31,8 @@ class MISMATCH_TRAIN_TEST(Base_Computed_Metric):
             train_set = ast.literal_eval(row["train"])
             test_set = ast.literal_eval(row["test"])
 
-            self.y_train_true[train_test_split_ix] = y[train_set]
-            self.y_test_true[train_test_split_ix] = y[test_set]
+            self.y_train_true[EXP_DATASET][train_test_split_ix] = y[train_set]
+            self.y_test_true[EXP_DATASET][train_test_split_ix] = y[test_set]
 
         print("done loading")
 
@@ -51,10 +51,7 @@ class MISMATCH_TRAIN_TEST(Base_Computed_Metric):
         ].apply(lambda x: [ast.literal_eval(iii) for iii in x], axis=0)
         return df
 
-    def mismatch_train_test(
-        self,
-        row: pd.Series,
-    ) -> pd.Series:
+    def mismatch_train_test(self, row: pd.Series, EXP_DATASET: DATASET) -> pd.Series:
         unique_id = row["EXP_UNIQUE_ID"]
         train_test_split_number = self.done_workload_df.loc[
             self.done_workload_df["EXP_UNIQUE_ID"] == unique_id
@@ -84,8 +81,8 @@ class MISMATCH_TRAIN_TEST(Base_Computed_Metric):
 
         return pd.Series(results)
 
-    def compute(self) -> None:
-        self._take_single_metric_and_compute_new_one(
+    def compute(self) -> List[Tuple[Callable, List[Any]]]:
+        return self._take_single_metric_and_compute_new_one(
             existing_metric_names=["y_pred_train", "y_pred_test"],
             new_metric_name="mismatch_train_test",
             apply_to_row=self.mismatch_train_test,

@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any, List, Tuple
 import pandas as pd
 
 from metrics.computed.base_computed_metric import Base_Computed_Metric
@@ -49,15 +50,20 @@ class METRIC_DROP(Base_Computed_Metric):
         row = row[:-1]
         return row
 
-    def compute(self) -> None:
+    def compute(self) -> List[Tuple[Callable, List[Any]]]:
+        results = []
         for basic_metric in self.metrics:
-            self._take_single_metric_and_compute_new_one(
-                existing_metric_names=[basic_metric],
-                new_metric_name="biggest_drop_per_" + basic_metric,
-                apply_to_row=self.biggest_drop,
-            )
-            self._take_single_metric_and_compute_new_one(
-                existing_metric_names=[basic_metric],
-                new_metric_name="nr_decreasing_al_cycles_per_" + basic_metric,
-                apply_to_row=self.nr_decreasing_al_cycles,
-            )
+            results = [
+                *results,
+                *self._take_single_metric_and_compute_new_one(
+                    existing_metric_names=[basic_metric],
+                    new_metric_name="biggest_drop_per_" + basic_metric,
+                    apply_to_row=self.biggest_drop,
+                ),
+                *self._take_single_metric_and_compute_new_one(
+                    existing_metric_names=[basic_metric],
+                    new_metric_name="nr_decreasing_al_cycles_per_" + basic_metric,
+                    apply_to_row=self.nr_decreasing_al_cycles,
+                ),
+            ]
+        return results

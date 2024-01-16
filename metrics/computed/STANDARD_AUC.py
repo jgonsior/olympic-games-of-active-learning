@@ -1,7 +1,7 @@
 from __future__ import annotations
 import glob
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Callable, List, Tuple
 import pandas as pd
 
 from metrics.computed.base_computed_metric import Base_Computed_Metric
@@ -41,7 +41,7 @@ class STANDARD_AUC(Base_Computed_Metric):
 
         return ls
 
-    def compute(self) -> None:
+    def compute(self) -> List[Tuple[Callable, List[Any]]]:
         all_existing_metric_names = set(
             [
                 Path(a).name
@@ -58,52 +58,56 @@ class STANDARD_AUC(Base_Computed_Metric):
             and not a.startswith("y_pred_test")
             and not a.startswith("selected_indices")
         ]
-
+        results = []
         for metric in all_existing_metric_names:
-            self._take_single_metric_and_compute_new_one(
-                existing_metric_names=[metric],
-                new_metric_name="auc_0_5_" + metric,
-                apply_to_row=self.range_auc,
-                additional_apply_to_row_kwargs={"range_start": 0, "range_end": 5},
-            )
-            self._take_single_metric_and_compute_new_one(
-                existing_metric_names=[metric],
-                new_metric_name="auc_5_15_" + metric,
-                apply_to_row=self.range_auc,
-                additional_apply_to_row_kwargs={"range_start": 5, "range_end": 15},
-            )
-            self._take_single_metric_and_compute_new_one(
-                existing_metric_names=[metric],
-                new_metric_name="auc_15_20_" + metric,
-                apply_to_row=self.range_auc,
-                additional_apply_to_row_kwargs={"range_start": 15, "range_end": 20},
-            )
-            self._take_single_metric_and_compute_new_one(
-                existing_metric_names=[metric],
-                new_metric_name="auc_0_7_" + metric,
-                apply_to_row=self.range_auc,
-                additional_apply_to_row_kwargs={"range_start": 0, "range_end": 7},
-            )
-            self._take_single_metric_and_compute_new_one(
-                existing_metric_names=[metric],
-                new_metric_name="auc_7_14_" + metric,
-                apply_to_row=self.range_auc,
-                additional_apply_to_row_kwargs={"range_start": 7, "range_end": 14},
-            )
-            self._take_single_metric_and_compute_new_one(
-                existing_metric_names=[metric],
-                new_metric_name="auc_14_20_" + metric,
-                apply_to_row=self.range_auc,
-                additional_apply_to_row_kwargs={"range_start": 14, "range_end": 20},
-            )
-            self._take_single_metric_and_compute_new_one(
-                existing_metric_names=[metric],
-                new_metric_name="learning_stability_" + metric,
-                apply_to_row=self.learning_stability,
-            )
-            self._take_single_metric_and_compute_new_one(
-                existing_metric_names=[metric],
-                new_metric_name="auc_" + metric,
-                apply_to_row=self.range_auc,
-                additional_apply_to_row_kwargs={"range_start": 0, "range_end": -1},
-            )
+            results = [
+                *results,
+                *self._take_single_metric_and_compute_new_one(
+                    existing_metric_names=[metric],
+                    new_metric_name="auc_0_5_" + metric,
+                    apply_to_row=self.range_auc,
+                    additional_apply_to_row_kwargs={"range_start": 0, "range_end": 5},
+                ),
+                *self._take_single_metric_and_compute_new_one(
+                    existing_metric_names=[metric],
+                    new_metric_name="auc_5_15_" + metric,
+                    apply_to_row=self.range_auc,
+                    additional_apply_to_row_kwargs={"range_start": 5, "range_end": 15},
+                ),
+                *self._take_single_metric_and_compute_new_one(
+                    existing_metric_names=[metric],
+                    new_metric_name="auc_15_20_" + metric,
+                    apply_to_row=self.range_auc,
+                    additional_apply_to_row_kwargs={"range_start": 15, "range_end": 20},
+                ),
+                *self._take_single_metric_and_compute_new_one(
+                    existing_metric_names=[metric],
+                    new_metric_name="auc_0_7_" + metric,
+                    apply_to_row=self.range_auc,
+                    additional_apply_to_row_kwargs={"range_start": 0, "range_end": 7},
+                ),
+                *self._take_single_metric_and_compute_new_one(
+                    existing_metric_names=[metric],
+                    new_metric_name="auc_7_14_" + metric,
+                    apply_to_row=self.range_auc,
+                    additional_apply_to_row_kwargs={"range_start": 7, "range_end": 14},
+                ),
+                *self._take_single_metric_and_compute_new_one(
+                    existing_metric_names=[metric],
+                    new_metric_name="auc_14_20_" + metric,
+                    apply_to_row=self.range_auc,
+                    additional_apply_to_row_kwargs={"range_start": 14, "range_end": 20},
+                ),
+                *self._take_single_metric_and_compute_new_one(
+                    existing_metric_names=[metric],
+                    new_metric_name="learning_stability_" + metric,
+                    apply_to_row=self.learning_stability,
+                ),
+                *self._take_single_metric_and_compute_new_one(
+                    existing_metric_names=[metric],
+                    new_metric_name="auc_" + metric,
+                    apply_to_row=self.range_auc,
+                    additional_apply_to_row_kwargs={"range_start": 0, "range_end": -1},
+                ),
+            ]
+        return results
