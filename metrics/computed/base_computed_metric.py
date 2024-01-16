@@ -109,7 +109,6 @@ class Base_Computed_Metric(ABC):
         column_names_which_are_al_cycles.remove("EXP_UNIQUE_ID")
 
         df = df.fillna("[]")
-
         df[column_names_which_are_al_cycles] = df[column_names_which_are_al_cycles].map(
             lambda x: ast.literal_eval(str(x)),
         )

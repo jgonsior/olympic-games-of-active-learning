@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, List, Tuple
 import numpy as np
 import pandas as pd
+from datasets import DATASET
 
 from metrics.computed.base_computed_metric import Base_Computed_Metric
 
@@ -20,7 +21,7 @@ class TIMELAG_METRIC(Base_Computed_Metric):
 
         return df
 
-    def time_lag(self, row: pd.Series) -> pd.Series:
+    def time_lag(self, row: pd.Series, EXP_DATASET: DATASET) -> pd.Series:
         row = row.loc[row.index != "EXP_UNIQUE_ID"]
         row = row.diff()
         row.drop(labels=["0"], inplace=True)

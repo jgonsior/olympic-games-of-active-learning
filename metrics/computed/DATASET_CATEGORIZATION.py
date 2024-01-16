@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 
 class DATASET_CATEGORIZATION(Base_Computed_Metric):
-    dataset_categorizations: Dict[SAMPLES_CATEGORIZER, np.ndarray] = {}
+    dataset_categorizations: Dict[DATASET, Dict[SAMPLES_CATEGORIZER, np.ndarray]] = {}
 
     def _per_dataset_hook(
         self, EXP_DATASET: DATASET, samples_categorizer: SAMPLES_CATEGORIZER
@@ -30,7 +30,9 @@ class DATASET_CATEGORIZATION(Base_Computed_Metric):
 
         data = np.load(samples_categorization_path)["samples_categorization"]
 
-        self.dataset_categorizations[samples_categorizer] = data
+        if EXP_DATASET not in self.dataset_categorizations.keys():
+            self.dataset_categorizations[EXP_DATASET] = {}
+        self.dataset_categorizations[EXP_DATASET][samples_categorizer] = data
 
         return True
 
@@ -40,10 +42,15 @@ class DATASET_CATEGORIZATION(Base_Computed_Metric):
         return df
 
     def count_batch_sample_categories(
-        self, row: pd.Series, samples_categorizer: SAMPLES_CATEGORIZER
+        self,
+        row: pd.Series,
+        samples_categorizer: SAMPLES_CATEGORIZER,
+        EXP_DATASET: DATASET,
     ) -> pd.Series:
         for ix, r in row.items():
-            row[ix] = self.dataset_categorizations[samples_categorizer][r].tolist()
+            row[ix] = self.dataset_categorizations[EXP_DATASET][samples_categorizer][
+                r
+            ].tolist()
         return row
 
     def compute(self) -> List[Tuple[Callable, List[Any]]]:
@@ -51,7 +58,7 @@ class DATASET_CATEGORIZATION(Base_Computed_Metric):
 
         result = []
         for samples_categorizer in SAMPLES_CATEGORIZER:
-            results = [
+            result = [
                 *result,
                 *self._take_single_metric_and_compute_new_one(
                     existing_metric_names=["selected_indices"],

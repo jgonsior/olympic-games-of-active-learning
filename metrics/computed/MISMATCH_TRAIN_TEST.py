@@ -31,6 +31,10 @@ class MISMATCH_TRAIN_TEST(Base_Computed_Metric):
             train_set = ast.literal_eval(row["train"])
             test_set = ast.literal_eval(row["test"])
 
+            if EXP_DATASET not in self.y_train_true.keys():
+                self.y_train_true[EXP_DATASET] = {}
+                self.y_test_true[EXP_DATASET] = {}
+
             self.y_train_true[EXP_DATASET][train_test_split_ix] = y[train_set]
             self.y_test_true[EXP_DATASET][train_test_split_ix] = y[test_set]
 
@@ -69,10 +73,10 @@ class MISMATCH_TRAIN_TEST(Base_Computed_Metric):
             y_pred_train = row[f"{al_iteration}_x"]
             y_pred_test = row[f"{al_iteration}_y"]
             amount_of_correct_predicted_train = np.sum(
-                y_pred_train == self.y_train_true[train_test_split_number]
+                y_pred_train == self.y_train_true[EXP_DATASET][train_test_split_number]
             ) / len(y_pred_train)
             amount_of_correct_predicted_test = np.sum(
-                y_pred_test == self.y_test_true[train_test_split_number]
+                y_pred_test == self.y_test_true[EXP_DATASET][train_test_split_number]
             ) / len(y_pred_test)
 
             results[al_iteration] = (

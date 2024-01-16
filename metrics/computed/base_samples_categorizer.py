@@ -143,6 +143,7 @@ class Base_Samples_Categorizer(ABC):
                 f"{self.config.OUTPUT_PATH}/{strat.name}/{dataset.name}/y_pred_train.csv.xz"
             )
             if not y_pred_train_path.exists():
+                print("Have you converted csv files to .xz?")
                 continue
             Y_pred_train = pd.read_csv(y_pred_train_path)
 

@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 class CLASS_DISTRIBUTIONS(Base_Computed_Metric):
     y_true: np.ndarray
-    true_distribution: Dict[int, Dict[int, int]] = {}
+    true_distribution: Dict[DATASET, Dict[int, Dict[int, int]]] = {}
     classes: List[int]
 
     def _per_dataset_hook(self, EXP_DATASET: DATASET) -> None:
@@ -31,12 +31,15 @@ class CLASS_DISTRIBUTIONS(Base_Computed_Metric):
         for train_test_split_ix, row in _train_test_splits.iterrows():
             train_set = ast.literal_eval(row["train"])
 
-            _, self.true_distribution[train_test_split_ix] = np.unique(
+            if EXP_DATASET not in self.true_distribution.keys():
+                self.true_distribution[EXP_DATASET] = {}
+
+            _, self.true_distribution[EXP_DATASET][train_test_split_ix] = np.unique(
                 self.y_true[train_set], return_counts=True
             )  # type:ignore
-            self.true_distribution[train_test_split_ix] = [
-                x / np.sum(self.true_distribution[train_test_split_ix])
-                for x in self.true_distribution[train_test_split_ix]
+            self.true_distribution[EXP_DATASET][train_test_split_ix] = [
+                x / np.sum(self.true_distribution[EXP_DATASET][train_test_split_ix])
+                for x in self.true_distribution[EXP_DATASET][train_test_split_ix]
             ]
 
         print("done loading")
@@ -49,7 +52,11 @@ class CLASS_DISTRIBUTIONS(Base_Computed_Metric):
     # variant a: per batch
     # variant b: for all selected indices up until this point
     def _class_distributions(
-        self, row: pd.Series, batch: bool, metric: Literal["manhattan", "chebyshev"]
+        self,
+        row: pd.Series,
+        batch: bool,
+        metric: Literal["manhattan", "chebyshev"],
+        EXP_DATASET: DATASET,
     ) -> pd.Series:
         unique_id = row["EXP_UNIQUE_ID"]
         train_test_split_number = self.done_workload_df.loc[
@@ -72,7 +79,9 @@ class CLASS_DISTRIBUTIONS(Base_Computed_Metric):
             selected_classes = self.y_true[selected_indices]
             k, class_distributions = np.unique(selected_classes, return_counts=True)
 
-            if len(k) != len(self.true_distribution[train_test_split_number]):
+            if len(k) != len(
+                self.true_distribution[EXP_DATASET][train_test_split_number]
+            ):
                 new_class_distributions = [0 for _ in self.classes]
                 for key, value in zip(k, class_distributions):
                     new_class_distributions[self.classes.index(key)] = value
@@ -82,7 +91,7 @@ class CLASS_DISTRIBUTIONS(Base_Computed_Metric):
                 x / sum(class_distributions) for x in class_distributions
             ]
 
-            true_counts = self.true_distribution[train_test_split_number]
+            true_counts = self.true_distribution[EXP_DATASET][train_test_split_number]
             pred_counts = class_distributions
 
             if metric == "manhattan":
@@ -100,22 +109,30 @@ class CLASS_DISTRIBUTIONS(Base_Computed_Metric):
     def class_distributions_manhattan_batch(
         self, row: pd.Series, EXP_DATASET: DATASET
     ) -> pd.Series:
-        return self._class_distributions(row, metric="manhattan", batch=True)
+        return self._class_distributions(
+            row, metric="manhattan", batch=True, EXP_DATASET=EXP_DATASET
+        )
 
     def unifclass_distributions_chebyshev_batch(
         self, row: pd.Series, EXP_DATASET: DATASET
     ) -> pd.Series:
-        return self._class_distributions(row, metric="chebyshev", batch=True)
+        return self._class_distributions(
+            row, metric="chebyshev", batch=True, EXP_DATASET=EXP_DATASET
+        )
 
     def class_distributions_manhattan_added_up(
         self, row: pd.Series, EXP_DATASET: DATASET
     ) -> pd.Series:
-        return self._class_distributions(row, metric="manhattan", batch=False)
+        return self._class_distributions(
+            row, metric="manhattan", batch=False, EXP_DATASET=EXP_DATASET
+        )
 
     def unifclass_distributions_chebyshev_added_up(
         self, row: pd.Series, EXP_DATASET: DATASET
     ) -> pd.Series:
-        return self._class_distributions(row, metric="chebyshev", batch=False)
+        return self._class_distributions(
+            row, metric="chebyshev", batch=False, EXP_DATASET=EXP_DATASET
+        )
 
     def compute(self) -> List[Tuple[Callable, List[Any]]]:
         return [

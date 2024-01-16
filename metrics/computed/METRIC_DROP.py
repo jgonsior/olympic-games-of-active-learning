@@ -2,6 +2,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, List, Tuple
 import pandas as pd
+from datasets import DATASET
 
 from metrics.computed.base_computed_metric import Base_Computed_Metric
 
@@ -26,7 +27,7 @@ class METRIC_DROP(Base_Computed_Metric):
     def _pre_appy_to_row_hook(self, df: pd.DataFrame) -> pd.DataFrame:
         return df
 
-    def biggest_drop(self, row: pd.Series) -> pd.Series:
+    def biggest_drop(self, row: pd.Series, EXP_DATASET: DATASET) -> pd.Series:
         row = row.loc[row.index != "EXP_UNIQUE_ID"]
         biggest_drop = 0
 
@@ -38,7 +39,9 @@ class METRIC_DROP(Base_Computed_Metric):
         row = row[:-1]
         return row
 
-    def nr_decreasing_al_cycles(self, row: pd.Series) -> pd.Series:
+    def nr_decreasing_al_cycles(
+        self, row: pd.Series, EXP_DATASET: DATASET
+    ) -> pd.Series:
         row = row.loc[row.index != "EXP_UNIQUE_ID"]
 
         nr_drops = 0

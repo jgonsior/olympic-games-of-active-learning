@@ -19,7 +19,9 @@ class STANDARD_AUC(Base_Computed_Metric):
             df = self._parse_using_ast_literal_eval(df, calculate_mean_too=True)
         return df
 
-    def range_auc(self, row: pd.Series, range_start: int, range_end: int) -> pd.Series:
+    def range_auc(
+        self, row: pd.Series, range_start: int, range_end: int, EXP_DATASET: DATASET
+    ) -> pd.Series:
         row = row.loc[row.index != "EXP_UNIQUE_ID"]
         row = row[range_start:range_end]
         return row.sum() / row.notna().sum(0)
@@ -27,7 +29,7 @@ class STANDARD_AUC(Base_Computed_Metric):
     # see trittenbach 2020 paper: LS(k) = (QR(end-k, end)/k)/(QR(init,end)/|L^end \without L^init)
     # intuition: we calculate the average improvement of the last five AL cycles, and divide by the average attribution of all cycles
     # if the last five steps are still improving -> 20 iterations is not enough apparently, otherwise, it is
-    def learning_stability(self, row: pd.Series) -> pd.Series:
+    def learning_stability(self, row: pd.Series, EXP_DATASET: DATASET) -> pd.Series:
         row = row.loc[row.index != "EXP_UNIQUE_ID"]
 
         diff = row.diff()[1:]
