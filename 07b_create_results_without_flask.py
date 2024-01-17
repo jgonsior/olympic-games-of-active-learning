@@ -42,7 +42,7 @@ _download_static_ressources()
 
 # @TODO das hier irgendwie anders definieren per CLI params oder json string input oder was weiß ich
 exp_grid_request_params, full_exp_grid = get_exp_grid_without_flask_params(config)
-
+VISUALIZATION
 """exp_grid_request_params["VISUALIZATIONS"] = [
     # VISUALIZATION.STRATEGY_RANKING,
     VISUALIZATION.AUC_TABLE,
@@ -64,6 +64,7 @@ visualizations_and_tables: List[Base_Visualizer] = []
 plt.ioff()
 
 for viz in exp_grid_request_params["VISUALIZATIONS"]:
+    print(viz)
     visualizer = vizualization_to_python_function_mapping[viz](
         config, exp_grid_request_params, config.EXP_TITLE
     )
