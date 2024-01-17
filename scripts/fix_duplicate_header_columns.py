@@ -19,7 +19,7 @@ config = Config()
 glob_list = [
     f for f in glob.glob(str(config.OUTPUT_PATH) + "/**/*.csv.xz", recursive=True) if  not f.endswith("_workload.csv.xz") and not f.endswith("_workloads.csv.xz")
 ]
-
+print(len(glob_list))
 
 
 def _do_stuff(file_name):  
