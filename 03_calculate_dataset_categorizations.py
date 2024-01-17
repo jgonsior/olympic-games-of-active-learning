@@ -45,7 +45,8 @@ dataset_categorizer_combinations: List[Tuple[DATASET, SAMPLES_CATEGORIZER]] = li
 
 
 # with parallel_backend("threading", n_jobs=multiprocessing.cpu_count()):
-Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
+#Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
+Parallel(n_jobs=1, verbose=10)(
     delayed(_run_samples_categorizer)(sc, ds)
     for (sc, ds) in dataset_categorizer_combinations
 )

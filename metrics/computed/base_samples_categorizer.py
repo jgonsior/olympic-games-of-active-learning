@@ -151,7 +151,8 @@ class Base_Samples_Categorizer(ABC):
                 continue
 
             cols_with_indice_lists = Y_pred_train.columns.difference(["EXP_UNIQUE_ID"])
-
+            print(y_pred_train_path)
+            print(Y_pred_train)
             Y_pred_train[cols_with_indice_lists] = (
                 Y_pred_train[cols_with_indice_lists]
                 .fillna("[]")
