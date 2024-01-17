@@ -1,4 +1,5 @@
 import itertools
+from pathlib import Path
 import sys
 import glob
 from typing import Dict, List
@@ -6,6 +7,9 @@ from matplotlib import pyplot as plt, use
 from numpy import histogram_bin_edges
 import pandas as pd
 from tqdm import tqdm
+from datasets import DATASET
+
+from resources.data_types import AL_STRATEGY
 
 sys.dont_write_bytecode = True
 
@@ -16,6 +20,8 @@ import multiprocessing
 import dask.dataframe as dd
 import numpy as np
 import seaborn as sns
+
+from scipy.stats import pearsonr
 
 # all batches which have been running longer than 10 minutes will be ignored
 
@@ -137,12 +143,68 @@ def _calculate_correlations():
         config.DENSE_WORKLOAD_PATH,
     )
 
-    for row in dense_workload.iterrows():
-        print(row)
+    def _do_stuff_parallel(row):
+        print(
+            f"{config.OUTPUT_PATH}/{AL_STRATEGY(row.EXP_STRATEGY).name}/{DATASET(row.EXP_DATASET).name}/*.csv.xz"
+        )
 
-        # load metric files for this row
-        # calculate correlations between those files
-        #
+        metrics_data = []
+        for metric_path in glob.glob(
+            f"{config.OUTPUT_PATH}/{AL_STRATEGY(row.EXP_STRATEGY).name}/{DATASET(row.EXP_DATASET).name}/*.csv.xz",
+            recursive=True,
+        ):
+            metrics_not_suitable_for_comparisons = [
+                "selected_indices",
+                "y_pred_test",
+                "y_pred_train",
+                "query_selection_time",
+                "learner_training_time",
+            ]
+
+            ignore_metric = False
+            for mnsfc in metrics_not_suitable_for_comparisons:
+                if metric_path.endswith(f"{mnsfc}.csv.xz"):
+                    ignore_metric = True
+                    continue
+            if ignore_metric:
+                continue
+            metric_path = Path(metric_path)
+
+            metric_df = pd.read_csv(metric_path)
+            metric_df = metric_df.loc[
+                metric_df["EXP_UNIQUE_ID"] == row["EXP_UNIQUE_ID"]
+            ]
+            metric_df = metric_df.drop("EXP_UNIQUE_ID", axis=1).iloc[0]
+
+            metric_df = metric_df.to_list()
+
+            metric_name = str(metric_path.name).removesuffix(".csv.xz")
+
+            metrics_data.append([metric_name, *metric_df])
+
+        metrics_df = pd.DataFrame(metrics_data)
+        metrics_df.set_index(0, inplace=True)
+        metrics_df = metrics_df.T
+        print(metrics_df)
+        pearson = metrics_df.corr(method="pearson")
+        spearman = metrics_df.corr(method="spearman")
+        corr = pearson
+
+        # corr = corr[corr.columns[::-1]]
+
+        matrix = np.tril(corr)
+
+        cm = sns.light_palette("green", as_cmap=True)
+        sns.heatmap(
+            corr, vmin=0, vmax=1, annot=True, cmap=cm, fmt=".1%"
+        )  # , mask=matrix)
+
+        plt.show()
+
+        exit(-1)
+
+    # dense_workload.parallel_apply(_do_stuff_parallel, axis=1)
+    dense_workload.apply(_do_stuff_parallel, axis=1)
 
 
 _calculate_correlations()
