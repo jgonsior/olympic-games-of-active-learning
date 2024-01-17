@@ -192,7 +192,7 @@ def _calculate_correlations():
 
         # corr = corr[corr.columns[::-1]]
 
-        matrix = np.tril(corr)
+        # matrix = np.tril(corr)
 
         cm = sns.light_palette("green", as_cmap=True)
         sns.heatmap(
@@ -201,6 +201,7 @@ def _calculate_correlations():
 
         plt.show()
 
+        # TODO: return correlation values, average them!
         exit(-1)
 
     # dense_workload.parallel_apply(_do_stuff_parallel, axis=1)
