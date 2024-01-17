@@ -12,6 +12,7 @@ from pandarallel import pandarallel
 from joblib import Parallel, delayed
 import multiprocessing
 import dask.dataframe as dd
+import numpy as np
 
 # all batches which have been running longer than 10 minutes will be ignored
 
@@ -33,7 +34,7 @@ done_workload = dd.read_csv(
         "EXP_TRAIN_TEST_BUCKET_SIZE": "float64",
         "EXP_UNIQUE_ID": "float64",
     },
-)
+).astype(np.int64)
 # failed_workload = dd.read_csv(config.OVERALL_FAILED_WORKLOAD_PATH)
 
 # ich nehme mir eine kombination aus batch_size, learner_model, start_points, train_test_bucket, dataset
@@ -50,10 +51,17 @@ column_combinations = [
     "EXP_TRAIN_TEST_BUCKET_SIZE",
 ]
 
-print(
-    done_workload.groupby(by=column_combinations)["EXP_UNIQUE_ID"].apply(list).compute()
-)
+#print(
+#    done_workload.groupby(by=column_combinations)["EXP_UNIQUE_ID"].apply(list).compute()
+#)
 
+
+exp_ids_present_per_dataset = done_workload.groupby(by=[c for c in column_combinations if c != "EXP_DATASET"])["EXP_UNIQUE_ID"].apply(list).compute().to_frame()
+print(exp_ids_present_per_dataset)
+#exp_ids_present_per_dataset.to_parquet("exp_ids_present_per_dataset.parquet", engine="pyarrow")
+exp_ids_present_per_strategy = done_workload.groupby(by=[c for c in column_combinations if c != "EXP_STRATEGY"])["EXP_UNIQUE_ID"].apply(list).compute().to_frame()
+print(exp_ids_present_per_strategy)
+#exp_ids_present_per_strategy.to_parquet("exp_ids_present_per_strategy.parquet", engine="pyarrow")
 
 exit(-1)
 
