@@ -142,6 +142,7 @@ class Base_Samples_Categorizer(ABC):
             y_pred_train_path = Path(
                 f"{self.config.OUTPUT_PATH}/{strat.name}/{dataset.name}/y_pred_train.csv.xz"
             )
+            print(y_pred_train_path)
             if not y_pred_train_path.exists():
                 print("Have you converted csv files to .xz?")
                 continue
@@ -151,8 +152,6 @@ class Base_Samples_Categorizer(ABC):
                 continue
 
             cols_with_indice_lists = Y_pred_train.columns.difference(["EXP_UNIQUE_ID"])
-            print(y_pred_train_path)
-            print(Y_pred_train)
             Y_pred_train[cols_with_indice_lists] = (
                 Y_pred_train[cols_with_indice_lists]
                 .fillna("[]")
@@ -161,6 +160,7 @@ class Base_Samples_Categorizer(ABC):
             Y_pred_test = pd.read_csv(
                 f"{self.config.OUTPUT_PATH}/{strat.name}/{dataset.name}/y_pred_test.csv.xz",
             )
+            print(Y_pred_test)
             Y_pred_test[cols_with_indice_lists] = (
                 Y_pred_test[cols_with_indice_lists]
                 .fillna("[]")
