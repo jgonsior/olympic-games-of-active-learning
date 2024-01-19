@@ -18,8 +18,8 @@ config = Config()
 
 glob_list = [
     f
-    for f in glob.glob(str(config.OUTPUT_PATH) + "/**/*.csv", recursive=True)
-    if not f.endswith("_workload.csv") and not f.endswith("_workloads.csv")
+    for f in glob.glob(str(config.OUTPUT_PATH) + "/**/*.csv.xz", recursive=True)
+    if not f.endswith("_workload.csv.xz") and not f.endswith("_workloads.csv.xz")
 ]
 print(len(glob_list))
 
