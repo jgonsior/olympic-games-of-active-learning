@@ -18,8 +18,8 @@ config = Config()
 
 glob_list = [
     f
-    for f in glob.glob(str(config.OUTPUT_PATH) + "/**/*.csv.xz", recursive=True)
-    if not f.endswith("_workload.csv.xz") and not f.endswith("_workloads.csv.xz")
+    for f in glob.glob(str(config.OUTPUT_PATH) + "/**/*.csv", recursive=True)
+    if not f.endswith("_workload.csv") and not f.endswith("_workloads.csv")
 ]
 print(len(glob_list))
 
@@ -31,8 +31,8 @@ def _do_stuff(file_name):
     #  return
 
     print(metric_file)
-    with lzma.open(metric_file, "rt") as mf:
-        with lzma.open(tmp_metric_file, "wt") as tmf:
+    with open(metric_file, "r") as mf:
+        with open(tmp_metric_file, "w") as tmf:
             for ix, line in enumerate(mf):
                 if ix == 0 or "EXP_UNIQUE_ID" not in line:
                     tmf.write(line)
