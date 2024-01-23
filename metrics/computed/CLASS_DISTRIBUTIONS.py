@@ -27,7 +27,7 @@ class CLASS_DISTRIBUTIONS(Base_Computed_Metric):
             f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}.csv",
             usecols=["LABEL_TARGET"],
         )["LABEL_TARGET"].to_numpy()
-        
+
         self.classes[EXP_DATASET] = np.unique(self.y_true[EXP_DATASET]).tolist()
         for train_test_split_ix, row in _train_test_splits.iterrows():
             train_set = ast.literal_eval(row["train"])
@@ -85,7 +85,9 @@ class CLASS_DISTRIBUTIONS(Base_Computed_Metric):
             ):
                 new_class_distributions = [0 for _ in self.classes[EXP_DATASET]]
                 for key, value in zip(k, class_distributions):
-                    new_class_distributions[self.classes[EXP_DATASET].index(key)] = value
+                    new_class_distributions[
+                        self.classes[EXP_DATASET].index(key)
+                    ] = value
                 class_distributions = new_class_distributions
 
             class_distributions = [
@@ -94,7 +96,6 @@ class CLASS_DISTRIBUTIONS(Base_Computed_Metric):
 
             true_counts = self.true_distribution[EXP_DATASET][train_test_split_number]
             pred_counts = class_distributions
-
 
             if metric == "manhattan":
                 total_diff = 0

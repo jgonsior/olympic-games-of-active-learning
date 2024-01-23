@@ -70,16 +70,18 @@ class MISMATCH_TRAIN_TEST(Base_Computed_Metric):
         for al_iteration in range(0, amount_of_al_iterations):
             y_pred_train = row[f"{al_iteration}_x"]
             y_pred_test = row[f"{al_iteration}_y"]
-            
+
             if len(y_pred_train) == 0:
                 # we don't have so many labeled data for so many iterations
                 results[al_iteration] = np.nan
-            else:    
+            else:
                 amount_of_correct_predicted_train = np.sum(
-                    y_pred_train == self.y_train_true[EXP_DATASET][train_test_split_number]
+                    y_pred_train
+                    == self.y_train_true[EXP_DATASET][train_test_split_number]
                 ) / len(y_pred_train)
                 amount_of_correct_predicted_test = np.sum(
-                    y_pred_test == self.y_test_true[EXP_DATASET][train_test_split_number]
+                    y_pred_test
+                    == self.y_test_true[EXP_DATASET][train_test_split_number]
                 ) / len(y_pred_test)
 
                 results[al_iteration] = (

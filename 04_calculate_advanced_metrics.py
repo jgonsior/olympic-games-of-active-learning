@@ -46,6 +46,7 @@ for computed_metric in config.COMPUTED_METRICS:
     metrics_to_compute = computed_metric_class.compute()
 
     Parallel(n_jobs=multiprocessing.cpu_count(), backend="multiprocessing", verbose=10)(
-    # Parallel(n_jobs=1, backend="multiprocessing", verbose=10)(
-        delayed(_run_single_metric)(m) for (m) in metrics_to_compute
+        # Parallel(n_jobs=1, backend="multiprocessing", verbose=10)(
+        delayed(_run_single_metric)(m)
+        for (m) in metrics_to_compute
     )
