@@ -14,20 +14,21 @@ if TYPE_CHECKING:
 
 
 class CLASS_DISTRIBUTIONS(Base_Computed_Metric):
-    y_true: np.ndarray
+    y_true: Dict[DATASET, np.ndarray] = {}
     true_distribution: Dict[DATASET, Dict[int, Dict[int, int]]] = {}
-    classes: List[int]
+    classes: Dict[DATASET, List[int]] = {}
 
     def _per_dataset_hook(self, EXP_DATASET: DATASET) -> None:
         print("loading", EXP_DATASET)
         _train_test_splits = pd.read_csv(
             f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}{self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX}"
         )
-        self.y_true = pd.read_csv(
+        self.y_true[EXP_DATASET] = pd.read_csv(
             f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}.csv",
             usecols=["LABEL_TARGET"],
         )["LABEL_TARGET"].to_numpy()
-        self.classes = np.unique(self.y_true).tolist()
+        
+        self.classes[EXP_DATASET] = np.unique(self.y_true[EXP_DATASET]).tolist()
         for train_test_split_ix, row in _train_test_splits.iterrows():
             train_set = ast.literal_eval(row["train"])
 
@@ -35,7 +36,7 @@ class CLASS_DISTRIBUTIONS(Base_Computed_Metric):
                 self.true_distribution[EXP_DATASET] = {}
 
             _, self.true_distribution[EXP_DATASET][train_test_split_ix] = np.unique(
-                self.y_true[train_set], return_counts=True
+                self.y_true[EXP_DATASET][train_set], return_counts=True
             )  # type:ignore
             self.true_distribution[EXP_DATASET][train_test_split_ix] = [
                 x / np.sum(self.true_distribution[EXP_DATASET][train_test_split_ix])
@@ -76,15 +77,15 @@ class CLASS_DISTRIBUTIONS(Base_Computed_Metric):
             if len(selected_indices) == 0:
                 continue
 
-            selected_classes = self.y_true[selected_indices]
+            selected_classes = self.y_true[EXP_DATASET][selected_indices]
             k, class_distributions = np.unique(selected_classes, return_counts=True)
 
             if len(k) != len(
                 self.true_distribution[EXP_DATASET][train_test_split_number]
             ):
-                new_class_distributions = [0 for _ in self.classes]
+                new_class_distributions = [0 for _ in self.classes[EXP_DATASET]]
                 for key, value in zip(k, class_distributions):
-                    new_class_distributions[self.classes.index(key)] = value
+                    new_class_distributions[self.classes[EXP_DATASET].index(key)] = value
                 class_distributions = new_class_distributions
 
             class_distributions = [
@@ -93,6 +94,7 @@ class CLASS_DISTRIBUTIONS(Base_Computed_Metric):
 
             true_counts = self.true_distribution[EXP_DATASET][train_test_split_number]
             pred_counts = class_distributions
+
 
             if metric == "manhattan":
                 total_diff = 0

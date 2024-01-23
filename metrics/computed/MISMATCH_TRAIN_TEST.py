@@ -60,9 +60,7 @@ class MISMATCH_TRAIN_TEST(Base_Computed_Metric):
         train_test_split_number = self.done_workload_df.loc[
             self.done_workload_df["EXP_UNIQUE_ID"] == unique_id
         ]["EXP_TRAIN_TEST_BUCKET_SIZE"].to_list()[0]
-
         row = row.loc[row.index != "EXP_UNIQUE_ID"]
-
         # calculate how many y's in train richtig vorhergesagt
         # calculate how many y's in test richtig vorhergesagt
         # differenz ist dann das ergebnis
@@ -72,16 +70,21 @@ class MISMATCH_TRAIN_TEST(Base_Computed_Metric):
         for al_iteration in range(0, amount_of_al_iterations):
             y_pred_train = row[f"{al_iteration}_x"]
             y_pred_test = row[f"{al_iteration}_y"]
-            amount_of_correct_predicted_train = np.sum(
-                y_pred_train == self.y_train_true[EXP_DATASET][train_test_split_number]
-            ) / len(y_pred_train)
-            amount_of_correct_predicted_test = np.sum(
-                y_pred_test == self.y_test_true[EXP_DATASET][train_test_split_number]
-            ) / len(y_pred_test)
+            
+            if len(y_pred_train) == 0:
+                # we don't have so many labeled data for so many iterations
+                results[al_iteration] = np.nan
+            else:    
+                amount_of_correct_predicted_train = np.sum(
+                    y_pred_train == self.y_train_true[EXP_DATASET][train_test_split_number]
+                ) / len(y_pred_train)
+                amount_of_correct_predicted_test = np.sum(
+                    y_pred_test == self.y_test_true[EXP_DATASET][train_test_split_number]
+                ) / len(y_pred_test)
 
-            results[al_iteration] = (
-                amount_of_correct_predicted_test / amount_of_correct_predicted_train
-            )
+                results[al_iteration] = (
+                    amount_of_correct_predicted_test / amount_of_correct_predicted_train
+                )
 
         return pd.Series(results)
 
