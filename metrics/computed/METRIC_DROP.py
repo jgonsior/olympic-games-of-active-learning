@@ -35,7 +35,7 @@ class METRIC_DROP(Base_Computed_Metric):
             diff = v0 - v1
             if diff > biggest_drop:
                 biggest_drop = diff
-            row[ix] = -biggest_drop
+            row.iloc[ix] = -biggest_drop
         row = row[:-1]
         return row
 
@@ -49,7 +49,7 @@ class METRIC_DROP(Base_Computed_Metric):
         for ix, (v0, v1) in enumerate(zip(row[0:-1], row[1:])):
             if v1 < v0:
                 nr_drops += 1
-            row[ix] = -nr_drops
+            row.iloc[ix] = -nr_drops
         row = row[:-1]
         return row
 

@@ -24,6 +24,7 @@ class STANDARD_AUC(Base_Computed_Metric):
     ) -> pd.Series:
         row = row.loc[row.index != "EXP_UNIQUE_ID"]
         row = row[range_start:range_end]
+
         return row.sum() / row.notna().sum(0)
 
     # see trittenbach 2020 paper: LS(k) = (QR(end-k, end)/k)/(QR(init,end)/|L^end \without L^init)

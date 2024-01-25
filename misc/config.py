@@ -108,7 +108,7 @@ class Config:
     EXP_RESULT_EXTRACTED_ZIP_PATH: Path
     METRIC_RESULTS_FOLDER: Path
 
-    DENSE_WORKLOAD_PATH: Path = "05_dense_workload.csv"  # type: ignore
+    DENSE_WORKLOAD_PATH: Path = "06_dense_workload.csv"  # type: ignore
 
     RERUN_FAILED_WORKLOADS: bool = False
     RECALCULATE_UPDATED_EXP_GRID: bool = False

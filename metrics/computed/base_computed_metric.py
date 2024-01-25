@@ -81,6 +81,10 @@ def _process_a_single_strategy(
 
     new_df["EXP_UNIQUE_ID"] = exp_unique_id_column
 
+    if new_df.isnull().values.any():
+        print(new_df)
+        exit(-1)
+    return
     # save new df somehow
     new_df.to_csv(
         new_metric_path,

@@ -1,3 +1,5 @@
+import ast
+from collections import defaultdict
 import itertools
 from pathlib import Path
 import sys
@@ -138,10 +140,88 @@ def _get_dense_exp_ids(done_workload):
     done_workload.compute().to_csv(config.DENSE_WORKLOAD_PATH, index=False)
 
 
-def _calculate_correlations():
+def _calculate_correlations(param_to_evaluate):
     dense_workload = pd.read_csv(
         config.DENSE_WORKLOAD_PATH,
     )
+
+    dense_workload_grouped = dense_workload.groupby(
+        by=[ddd for ddd in column_combinations if ddd != param_to_evaluate]
+    ).apply(lambda r: list(zip(r[param_to_evaluate], r["EXP_UNIQUE_ID"])))
+
+    for _, row in dense_workload_grouped.reset_index().iterrows():
+        path_glob = f"{config.OUTPUT_PATH}/{AL_STRATEGY(row.EXP_STRATEGY).name}/{DATASET(row.EXP_DATASET).name}/*.csv.xz"
+
+        print(path_glob)
+        metrics_data = defaultdict(lambda: defaultdict(list))
+        for metric_path in glob.glob(
+            path_glob,
+            recursive=True,
+        ):
+            metrics_not_suitable_for_comparisons = [
+                "selected_indices",
+                "y_pred_test",
+                "y_pred_train",
+                "query_selection_time",
+                "learner_training_time",
+            ]
+
+            ignore_metric = False
+            for mnsfc in metrics_not_suitable_for_comparisons:
+                if metric_path.endswith(f"{mnsfc}.csv.xz"):
+                    ignore_metric = True
+                    continue
+            if ignore_metric:
+                continue
+            metric_path = Path(metric_path)
+            print(metric_path)
+
+            metric_df = pd.read_csv(metric_path)
+
+            for param_to_evaluate_value, EXP_UNIQUE_ID in row[0]:
+                value = (
+                    metric_df.loc[metric_df["EXP_UNIQUE_ID"] == EXP_UNIQUE_ID]
+                    .drop("EXP_UNIQUE_ID", axis=1)
+                    .iloc[0]
+                    .to_list()
+                )
+                metric_name = str(metric_path.name).removesuffix(".csv.xz")
+
+                print(value)
+                print(
+                    np.mean(
+                        ast.literal_eval(str(value).replace("nan", "None")),
+                        axis=0,
+                    )
+                )
+                metrics_data[param_to_evaluate_value][metric_name].append(
+                    np.mean(value)
+                )
+
+        print(metrics_data)
+        metrics_df = pd.DataFrame(metrics_data)
+        print(metrics_df)
+        pearson = metrics_df.corr(method="pearson")
+        print(pearson)
+        exit(-1)
+        spearman = metrics_df.corr(method="spearman")
+        corr = pearson
+
+        # corr = corr[corr.columns[::-1]]
+
+        # matrix = np.tril(corr)
+
+        cm = sns.light_palette("green", as_cmap=True)
+        sns.heatmap(
+            corr, vmin=0, vmax=1, annot=True, cmap=cm, fmt=".1%"
+        )  # , mask=matrix)
+
+        # plt.show()
+
+        print(pearson)
+        # TODO: return correlation values, average them!
+
+        exit(-1)
 
     def _do_stuff_parallel(row):
         print(
@@ -199,8 +279,9 @@ def _calculate_correlations():
             corr, vmin=0, vmax=1, annot=True, cmap=cm, fmt=".1%"
         )  # , mask=matrix)
 
-        plt.show()
+        # plt.show()
 
+        print(pearson)
         # TODO: return correlation values, average them!
         exit(-1)
 
@@ -208,7 +289,19 @@ def _calculate_correlations():
     dense_workload.apply(_do_stuff_parallel, axis=1)
 
 
-_calculate_correlations()
+# _get_dense_exp_ids(done_workload)
+
+for cc in [
+    "EXP_BATCH_SIZE",
+    "EXP_DATASET",
+    "EXP_STRATEGY",
+    # "EXP_RANDOM_SEED",
+    "EXP_START_POINT",
+    # "EXP_NUM_QUERIES",
+    "EXP_LEARNER_MODEL",
+    "EXP_TRAIN_TEST_BUCKET_SIZE" "METRICS",
+]:
+    _calculate_correlations(cc)
 # _get_dense_exp_ids(done_workload)
 exit(-1)
 
