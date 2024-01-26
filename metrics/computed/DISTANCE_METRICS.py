@@ -95,7 +95,11 @@ class DISTANCE_METRICS(Base_Computed_Metric):
         )
         return train_set
 
-    def avg_dist_unlabeled(self, row: pd.Series, EXP_DATASET: DATASET) -> pd.Series:
+    def avg_dist_unlabeled(
+        self,
+        row: pd.Series,
+        EXP_DATASET: DATASET,
+    ) -> pd.Series:
         unique_id = row["EXP_UNIQUE_ID"]
         row = row.loc[row.index != "EXP_UNIQUE_ID"]
 
@@ -122,19 +126,19 @@ class DISTANCE_METRICS(Base_Computed_Metric):
                 row[ix] = sum(distances) / len(distances)
         return row
 
-    def compute(self) -> List[Tuple[Callable, List[Any]]]:
+    def get_all_metric_jobs(self) -> List[Tuple[Callable, List[Any]]]:
         return [
-            *self._take_single_metric_and_compute_new_one(
+            *self._compute_single_metric_jobs(
                 existing_metric_names=["selected_indices"],
                 new_metric_name="avg_dist_batch",
                 apply_to_row=self.avg_dist_batch,
             ),
-            *self._take_single_metric_and_compute_new_one(
+            *self._compute_single_metric_jobs(
                 existing_metric_names=["selected_indices"],
                 new_metric_name="avg_dist_labeled",
                 apply_to_row=self.avg_dist_labeled,
             ),
-            *self._take_single_metric_and_compute_new_one(
+            *self._compute_single_metric_jobs(
                 existing_metric_names=["selected_indices"],
                 new_metric_name="avg_dist_unlabeled",
                 apply_to_row=self.avg_dist_unlabeled,

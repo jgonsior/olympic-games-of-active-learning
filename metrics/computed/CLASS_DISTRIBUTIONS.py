@@ -137,24 +137,24 @@ class CLASS_DISTRIBUTIONS(Base_Computed_Metric):
             row, metric="chebyshev", batch=False, EXP_DATASET=EXP_DATASET
         )
 
-    def compute(self) -> List[Tuple[Callable, List[Any]]]:
+    def get_all_metric_jobs(self) -> List[Tuple[Callable, List[Any]]]:
         return [
-            *self._take_single_metric_and_compute_new_one(
+            *self._compute_single_metric_jobs(
                 existing_metric_names=["selected_indices"],
                 new_metric_name="class_distributions_chebyshev_batch",
                 apply_to_row=self.unifclass_distributions_chebyshev_batch,
             ),
-            *self._take_single_metric_and_compute_new_one(
+            *self._compute_single_metric_jobs(
                 existing_metric_names=["selected_indices"],
                 new_metric_name="class_distributions_manhattan_batch",
                 apply_to_row=self.class_distributions_manhattan_batch,
             ),
-            *self._take_single_metric_and_compute_new_one(
+            *self._compute_single_metric_jobs(
                 existing_metric_names=["selected_indices"],
                 new_metric_name="class_distributions_chebyshev_added_up",
                 apply_to_row=self.unifclass_distributions_chebyshev_added_up,
             ),
-            *self._take_single_metric_and_compute_new_one(
+            *self._compute_single_metric_jobs(
                 existing_metric_names=["selected_indices"],
                 new_metric_name="class_distributions_manhattan_added_up",
                 apply_to_row=self.class_distributions_manhattan_added_up,

@@ -53,6 +53,7 @@ class MISMATCH_TRAIN_TEST(Base_Computed_Metric):
         df.loc[:, column_names_which_are_al_cycles] = df.loc[
             :, column_names_which_are_al_cycles
         ].apply(lambda x: [ast.literal_eval(iii) for iii in x], axis=0)
+
         return df
 
     def mismatch_train_test(self, row: pd.Series, EXP_DATASET: DATASET) -> pd.Series:
@@ -61,6 +62,7 @@ class MISMATCH_TRAIN_TEST(Base_Computed_Metric):
             self.done_workload_df["EXP_UNIQUE_ID"] == unique_id
         ]["EXP_TRAIN_TEST_BUCKET_SIZE"].to_list()[0]
         row = row.loc[row.index != "EXP_UNIQUE_ID"]
+
         # calculate how many y's in train richtig vorhergesagt
         # calculate how many y's in test richtig vorhergesagt
         # differenz ist dann das ergebnis
@@ -90,8 +92,8 @@ class MISMATCH_TRAIN_TEST(Base_Computed_Metric):
 
         return pd.Series(results)
 
-    def compute(self) -> List[Tuple[Callable, List[Any]]]:
-        return self._take_single_metric_and_compute_new_one(
+    def get_all_metric_jobs(self) -> List[Tuple[Callable, List[Any]]]:
+        return self._compute_single_metric_jobs(
             existing_metric_names=["y_pred_train", "y_pred_test"],
             new_metric_name="mismatch_train_test",
             apply_to_row=self.mismatch_train_test,

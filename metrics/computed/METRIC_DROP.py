@@ -53,17 +53,17 @@ class METRIC_DROP(Base_Computed_Metric):
         row = row[:-1]
         return row
 
-    def compute(self) -> List[Tuple[Callable, List[Any]]]:
+    def get_all_metric_jobs(self) -> List[Tuple[Callable, List[Any]]]:
         results = []
         for basic_metric in self.metrics:
             results = [
                 *results,
-                *self._take_single_metric_and_compute_new_one(
+                *self._compute_single_metric_jobs(
                     existing_metric_names=[basic_metric],
                     new_metric_name="biggest_drop_per_" + basic_metric,
                     apply_to_row=self.biggest_drop,
                 ),
-                *self._take_single_metric_and_compute_new_one(
+                *self._compute_single_metric_jobs(
                     existing_metric_names=[basic_metric],
                     new_metric_name="nr_decreasing_al_cycles_per_" + basic_metric,
                     apply_to_row=self.nr_decreasing_al_cycles,

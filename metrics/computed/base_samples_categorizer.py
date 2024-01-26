@@ -85,17 +85,17 @@ class Base_Samples_Categorizer(ABC):
         column_names_which_are_al_cycles = df.columns.difference(["EXP_UNIQUE_ID"])
 
         df = df.fillna("")
+
         df["selected_indices"] = df[column_names_which_are_al_cycles].apply(
             lambda x: ast.literal_eval(
                 ("[" + ",".join(x).replace("[", "").replace("]", "") + "]").replace(
-                    ",,", ""
+                    ",,", ","
                 )
             ),
             axis=1,
         )
         for c in column_names_which_are_al_cycles:
             del df[c]
-
         return df
 
     def _convert_df_to_python_types(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -113,7 +113,7 @@ class Base_Samples_Categorizer(ABC):
                     f"{self.config.DATASETS_PATH}/{dataset.name}{self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX}",
                     usecols=["train", "test"],
                 )
-                .map(lambda x: ast.literal_eval(x.replace(",,", "")))
+                .map(lambda x: ast.literal_eval(x.replace(",,", ",")))
                 .reset_index(level=0)
                 .rename(columns={"index": "EXP_TRAIN_TEST_BUCKET_SIZE"})
             )
@@ -505,6 +505,7 @@ class INCLUDED_IN_OPTIMAL_STRATEGY(Base_Samples_Categorizer):
                     optimally_selected_indices_df[0]
                 )
             )
+
             for selected_indices in optimally_selected_indices_df.selected_indices:
                 samples_categorization[selected_indices] += 1
 
@@ -574,9 +575,7 @@ class CLOSENESS_TO_CLUSTER_CENTER(Base_Samples_Categorizer):
 
         print(f"{dataset.name} k= {k}")
 
-        clusterer = MiniBatchKMeans(
-            n_clusters=k,
-        )
+        clusterer = MiniBatchKMeans(n_clusters=k, n_init="auto")
         distances_to_clusters_centers = np.min(clusterer.fit_transform(X), axis=1)
         samples_categorization = distances_to_clusters_centers
 

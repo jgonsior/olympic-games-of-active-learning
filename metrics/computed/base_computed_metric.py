@@ -1,5 +1,6 @@
 from __future__ import annotations
 from abc import ABC
+import abc
 import multiprocessing
 from pathlib import Path
 from typing import Any, Callable, List, TYPE_CHECKING, Tuple
@@ -24,7 +25,7 @@ def _process_a_single_strategy(
     apply_to_row,
     new_metric_name,
     OVERWRITE_EXISTING_METRIC_FILES,
-    additional_apply_to_row_kwargs,
+    additional_apply_to_row_kwargs2,
 ):
     new_metric_path = (
         OUTPUT_PATH
@@ -52,7 +53,7 @@ def _process_a_single_strategy(
 
     joined_df = pd.DataFrame()
     for METRIC_RESULTS_FILE in metric_result_files:
-        print(METRIC_RESULTS_FILE)
+        # print(METRIC_RESULTS_FILE)
         original_df = pd.read_csv(METRIC_RESULTS_FILE, header=0, delimiter=",")
 
         if len(joined_df) == 0:
@@ -69,22 +70,23 @@ def _process_a_single_strategy(
 
     joined_df = _pre_appy_to_row_hook(joined_df)
 
-    additional_apply_to_row_kwargs["EXP_DATASET"] = EXP_DATASET
+    additional_apply_to_row_kwargs2["EXP_DATASET"] = EXP_DATASET
 
     new_df = convert_original_df(
         joined_df,
         apply_to_row=apply_to_row,
-        additional_apply_to_row_kwargs=additional_apply_to_row_kwargs,
+        additional_apply_to_row_kwargs=additional_apply_to_row_kwargs2,
     )
     if isinstance(new_df, pd.Series):
         new_df = new_df.to_frame()
 
     new_df["EXP_UNIQUE_ID"] = exp_unique_id_column
 
-    if new_df.isnull().values.any():
+    if new_df.isnull().sum().sum() > 20:
+        print(apply_to_row)
         print(new_df)
-        exit(-1)
-    return
+        # exit(-1)
+    # return
     # save new df somehow
     new_df.to_csv(
         new_metric_path,
@@ -174,7 +176,7 @@ class Base_Computed_Metric(ABC):
     def _per_dataset_hook(self, EXP_DATASET: DATASET, **kwargs) -> None:
         ...
 
-    def _take_single_metric_and_compute_new_one(
+    def _compute_single_metric_jobs(
         self,
         existing_metric_names: List[str],
         new_metric_name: str,
@@ -209,15 +211,17 @@ class Base_Computed_Metric(ABC):
             ]
         return to_run_list
 
-    def compute(self) -> List[Tuple[Callable, List[Any]]]:
-        to_run_stuff = []
+    @abc.abstractmethod
+    def get_all_metric_jobs(self) -> List[Tuple[Callable, List[Any]]]:
+        raise NotImplemented
+        """to_run_stuff = []
         for metric in self.metrics:
             to_run_stuff = [
                 *to_run_stuff,
-                *self._take_single_metric_and_compute_new_one(
+                *self._compute_single_metric_jobs(
                     existing_metric_names=[metric],
                     new_metric_name=self.computed_metric_appendix() + "_" + metric,
                     apply_to_row=self.apply_to_row,
                 ),
             ]
-        return to_run_stuff
+        return to_run_stuff"""

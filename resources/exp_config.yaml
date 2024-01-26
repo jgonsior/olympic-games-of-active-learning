@@ -323,6 +323,7 @@ full_exp_v2: { EXP_GRID_DATASET: [1-104], EXP_GRID_STRATEGY: [
                 SKACTIVEML_QBC_VOTE_ENTROPY,
                 SKACTIVEML_QUIRE,
             ], METRICS: [Predicted_Samples, Selected_Indices, Standard_ML_Metrics, Timing_Metrics], EXP_GRID_RANDOM_SEED: [0], EXP_GRID_START_POINT: [0-19], EXP_GRID_NUM_QUERIES: [100], EXP_GRID_BATCH_SIZE: [1, 5, 10], EXP_GRID_LEARNER_MODEL: [MLP, RBF_SVM, RF], EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0-4] }
+
 full_exp_jan: { EXP_GRID_DATASET: [1-104], EXP_GRID_STRATEGY: [
                 ALIPY_RANDOM,
                 ALIPY_UNCERTAINTY_LC,

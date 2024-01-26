@@ -53,14 +53,14 @@ class DATASET_CATEGORIZATION(Base_Computed_Metric):
             ].tolist()
         return row
 
-    def compute(self) -> List[Tuple[Callable, List[Any]]]:
+    def get_all_metric_jobs(self) -> List[Tuple[Callable, List[Any]]]:
         from resources.data_types import SAMPLES_CATEGORIZER
 
         result = []
         for samples_categorizer in SAMPLES_CATEGORIZER:
             result = [
                 *result,
-                *self._take_single_metric_and_compute_new_one(
+                *self._compute_single_metric_jobs(
                     existing_metric_names=["selected_indices"],
                     new_metric_name=f"{samples_categorizer.name}",
                     apply_to_row=self.count_batch_sample_categories,

@@ -27,7 +27,7 @@ class TIMELAG_METRIC(Base_Computed_Metric):
         row.drop(labels=["0"], inplace=True)
         return row
 
-    def compute(self) -> List[Tuple[Callable, List[Any]]]:
+    def get_all_metric_jobs(self) -> List[Tuple[Callable, List[Any]]]:
         all_existing_metric_names = set(
             [
                 Path(a).name
@@ -49,7 +49,7 @@ class TIMELAG_METRIC(Base_Computed_Metric):
         for metric in all_existing_metric_names:
             results = [
                 *results,
-                *self._take_single_metric_and_compute_new_one(
+                *self._compute_single_metric_jobs(
                     existing_metric_names=[metric],
                     new_metric_name=metric + "_time_lag",
                     apply_to_row=self.time_lag,
