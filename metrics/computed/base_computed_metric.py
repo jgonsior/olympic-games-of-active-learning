@@ -86,6 +86,8 @@ def _process_a_single_strategy(
         print(apply_to_row)
         print(new_df)
         # exit(-1)
+    # print(new_metric_path)
+    # print(new_df)
     # return
     # save new df somehow
     new_df.to_csv(

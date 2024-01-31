@@ -64,6 +64,9 @@ class STANDARD_AUC(Base_Computed_Metric):
         results = []
 
         print("I NEED TO DEFINE MORE CUT POINTS BESIDES 0-20!!")
+        print(
+            "And what about learning stability when having 100 iterations? Kinda pointless to only look at the last 5 iterations, need to be a cut point until this specific point as well"
+        )
         exit(-1)
         for metric in all_existing_metric_names:
             results = [

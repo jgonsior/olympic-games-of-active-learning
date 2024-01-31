@@ -51,6 +51,8 @@ class DATASET_CATEGORIZATION(Base_Computed_Metric):
             row[ix] = self.dataset_categorizations[EXP_DATASET][samples_categorizer][
                 r
             ].tolist()
+        # print(row)
+        # exit(-1)
         return row
 
     def get_all_metric_jobs(self) -> List[Tuple[Callable, List[Any]]]:

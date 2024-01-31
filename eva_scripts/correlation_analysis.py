@@ -5,6 +5,7 @@ from pathlib import Path
 import sys
 import glob
 from typing import Dict, List
+import warnings
 from matplotlib import pyplot as plt, use
 from numpy import histogram_bin_edges
 import pandas as pd
@@ -23,7 +24,7 @@ import dask.dataframe as dd
 import numpy as np
 import seaborn as sns
 
-from scipy.stats import pearsonr
+from scipy.stats import pearsonr, spearmanr, permutation_test
 
 # all batches which have been running longer than 10 minutes will be ignored
 
@@ -93,6 +94,12 @@ def _calculate_min_cutoffs():
 
 
 def _get_dense_exp_ids(done_workload):
+    if config.DENSE_WORKLOAD_PATH.exists():
+        print(
+            f"{config.DENSE_WORKLOAD_PATH} exists already, not caluclating again. Delete if this is unintended. And keep up the good work, you're doing a great job and look amazingly beautiful today!"
+        )
+        return
+
     for param in column_combinations:
         if param in ["EXP_NUM_QUERIES", "EXP_RANDOM_SEED"]:
             continue
@@ -149,11 +156,22 @@ def _calculate_correlations(param_to_evaluate):
         by=[ddd for ddd in column_combinations if ddd != param_to_evaluate]
     ).apply(lambda r: list(zip(r[param_to_evaluate], r["EXP_UNIQUE_ID"])))
 
-    for _, row in dense_workload_grouped.reset_index().iterrows():
+    print(
+        f"Calculating correlations for {param_to_evaluate}: {len(dense_workload_grouped)}"
+    )
+
+    combined_stats = []
+
+    pbar = tqdm(
+        dense_workload_grouped.reset_index().iterrows(),
+        total=dense_workload_grouped.shape[0],
+    )
+    for _, row in pbar:
         path_glob = f"{config.OUTPUT_PATH}/{AL_STRATEGY(row.EXP_STRATEGY).name}/{DATASET(row.EXP_DATASET).name}/*.csv.xz"
 
-        print(path_glob)
-        metrics_data = defaultdict(lambda: defaultdict(list))
+        pbar.set_description(path_glob)
+
+        metrics_data = defaultdict(lambda: defaultdict(int))
         for metric_path in glob.glob(
             path_glob,
             recursive=True,
@@ -173,12 +191,25 @@ def _calculate_correlations(param_to_evaluate):
                     continue
             if ignore_metric:
                 continue
+
+            # ignore cut-point/auc metrics because they are simply summed/averaged over the other metrics -> the correlations will be found in the original metrics, not in them!
+            if "auc_" in metric_path:
+                continue
+            if "learning_stability_" in metric_path:
+                continue
+
             metric_path = Path(metric_path)
-            print(metric_path)
+            # print(metric_path)
 
             metric_df = pd.read_csv(metric_path)
 
+            if metric_df.shape[1] < 3:
+                print("Metric has too few columns, exiting.")
+                print(metric_path)
+                exit(-1)
+
             for param_to_evaluate_value, EXP_UNIQUE_ID in row[0]:
+                # print(param_to_evaluate_value)
                 value = (
                     metric_df.loc[metric_df["EXP_UNIQUE_ID"] == EXP_UNIQUE_ID]
                     .drop("EXP_UNIQUE_ID", axis=1)
@@ -187,109 +218,42 @@ def _calculate_correlations(param_to_evaluate):
                 )
                 metric_name = str(metric_path.name).removesuffix(".csv.xz")
 
-                print(value)
-                print(
-                    np.mean(
-                        ast.literal_eval(str(value).replace("nan", "None")),
-                        axis=0,
-                    )
-                )
-                metrics_data[param_to_evaluate_value][metric_name].append(
-                    np.mean(value)
-                )
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore", category=RuntimeWarning)
+                    value = [
+                        np.nanmean(ast.literal_eval(str(vvv)))
+                        if str(vvv) != "nan"
+                        else np.nan
+                        for vvv in value
+                    ]
+                metrics_data[param_to_evaluate_value][
+                    metric_name
+                ] = value  # np.nanmean(value)
 
-        print(metrics_data)
+        # print(metrics_data)
         metrics_df = pd.DataFrame(metrics_data)
-        print(metrics_df)
-        pearson = metrics_df.corr(method="pearson")
-        print(pearson)
-        exit(-1)
-        spearman = metrics_df.corr(method="spearman")
-        corr = pearson
+        # print(metrics_df)
 
-        # corr = corr[corr.columns[::-1]]
+        # now i calculate the correlation PER metric pair!
 
-        # matrix = np.tril(corr)
-
-        cm = sns.light_palette("green", as_cmap=True)
-        sns.heatmap(
-            corr, vmin=0, vmax=1, annot=True, cmap=cm, fmt=".1%"
-        )  # , mask=matrix)
-
-        # plt.show()
-
-        print(pearson)
-        # TODO: return correlation values, average them!
-
-        exit(-1)
-
-    def _do_stuff_parallel(row):
-        print(
-            f"{config.OUTPUT_PATH}/{AL_STRATEGY(row.EXP_STRATEGY).name}/{DATASET(row.EXP_DATASET).name}/*.csv.xz"
+        metrics_df["spearmanr_stat"], metrics_df["spearmanr_pvalue"] = zip(
+            *metrics_df.apply(
+                lambda rrr: spearmanr(rrr.iloc[0], rrr.iloc[1], nan_policy="omit"),
+                axis=1,
+            )
         )
 
-        metrics_data = []
-        for metric_path in glob.glob(
-            f"{config.OUTPUT_PATH}/{AL_STRATEGY(row.EXP_STRATEGY).name}/{DATASET(row.EXP_DATASET).name}/*.csv.xz",
-            recursive=True,
-        ):
-            metrics_not_suitable_for_comparisons = [
-                "selected_indices",
-                "y_pred_test",
-                "y_pred_train",
-                "query_selection_time",
-                "learner_training_time",
-            ]
+        # print(metrics_df)
 
-            ignore_metric = False
-            for mnsfc in metrics_not_suitable_for_comparisons:
-                if metric_path.endswith(f"{mnsfc}.csv.xz"):
-                    ignore_metric = True
-                    continue
-            if ignore_metric:
-                continue
-            metric_path = Path(metric_path)
+        combined_stats.append(
+            [metrics_df["spearmanr_stat"], metrics_df["spearmanr_pvalue"]]
+        )
 
-            metric_df = pd.read_csv(metric_path)
-            metric_df = metric_df.loc[
-                metric_df["EXP_UNIQUE_ID"] == row["EXP_UNIQUE_ID"]
-            ]
-            metric_df = metric_df.drop("EXP_UNIQUE_ID", axis=1).iloc[0]
-
-            metric_df = metric_df.to_list()
-
-            metric_name = str(metric_path.name).removesuffix(".csv.xz")
-
-            metrics_data.append([metric_name, *metric_df])
-
-        metrics_df = pd.DataFrame(metrics_data)
-        metrics_df.set_index(0, inplace=True)
-        metrics_df = metrics_df.T
-        print(metrics_df)
-        pearson = metrics_df.corr(method="pearson")
-        spearman = metrics_df.corr(method="spearman")
-        corr = pearson
-
-        # corr = corr[corr.columns[::-1]]
-
-        # matrix = np.tril(corr)
-
-        cm = sns.light_palette("green", as_cmap=True)
-        sns.heatmap(
-            corr, vmin=0, vmax=1, annot=True, cmap=cm, fmt=".1%"
-        )  # , mask=matrix)
-
-        # plt.show()
-
-        print(pearson)
-        # TODO: return correlation values, average them!
-        exit(-1)
-
-    # dense_workload.parallel_apply(_do_stuff_parallel, axis=1)
-    dense_workload.apply(_do_stuff_parallel, axis=1)
+    print(combined_stats)
+    exit(-1)
 
 
-# _get_dense_exp_ids(done_workload)
+_get_dense_exp_ids(done_workload)
 
 for cc in [
     "EXP_BATCH_SIZE",
