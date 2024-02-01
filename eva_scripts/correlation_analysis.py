@@ -78,16 +78,16 @@ def _calculate_min_cutoffs():
             .compute()
             .to_frame()
         )
-        percentile_25 = np.percentile(exp_ids_present_per_combination[cc], 20)
-        percentile_50 = np.percentile(exp_ids_present_per_combination[cc], 50)
-        percentile_75 = np.percentile(exp_ids_present_per_combination[cc], 75)
+        # percentile_25 = np.percentile(exp_ids_present_per_combination[cc], 20)
+        # percentile_50 = np.percentile(exp_ids_present_per_combination[cc], 50)
+        # percentile_75 = np.percentile(exp_ids_present_per_combination[cc], 75)
 
         ax = sns.histplot(exp_ids_present_per_combination)
-        ax.axvline(percentile_25)
-        ax.axvline(percentile_50)
-        ax.axvline(percentile_75)
+        # ax.axvline(percentile_25)
+        # ax.axvline(percentile_50)
+        # ax.axvline(percentile_75)
 
-        min_cutoffs[cc] = percentile_25
+        # min_cutoffs[cc] = percentile_25
         plt.savefig(f"plots/{cc}.jpg", dpi=300)
         plt.clf()
     print(min_cutoffs)
@@ -253,8 +253,9 @@ def _calculate_correlations(param_to_evaluate):
     exit(-1)
 
 
+_calculate_min_cutoffs()
 _get_dense_exp_ids(done_workload)
-
+exit(-1)
 for cc in [
     "EXP_BATCH_SIZE",
     "EXP_DATASET",

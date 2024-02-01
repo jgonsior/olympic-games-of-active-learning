@@ -42,6 +42,8 @@ class Base_Dataset_Loader(ABC):
         datasets_cleaned_path.mkdir(parents=True, exist_ok=True)
 
         for dataset_name in self.parameter_dict.keys():
+            # if dataset_name != "arrythmia":
+            #    continue
             destination_path = dataset_name + ".csv"
 
             dataset_raw_path = datasets_raw_path / destination_path
@@ -94,11 +96,16 @@ class Base_Dataset_Loader(ABC):
 
         label_column = parsing_args["target"]
         assert label_column in df.columns
-
         df.rename(columns={label_column: "LABEL_TARGET"}, inplace=True)
 
         # remove rows having NaN values
+        len_before = len(df)
+
         df.dropna(inplace=True)
+        len_after = len(df)
+
+        print(f"{len_before} - {len_after} - {dataset_name}")
+        # df.fillna(value=0, inplace=True)
 
         X = df.loc[:, df.columns != "LABEL_TARGET"].to_numpy()  # type: ignore
         Y = df["LABEL_TARGET"].to_numpy()  # type: ignore
@@ -195,13 +202,13 @@ class Base_Dataset_Loader(ABC):
             splits_df.loc[ix, "start_points"] = str(start_points)
 
         # quick check that everything worked as intented
-        for split in range(0, 5):
+        """for split in range(0, 5):
             print(len(splits_df.iloc[split]["train"]) / len(X))
             print(len(splits_df.iloc[split]["test"]) / len(X))
 
             print(np.unique(Y[splits_df.iloc[split]["train"]], return_counts=True))
             print(np.unique(Y[splits_df.iloc[split]["test"]], return_counts=True))
-
+        """
         return splits_df
 
     def save_dataset_and_splits(
