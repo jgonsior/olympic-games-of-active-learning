@@ -39,7 +39,7 @@ exp_ids_to_remove = []
 df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
 exp_ids_to_remove = df[df["EXP_DATASET"].isin(datasets_to_remove)]["EXP_UNIQUE_ID"]
 
-for file_name in glob.glob(str(config.OUTPUT_PATH) + "/**/*.csv.xz", recursive=True):
+for file_name in glob.glob(str(config.OUTPUT_PATH) + "/**/*.csv", recursive=True):
     print(file_name)
     df = pd.read_csv(file_name)
     a = len(df)

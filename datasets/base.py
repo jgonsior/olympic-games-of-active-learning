@@ -146,7 +146,7 @@ class Base_Dataset_Loader(ABC):
         value_counts = df["LABEL_TARGET"].value_counts()
 
         for label, count in value_counts.items():
-            if count < 2:
+            if count <= 2:
                 df = df[df.LABEL_TARGET != label]
                 print(len(df))
                 print(dataset_name * 1000)

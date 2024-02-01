@@ -122,11 +122,6 @@ class Base_Samples_Categorizer(ABC):
     def _merge_indices(
         self, row: pd.Series, cols_with_indice_lists: List[int]
     ) -> List[np.ndarray]:
-        print("\n" * 10)
-        print(row.index)
-        print(cols_with_indice_lists)
-        print(np.shape(row["train"]))
-        print(np.shape(row["test"]))
         result = np.empty(
             (len(cols_with_indice_lists), len(row["train"]) + len(row["test"])),
             dtype=np.float16,
@@ -176,17 +171,12 @@ class Base_Samples_Categorizer(ABC):
                 self.done_workload_df["EXP_UNIQUE_ID"].isin(Y_pred_train.EXP_UNIQUE_ID)
             ]  # ["EXP_TRAIN_TEST_BUCKET_SIZE"].to_frame()
 
-            print(np.shape(Y_pred_train.iloc[0, 0]))
-            print(np.shape(Y_pred_test.iloc[0, 0]))
-
             Y_pred = Y_pred_train.merge(
                 Y_pred_test,
                 how="inner",
                 on="EXP_UNIQUE_ID",
                 suffixes=["_train", "_test"],
             )
-            print("merged")
-            print(np.shape(Y_pred.iloc[0, 0]))
 
             exp_train_test_buckets = exp_train_test_buckets.merge(
                 _train_test_splits, how="left", on="EXP_TRAIN_TEST_BUCKET_SIZE"
@@ -194,9 +184,7 @@ class Base_Samples_Categorizer(ABC):
             Y_pred = Y_pred.merge(
                 exp_train_test_buckets, how="inner", on="EXP_UNIQUE_ID"
             )
-            print(np.shape(Y_pred.iloc[0, 0]))
 
-            print(Y_pred)
             exp_unique_ids = Y_pred["EXP_UNIQUE_ID"]
             Y_pred = Y_pred.apply(
                 lambda x: self._merge_indices(
@@ -207,8 +195,6 @@ class Base_Samples_Categorizer(ABC):
             )
 
             Y_pred.set_index(exp_unique_ids, inplace=True)
-            print(np.shape(Y_pred.iloc[0, 0]))
-            # exit(-1)
 
             yield Y_pred
 
@@ -322,12 +308,16 @@ class COUNT_WRONG_CLASSIFICATIONS(Base_Samples_Categorizer):
     """
 
     def calculate_samples_categorization(self, dataset: DATASET) -> np.ndarray:
+        print(dataset.name)
         _, Y_true = self._load_dataset(dataset)
         samples_categorization = np.zeros_like(Y_true)
         for Y_preds in self._get_Y_preds_iterator(dataset):
             for exp_unique_id, r in Y_preds.iterrows():
+                print(dataset.name)
+                print(dataset)
                 print(np.shape(Y_true))
                 print(np.shape(Y_preds.iloc[0, 0]))
+                # exit(-1)
                 for al_cycle_iteration, Y_pred in enumerate(r):
                     # calculate how often Y_pred and Y_true are not equal
                     samples_categorization[np.where(Y_pred != Y_true)] += 1

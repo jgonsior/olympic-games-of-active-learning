@@ -43,7 +43,6 @@ dataset_categorizer_combinations: List[Tuple[DATASET, SAMPLES_CATEGORIZER]] = li
     itertools.product(config.SAMPLES_CATEGORIZER, config.EXP_GRID_DATASET)
 )
 
-
 # with parallel_backend("threading", n_jobs=multiprocessing.cpu_count()):
 # Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
 Parallel(n_jobs=1, verbose=10)(
