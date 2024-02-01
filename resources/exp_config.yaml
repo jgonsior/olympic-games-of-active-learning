@@ -402,7 +402,7 @@ full_exp_jan: { EXP_GRID_DATASET: [1-104], EXP_GRID_STRATEGY: [
 
 arr_bug:
     {
-        EXP_GRID_DATASET: [arrythmia, Iris, wine_origin],
+        EXP_GRID_DATASET: [arrythmia, Iris, wine_origin, liver],
         EXP_GRID_STRATEGY: [ALIPY_RANDOM],
         EXP_GRID_RANDOM_SEED: [0],
         EXP_GRID_NUM_QUERIES: [20],

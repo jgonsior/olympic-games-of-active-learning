@@ -20,6 +20,14 @@ for csv_file in ./**/*.csv; do
     then
         continue
     fi
+    if [[ "$csv_file" == */05_failed_workloads.csv ]]
+    then
+        continue
+    fi
+    if [[ "$csv_file" == */05_started_oom_workloads.csv ]]
+    then
+        continue
+    fi
     echo $csv_file
     xz -T0 -0 $csv_file
 

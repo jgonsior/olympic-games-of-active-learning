@@ -189,8 +189,8 @@ def create_workload(config: Config) -> List[int]:
             )
             print(f"{len(open_workload_df)} - removed failed")
 
-        print(open_workload_df.iloc[0].to_list())
-        print(failed_workload_df.iloc[0].to_list())
+        # print(open_workload_df.iloc[0].to_list())
+        # print(failed_workload_df.iloc[0].to_list())
         # exit(-1)
 
         # remove already run workloads
