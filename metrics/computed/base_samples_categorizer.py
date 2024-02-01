@@ -71,7 +71,6 @@ class Base_Samples_Categorizer(ABC):
             f"{self.config.DATASETS_PATH}/{dataset.name}.csv",
             usecols=["LABEL_TARGET"],
         )["LABEL_TARGET"].to_numpy()
-
         return X, Y_true
 
     def _get_distance_matrix(self, dataset: DATASET) -> np.ndarray:
@@ -270,7 +269,7 @@ class Base_Samples_Categorizer(ABC):
 
         samples_categorization = np.zeros_like(Y_true, dtype=np.float32)
 
-        for Y_class in np.unique(Y_true):
+        for Y_class, counts in zip(*np.unique(Y_true, return_counts=True)):
             samples_of_this_class_mask = np.where(mask_func(Y_true, Y_class))[0]
 
             neigh = KNeighborsClassifier(
@@ -284,13 +283,19 @@ class Base_Samples_Categorizer(ABC):
                 Y_true[samples_of_this_class_mask],
             )
 
-            nearest_neighbors_of_same_class_distances = neigh.kneighbors(
-                n_neighbors=k, return_distance=True
-            )[0]
+            if counts > k:
+                nearest_neighbors_of_same_class_distances = neigh.kneighbors(
+                    n_neighbors=k, return_distance=True
+                )[0]
+            else:
+                nearest_neighbors_of_same_class_distances = distance_matrix[
+                    samples_of_this_class_mask
+                ][:, samples_of_this_class_mask]
 
             avg_distance_to_same_class_neighbors = np.average(
                 nearest_neighbors_of_same_class_distances, axis=1
             )
+
             samples_categorization[
                 samples_of_this_class_mask
             ] = avg_distance_to_same_class_neighbors
@@ -308,16 +313,10 @@ class COUNT_WRONG_CLASSIFICATIONS(Base_Samples_Categorizer):
     """
 
     def calculate_samples_categorization(self, dataset: DATASET) -> np.ndarray:
-        print(dataset.name)
         _, Y_true = self._load_dataset(dataset)
         samples_categorization = np.zeros_like(Y_true)
         for Y_preds in self._get_Y_preds_iterator(dataset):
-            for exp_unique_id, r in Y_preds.iterrows():
-                print(dataset.name)
-                print(dataset)
-                print(np.shape(Y_true))
-                print(np.shape(Y_preds.iloc[0, 0]))
-                # exit(-1)
+            for _, r in Y_preds.iterrows():
                 for al_cycle_iteration, Y_pred in enumerate(r):
                     # calculate how often Y_pred and Y_true are not equal
                     samples_categorization[np.where(Y_pred != Y_true)] += 1

@@ -133,6 +133,13 @@ class Base_Dataset_Loader(ABC):
 
         df = pd.DataFrame(X)
         df["LABEL_TARGET"] = Y
+
+        value_counts = df["LABEL_TARGET"].value_counts()
+
+        for label, count in value_counts.items():
+            if count < 2:
+                df = df[df.LABEL_TARGET != label]
+
         return df
 
     """
@@ -143,15 +150,6 @@ class Base_Dataset_Loader(ABC):
         self, dataset_name: str, df: pd.DataFrame
     ) -> pd.DataFrame:
         # remove all classes, where we have less than 2 samples
-        value_counts = df["LABEL_TARGET"].value_counts()
-
-        for label, count in value_counts.items():
-            if count <= 2:
-                df = df[df.LABEL_TARGET != label]
-                print(len(df))
-                print(dataset_name * 1000)
-                print("\n" * 10)
-            # exit(-1)
         X = df.loc[:, df.columns != "LABEL_TARGET"].to_numpy()  # type: ignore
         Y = df["LABEL_TARGET"].to_numpy()  # type: ignore
         classes = np.unique(Y)
