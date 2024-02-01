@@ -18,7 +18,6 @@ kaggle_loader.load_datasets()
 
 local_loader = Local_Loader(config)
 local_loader.load_datasets()
-exit(-1)
 
 # compute distances
 for dataset_csv in list(glob.glob(str(config.DATASETS_PATH) + "/*.csv")):

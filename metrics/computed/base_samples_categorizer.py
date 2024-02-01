@@ -208,7 +208,7 @@ class Base_Samples_Categorizer(ABC):
 
             Y_pred.set_index(exp_unique_ids, inplace=True)
             print(np.shape(Y_pred.iloc[0, 0]))
-            exit(-1)
+            # exit(-1)
 
             yield Y_pred
 
