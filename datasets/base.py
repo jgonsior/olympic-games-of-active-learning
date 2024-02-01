@@ -42,8 +42,8 @@ class Base_Dataset_Loader(ABC):
         datasets_cleaned_path.mkdir(parents=True, exist_ok=True)
 
         for dataset_name in self.parameter_dict.keys():
-            if dataset_name not in ["arrythmia", "Iris", "wine_origin", "liver"]:
-                continue
+            # if dataset_name not in ["arrythmia", "Iris", "wine_origin", "liver"]:
+            #    continue
             destination_path = dataset_name + ".csv"
 
             dataset_raw_path = datasets_raw_path / destination_path
