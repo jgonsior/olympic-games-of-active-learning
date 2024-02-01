@@ -43,8 +43,8 @@ class Base_Dataset_Loader(ABC):
 
         for dataset_name in self.parameter_dict.keys():
             # if dataset_name != "wine_origin":
-            if dataset_name != "arrythmia":
-                continue
+            # if dataset_name != "arrythmia":
+            #    continue
             destination_path = dataset_name + ".csv"
 
             dataset_raw_path = datasets_raw_path / destination_path
@@ -149,9 +149,9 @@ class Base_Dataset_Loader(ABC):
         for label, count in value_counts.items():
             if count < 2:
                 df = df[df.LABEL_TARGET != label]
-            print(len(df))
-            print(dataset_name * 1000)
-            print("\n" * 10)
+                print(len(df))
+                print(dataset_name * 1000)
+                print("\n" * 10)
             # exit(-1)
         X = df.loc[:, df.columns != "LABEL_TARGET"].to_numpy()  # type: ignore
         Y = df["LABEL_TARGET"].to_numpy()  # type: ignore
