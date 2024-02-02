@@ -35,11 +35,16 @@ datasets_to_remove = [
     ]
 ]
 
-exp_ids_to_remove = []
-
-
 df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
-exp_ids_to_remove = df[df["EXP_DATASET"].isin(datasets_to_remove)]["EXP_UNIQUE_ID"]
+exp_ids_to_remove = set(
+    df[df["EXP_DATASET"].isin(datasets_to_remove)]["EXP_UNIQUE_ID"].tolist()
+)
+
+exp_ids_to_remove.add("5000244")
+exp_ids_to_remove.add("4735538")
+
+
+print(exp_ids_to_remove)
 
 
 def _do_stuff(file_name):
