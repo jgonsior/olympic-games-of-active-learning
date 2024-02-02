@@ -43,8 +43,7 @@ exp_ids_to_remove = set(
 exp_ids_to_remove.add("5000244")
 exp_ids_to_remove.add("4735538")
 
-
-print(exp_ids_to_remove)
+print(f"Removing {len(exp_ids_to_remove)}")
 
 
 def _do_stuff(file_name):
