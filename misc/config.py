@@ -103,6 +103,7 @@ class Config:
     OVERALL_DONE_WORKLOAD_PATH: Path = "05_done_workload.csv"  # type: ignore
     OVERALL_FAILED_WORKLOAD_PATH: Path = "05_failed_workloads.csv"  # type: ignore
     OVERALL_STARTED_OOM_WORKLOAD_PATH: Path = "05_started_oom_workloads.csv"  # type: ignore
+    WRONG_CSV_FILES_PATH: Path = "05_wrong_csv_files.csv"  # type: ignore
     EXP_RESULT_ZIP_PATH_PREFIX: Path
     EXP_RESULT_ZIP_PATH: Path = ".tar.gz"  # type: ignore
     EXP_RESULT_EXTRACTED_ZIP_PATH: Path
@@ -239,6 +240,8 @@ class Config:
         self.OVERALL_STARTED_OOM_WORKLOAD_PATH = (
             self.OUTPUT_PATH / self.OVERALL_STARTED_OOM_WORKLOAD_PATH
         )
+
+        self.WRONG_CSV_FILES_PATH = self.OUTPUT_PATH / self.WRONG_CSV_FILES_PATH
 
         self.OUTPUT_PATH.mkdir(parents=True, exist_ok=True)
 

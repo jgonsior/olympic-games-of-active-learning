@@ -1,3 +1,4 @@
+import csv
 import multiprocessing
 import sys
 import glob
@@ -48,11 +49,28 @@ print(f"Removing {len(exp_ids_to_remove)}")
 
 def _do_stuff(file_name):
     print(file_name)
-    df = pd.read_csv(file_name)
-    a = len(df)
-    df = df[~df["EXP_UNIQUE_ID"].isin(exp_ids_to_remove)]
-    if len(df) < a:
-        df.to_csv(file_name, index=False, compression="infer")
+
+    try:
+        df = pd.read_csv(file_name)
+        a = len(df)
+        df = df[~df["EXP_UNIQUE_ID"].isin(exp_ids_to_remove)]
+        if len(df) < a:
+            df.to_csv(file_name, index=False, compression="infer")
+    except Exception as err:
+        exc_type, value, traceback = sys.exc_info()
+
+        error = {
+            "file_name": file_name,
+            "exc_type": exc_type,
+            "value": value,
+            "traceback": traceback,
+        }
+        with open(config.WRONG_CSV_FILES_PATH, "a") as f:
+            w = csv.DictWriter(f, fieldnames=error.keys())
+
+            if config.WRONG_CSV_FILES_PATH.stat().st_size == 0:
+                w.writeheader()
+            w.writerow(error)
 
 
 glob_list = [
