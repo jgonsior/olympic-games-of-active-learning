@@ -188,10 +188,21 @@ def create_workload(config: Config) -> List[int]:
                 open_workload_df, failed_workload_df
             )
             print(f"{len(open_workload_df)} - removed failed")
-
-        # print(open_workload_df.iloc[0].to_list())
-        # print(failed_workload_df.iloc[0].to_list())
-        # exit(-1)
+        else:
+            # only rerun those having MLP failure
+            failed_workload_df = failed_workload_df[
+                ~failed_workload_df["error"].isin(
+                    [
+                        # "<class 'sklearn.exceptions.ConvergenceWarning'>",
+                        "<class 'OSError'>",
+                        "<class 'BrokenPipeError'> ",
+                    ]
+                )
+            ]
+            open_workload_df = _remove_right_from_left_workload(
+                open_workload_df, failed_workload_df
+            )
+            print(f"{len(open_workload_df)} - removed only some failed")
 
         # remove already run workloads
         open_workload_df = _remove_right_from_left_workload(

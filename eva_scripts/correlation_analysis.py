@@ -33,7 +33,7 @@ config = Config()
 
 
 # oom_workload = dd.read_csv(str(config.OVERALL_STARTED_OOM_WORKLOAD_PATH))
-done_workload = dd.read_csv(
+done_workload = pd.read_csv(
     config.OVERALL_DONE_WORKLOAD_PATH,
     dtype={
         "EXP_BATCH_SIZE": "float64",
@@ -67,33 +67,83 @@ column_combinations = [
 
 
 def _calculate_min_cutoffs():
+
+    font_size = 5.8
+
+    tex_fonts = {
+        # Use LaTeX to write all text
+        "text.usetex": True,
+        # "text.usetex": False,
+        "font.family": "times",
+        # Use 10pt font in plots, to match 10pt font in document
+        "axes.labelsize": font_size,
+        "font.size": font_size,
+        # Make the legend/label fonts a little smaller
+        "legend.fontsize": font_size,
+        "xtick.labelsize": font_size,
+        "ytick.labelsize": font_size,
+        "xtick.bottom": True,
+        # "figure.autolayout": True,
+    }
+
+    plt.rcParams.update(tex_fonts)  # type: ignore
+
+    sns.set_theme(
+        rc={"figure.figsize": (8.5 * 0.393, 6 * 0.393)}, style="white", context="paper"
+    )
+
     min_cutoffs = {}
     for cc in column_combinations:
         if cc in ["EXP_NUM_QUERIES", "EXP_RANDOM_SEED"]:
             continue
         print(cc)
+        done_workload = dd.read_csv(
+            config.OVERALL_DONE_WORKLOAD_PATH,
+            dtype={
+                "EXP_BATCH_SIZE": "float64",
+                "EXP_DATASET": "float64",
+                "EXP_LEARNER_MODEL": "float64",
+                "EXP_NUM_QUERIES": "float64",
+                "EXP_RANDOM_SEED": "float64",
+                "EXP_START_POINT": "float64",
+                "EXP_STRATEGY": "float64",
+                "EXP_TRAIN_TEST_BUCKET_SIZE": "float64",
+                "EXP_UNIQUE_ID": "float64",
+            },
+        )
         exp_ids_present_per_combination = (
             done_workload.groupby(by=[c for c in column_combinations if c != cc])[cc]
             .apply(len)
             .compute()
             .to_frame()
         )
-        # percentile_25 = np.percentile(exp_ids_present_per_combination[cc], 20)
-        # percentile_50 = np.percentile(exp_ids_present_per_combination[cc], 50)
-        # percentile_75 = np.percentile(exp_ids_present_per_combination[cc], 75)
+        percentile_25 = np.percentile(exp_ids_present_per_combination[cc], 10)
+        percentile_50 = np.percentile(exp_ids_present_per_combination[cc], 15)
+        percentile_75 = np.percentile(exp_ids_present_per_combination[cc], 20)
+        percentile_10 = np.percentile(exp_ids_present_per_combination[cc], 5)
 
+        # if cc == "EXP_DATASET":
+        #    binwidth = 5
         ax = sns.histplot(exp_ids_present_per_combination)
-        # ax.axvline(percentile_25)
-        # ax.axvline(percentile_50)
-        # ax.axvline(percentile_75)
+        ax.axvline(percentile_25, color="darkred")
+        ax.axvline(percentile_50, color="darkred")
+        ax.axvline(percentile_75, color="darkred")
+        ax.axvline(percentile_10, color="darkred")
 
+        ax.get_yaxis().set_ticks([])
+        ax.set_ylabel("")
+        ax.set_xlabel("")
         # min_cutoffs[cc] = percentile_25
-        plt.savefig(f"plots/{cc}.jpg", dpi=300)
+        plt.savefig(f"plots/{cc}.jpg", dpi=300, bbox_inches="tight", pad_inches=0)
         plt.clf()
     print(min_cutoffs)
 
 
-def _get_dense_exp_ids(done_workload):
+def _get_dense_exp_ids(done_workload, CUTOFF_VALUE: int):
+    """config.DENSE_WORKLOAD_PATH = Path(
+        str(config.DENSE_WORKLOAD_PATH) + f"_{CUTOFF_VALUE}.csv"
+    )"""
+
     if config.DENSE_WORKLOAD_PATH.exists():
         print(
             f"{config.DENSE_WORKLOAD_PATH} exists already, not caluclating again. Delete if this is unintended. And keep up the good work, you're doing a great job and look amazingly beautiful today!"
@@ -106,20 +156,19 @@ def _get_dense_exp_ids(done_workload):
 
         print(param)
 
-        exp_ids_present_per_combination: pd.DataFrame = (
-            done_workload.groupby(by=[c for c in column_combinations if c != param])[
-                "EXP_UNIQUE_ID"
-            ]
-            .apply(list)
-            .compute()
-            .to_frame()
+        done_workload2 = pd.read_csv(
+            config.OVERALL_DONE_WORKLOAD_PATH,
         )
+
+        exp_ids_present_per_combination = done_workload2.groupby(
+            by=[c for c in column_combinations if c != param]
+        )["EXP_UNIQUE_ID"].apply(list)
 
         exp_ids_present_per_combination_lens = exp_ids_present_per_combination.apply(
-            lambda x: len(x["EXP_UNIQUE_ID"]), axis=1
+            lambda x: len(x)
         )
 
-        cutoff_value = np.percentile(exp_ids_present_per_combination_lens, 75)
+        cutoff_value = np.percentile(exp_ids_present_per_combination_lens, CUTOFF_VALUE)
 
         print(f"cutoff_value is {cutoff_value}")
 
@@ -127,15 +176,18 @@ def _get_dense_exp_ids(done_workload):
             continue
 
         # print(exp_ids_present_per_combination)
-        exp_ids_present_per_combination = exp_ids_present_per_combination[
-            exp_ids_present_per_combination.apply(
-                lambda x: True if len(x["EXP_UNIQUE_ID"]) >= cutoff_value else False,
-                axis=1,
+        exp_ids_present_per_combination2 = pd.DataFrame = done_workload.groupby(
+            by=[c for c in column_combinations if c != param]
+        )["EXP_UNIQUE_ID"].apply(list)
+
+        exp_ids_present_per_combination2 = exp_ids_present_per_combination2[
+            exp_ids_present_per_combination2.apply(
+                lambda x: True if len(x) >= cutoff_value else False
             )
         ]
 
         exp_ids_merged = set(
-            itertools.chain(*exp_ids_present_per_combination["EXP_UNIQUE_ID"].to_list())
+            itertools.chain(*exp_ids_present_per_combination2.to_list())
         )
 
         before = len(done_workload)
@@ -144,13 +196,15 @@ def _get_dense_exp_ids(done_workload):
         ]
         print(f"reduced from {before} to {len(done_workload)}")
 
-    done_workload.compute().to_csv(config.DENSE_WORKLOAD_PATH, index=False)
+    done_workload.to_csv(config.DENSE_WORKLOAD_PATH, index=False)
 
 
 def _calculate_correlations(param_to_evaluate):
     dense_workload = pd.read_csv(
         config.DENSE_WORKLOAD_PATH,
     )
+
+    print(f"Original: {len(dense_workload)}")
 
     dense_workload_grouped = dense_workload.groupby(
         by=[ddd for ddd in column_combinations if ddd != param_to_evaluate]
@@ -159,6 +213,8 @@ def _calculate_correlations(param_to_evaluate):
     print(
         f"Calculating correlations for {param_to_evaluate}: {len(dense_workload_grouped)}"
     )
+    print(dense_workload_grouped)
+    return
 
     combined_stats = []
 
@@ -221,9 +277,11 @@ def _calculate_correlations(param_to_evaluate):
                 with warnings.catch_warnings():
                     warnings.simplefilter("ignore", category=RuntimeWarning)
                     value = [
-                        np.nanmean(ast.literal_eval(str(vvv)))
-                        if str(vvv) != "nan"
-                        else np.nan
+                        (
+                            np.nanmean(ast.literal_eval(str(vvv)))
+                            if str(vvv) != "nan"
+                            else np.nan
+                        )
                         for vvv in value
                     ]
                 metrics_data[param_to_evaluate_value][
@@ -254,8 +312,16 @@ def _calculate_correlations(param_to_evaluate):
 
 
 _calculate_min_cutoffs()
-_get_dense_exp_ids(done_workload)
 exit(-1)
+"""for i in [
+    5,
+    10,
+    15,
+    20,
+    25,
+]:"""
+_get_dense_exp_ids(done_workload, 15)
+# exit(-1)
 for cc in [
     "EXP_BATCH_SIZE",
     "EXP_DATASET",
@@ -264,7 +330,8 @@ for cc in [
     "EXP_START_POINT",
     # "EXP_NUM_QUERIES",
     "EXP_LEARNER_MODEL",
-    "EXP_TRAIN_TEST_BUCKET_SIZE" "METRICS",
+    "EXP_TRAIN_TEST_BUCKET_SIZE",
+    "METRICS",
 ]:
     _calculate_correlations(cc)
 # _get_dense_exp_ids(done_workload)

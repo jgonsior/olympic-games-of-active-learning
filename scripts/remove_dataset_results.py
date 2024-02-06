@@ -43,6 +43,7 @@ exp_ids_to_remove = set(
 
 exp_ids_to_remove.add("5000244")
 exp_ids_to_remove.add("4735538")
+exp_ids_to_remove.add("3684905")
 
 print(f"Removing {len(exp_ids_to_remove)}")
 
