@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional, Tuple
 import numpy as np
 from framework_runners.base_runner import AL_Experiment
 from small_text import SklearnClassifier
+from small_text.classifiers.factories import SklearnClassifierFactory
 
 if TYPE_CHECKING:
     from misc.config import Config
@@ -35,14 +36,23 @@ class SMALLTEXT_AL_Experiment(AL_Experiment):
         from resources.data_types import al_strategy_to_python_classes_mapping
 
         strategy = AL_STRATEGY(self.config.EXP_STRATEGY)
+
         additional_params = al_strategy_to_python_classes_mapping[strategy][1]
 
-        query_strategy = al_strategy_to_python_classes_mapping[strategy][0](
-            **additional_params
-        )
         self._small_text_model = EmbeddingBasedSklearnClassifier(
             self.model,
             num_classes=np.unique(self.Y),
+        )
+        if strategy == AL_STRATEGY.SMALLTEXT_DISCRIMINATIVEAL:
+            additional_params["classifier_factory"] = SklearnClassifierFactory(
+                self.model,
+                num_classes=np.unique(self.Y),
+            )
+
+            additional_params["num_iterations"] = 2
+
+        query_strategy = al_strategy_to_python_classes_mapping[strategy][0](
+            **additional_params
         )
 
         self.al_strategy = query_strategy
