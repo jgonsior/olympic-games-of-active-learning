@@ -193,7 +193,7 @@ def create_workload(config: Config) -> List[int]:
             failed_workload_df = failed_workload_df[
                 ~failed_workload_df["error"].isin(
                     [
-                        # "<class 'sklearn.exceptions.ConvergenceWarning'>",
+                        "<class 'sklearn.exceptions.ConvergenceWarning'>",
                         "<class 'OSError'>",
                         "<class 'BrokenPipeError'> ",
                     ]
