@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from datasets import DATASET
 
+import dask.dataframe as dd
 from metrics.computed.base_computed_metric import Base_Computed_Metric
 
 from typing import Any, Callable, Dict, List, TYPE_CHECKING, Literal, Tuple
@@ -20,13 +21,17 @@ class CLASS_DISTRIBUTIONS(Base_Computed_Metric):
 
     def _per_dataset_hook(self, EXP_DATASET: DATASET) -> None:
         print("loading", EXP_DATASET)
-        _train_test_splits = pd.read_csv(
+        _train_test_splits = dd.read_csv(
             f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}{self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX}"
+        ).compute()
+        self.y_true[EXP_DATASET] = (
+            dd.read_csv(
+                f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}.csv",
+                usecols=["LABEL_TARGET"],
+            )["LABEL_TARGET"]
+            .compute()
+            .to_numpy()
         )
-        self.y_true[EXP_DATASET] = pd.read_csv(
-            f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}.csv",
-            usecols=["LABEL_TARGET"],
-        )["LABEL_TARGET"].to_numpy()
 
         self.classes[EXP_DATASET] = np.unique(self.y_true[EXP_DATASET]).tolist()
         for train_test_split_ix, row in _train_test_splits.iterrows():
@@ -85,9 +90,9 @@ class CLASS_DISTRIBUTIONS(Base_Computed_Metric):
             ):
                 new_class_distributions = [0 for _ in self.classes[EXP_DATASET]]
                 for key, value in zip(k, class_distributions):
-                    new_class_distributions[
-                        self.classes[EXP_DATASET].index(key)
-                    ] = value
+                    new_class_distributions[self.classes[EXP_DATASET].index(key)] = (
+                        value
+                    )
                 class_distributions = new_class_distributions
 
             class_distributions = [

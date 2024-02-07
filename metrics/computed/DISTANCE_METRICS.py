@@ -5,6 +5,7 @@ import itertools
 import numpy as np
 import pandas as pd
 from datasets import DATASET
+import dask.dataframe as dd
 
 from metrics.computed.base_computed_metric import Base_Computed_Metric
 
@@ -22,15 +23,19 @@ class DISTANCE_METRICS(Base_Computed_Metric):
     _train_test_splits: Dict[DATASET, pd.DataFrame] = {}
 
     def _per_dataset_hook(self, EXP_DATASET: DATASET) -> None:
-        print("loading", EXP_DATASET)
-        self._precomputed_distances[EXP_DATASET] = pd.read_csv(
-            f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}{self.config.DATASETS_DISTANCES_APPENDIX}",
-        ).to_numpy()
-        self._train_test_splits[EXP_DATASET] = pd.read_csv(
+        print("loading", EXP_DATASET.name)
+        self._precomputed_distances[EXP_DATASET] = (
+            dd.read_csv(
+                f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}{self.config.DATASETS_DISTANCES_APPENDIX}",
+            )
+            .compute()
+            .to_numpy()
+        )
+        self._train_test_splits[EXP_DATASET] = dd.read_csv(
             f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}{self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX}",
             delimiter=",",
             index_col=False,
-        )
+        ).compute()
         print("done loading")
 
     def computed_metric_appendix(self) -> str:

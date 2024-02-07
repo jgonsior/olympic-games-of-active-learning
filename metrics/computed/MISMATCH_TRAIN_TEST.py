@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from datasets import DATASET
 
+import dask.dataframe as dd
 from metrics.computed.base_computed_metric import Base_Computed_Metric
 
 from typing import Any, Callable, Dict, TYPE_CHECKING, List, Tuple
@@ -19,13 +20,17 @@ class MISMATCH_TRAIN_TEST(Base_Computed_Metric):
 
     def _per_dataset_hook(self, EXP_DATASET: DATASET) -> None:
         print("loading", EXP_DATASET)
-        _train_test_splits = pd.read_csv(
+        _train_test_splits = dd.read_csv(
             f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}{self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX}",
+        ).compute()
+        y = (
+            dd.read_csv(
+                f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}.csv",
+                usecols=["LABEL_TARGET"],
+            )["LABEL_TARGET"]
+            .compute()
+            .to_numpy()
         )
-        y = pd.read_csv(
-            f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}.csv",
-            usecols=["LABEL_TARGET"],
-        )["LABEL_TARGET"].to_numpy()
 
         for train_test_split_ix, row in _train_test_splits.iterrows():
             train_set = ast.literal_eval(row["train"])

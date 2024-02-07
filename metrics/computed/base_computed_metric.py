@@ -11,6 +11,10 @@ import pandas as pd
 from collections.abc import Iterable
 from datasets import DATASET
 
+from pandarallel import pandarallel
+
+pandarallel.initialize(progress_bar=True)
+
 if TYPE_CHECKING:
     from misc.config import Config
 
@@ -105,8 +109,7 @@ class Base_Computed_Metric(ABC):
         self.done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
         self.config = config
 
-    def computed_metric_appendix(self) -> str:
-        ...
+    def computed_metric_appendix(self) -> str: ...
 
     def apply_to_row(self, row: pd.Series) -> pd.Series:
         pass
@@ -126,9 +129,9 @@ class Base_Computed_Metric(ABC):
             df[column_names_which_are_al_cycles] = df[
                 column_names_which_are_al_cycles
             ].map(
-                lambda x: sum(x) / len(x)
-                if isinstance(x, Iterable) and len(x) > 0
-                else x
+                lambda x: (
+                    sum(x) / len(x) if isinstance(x, Iterable) and len(x) > 0 else x
+                )
             )
             df[column_names_which_are_al_cycles] = df[
                 column_names_which_are_al_cycles
@@ -175,8 +178,7 @@ class Base_Computed_Metric(ABC):
     def _pre_appy_to_row_hook(self, df: pd.DataFrame) -> pd.DataFrame:
         return df
 
-    def _per_dataset_hook(self, EXP_DATASET: DATASET, **kwargs) -> None:
-        ...
+    def _per_dataset_hook(self, EXP_DATASET: DATASET, **kwargs) -> None: ...
 
     def _compute_single_metric_jobs(
         self,
