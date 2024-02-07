@@ -25,5 +25,5 @@ oom_workload = oom_workload.loc[
 oom_workload = oom_workload.loc[
     ~oom_workload["EXP_UNIQUE_ID"].isin(failed_workload["EXP_UNIQUE_ID"])
 ]
-
+# oom_workload = oom_workload.loc[oom_workload["EXP_STRATEGY"] != 47]
 oom_workload.to_csv(config.OVERALL_STARTED_OOM_WORKLOAD_PATH, index=False)

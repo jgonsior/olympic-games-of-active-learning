@@ -15,6 +15,7 @@ from datasets import DATASET, load_dataset
 from misc.config import Config
 from misc.logging import log_it
 from resources.data_types import (
+    AL_STRATEGY,
     al_strategies_which_only_support_binary_classification,
     LEARNER_MODEL,
     al_strategies_which_require_decision_boundary_model,
@@ -193,9 +194,14 @@ def create_workload(config: Config) -> List[int]:
             failed_workload_df = failed_workload_df[
                 ~failed_workload_df["error"].isin(
                     [
-                        "<class 'sklearn.exceptions.ConvergenceWarning'>",
-                        "<class 'OSError'>",
-                        "<class 'BrokenPipeError'> ",
+                        fff
+                        for fff in failed_workload_df["error"].unique()
+                        if fff
+                        in [
+                            "<class 'sklearn.exceptions.ConvergenceWarning'>",
+                            "<class 'OSError'>",
+                            "<class 'BrokenPipeError'>",
+                        ]
                     ]
                 )
             ]
