@@ -25,16 +25,14 @@ class DISTANCE_METRICS(Base_Computed_Metric):
     def _per_dataset_hook(self, EXP_DATASET: DATASET) -> None:
         print("loading", EXP_DATASET.name)
         self._precomputed_distances[EXP_DATASET] = (
-            dd.read_csv(
-                f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}{self.config.DATASETS_DISTANCES_APPENDIX}",
+            dd.read_parquet(
+                f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}{self.config.DATASETS_DISTANCES_APPENDIX}.parquet",
             )
             .compute()
             .to_numpy()
         )
-        self._train_test_splits[EXP_DATASET] = dd.read_csv(
-            f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}{self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX}",
-            delimiter=",",
-            index_col=False,
+        self._train_test_splits[EXP_DATASET] = dd.read_parquet(
+            f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}{self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX}.parquet",
         ).compute()
         print("done loading")
 

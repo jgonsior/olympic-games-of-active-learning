@@ -21,12 +21,12 @@ class CLASS_DISTRIBUTIONS(Base_Computed_Metric):
 
     def _per_dataset_hook(self, EXP_DATASET: DATASET) -> None:
         print("loading", EXP_DATASET)
-        _train_test_splits = dd.read_csv(
-            f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}{self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX}"
+        _train_test_splits = dd.read_parquet(
+            f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}{self.config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX}.parquet"
         ).compute()
         self.y_true[EXP_DATASET] = (
-            dd.read_csv(
-                f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}.csv",
+            dd.read_parquet(
+                f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}.csv.parquet",
                 usecols=["LABEL_TARGET"],
             )["LABEL_TARGET"]
             .compute()
