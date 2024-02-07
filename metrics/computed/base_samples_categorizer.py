@@ -42,7 +42,8 @@ class Base_Samples_Categorizer(ABC):
         self.done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
         self.config = config
 
-    def calculate_samples_categorization(self, dataset: DATASET) -> np.ndarray: ...
+    def calculate_samples_categorization(self, dataset: DATASET) -> np.ndarray:
+        ...
 
     def categorize_samples(self, dataset: DATASET) -> None:
         samples_categorization_path = Path(
@@ -248,9 +249,9 @@ class Base_Samples_Categorizer(ABC):
                 nearest_neighbors_of_same_class_distances, axis=1
             )
 
-            samples_categorization[samples_of_this_class_mask] = (
-                avg_distance_to_same_class_neighbors
-            )
+            samples_categorization[
+                samples_of_this_class_mask
+            ] = avg_distance_to_same_class_neighbors
 
         # normalize samples_categorization
         samples_categorization = samples_categorization / np.sum(samples_categorization)
@@ -298,9 +299,9 @@ class Base_Samples_Categorizer(ABC):
                 nearest_neighbors_of_same_class_distances, axis=1
             )
 
-            samples_categorization[samples_of_this_class_mask] = (
-                avg_distance_to_same_class_neighbors
-            )
+            samples_categorization[
+                samples_of_this_class_mask
+            ] = avg_distance_to_same_class_neighbors
 
         # normalize samples_categorization
         samples_categorization = (

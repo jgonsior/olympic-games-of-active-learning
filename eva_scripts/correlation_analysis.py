@@ -47,7 +47,6 @@ column_combinations = [
 
 
 def _calculate_min_cutoffs():
-
     font_size = 5.8
 
     tex_fonts = {
