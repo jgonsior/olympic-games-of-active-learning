@@ -11,9 +11,6 @@ import pandas as pd
 from collections.abc import Iterable
 from datasets import DATASET
 
-from pandarallel import pandarallel
-
-pandarallel.initialize(progress_bar=True)
 
 if TYPE_CHECKING:
     from misc.config import Config
