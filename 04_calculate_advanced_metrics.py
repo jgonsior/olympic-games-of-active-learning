@@ -37,7 +37,7 @@ def _run_single_metric(m):
 
 
 for computed_metric in config.COMPUTED_METRICS:
-    # print(computed_metric)
+    print(computed_metric)
     computed_metric_class = getattr(
         importlib.import_module("metrics.computed." + computed_metric),
         computed_metric,
