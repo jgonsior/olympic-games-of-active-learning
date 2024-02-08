@@ -26,7 +26,7 @@ class CLASS_DISTRIBUTIONS(Base_Computed_Metric):
         ).compute()
         self.y_true[EXP_DATASET] = (
             dd.read_parquet(
-                f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}.csv.parquet",
+                f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}.parquet",
                 usecols=["LABEL_TARGET"],
             )["LABEL_TARGET"]
             .compute()

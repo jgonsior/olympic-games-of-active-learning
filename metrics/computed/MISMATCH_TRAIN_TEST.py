@@ -25,7 +25,7 @@ class MISMATCH_TRAIN_TEST(Base_Computed_Metric):
         ).compute()
         y = (
             dd.read_parquet(
-                f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}.csv.parquet",
+                f"{self.config.DATASETS_PATH}/{EXP_DATASET.name}.parquet",
                 usecols=["LABEL_TARGET"],
             )["LABEL_TARGET"]
             .compute()
