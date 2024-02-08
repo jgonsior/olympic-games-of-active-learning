@@ -93,7 +93,7 @@ class DISTANCE_METRICS(Base_Computed_Metric):
         ]
         train_set = ast.literal_eval(
             self._train_test_splits[EXP_DATASET]["train"].iloc[
-                details["EXP_TRAIN_TEST_BUCKET_SIZE"].to_list()[0]
+                int(details["EXP_TRAIN_TEST_BUCKET_SIZE"].to_list()[0])
             ]
         )
         return train_set
