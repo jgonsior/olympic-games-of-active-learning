@@ -19,6 +19,15 @@ class STANDARD_AUC(Base_Computed_Metric):
             df = self._parse_using_ast_literal_eval(df, calculate_mean_too=True)
         return df
 
+    def range_diff(
+        self, row: pd.Series, range_start: int, range_end: int, EXP_DATASET: DATASET
+    ) -> pd.Series:
+        row = row.loc[row.index != "EXP_UNIQUE_ID"]
+        row1 = row[range_start]
+        row2 = row[range_end]
+
+        return row2 - row1
+
     def range_auc(
         self, row: pd.Series, range_start: int, range_end: int, EXP_DATASET: DATASET
     ) -> pd.Series:
@@ -30,12 +39,14 @@ class STANDARD_AUC(Base_Computed_Metric):
     # see trittenbach 2020 paper: LS(k) = (QR(end-k, end)/k)/(QR(init,end)/|L^end \without L^init)
     # intuition: we calculate the average improvement of the last five AL cycles, and divide by the average attribution of all cycles
     # if the last five steps are still improving -> 20 iterations is not enough apparently, otherwise, it is
-    def learning_stability(self, row: pd.Series, EXP_DATASET: DATASET) -> pd.Series:
+    def learning_stability(
+        self, row: pd.Series, EXP_DATASET: DATASET, time_range: int
+    ) -> pd.Series:
         row = row.loc[row.index != "EXP_UNIQUE_ID"]
 
         diff = row.diff()[1:]
         overall_average_improvement = diff.mean()
-        last_improvement = diff[-5:].mean()
+        last_improvement = diff[-time_range:].mean()
 
         if overall_average_improvement <= 0:
             ls = 0
@@ -67,13 +78,27 @@ class STANDARD_AUC(Base_Computed_Metric):
         print(
             "And what about learning stability when having 100 iterations? Kinda pointless to only look at the last 5 iterations, need to be a cut point until this specific point as well"
         )
+        print(
+            """
+              * Dataset specific thresholds
+              * Thresholds are NOT part of metric name to make it comparable among datasets
+              * I need: full, first_third, middle_third, last_third_stability, ramp_up, learning_stability, und jetzt noch irgendwas über die "wir gehen hoch phase", vielleicht pos_auc, oder neg_auc, oder ist das nicht schon nr_decreasing_al_cycles?
+              * ich bestimme pro datensatz wie viele AL cycles es überhaupt geben kann (unter berücksichtigung der batch size, indem ich mir die nan werte anschaue?)
+              """
+        )
         exit(-1)
         for metric in all_existing_metric_names:
             results = [
                 *results,
                 *self._compute_single_metric_jobs(
                     existing_metric_names=[metric],
-                    new_metric_name="auc_0_5_" + metric,
+                    new_metric_name="auc_0_100_" + metric,
+                    apply_to_row=self.range_auc,
+                    additional_apply_to_row_kwargs={"range_start": 0, "range_end": 5},
+                ),
+                *self._compute_single_metric_jobs(
+                    existing_metric_names=[metric],
+                    new_metric_name="auc_0_10_" + metric,
                     apply_to_row=self.range_auc,
                     additional_apply_to_row_kwargs={"range_start": 0, "range_end": 5},
                 ),
@@ -109,8 +134,21 @@ class STANDARD_AUC(Base_Computed_Metric):
                 ),
                 *self._compute_single_metric_jobs(
                     existing_metric_names=[metric],
-                    new_metric_name="learning_stability_" + metric,
+                    new_metric_name="learning_stability_5_" + metric,
                     apply_to_row=self.learning_stability,
+                    additional_apply_to_row_kwargs={"time_range": 5},
+                ),
+                *self._compute_single_metric_jobs(
+                    existing_metric_names=[metric],
+                    new_metric_name="learning_stability_10_" + metric,
+                    apply_to_row=self.learning_stability,
+                    additional_apply_to_row_kwargs={"time_range": 10},
+                ),
+                *self._compute_single_metric_jobs(
+                    existing_metric_names=[metric],
+                    new_metric_name="learning_stability_20" + metric,
+                    apply_to_row=self.learning_stability,
+                    additional_apply_to_row_kwargs={"time_range": 20},
                 ),
                 *self._compute_single_metric_jobs(
                     existing_metric_names=[metric],

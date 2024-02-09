@@ -186,6 +186,7 @@ class Base_Computed_Metric(ABC):
     ) -> List[Tuple[Callable, List[str]]]:
         to_run_list = []
         for EXP_DATASET in self.config.EXP_GRID_DATASET:
+            print(additional_apply_to_row_kwargs)
             ret = self._per_dataset_hook(EXP_DATASET, **additional_apply_to_row_kwargs)
 
             if ret == False:

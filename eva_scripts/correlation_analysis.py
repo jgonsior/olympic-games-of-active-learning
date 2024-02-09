@@ -1,13 +1,10 @@
-import ast
 from collections import defaultdict
 import itertools
 from pathlib import Path
 import sys
 import glob
-from typing import Dict, List
 import warnings
-from matplotlib import pyplot as plt, use
-from numpy import histogram_bin_edges
+from matplotlib import pyplot as plt
 import pandas as pd
 from tqdm import tqdm
 from datasets import DATASET
@@ -17,18 +14,12 @@ from resources.data_types import AL_STRATEGY
 sys.dont_write_bytecode = True
 
 from misc.config import Config
-from pandarallel import pandarallel
-from joblib import Parallel, delayed
-import multiprocessing
-
-# import dask.dataframe as dd
 import numpy as np
 import seaborn as sns
 
 from scipy.stats import pearsonr, spearmanr, permutation_test
 
 
-pandarallel.initialize(progress_bar=True)
 config = Config()
 
 
@@ -76,42 +67,18 @@ def _calculate_min_cutoffs():
         if cc in ["EXP_NUM_QUERIES", "EXP_RANDOM_SEED"]:
             continue
         print(cc)
-        done_workload = dd.read_csv(
-            config.OVERALL_DONE_WORKLOAD_PATH,
-            dtype={
-                "EXP_BATCH_SIZE": "float64",
-                "EXP_DATASET": "float64",
-                "EXP_LEARNER_MODEL": "float64",
-                "EXP_NUM_QUERIES": "float64",
-                "EXP_RANDOM_SEED": "float64",
-                "EXP_START_POINT": "float64",
-                "EXP_STRATEGY": "float64",
-                "EXP_TRAIN_TEST_BUCKET_SIZE": "float64",
-                "EXP_UNIQUE_ID": "float64",
-            },
-        )
-        exp_ids_present_per_combination = (
-            done_workload.groupby(by=[c for c in column_combinations if c != cc])[cc]
-            .apply(len)
-            .compute()
-            .to_frame()
-        )
-        percentile_25 = np.percentile(exp_ids_present_per_combination[cc], 10)
-        percentile_50 = np.percentile(exp_ids_present_per_combination[cc], 15)
-        percentile_75 = np.percentile(exp_ids_present_per_combination[cc], 20)
-        percentile_10 = np.percentile(exp_ids_present_per_combination[cc], 5)
+        done_workload = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
 
-        # if cc == "EXP_DATASET":
-        #    binwidth = 5
+        exp_ids_present_per_combination = done_workload.groupby(
+            by=[c for c in column_combinations if c != cc]
+        )["EXP_UNIQUE_ID"].apply(len)
+
         ax = sns.histplot(exp_ids_present_per_combination)
-        ax.axvline(percentile_25, color="darkred")
-        ax.axvline(percentile_50, color="darkred")
-        ax.axvline(percentile_75, color="darkred")
-        ax.axvline(percentile_10, color="darkred")
 
         ax.get_yaxis().set_ticks([])
         ax.set_ylabel("")
         ax.set_xlabel("")
+        ax.set_title(f"{cc}")
         # min_cutoffs[cc] = percentile_25
         plt.savefig(f"plots/{cc}.jpg", dpi=300, bbox_inches="tight", pad_inches=0)
         plt.clf()
@@ -130,53 +97,47 @@ def _get_dense_exp_ids(done_workload, CUTOFF_VALUE: int):
         return
 
     cutoff_values = {
+        "EXP_STRATEGY": 42,
+        "EXP_DATASET": 80,  # 90: 1141577
         "EXP_BATCH_SIZE": 3,
-        "EXP_DATASET": 39,
-        "EXP_LEARNER_MODEL": 2,
+        "EXP_LEARNER_MODEL": 3,
         "EXP_START_POINT": 20,
-        "EXP_STRATEGY": 90,
         "EXP_TRAIN_TEST_BUCKET_SIZE": 5,
     }
 
-    for param in column_combinations:
-        if param in ["EXP_NUM_QUERIES", "EXP_RANDOM_SEED"]:
-            continue
+    for param, cutoff_value in cutoff_values.items():
+        print(f"{param} - cutoff_value is {cutoff_value}")
 
-        print(param)
-
-        """done_workload2 = pd.read_csv(
-            config.OVERALL_DONE_WORKLOAD_PATH,
+        data_for_hist = (
+            done_workload.groupby(by=[c for c in column_combinations if c != param])[
+                "EXP_UNIQUE_ID"
+            ]
+            .apply(list)
+            .apply(len)
+            .to_numpy()
         )
 
-        exp_ids_present_per_combination = done_workload2.groupby(
+        ax = sns.histplot(data_for_hist)
+        ax.axvline(cutoff_value, color="darkred")
+        ax.get_yaxis().set_ticks([])
+        ax.set_ylabel("")
+        ax.set_xlabel("")
+        ax.set_title(f"{param}: {cutoff_value}")
+        plt.savefig(f"plots2/{param}.jpg", dpi=300, bbox_inches="tight", pad_inches=0)
+        plt.clf()
+
+        exp_ids_present_per_combination = done_workload.groupby(
             by=[c for c in column_combinations if c != param]
         )["EXP_UNIQUE_ID"].apply(list)
 
-        exp_ids_present_per_combination_lens = exp_ids_present_per_combination.apply(
-            lambda x: len(x)
-        )
-
-        cutoff_value = np.percentile(exp_ids_present_per_combination_lens, CUTOFF_VALUE)
-        """
-        cutoff_value = cutoff_values[param]
-        print(f"cutoff_value is {cutoff_value}")
-
-        if cutoff_value == 1.0:
-            continue
-
-        # print(exp_ids_present_per_combination)
-        exp_ids_present_per_combination2 = pd.DataFrame = done_workload.groupby(
-            by=[c for c in column_combinations if c != param]
-        )["EXP_UNIQUE_ID"].apply(list)
-
-        exp_ids_present_per_combination2 = exp_ids_present_per_combination2[
-            exp_ids_present_per_combination2.apply(
+        exp_ids_present_per_combination = exp_ids_present_per_combination[
+            exp_ids_present_per_combination.apply(
                 lambda x: True if len(x) >= cutoff_value else False
             )
         ]
 
         exp_ids_merged = set(
-            itertools.chain(*exp_ids_present_per_combination2.to_list())
+            itertools.chain(*exp_ids_present_per_combination.to_list())
         )
 
         before = len(done_workload)
@@ -184,28 +145,6 @@ def _get_dense_exp_ids(done_workload, CUTOFF_VALUE: int):
             done_workload["EXP_UNIQUE_ID"].isin(exp_ids_merged)
         ]
         print(f"reduced from {before} to {len(done_workload)}")
-
-        test = pd.DataFrame(np.array([0, 1, 3, 4, 5, 6]))
-
-        data = pd.DataFrame(
-            done_workload.groupby(by=[c for c in column_combinations if c != param])[
-                "EXP_UNIQUE_ID"
-            ]
-            .apply(len)
-            .to_numpy()
-        )
-
-        print(data)
-
-        ax = sns.histplot(data=data)
-        ax.get_yaxis().set_ticks([])
-        ax.set_ylabel("")
-        ax.set_xlabel("")
-        ax.axvline(cutoff_value, color="darkred")
-
-        plt.savefig(f"plots/{param}.jpg", dpi=300, bbox_inches="tight", pad_inches=0)
-        plt.clf()
-
     done_workload.to_csv(config.DENSE_WORKLOAD_PATH, index=False)
 
 
@@ -321,9 +260,9 @@ def _calculate_correlations(param_to_evaluate):
     exit(-1)
 
 
+_calculate_min_cutoffs()
 _get_dense_exp_ids(done_workload, 99)
 exit(-1)
-# _calculate_min_cutoffs()
 # exit(-1)
 for i in [5, 10, 15, 20, 25, 30, 35]:
     _get_dense_exp_ids(done_workload, i)
