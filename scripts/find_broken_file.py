@@ -54,7 +54,7 @@ def _do_stuff(file_name):
         with open(correct_files_csv_path, "a") as f:
             w = csv.DictWriter(f, fieldnames=["metric_file"])
             w.writerow({"metric_file": metric_file})
-    except EOFError as e:
+    except:
         with open(broken_files_csv_path, "a") as f:
             w = csv.DictWriter(f, fieldnames=["metric_file"])
             w.writerow({"metric_file": metric_file})
@@ -62,7 +62,8 @@ def _do_stuff(file_name):
         print(metric_file)
 
 
-# Parallel(n_jobs=1, verbose=10)(
-Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
-    delayed(_do_stuff)(file_name) for file_name in glob_list
+Parallel(n_jobs=1, verbose=10)(
+    # Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
+    delayed(_do_stuff)(file_name)
+    for file_name in glob_list
 )
