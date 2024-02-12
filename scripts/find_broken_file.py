@@ -18,14 +18,26 @@ import shutil
 pandarallel.initialize(progress_bar=True)
 config = Config()
 
-parsed_metric_csv_file_path = Path(config.OUTPUT_PATH / "07_parsed_metric_csvs.csv")
+broken_files_csv_path = Path(config.OUTPUT_PATH / "07_broken_csvs.csv")
 
+
+if not broken_files_csv_path.exists():
+    with open(broken_files_csv_path, "a") as f:
+        w = csv.DictWriter(f, fieldnames=["metric_file"])
+        w.writeheader()
 
 glob_list = [
     f
     for f in glob.glob(str(config.OUTPUT_PATH) + "/**/*.csv.xz", recursive=True)
     if not f.endswith("_workload.csv.xz") and not f.endswith("_workloads.csv.xz")
 ]
+
+parsed_metric_csv_file = pd.read_csv(broken_files_csv_path)
+parsed_metric_csvs = set(parsed_metric_csv_file["metric_file"].to_list())
+
+print(len(glob_list))
+glob_list = [ggg for ggg in glob_list if ggg not in parsed_metric_csvs]
+print(len(glob_list))
 
 
 def _do_stuff(file_name):
@@ -34,6 +46,10 @@ def _do_stuff(file_name):
         df = pd.read_csv(metric_file)
         lll = len(df.columns)
     except EOFError as e:
+        with open(broken_files_csv_path, "a") as f:
+            w = csv.DictWriter(f, fieldnames=["metric_file"])
+            w.writerow({"metric_file": metric_file})
+
         print(metric_file)
 
 
