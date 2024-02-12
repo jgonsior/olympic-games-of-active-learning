@@ -19,6 +19,7 @@ pandarallel.initialize(progress_bar=True)
 config = Config()
 
 broken_files_csv_path = Path(config.OUTPUT_PATH / "07_broken_csvs.csv")
+correct_files_csv_path = Path(config.OUTPUT_PATH / "07_correct_csvs.csv")
 
 
 if not broken_files_csv_path.exists():
@@ -26,13 +27,17 @@ if not broken_files_csv_path.exists():
         w = csv.DictWriter(f, fieldnames=["metric_file"])
         w.writeheader()
 
+if not correct_files_csv_path.exists():
+    with open(correct_files_csv_path, "a") as f:
+        w = csv.DictWriter(f, fieldnames=["metric_file"])
+        w.writeheader()
 glob_list = [
     f
     for f in glob.glob(str(config.OUTPUT_PATH) + "/**/*.csv.xz", recursive=True)
     if not f.endswith("_workload.csv.xz") and not f.endswith("_workloads.csv.xz")
 ]
 
-parsed_metric_csv_file = pd.read_csv(broken_files_csv_path)
+parsed_metric_csv_file = pd.read_csv(correct_files_csv_path)
 parsed_metric_csvs = set(parsed_metric_csv_file["metric_file"].to_list())
 
 print(len(glob_list))
@@ -45,6 +50,10 @@ def _do_stuff(file_name):
     try:
         df = pd.read_csv(metric_file)
         lll = len(df.columns)
+
+        with open(correct_files_csv_path, "a") as f:
+            w = csv.DictWriter(f, fieldnames=["metric_file"])
+            w.writerow({"metric_file": metric_file})
     except EOFError as e:
         with open(broken_files_csv_path, "a") as f:
             w = csv.DictWriter(f, fieldnames=["metric_file"])
