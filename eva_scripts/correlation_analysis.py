@@ -17,7 +17,7 @@ from misc.config import Config
 import numpy as np
 import seaborn as sns
 
-from scipy.stats import pearsonr, spearmanr, permutation_test
+from scipy.stats import spearmanr
 
 
 config = Config()

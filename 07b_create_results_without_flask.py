@@ -1,4 +1,3 @@
-from pathlib import Path
 import sys
 from typing import List
 
@@ -15,7 +14,6 @@ from analyse_results.visualizations import (
     VISUALIZATION,
     vizualization_to_python_function_mapping,
 )
-from jinja2 import Template
 from analyse_results.visualizations.base_visualizer import Base_Visualizer
 from misc.config import Config
 from collections.abc import Iterable
@@ -27,12 +25,9 @@ sys.dont_write_bytecode = True
 
 from misc.config import Config
 from pandarallel import pandarallel
-import pandas as pd
 
 pandarallel.initialize(progress_bar=True)
 import sys
-from datasets import DATASET
-from resources.data_types import AL_STRATEGY
 
 # pd.options.display.float_format = "{:100,.2f}".format
 

@@ -1,10 +1,7 @@
-import ast
 import csv
-import multiprocessing
 from pathlib import Path
 import sys
 import glob
-import lzma
 
 from joblib import Parallel, delayed
 import pandas as pd
@@ -13,7 +10,6 @@ sys.dont_write_bytecode = True
 
 from misc.config import Config
 from pandarallel import pandarallel
-import shutil
 
 pandarallel.initialize(progress_bar=True)
 config = Config()

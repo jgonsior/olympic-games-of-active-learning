@@ -7,7 +7,7 @@ import io
 import itertools
 import multiprocessing
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, List, Tuple, Type, Union
+from typing import TYPE_CHECKING, Any, Callable, List, Tuple, Type
 
 from typing import Any, Dict
 from aenum import IntEnum, unique

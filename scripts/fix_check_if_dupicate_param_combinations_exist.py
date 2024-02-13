@@ -1,10 +1,8 @@
 from collections import Counter
 import glob
-from os import dup
 import sys
 
 import pandas as pd
-from sklearn.conftest import fetch_olivetti_faces
 
 
 sys.dont_write_bytecode = True

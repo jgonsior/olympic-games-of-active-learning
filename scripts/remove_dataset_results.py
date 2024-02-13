@@ -7,7 +7,6 @@ from joblib import Parallel, delayed
 import pandas as pd
 from datasets import DATASET
 
-from resources.data_types import LEARNER_MODEL
 
 
 sys.dont_write_bytecode = True

@@ -15,7 +15,6 @@ from datasets import DATASET, load_dataset
 from misc.config import Config
 from misc.logging import log_it
 from resources.data_types import (
-    AL_STRATEGY,
     al_strategies_which_only_support_binary_classification,
     LEARNER_MODEL,
     al_strategies_which_require_decision_boundary_model,

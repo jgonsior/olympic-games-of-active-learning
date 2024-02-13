@@ -12,7 +12,7 @@ from resources.data_types import (
     AL_STRATEGY,
     LEARNER_MODEL,
 )
-from jinja2 import Environment, PackageLoader, select_autoescape
+from jinja2 import Environment, PackageLoader
 
 import yaml
 

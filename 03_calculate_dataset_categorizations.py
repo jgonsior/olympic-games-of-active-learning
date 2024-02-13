@@ -3,7 +3,7 @@ import multiprocessing
 import sys
 from typing import Tuple
 
-from joblib import Parallel, delayed, parallel_backend
+from joblib import Parallel, delayed
 
 
 sys.dont_write_bytecode = True

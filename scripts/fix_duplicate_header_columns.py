@@ -2,7 +2,6 @@ import multiprocessing
 from pathlib import Path
 import sys
 import glob
-import lzma
 
 from joblib import Parallel, delayed
 

@@ -2,7 +2,6 @@ from __future__ import annotations
 import glob
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, List, Tuple
-import numpy as np
 import pandas as pd
 from datasets import DATASET
 

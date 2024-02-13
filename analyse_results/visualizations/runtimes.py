@@ -1,6 +1,5 @@
 from __future__ import annotations
 from pathlib import Path
-from re import M
 
 import pandas as pd
 from analyse_results.visualizations.base_visualizer import (
