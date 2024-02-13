@@ -142,7 +142,7 @@ class Base_Samples_Categorizer(ABC):
     def _get_Y_preds_iterator(self, dataset: DATASET) -> Iterable[pd.DataFrame]:
         _train_test_splits = self._get_train_test_splits(dataset)
         for strat in self.config.EXP_GRID_STRATEGY:
-            print(strat)
+            print(strat.name)
             y_pred_train_path = Path(
                 f"{self.config.OUTPUT_PATH}/{strat.name}/{dataset.name}/y_pred_train.csv.xz"
             )
