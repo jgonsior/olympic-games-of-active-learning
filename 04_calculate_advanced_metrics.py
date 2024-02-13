@@ -52,8 +52,8 @@ for computed_metric in config.COMPUTED_METRICS:
     metrics_to_compute = computed_metric_class.get_all_metric_jobs()
 
     Parallel(
-        # n_jobs=multiprocessing.cpu_count(),
-        n_jobs=1,  # never run as single processes -> weird bugs occur!
+        n_jobs=multiprocessing.cpu_count(),
+        # n_jobs=1,  # never run as single processes -> weird bugs occur!
         backend="multiprocessing",
         verbose=10,
     )(delayed(_run_single_metric)(m) for (m) in metrics_to_compute)
