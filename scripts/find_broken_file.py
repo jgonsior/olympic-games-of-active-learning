@@ -62,8 +62,8 @@ def _do_stuff(file_name):
         print(metric_file)
 
 
-Parallel(n_jobs=1, verbose=10)(
-    # Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
+#Parallel(n_jobs=1, verbose=10)(
+Parallel(n_jobs=multiprocessing.cpu_count()-3, verbose=10)(
     delayed(_do_stuff)(file_name)
     for file_name in glob_list
 )

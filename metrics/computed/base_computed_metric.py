@@ -83,7 +83,7 @@ def _process_a_single_strategy(
 
     new_df["EXP_UNIQUE_ID"] = exp_unique_id_column
 
-    if new_df.isnull().sum().sum() > 20:
+    if new_df.isnull().sum().sum() > 30:
         print(apply_to_row)
         print(new_df)
         # exit(-1)
@@ -106,7 +106,8 @@ class Base_Computed_Metric(ABC):
         self.done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
         self.config = config
 
-    def computed_metric_appendix(self) -> str: ...
+    def computed_metric_appendix(self) -> str:
+        ...
 
     def apply_to_row(self, row: pd.Series) -> pd.Series:
         pass
@@ -119,7 +120,7 @@ class Base_Computed_Metric(ABC):
 
         df = df.fillna("[]")
         df[column_names_which_are_al_cycles] = df[column_names_which_are_al_cycles].map(
-            lambda x: ast.literal_eval(str(x)),
+            lambda x: ast.literal_eval(str(x).replace("nan", "None")),
         )
 
         if calculate_mean_too:
@@ -127,7 +128,9 @@ class Base_Computed_Metric(ABC):
                 column_names_which_are_al_cycles
             ].map(
                 lambda x: (
-                    sum(x) / len(x) if isinstance(x, Iterable) and len(x) > 0 else x
+                    sum([xxx for xxx in x if xxx is not None]) / len(x)
+                    if isinstance(x, Iterable) and len(x) > 0
+                    else x
                 )
             )
             df[column_names_which_are_al_cycles] = df[
@@ -175,7 +178,8 @@ class Base_Computed_Metric(ABC):
     def _pre_appy_to_row_hook(self, df: pd.DataFrame) -> pd.DataFrame:
         return df
 
-    def _per_dataset_hook(self, EXP_DATASET: DATASET, **kwargs) -> None: ...
+    def _per_dataset_hook(self, EXP_DATASET: DATASET, **kwargs) -> None:
+        ...
 
     def _compute_single_metric_jobs(
         self,
@@ -186,7 +190,6 @@ class Base_Computed_Metric(ABC):
     ) -> List[Tuple[Callable, List[str]]]:
         to_run_list = []
         for EXP_DATASET in self.config.EXP_GRID_DATASET:
-            print(additional_apply_to_row_kwargs)
             ret = self._per_dataset_hook(EXP_DATASET, **additional_apply_to_row_kwargs)
 
             if ret == False:

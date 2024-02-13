@@ -39,21 +39,21 @@ def _run_single_metric(m):
 
 all_datasets = copy.deepcopy(config.EXP_GRID_DATASET)
 
-for ds in all_datasets:
-    config.EXP_GRID_DATASET = [ds]
+# fr ds in all_datasets:
+#   config.EXP_GRID_DATASET = [ds]
 
-    for computed_metric in config.COMPUTED_METRICS:
-        print(computed_metric)
-        computed_metric_class = getattr(
-            importlib.import_module("metrics.computed." + computed_metric),
-            computed_metric,
-        )
-        computed_metric_class = computed_metric_class(config)
-        metrics_to_compute = computed_metric_class.get_all_metric_jobs()
+for computed_metric in config.COMPUTED_METRICS:
+    print(computed_metric)
+    computed_metric_class = getattr(
+        importlib.import_module("metrics.computed." + computed_metric),
+        computed_metric,
+    )
+    computed_metric_class = computed_metric_class(config)
+    metrics_to_compute = computed_metric_class.get_all_metric_jobs()
 
-        Parallel(
-            n_jobs=multiprocessing.cpu_count(),
-            backend="multiprocessing",
-            verbose=10,
-            # n_jobs=2, # never run as single processes -> weird bugs occur!
-        )(delayed(_run_single_metric)(m) for (m) in metrics_to_compute)
+    Parallel(
+        # n_jobs=multiprocessing.cpu_count(),
+        n_jobs=1,  # never run as single processes -> weird bugs occur!
+        backend="multiprocessing",
+        verbose=10,
+    )(delayed(_run_single_metric)(m) for (m) in metrics_to_compute)
