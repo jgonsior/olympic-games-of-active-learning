@@ -326,7 +326,6 @@ class COUNT_WRONG_CLASSIFICATIONS(Base_Samples_Categorizer):
     def calculate_samples_categorization(self, dataset: DATASET) -> np.ndarray:
         _, Y_true = self._load_dataset(dataset)
         samples_categorization = np.zeros_like(Y_true)
-        print(len(list(self._get_Y_preds_iterator(dataset))))
         for Y_preds in self._get_Y_preds_iterator(dataset):
             for _, r in Y_preds.iterrows():
                 for al_cycle_iteration, Y_pred in enumerate(r):
@@ -354,7 +353,6 @@ class SWITCHES_CLASS_OFTEN(Base_Samples_Categorizer):
         _, Y_true = self._load_dataset(dataset)
         samples_categorization = np.zeros_like(Y_true, dtype=np.float32)
 
-        print(len(list(self._get_Y_preds_iterator(dataset))))
         for Y_preds in self._get_Y_preds_iterator(dataset):
             a = Y_preds.to_numpy()
 
