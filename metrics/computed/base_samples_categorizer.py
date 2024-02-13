@@ -49,10 +49,12 @@ class Base_Samples_Categorizer(ABC):
         samples_categorization_path = Path(
             f"{self.config.OUTPUT_PATH}/_{self.__class__.__name__}/{dataset.name}.npz"
         )
+        print(samples_categorization_path)
         if (
             not self.config.OVERWRITE_EXISTING_METRIC_FILES
             and samples_categorization_path.exists()
         ):
+            print("Already run")
             return
 
         samples_categorization_path.parent.mkdir(parents=True, exist_ok=True)
