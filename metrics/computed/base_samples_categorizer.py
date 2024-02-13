@@ -160,6 +160,7 @@ class Base_Samples_Categorizer(ABC):
                 .fillna("[]")
                 .map(lambda x: ast.literal_eval(x))
             )
+            print("done1")
             Y_pred_test = pd.read_csv(
                 f"{self.config.OUTPUT_PATH}/{strat.name}/{dataset.name}/y_pred_test.csv.xz",
             )
@@ -169,6 +170,7 @@ class Base_Samples_Categorizer(ABC):
                 .fillna("[]")
                 .map(lambda x: ast.literal_eval(x))
             )
+            print("done2")
 
             # get train_test_splits based on EXP_UNIQUE_ID
             exp_train_test_buckets = self.done_workload_df[
@@ -181,6 +183,7 @@ class Base_Samples_Categorizer(ABC):
                 on="EXP_UNIQUE_ID",
                 suffixes=["_train", "_test"],
             )
+            print("done3")
 
             exp_train_test_buckets = exp_train_test_buckets.merge(
                 _train_test_splits, how="left", on="EXP_TRAIN_TEST_BUCKET_SIZE"
@@ -188,6 +191,7 @@ class Base_Samples_Categorizer(ABC):
             Y_pred = Y_pred.merge(
                 exp_train_test_buckets, how="inner", on="EXP_UNIQUE_ID"
             )
+            print("done4")
 
             exp_unique_ids = Y_pred["EXP_UNIQUE_ID"]
             Y_pred = Y_pred.apply(
@@ -197,8 +201,10 @@ class Base_Samples_Categorizer(ABC):
                 axis=1,
                 result_type="expand",
             )
+            print("done5")
 
             Y_pred.set_index(exp_unique_ids, inplace=True)
+            print("done6")
 
             yield Y_pred
 
