@@ -10,7 +10,7 @@ import pandas as pd
 
 from pandarallel import pandarallel
 
-pandarallel.initialize(progress_bar=True)
+pandarallel.initialize(progress_bar=True, nb)
 
 sys.dont_write_bytecode = True
 

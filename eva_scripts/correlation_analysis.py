@@ -86,9 +86,9 @@ def _calculate_min_cutoffs():
 
 
 def _get_dense_exp_ids(done_workload, CUTOFF_VALUE: int):
-    # config.DENSE_WORKLOAD_PATH = Path(
-    #    str(config.DENSE_WORKLOAD_PATH) + f"_{CUTOFF_VALUE}.csv"
-    # )
+    config.DENSE_WORKLOAD_PATH = Path(
+        str(config.DENSE_WORKLOAD_PATH) + f"_{CUTOFF_VALUE}.csv"
+    )
 
     if config.DENSE_WORKLOAD_PATH.exists():
         print(
@@ -98,7 +98,7 @@ def _get_dense_exp_ids(done_workload, CUTOFF_VALUE: int):
 
     cutoff_values = {
         "EXP_STRATEGY": 42,
-        "EXP_DATASET": 80,  # 90: 1141577
+        "EXP_DATASET": CUTOFF_VALUE,  # 90: 1141577
         "EXP_BATCH_SIZE": 3,
         "EXP_LEARNER_MODEL": 3,
         "EXP_START_POINT": 20,
@@ -123,7 +123,12 @@ def _get_dense_exp_ids(done_workload, CUTOFF_VALUE: int):
         ax.set_ylabel("")
         ax.set_xlabel("")
         ax.set_title(f"{param}: {cutoff_value}")
-        plt.savefig(f"plots2/{param}.jpg", dpi=300, bbox_inches="tight", pad_inches=0)
+        plt.savefig(
+            f"plots_{CUTOFF_VALUE}/{param}.jpg",
+            dpi=300,
+            bbox_inches="tight",
+            pad_inches=0,
+        )
         plt.clf()
 
         exp_ids_present_per_combination = done_workload.groupby(
@@ -261,7 +266,17 @@ def _calculate_correlations(param_to_evaluate):
 
 
 _calculate_min_cutoffs()
-_get_dense_exp_ids(done_workload, 99)
+_get_dense_exp_ids(done_workload, 70)
+_get_dense_exp_ids(done_workload, 75)
+_get_dense_exp_ids(done_workload, 80)
+_get_dense_exp_ids(done_workload, 85)
+_get_dense_exp_ids(done_workload, 90)
+_get_dense_exp_ids(done_workload, 95)
+_get_dense_exp_ids(done_workload, 100)
+_get_dense_exp_ids(done_workload, 101)
+_get_dense_exp_ids(done_workload, 102)
+_get_dense_exp_ids(done_workload, 103)
+_get_dense_exp_ids(done_workload, 104)
 exit(-1)
 # exit(-1)
 for i in [5, 10, 15, 20, 25, 30, 35]:
