@@ -180,7 +180,7 @@ def _do_stuff(file_name, config):
 
         ax.set_title(f"{EXP_DATASET.name} - {k}")
         plt.savefig(
-            f"plots_cutoffs/{EXP_DATASET.name}-{k}_grouped.jpg",
+            f"plots_single_cutoffs/{EXP_DATASET.name}-{k}_grouped.jpg",
             dpi=300,
             bbox_inches="tight",
             pad_inches=0,
