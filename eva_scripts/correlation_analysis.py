@@ -117,6 +117,8 @@ def _get_dense_exp_ids(done_workload, CUTOFF_VALUE: int):
             .to_numpy()
         )
 
+        Path(f"plots_{CUTOFF_VALUE}").mkdir(exist_ok=True)
+
         ax = sns.histplot(data_for_hist)
         ax.axvline(cutoff_value, color="darkred")
         ax.get_yaxis().set_ticks([])
