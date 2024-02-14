@@ -169,6 +169,7 @@ tmp/
 
 paper/
 plots/
+plots_*/
 *.db
 
 log.txt
