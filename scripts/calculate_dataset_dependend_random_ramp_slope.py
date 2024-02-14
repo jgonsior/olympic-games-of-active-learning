@@ -193,8 +193,7 @@ glob_list = [
     )
 ]
 
-Parallel(n_jobs=6, verbose=10)(
-    # Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
-    delayed(_do_stuff)(file_name, config)
-    for file_name in glob_list
+# Parallel(n_jobs=6, verbose=10)(
+Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
+    delayed(_do_stuff)(file_name, config) for file_name in glob_list
 )
