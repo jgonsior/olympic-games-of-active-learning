@@ -25,11 +25,14 @@ if not parsed_metric_csv_file_path.exists():
 glob_list = [
     f
     for f in glob.glob(str(config.OUTPUT_PATH) + "/**/*.csv.xz", recursive=True)
-    if not f.endswith("_workload.csv.xz") and not f.endswith("_workloads.csv.xz")
+    if not f.endswith("_workload.csv.xz")
+    and not f.endswith("_workloads.csv.xz")
+    and not "/metrics/" in f
 ]
 
 parsed_metric_csv_file = pd.read_csv(parsed_metric_csv_file_path)
 parsed_metric_csvs = set(parsed_metric_csv_file["metric_file"].to_list())
+
 
 print(len(glob_list))
 glob_list = [ggg for ggg in glob_list if ggg not in parsed_metric_csvs]
