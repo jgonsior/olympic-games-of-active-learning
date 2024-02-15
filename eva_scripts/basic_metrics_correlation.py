@@ -113,7 +113,7 @@ for df in dfs:
         summed_up_corr_values = summed_up_corr_values + df
 
 
-result_folder = Path(f"plots/{config.EXP_TITLE}/")
+result_folder = Path(config.OUTPUT_PATH / f"plots/")
 result_folder.mkdir(parents=True, exist_ok=True)
 
 summed_up_corr_values.to_csv(result_folder / "basic_metrics.csv")
