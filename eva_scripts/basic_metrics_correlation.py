@@ -39,7 +39,7 @@ def _is_standard_metric(metric_path: str) -> bool:
     ]
 
     for sm in standard_metrics:
-        if f"{sm}.csv" in metric_path:
+        if f"/{sm}.csv" in metric_path:
             return True
     return False
 
