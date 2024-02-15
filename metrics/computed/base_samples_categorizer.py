@@ -76,8 +76,8 @@ class Base_Samples_Categorizer(ABC):
         return X, Y_true
 
     def _get_distance_matrix(self, dataset: DATASET) -> np.ndarray:
-        return pd.read_csv(
-            f"{self.config.DATASETS_PATH}/{dataset.name}{self.config.DATASETS_DISTANCES_APPENDIX}",
+        return pd.read_parquet(
+            f"{self.config.DATASETS_PATH}/{dataset.name}{self.config.DATASETS_DISTANCES_APPENDIX}.parquet",
         ).to_numpy()
 
     def _combine_selected_indices_to_all_selected_indices_of_al_cycle(
@@ -144,12 +144,12 @@ class Base_Samples_Categorizer(ABC):
         for strat in self.config.EXP_GRID_STRATEGY:
             print(strat.name)
             y_pred_train_path = Path(
-                f"{self.config.OUTPUT_PATH}/{strat.name}/{dataset.name}/y_pred_train.csv.xz"
+                f"{self.config.OUTPUT_PATH}/{strat.name}/{dataset.name}/y_pred_train.csv.xz.parquet"
             )
             if not y_pred_train_path.exists():
                 print("Have you converted csv files to .xz?")
                 continue
-            Y_pred_train = pd.read_csv(y_pred_train_path)
+            Y_pred_train = pd.read_parquet(y_pred_train_path)
 
             if len(Y_pred_train) == 0:
                 continue
@@ -161,8 +161,8 @@ class Base_Samples_Categorizer(ABC):
                 .map(lambda x: ast.literal_eval(x))
             )
             print("done1")
-            Y_pred_test = pd.read_csv(
-                f"{self.config.OUTPUT_PATH}/{strat.name}/{dataset.name}/y_pred_test.csv.xz",
+            Y_pred_test = pd.read_parquet(
+                f"{self.config.OUTPUT_PATH}/{strat.name}/{dataset.name}/y_pred_test.csv.xz.parquet",
             )
 
             Y_pred_test[cols_with_indice_lists] = (
