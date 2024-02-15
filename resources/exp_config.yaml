@@ -102,20 +102,20 @@ test:
 
 test2:
     {
-        EXP_GRID_DATASET: [Iris, wine_origin],
+        EXP_GRID_DATASET: [Iris, wine_origin, musk2, xor_4x4],
         EXP_GRID_STRATEGY:
             [
                 ALIPY_RANDOM,
                 ALIPY_UNCERTAINTY_LC,
-                ALIPY_UNCERTAINTY_MM,
-                ALIPY_UNCERTAINTY_ENTROPY,
                 OPTIMAL_GREEDY_10,
+                SMALLTEXT_DISCRIMINATIVEAL,
+                ALIPY_EXPECTED_ERROR_REDUCTION,
             ],
         EXP_GRID_RANDOM_SEED: [0],
-        EXP_GRID_NUM_QUERIES: [20],
-        EXP_GRID_BATCH_SIZE: [1, 5],
-        EXP_GRID_LEARNER_MODEL: [RF, DT],
-        EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0, 1],
+        EXP_GRID_NUM_QUERIES: [30],
+        EXP_GRID_BATCH_SIZE: [1, 5,10],
+        EXP_GRID_LEARNER_MODEL: [RF, DT, LINEAR_SVM],
+        EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0, 1, 2],
         EXP_GRID_START_POINT: [1-5],
         METRICS:
             [

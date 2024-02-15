@@ -87,7 +87,7 @@ def _calculate_min_cutoffs():
 
 def _get_dense_exp_ids(done_workload, CUTOFF_VALUE: int):
     config.DENSE_WORKLOAD_PATH = Path(
-        str(config.DENSE_WORKLOAD_PATH) + f"_{CUTOFF_VALUE}.csv"
+        str(config.DENSE_WORKLOAD_PATH) + f"_70_{CUTOFF_VALUE}.csv"
     )
 
     if config.DENSE_WORKLOAD_PATH.exists():
@@ -96,13 +96,22 @@ def _get_dense_exp_ids(done_workload, CUTOFF_VALUE: int):
         )
         return
 
-    cutoff_values = {
-        "EXP_STRATEGY": 42,
-        "EXP_DATASET": CUTOFF_VALUE,  # 90: 1141577
+    """cutoff_values = {
+        "EXP_STRATEGY": 39,
+        "EXP_DATASET": 95,  # 90: 1141577
         "EXP_BATCH_SIZE": 3,
         "EXP_LEARNER_MODEL": 3,
         "EXP_START_POINT": 20,
         "EXP_TRAIN_TEST_BUCKET_SIZE": 5,
+    }"""
+
+    cutoff_values = {
+        "EXP_STRATEGY": 3,
+        "EXP_DATASET": 3,  # 90: 1141577
+        "EXP_BATCH_SIZE": 2,
+        "EXP_LEARNER_MODEL": 2,
+        "EXP_START_POINT": 2,
+        "EXP_TRAIN_TEST_BUCKET_SIZE": 2,
     }
 
     for param, cutoff_value in cutoff_values.items():
@@ -119,7 +128,7 @@ def _get_dense_exp_ids(done_workload, CUTOFF_VALUE: int):
 
         Path(f"plots_{CUTOFF_VALUE}").mkdir(exist_ok=True)
 
-        ax = sns.histplot(data_for_hist)
+        """ax = sns.histplot(data_for_hist)
         ax.axvline(cutoff_value, color="darkred")
         ax.get_yaxis().set_ticks([])
         ax.set_ylabel("")
@@ -131,7 +140,7 @@ def _get_dense_exp_ids(done_workload, CUTOFF_VALUE: int):
             bbox_inches="tight",
             pad_inches=0,
         )
-        plt.clf()
+        plt.clf()"""
 
         exp_ids_present_per_combination = done_workload.groupby(
             by=[c for c in column_combinations if c != param]
@@ -267,22 +276,14 @@ def _calculate_correlations(param_to_evaluate):
     exit(-1)
 
 
-_calculate_min_cutoffs()
-_get_dense_exp_ids(done_workload, 70)
-_get_dense_exp_ids(done_workload, 75)
-_get_dense_exp_ids(done_workload, 80)
-_get_dense_exp_ids(done_workload, 85)
-_get_dense_exp_ids(done_workload, 90)
-_get_dense_exp_ids(done_workload, 95)
-_get_dense_exp_ids(done_workload, 100)
-_get_dense_exp_ids(done_workload, 101)
-_get_dense_exp_ids(done_workload, 102)
-_get_dense_exp_ids(done_workload, 103)
-_get_dense_exp_ids(done_workload, 104)
-exit(-1)
+# _calculate_min_cutoffs()
+_get_dense_exp_ids(done_workload, 39)
+# for i in [70, 75, 80, 85, 90, 95, 100]:
+#    _get_dense_exp_ids(done_workload, i)
 # exit(-1)
-for i in [5, 10, 15, 20, 25, 30, 35]:
-    _get_dense_exp_ids(done_workload, i)
+# exit(-1)
+# for i in [5, 10, 15, 20, 25, 30, 35]:
+#    _get_dense_exp_ids(done_workload, i)
 exit(-1)
 for cc in [
     "EXP_BATCH_SIZE",
