@@ -130,9 +130,8 @@ class Base_Samples_Categorizer(ABC):
             dtype=np.float16,
         )
         result.fill(np.nan)
-
         for c in cols_with_indice_lists:
-            if row[f"{c}_train"] == []:
+            if len(row[f"{c}_train"]) == 0:
                 continue
             result[c, row["train"]] = row[f"{c}_train"]
             result[c, row["test"]] = row[f"{c}_test"]
@@ -155,21 +154,12 @@ class Base_Samples_Categorizer(ABC):
                 continue
 
             cols_with_indice_lists = Y_pred_train.columns.difference(["EXP_UNIQUE_ID"])
-            Y_pred_train[cols_with_indice_lists] = (
-                Y_pred_train[cols_with_indice_lists]
-                .fillna("[]")
-                .map(lambda x: ast.literal_eval(x))
-            )
+
             print("done1")
             Y_pred_test = pd.read_parquet(
                 f"{self.config.OUTPUT_PATH}/{strat.name}/{dataset.name}/y_pred_test.csv.xz.parquet",
             )
 
-            Y_pred_test[cols_with_indice_lists] = (
-                Y_pred_test[cols_with_indice_lists]
-                .fillna("[]")
-                .map(lambda x: ast.literal_eval(x))
-            )
             print("done2")
 
             # get train_test_splits based on EXP_UNIQUE_ID
