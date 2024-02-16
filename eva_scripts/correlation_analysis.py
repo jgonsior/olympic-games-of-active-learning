@@ -85,26 +85,23 @@ def _calculate_min_cutoffs():
     print(min_cutoffs)
 
 
-def _get_dense_exp_ids(done_workload, CUTOFF_VALUE: int):
-    config.DENSE_WORKLOAD_PATH = Path(
-        str(config.DENSE_WORKLOAD_PATH) + f"_70_{CUTOFF_VALUE}.csv"
-    )
-
+def _get_dense_exp_ids(done_workload):
     if config.DENSE_WORKLOAD_PATH.exists():
         print(
             f"{config.DENSE_WORKLOAD_PATH} exists already, not caluclating again. Delete if this is unintended. And keep up the good work, you're doing a great job and look amazingly beautiful today!"
         )
         return
 
-    """cutoff_values = {
+    cutoff_values = {
         "EXP_STRATEGY": 39,
-        "EXP_DATASET": 95,  # 90: 1141577
+        "EXP_DATASET": 95,
         "EXP_BATCH_SIZE": 3,
         "EXP_LEARNER_MODEL": 3,
         "EXP_START_POINT": 20,
         "EXP_TRAIN_TEST_BUCKET_SIZE": 5,
-    }"""
+    }
 
+    """
     cutoff_values = {
         "EXP_STRATEGY": 3,
         "EXP_DATASET": 3,  # 90: 1141577
@@ -112,7 +109,7 @@ def _get_dense_exp_ids(done_workload, CUTOFF_VALUE: int):
         "EXP_LEARNER_MODEL": 2,
         "EXP_START_POINT": 2,
         "EXP_TRAIN_TEST_BUCKET_SIZE": 2,
-    }
+    }"""
 
     for param, cutoff_value in cutoff_values.items():
         print(f"{param} - cutoff_value is {cutoff_value}")
@@ -126,21 +123,21 @@ def _get_dense_exp_ids(done_workload, CUTOFF_VALUE: int):
             .to_numpy()
         )
 
-        Path(f"plots_{CUTOFF_VALUE}").mkdir(exist_ok=True)
+        Path(f"plots__cutoff").mkdir(exist_ok=True)
 
-        """ax = sns.histplot(data_for_hist)
+        ax = sns.histplot(data_for_hist)
         ax.axvline(cutoff_value, color="darkred")
         ax.get_yaxis().set_ticks([])
         ax.set_ylabel("")
         ax.set_xlabel("")
         ax.set_title(f"{param}: {cutoff_value}")
         plt.savefig(
-            f"plots_{CUTOFF_VALUE}/{param}.jpg",
+            f"plots_cutoff/{param}.jpg",
             dpi=300,
             bbox_inches="tight",
             pad_inches=0,
         )
-        plt.clf()"""
+        plt.clf()
 
         exp_ids_present_per_combination = done_workload.groupby(
             by=[c for c in column_combinations if c != param]
@@ -276,14 +273,8 @@ def _calculate_correlations(param_to_evaluate):
     exit(-1)
 
 
-# _calculate_min_cutoffs()
-_get_dense_exp_ids(done_workload, 39)
-# for i in [70, 75, 80, 85, 90, 95, 100]:
-#    _get_dense_exp_ids(done_workload, i)
-# exit(-1)
-# exit(-1)
-# for i in [5, 10, 15, 20, 25, 30, 35]:
-#    _get_dense_exp_ids(done_workload, i)
+_calculate_min_cutoffs()
+_get_dense_exp_ids(done_workload)
 exit(-1)
 for cc in [
     "EXP_BATCH_SIZE",
