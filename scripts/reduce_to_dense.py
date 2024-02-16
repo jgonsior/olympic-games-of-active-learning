@@ -32,7 +32,7 @@ print(len(dense_workload))
 
 
 def _do_stuff(file_name: str):
-    print(file_name)
+    # print(file_name)
     try:
         if file_name.endswith(".csv.xz") or file_name.endswith(".csv"):
             df = pd.read_csv(file_name)
