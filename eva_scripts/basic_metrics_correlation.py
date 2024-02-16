@@ -119,6 +119,10 @@ result_folder.mkdir(parents=True, exist_ok=True)
 summed_up_corr_values.to_csv(result_folder / "basic_metrics.csv")
 
 summed_up_corr_values = summed_up_corr_values.map(lambda r: np.mean(r))
+summed_up_corr_values.loc[:, "Total"] = summed_up_corr_values.mean(axis=1)
+summed_up_corr_values.sort_values(by=["Total"], inplace=True)
+
+print(summed_up_corr_values)
 
 set_seaborn_style(font_size=8)
 fig = plt.figure(figsize=set_matplotlib_size())

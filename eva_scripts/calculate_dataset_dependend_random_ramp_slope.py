@@ -18,6 +18,8 @@ import pandas as pd
 import seaborn as sns
 from datasets import DATASET
 from matplotlib.pyplot import text
+from statsmodels.tsa.stattools import adfuller, kpss
+from misc.plotting import set_seaborn_style
 
 sys.dont_write_bytecode = True
 
@@ -42,32 +44,12 @@ if not ramp_plateau_results_file.exists():
 # check all buckets of 5 AL cycles for stationary
 # when change from "stationary" to "non-stationary" --> we have a slope!
 
-# (EXP_DATASET, EXP_BATCH_SIZE, EXP_LEARNER_MODEL, EXP_TRAIN_TEST_BUCKET_SIZE):17
-cutoff_values: Dict[Tuple[str, int, int, int], float] = {}
+# (EXP_DATASET, EXP_BATCH_SIZE, EXP_LEARNER_MODEL, EXP_TRAIN_TEST_BUCKET_SIZE, EXP_START_POINT):17
+cutoff_values: Dict[Tuple[str, int, int, int, int], float] = {}
 
 
 def _do_stuff(file_name, config):
-
-    font_size = 5.8
-    tex_fonts = {
-        # Use LaTeX to write all text
-        "text.usetex": False,
-        # "text.usetex": False,
-        # "font.family": "times",
-        # Use 10pt font in plots, to match 10pt font in document
-        "axes.labelsize": font_size,
-        "font.size": font_size,
-        # Make the legend/label fonts a little smaller
-        "legend.fontsize": font_size,
-        "xtick.labelsize": font_size,
-        "ytick.labelsize": font_size,
-        "xtick.bottom": True,
-        # "figure.autolayout": True,
-    }
-
-    plt.rcParams.update(tex_fonts)  # type: ignore
-
-    sns.set_theme(rc={"figure.figsize": (12, 6)}, style="white", context="paper")
+    set_seaborn_style()
     metric_file = Path(file_name)
     print(metric_file)
     df = pd.read_csv(metric_file)
@@ -77,6 +59,13 @@ def _do_stuff(file_name, config):
         done_workload_df["EXP_UNIQUE_ID"].isin(df.EXP_UNIQUE_ID)
     ]
     EXP_DATASET = DATASET(small_done_df["EXP_DATASET"].iloc[0])
+
+    if EXP_DATASET in [
+        DATASET["vowel"],
+        DATASET["soybean"],
+        DATASET["statlog_vehicle"],
+    ]:
+        return
 
     del small_done_df["EXP_STRATEGY"]
     del small_done_df["EXP_DATASET"]
@@ -90,95 +79,55 @@ def _do_stuff(file_name, config):
             "EXP_TRAIN_TEST_BUCKET_SIZE",
             "EXP_START_POINT",
         ]
-    )["EXP_UNIQUE_ID"].apply(list)
+    )["EXP_UNIQUE_ID"].apply(lambda rrr: rrr)
 
-    for k, v in grouped.items():
-        interesting_rows = df.loc[df["EXP_UNIQUE_ID"].isin(v)]
-        del interesting_rows["EXP_UNIQUE_ID"]
+    for k, EXP_UNIQUE_ID in grouped.items():
+        current_row = df.loc[df["EXP_UNIQUE_ID"] == EXP_UNIQUE_ID]
+        del current_row["EXP_UNIQUE_ID"]
+        current_row_np = current_row.to_numpy()[0]
+        print(current_row)
 
-        grouped_cutoff_values_list = []
+        current_cutoff_values = {}
+        current_cutoff_values["median"] = np.argmax(
+            current_row_np > np.median(current_row)
+        )
+        current_cutoff_values["mean"] = np.argmax(
+            current_row_np > np.mean(current_row_np)
+        )
 
-        """for ix, row in interesting_rows.iterrows():
-            row = row.to_numpy()
+        for window_size in range(10, len(current_row_np)):
+            window = current_row_np[-window_size:]
 
-            cutoff_values = defaultdict(lambda: 0)
+            # print(window)
 
-            sliding_window_size = 20
-            for sliding_window_indices in range(len(row), sliding_window_size - 1, -1):
-                sliding_window_indices = range(
-                    sliding_window_indices - sliding_window_size,
-                    sliding_window_indices,
-                )
+            dftest = adfuller(window, autolag="t-stat", regression="ctt")
 
-                comparison_value = np.std(row[sliding_window_indices])
-
-                for ttt in sorted([0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.2]):
-                    if comparison_value > ttt and cutoff_values[ttt] == 0:
-                        cutoff_values[ttt] = sliding_window_indices[-1]
-                # print(
-                #    f"{sliding_window_indices[0]}:{sliding_window_indices[-1]}: {comparison_value:.2f} - {np.mean(row[sliding_window_indices]):.2f}"
-                # )
-
-            cutoff_values["111median"] = np.argmax(row > np.median(row))
-            cutoff_values["111mean"] = np.argmax(row > np.mean(row))
-
-            grouped_cutoff_values_list.append(cutoff_values)
-            ax = sns.lineplot(row)
-
-            for ci, cccc in enumerate(cutoff_values.items()):
-                (ck, cv) = cccc
-                ax.axvline(
-                    x=cv,
-                    lw=1,
-                    alpha=0.5,
-                    color=sns.color_palette(n_colors=len(cutoff_values.keys()))[ci],
-                )
-                text(cv, max(row), f"{ck}", rotation=90)
-            ax.set_title(f"{EXP_DATASET.name} - {k}_{ix}")
-
-            plt.savefig(
-                f"plots_cutoffs/{EXP_DATASET.name}-{k}_{ix}.jpg",
-                dpi=300,
-                bbox_inches="tight",
-                pad_inches=0,
+            if dftest[1] > 0.05:
+                res = "non stat"
+            else:
+                res = "    stat"
+            # print(window.tolist())
+            print(
+                f"{len(window)} : {res} {dftest[0]:.2f} {dftest[1]:.2f} {dftest[4]['5%']:.2f} "
             )
-            plt.clf()
 
-        avg_grouped_cutoff_values = defaultdict(list)
-
-        for grouped_cutoff_values in grouped_cutoff_values_list:
-            for kkkk, v in grouped_cutoff_values.items():
-                avg_grouped_cutoff_values[kkkk].append(v)
-
-        for kkkk, v in avg_grouped_cutoff_values.items():
-            avg_grouped_cutoff_values[kkkk] = np.mean(v)
-        """
-        avg_grouped_cutoff_values = {}
-        avg_grouped_cutoff_values["median"] = np.argmax(
-            interesting_rows.mean().to_numpy() > np.median(interesting_rows)
-        )
-        avg_grouped_cutoff_values["mean"] = np.argmax(
-            interesting_rows.mean().to_numpy() > np.mean(interesting_rows)
-        )
-        # avg_grouped_cutoff_values["median_of_mean"] = np.argmax(
-        #    interesting_rows.mean().to_numpy() > np.median(interesting_rows.mean())
-        # )
-        melted_data = interesting_rows.melt(var_name="x", value_name="val")
+        melted_data = current_row.melt(var_name="x", value_name="val")
         ax = sns.lineplot(data=melted_data, x="x", y="val")
 
-        for ci, cccc in enumerate(avg_grouped_cutoff_values.items()):
+        for ci, cccc in enumerate(current_cutoff_values.items()):
             (ck, cv) = cccc
             ax.axvline(
                 x=cv,
                 lw=1,
                 alpha=0.5,
-                color=sns.color_palette(n_colors=len(avg_grouped_cutoff_values.keys()))[
-                    ci
-                ],
+                color=sns.color_palette(n_colors=len(current_cutoff_values.keys()))[ci],
             )
-            text(cv, interesting_rows.mean().max(), f"{ck}", rotation=90)
+            text(cv, current_row.mean().max(), f"{ck}", rotation=90)
 
         ax.set_title(f"{EXP_DATASET.name} - {k}")
+        # plt.show()
+        exit(-1)
+
         plt.savefig(
             f"plots_single_cutoffs/{EXP_DATASET.name}-{k}_grouped.jpg",
             dpi=300,
@@ -188,9 +137,6 @@ def _do_stuff(file_name, config):
         plt.clf()
 
 
-# for EXP_DATASET in config.EXP_GRID_DATASET:
-# if EXP_DATASET.name in ["Iris", "wine_origin", "glass", "parkinsons"]:
-#    continue
 glob_list = [
     f
     for f in glob.glob(
@@ -199,7 +145,8 @@ glob_list = [
     )
 ]
 
-# Parallel(n_jobs=1, verbose=10)(
-Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
-    delayed(_do_stuff)(file_name, config) for file_name in glob_list
+Parallel(n_jobs=1, verbose=10)(
+    # Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
+    delayed(_do_stuff)(file_name, config)
+    for file_name in glob_list
 )
