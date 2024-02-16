@@ -3745,6 +3745,46 @@ packaging = "*"
 test = ["pytest (>=6,!=7.0.0,!=7.0.1)", "pytest-cov (>=3.0.0)", "pytest-qt"]
 
 [[package]]
+name = "rbeast"
+version = "0.1.18"
+description = "Bayesian changepoint detection and time series decomposition"
+optional = false
+python-versions = ">=3.5"
+files = [
+    {file = "Rbeast-0.1.18-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:99b106c4873524504738c3d77c52f09a41d5f70e66f51a8097ecc8fb3122fb0c"},
+    {file = "Rbeast-0.1.18-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:0749464adf9cad954824b70c5d5c0a211bd21b82f28882e349742925c71a6e18"},
+    {file = "Rbeast-0.1.18-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:7de9e5ad92f068c017a2fae2db1f64f3d48112d4e6c2f9d8deb06dc3e0d20e3b"},
+    {file = "Rbeast-0.1.18-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:631a2ac3c417649ba72077eef5d590e10bc73fae353c5e2d6d9fbcc91bc5e185"},
+    {file = "Rbeast-0.1.18-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:67003ae8a8f660e54ddea69066d18861dcf6a68201bf4c58854cce32f0740d2f"},
+    {file = "Rbeast-0.1.18-cp310-cp310-win_amd64.whl", hash = "sha256:d4e4bcc23baee145d63ff4c74a63cbca31103ba6f502c6b12bcad90e7ec43a27"},
+    {file = "Rbeast-0.1.18-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:66eea6d623372f0d8fde2a826c25e074999079cb8cb1321e83f3cd99bde72fdd"},
+    {file = "Rbeast-0.1.18-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:7a96f594ef4ba709dd6a7c9f80e8f38514ed0601ecdb02f4d43f6b88b890fb8b"},
+    {file = "Rbeast-0.1.18-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:d722654347a0b5232bf25390aaf5bbf4bf026532b6ea7240d332a10bcbb1f7ec"},
+    {file = "Rbeast-0.1.18-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:074097e24dfcc2ccf86ee9eb0e7da401667b79510b24dfdef8d054a2980663af"},
+    {file = "Rbeast-0.1.18-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:8f90268e5c8ee309d16c046b19ab6998d0855357298d8f10e816fdffcb03b75c"},
+    {file = "Rbeast-0.1.18-cp311-cp311-win_amd64.whl", hash = "sha256:0ee4aa780ea28a2e193c1c64967e82e31f1720d76f0c25f8f830c90581df17c8"},
+    {file = "Rbeast-0.1.18-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:cc62cb7a9ae091213e997736c1fedefb5439c14c6665e256c09424bbff890d4e"},
+    {file = "Rbeast-0.1.18-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e51d922a19d18af3d8a35c5886e0ebb14d849d8db8b02e6267cea75677414ade"},
+    {file = "Rbeast-0.1.18-cp37-cp37m-win_amd64.whl", hash = "sha256:407375d09669dc0fb1cd689bef61a249a4cd9874966086953ebac61384c75bef"},
+    {file = "Rbeast-0.1.18-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:c48b30705baf0f463710adf156477a5aac8e06d6023327f7af072e7b80286515"},
+    {file = "Rbeast-0.1.18-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:9b9514a0d803e7cb43cedf1a39da4ca575abba3fe52bae123751dc4b5e3ab383"},
+    {file = "Rbeast-0.1.18-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:823f117fa19fdcb08fb61764825c1ed4bc72861ed9a72ca5860d92ab54ddb599"},
+    {file = "Rbeast-0.1.18-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ff15e8964634c543772950d464c0779f7953a54c03083cbda77842335f7f0223"},
+    {file = "Rbeast-0.1.18-cp38-cp38-win_amd64.whl", hash = "sha256:16c4f19647baa94a76af79c58a7cef6dab8a3f26be8a0df393a5817eb389d25b"},
+    {file = "Rbeast-0.1.18-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:c94fdad8ce03f75b94b7402ec28d889051caff8934bae703faccede9c7ef8d4d"},
+    {file = "Rbeast-0.1.18-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:c9fcada062653e117722ced8f81e76dba6f1edaf31b6d71ef4d41b33c4fc8204"},
+    {file = "Rbeast-0.1.18-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:e19313b08487051490a11acd7427792709f877699c4bcfba8d1976e004c7a835"},
+    {file = "Rbeast-0.1.18-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e5c0d7779988b9f7e25bdd8e3a8ac1d17bc4733720786808bcf491ad454d51c4"},
+    {file = "Rbeast-0.1.18-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:44fad185ec7d648567ed4964786488145315504248afb63f6f511d08401e3047"},
+    {file = "Rbeast-0.1.18-cp39-cp39-win_amd64.whl", hash = "sha256:b35799cc07e629ff350df1372e8b1b1595cfdc01759f3ec248398275b59aa488"},
+    {file = "Rbeast-0.1.18.tar.gz", hash = "sha256:b616fb54de460e7cedd1709047d1cbb9528d2571ddd097074c36f1571e8c4ee4"},
+]
+
+[package.dependencies]
+matplotlib = ">=2.2.0"
+numpy = ">=1.17.3"
+
+[[package]]
 name = "referencing"
 version = "0.30.2"
 description = "JSON Referencing + Python"
@@ -4008,6 +4048,58 @@ files = [
     {file = "ruamel.yaml.clib-0.2.8-cp39-cp39-win_amd64.whl", hash = "sha256:25ac8c08322002b06fa1d49d1646181f0b2c72f5cbc15a85e80b4c30a544bb15"},
     {file = "ruamel.yaml.clib-0.2.8.tar.gz", hash = "sha256:beb2e0404003de9a4cab9753a8805a8fe9320ee6673136ed7f04255fe60bb512"},
 ]
+
+[[package]]
+name = "ruptures"
+version = "1.1.9"
+description = "Change point detection for signals in Python."
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "ruptures-1.1.9-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:8ab2569b94f6e6fb397379c4085516817ac51101970f4392d5f9f383ba45b02f"},
+    {file = "ruptures-1.1.9-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:aebd937375305d5247e3559158dbb1249f358540a11903a174a68fd2ce7ffeb9"},
+    {file = "ruptures-1.1.9-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b8071bd94c3acb09de3ddc09f88e002442e233a9431f1964d7949cf06c4fb315"},
+    {file = "ruptures-1.1.9-cp310-cp310-win_amd64.whl", hash = "sha256:06da516a38ac9ab0525f0c3791feaf1fb2c4704d85df6197578f8e1b8b808113"},
+    {file = "ruptures-1.1.9-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:ec33c2e42156b4de8fa52f2b1194c94d9b36b5e68b49984b2103c40c24606267"},
+    {file = "ruptures-1.1.9-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:4aaf893069368957a29883c209f57a782278cc6a85a2e1fb6193477a45ae115c"},
+    {file = "ruptures-1.1.9-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2f8899fc23c762245b3b2bf532ee366d285c98c3ffc4a66746a4daf524997cd0"},
+    {file = "ruptures-1.1.9-cp311-cp311-win_amd64.whl", hash = "sha256:4759f0b3decd8ee3c2bc5104247aedb9c06d51a2055e40961d5389dbeb7b9075"},
+    {file = "ruptures-1.1.9-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:28d242c961a2b486e36b25a4df3f26fabee0607ae8c80b2e65e73a9db491ce76"},
+    {file = "ruptures-1.1.9-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:9df414e3952e1d6b26dc02515d28b9adfc821ef2c6459c196a3ae751dd7d1813"},
+    {file = "ruptures-1.1.9-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:8466857f4d5c957b050bead1bb0e7d5f2807c60c5bdc30fc533f36ae0234583f"},
+    {file = "ruptures-1.1.9-cp312-cp312-win_amd64.whl", hash = "sha256:92adde29b24b3ad94d8cd9421634a5f8dd729ae74d3b88bdca4bbc5cfd450c11"},
+    {file = "ruptures-1.1.9-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:e93ddfd7a5c7930fb2a0b3e9af63f5b802c084117ceb00e8c3e1c3084128277b"},
+    {file = "ruptures-1.1.9-cp36-cp36m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1b04359d3b74d33175ee76218572ac8d6947aa76bd5db9646aa5feb4b9c6b81a"},
+    {file = "ruptures-1.1.9-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:439f200518ac5e67974cd82348eaa9a4bdb8d460019765d16619bf4aed6612ee"},
+    {file = "ruptures-1.1.9-cp36-cp36m-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:a7c2d8d7d60a5063d28a3faea0fef2e988e3e24774974da8827fa6a3b43d7e8a"},
+    {file = "ruptures-1.1.9-cp36-cp36m-win32.whl", hash = "sha256:b3b036e9a34734db789ca2490119319845d4fa7fa127b2e824313a074c58b5b9"},
+    {file = "ruptures-1.1.9-cp36-cp36m-win_amd64.whl", hash = "sha256:8ca334bdb810acee3c7adab1b8dc99d40f7d9e75b2f972adce9e69fddeef4e0e"},
+    {file = "ruptures-1.1.9-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:1d2bf983c70f680beafced8b279dcc15eabf706f4e0efa32d87a3d42c3e9c30e"},
+    {file = "ruptures-1.1.9-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:73f728f4b2de60483347464b811287b3a8cc44f5bcd905c32dd2b5e5e23c68a3"},
+    {file = "ruptures-1.1.9-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6978aa528b36c9a683b061231539393b392f5f3ab52b511f2f3912a37d74667d"},
+    {file = "ruptures-1.1.9-cp37-cp37m-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:4547e7611c97eb818c6dc8054c25ed84fb5060951541d3ef8602575b43487e87"},
+    {file = "ruptures-1.1.9-cp37-cp37m-win32.whl", hash = "sha256:3934bffd4f424de3a6ef73931fe9f4d84ff905f8ceef12c5f87b94006d90cc78"},
+    {file = "ruptures-1.1.9-cp37-cp37m-win_amd64.whl", hash = "sha256:31c8699b6fd7ec20ea31bf2a1a5dbeb52a79cad4f51615694f6cf5b443fc8af2"},
+    {file = "ruptures-1.1.9-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:14e2bf1d3453c67a7b11dcc7a34c20beebcd60401af35f18de8a4cad3fde30d7"},
+    {file = "ruptures-1.1.9-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:981fc93f7093b4d7522e148be61635eae39ab46b2e20afb6b736d1235c38b053"},
+    {file = "ruptures-1.1.9-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:732a9a06d46f52a9ce76c8fa1a799718f019d7431cd018ea54fe6b39ac13e3b3"},
+    {file = "ruptures-1.1.9-cp38-cp38-win_amd64.whl", hash = "sha256:49d42f06a755664f660ab326a887ecd1ec8fe4d3bdf78c1e233fb43029c8ee32"},
+    {file = "ruptures-1.1.9-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:829e7623364287c87607f01b62c799396bbdd3c4c2d0c9757e6252960fa51de2"},
+    {file = "ruptures-1.1.9-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:8cf9597804d1cd227f16021b24e0619c0747247b9de268e436ec8c317a846aca"},
+    {file = "ruptures-1.1.9-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:03fd112accfff518ab191ebac78d2d3cf2eca341a41363bfd95f3db907a6a7b1"},
+    {file = "ruptures-1.1.9-cp39-cp39-win_amd64.whl", hash = "sha256:55d7f20088153ebc2d4d2528dc3b6f7bdcdc8638153e84bfe1393e89001535ce"},
+    {file = "ruptures-1.1.9.tar.gz", hash = "sha256:aa940f3c02235dab94753ff15689f8ebaca10c83da71cb29cbb7f981dfa362dc"},
+]
+
+[package.dependencies]
+numpy = "*"
+scipy = "*"
+
+[package.extras]
+dev = ["pre-commit"]
+display = ["matplotlib"]
+docs = ["jupyter", "librosa", "matplotlib", "mkdocs", "mkdocs-macros-plugin", "mkdocs-material", "mkdocs-section-index", "mkdocstrings[python] (>=0.18)", "mknotebooks", "nltk", "pymdown-extensions"]
+test = ["pytest", "pytest-cov"]
 
 [[package]]
 name = "scikit-activeml"
@@ -4708,4 +4800,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "6a649fc3cfdab2738eceeecddcf8cfa535a68164bca0797f6c0a6c04ae4bc872"
+content-hash = "5709aca261619f6444e58cbc27e7894b0cbce685c9653abcb274c9b98ffe2324"
