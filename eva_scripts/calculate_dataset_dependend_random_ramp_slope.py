@@ -99,7 +99,7 @@ def _do_stuff(file_name, config):
 
         beast_res = rb.beast(current_row_np, season="none", print_options=0)
 
-        for cp_i, cp in enumerate(beast_res.trend.cp[:2]):
+        for cp_i, cp in enumerate(beast_res.trend.cp[:1]):
             if np.isnan(cp):
                 continue
             current_cutoff_values[f"cp_{cp_i}"] = cp
@@ -152,7 +152,6 @@ def _do_stuff(file_name, config):
             )"""
         ax = sns.lineplot(current_row_np)
 
-        linestyles = ["-", "--", "-.", ":"]
         linestyles = [
             lll
             for lll in OrderedDict(
@@ -173,6 +172,7 @@ def _do_stuff(file_name, config):
                 ]
             ).values()
         ]
+        linestyles = ["-", "--", "-.", ":"]
 
         for ci, cccc in enumerate(current_cutoff_values.items()):
             (ck, cv) = cccc

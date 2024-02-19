@@ -45,6 +45,8 @@ def _is_standard_metric(metric_path: str) -> bool:
 
 
 def _do_stuff(exp_dataset, exp_strategy, config):
+    if exp_strategy.name != "SKACTIVEML_DWUS":
+        return
     glob_list = [
         f
         for f in glob.glob(
@@ -55,27 +57,39 @@ def _do_stuff(exp_dataset, exp_strategy, config):
         if _is_standard_metric(f)
     ]
 
-    metric_dfs = {}
-    for file_name in glob_list:
-        metric_name = Path(file_name).name.removesuffix(".csv.xz")
-        metric_dfs[metric_name] = pd.read_csv(file_name)
-
-    if len(metric_dfs) == 0:
+    if len(glob_list) == 0:
         return
+
+    metric_dfs = {}
+
+    exp_ids = []
+    for file_name in glob_list:
+        print(file_name)
+        metric_name = Path(file_name).name.removesuffix(".csv.xz")
+        metric_dfs[metric_name] = pd.read_csv(file_name).sort_values(by="EXP_UNIQUE_ID")
+
+        if len(exp_ids) == 0:
+            exp_ids = set(metric_dfs[metric_name]["EXP_UNIQUE_ID"].tolist())
+        else:
+            difference = set(
+                metric_dfs[metric_name]["EXP_UNIQUE_ID"].tolist()
+            ).difference(exp_ids)
+            if difference != 0:
+                # save exp_unique_id
+                # delete them for now from all dfs to minimum
+                print(file_name)
+                exit(-1)
 
     summed_up_corr_values = None
 
-    for EXP_UNIQUE_ID in list(metric_dfs.values())[0]["EXP_UNIQUE_ID"]:
-
+    for ix, row in list(metric_dfs.values())[0].iterrows():
         correlation_data = []
 
         for metric, metric_df in metric_dfs.items():
             correlation_data.append(
                 [
                     metric,
-                    *metric_df.loc[metric_df["EXP_UNIQUE_ID"] == EXP_UNIQUE_ID]
-                    .iloc[0]
-                    .to_list()[:-1],
+                    *metric_df.iloc[ix].to_list()[:-1],
                 ]
             )
         correlation_matrix = pd.DataFrame(correlation_data).T
@@ -94,14 +108,13 @@ def _do_stuff(exp_dataset, exp_strategy, config):
     return summed_up_corr_values
 
 
-# dfs = Parallel(n_jobs=1, verbose=10)(
-dfs = Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
+dfs = Parallel(n_jobs=1, verbose=10)(
+    # dfs = Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
     delayed(_do_stuff)(exp_dataset, exp_strategy, config)
     for (exp_dataset, exp_strategy) in itertools.product(
         config.EXP_GRID_DATASET, config.EXP_GRID_STRATEGY
     )
 )
-
 
 summed_up_corr_values = None
 for df in dfs:
