@@ -18,9 +18,7 @@ import pandas as pd
 import seaborn as sns
 from datasets import DATASET
 from matplotlib.pyplot import text
-from statsmodels.tsa.stattools import adfuller, kpss
 from misc.plotting import set_seaborn_style
-import Rbeast as rb
 
 sys.dont_write_bytecode = True
 
@@ -67,7 +65,7 @@ def _do_stuff(file_name, config):
         DATASET["statlog_vehicle"],
     ]:
         return
-    
+
     if EXP_DATASET not in [DATASET["letter"], DATASET["MiceProtein"]]:
         return
     """
@@ -97,59 +95,54 @@ def _do_stuff(file_name, config):
             rpt.Dynp(model="l2").fit(current_row_np).predict(n_bkps=1)[0]
         )
 
-        beast_res = rb.beast(current_row_np, season="none", print_options=0)
+        average_improvement_over_all_time_steps = np.sum(current_row_np) / len(
+            current_row_np
+        )
+
+        mean_from_poor_mens_plateau = np.mean(
+            current_row_np[np.argmax(current_row_np > np.mean(current_row_np)) :]
+        )
+
+        window_size = 5
+
+        for window_param in range(window_size, len(current_row_np)):
+            # growing_window = current_row_np[-window_param:]
+            fixed_window = current_row_np[
+                (len(current_row_np) - window_param) : (
+                    len(current_row_np) - window_param + window_size
+                )
+            ]
+
+            # growing_average = np.mean(growing_window)
+
+            fixed_average = np.mean(fixed_window)
+            # print(f"{len(window)}: {window_std:.2f} {overall_stdt:.2f}")
+
+            if fixed_average > average_improvement_over_all_time_steps:
+                current_cutoff_values["fix"] = len(current_row_np) - window_param
+
+            # if fixed_average > mean_from_poor_mens_plateau:
+            #    current_cutoff_values["poor"] = len(current_row_np) - window_param
+
+        if "fix" not in current_cutoff_values.keys():
+            current_cutoff_values["fix"] = 1
+        """beast_res = rb.beast(current_row_np, season="none", print_options=0)
 
         for cp_i, cp in enumerate(beast_res.trend.cp[:1]):
             if np.isnan(cp):
                 continue
             current_cutoff_values[f"cp_{cp_i}"] = cp
-
+        """
         # current_cutoff_values["mean"] = np.argmax(
         #    current_row_np > np.mean(current_row_np)
         # )
+        """current_cutoff_values["poor"] = np.argmax(
+            current_row_np
+            > np.mean(
+                current_row_np[np.argmax(current_row_np > np.mean(current_row_np)) :]
+            )
+        )"""
 
-        """for window_size in range(5, len(current_row_np)):
-            window = current_row_np[-window_size:]
-            mk_result = mk.hamed_rao_modification_test(window, alpha=0.1)[:2]
-            mk_result1 = mk.original_test(window, alpha=0.1)[:2]
-            mk_result2 = mk.yue_wang_modification_test(window, alpha=0.1)[:2]
-            mk_result3 = mk.pre_whitening_modification_test(window, alpha=0.1)[:2]
-            mk_result4 = mk.trend_free_pre_whitening_modification_test(
-                window, alpha=0.1
-            )[:2]
-            mk_result5 = mk.regional_test(window, alpha=0.1)[:2]
-            # print(f"{len(window)}: {mk_result}")
-            if mk_result[0] == "increasing" and mk_result[1] == True:
-                current_cutoff_values["t1"] = len(current_row_np) - window_size
-            if mk_result1[0] == "increasing" and mk_result1[1] == True:
-                current_cutoff_values["t2"] = len(current_row_np) - window_size
-            if mk_result2[0] == "increasing" and mk_result2[1] == True:
-                current_cutoff_values["t3"] = len(current_row_np) - window_size
-            if mk_result3[0] == "increasing" and mk_result3[1] == True:
-                current_cutoff_values["t4"] = len(current_row_np) - window_size
-            if mk_result4[0] == "increasing" and mk_result4[1] == True:
-                current_cutoff_values["t5"] = len(current_row_np) - window_size
-
-            if mk_result5[0] == "increasing" and mk_result5[1] == True:
-                current_cutoff_values["regional_test"] = (
-                    len(current_row_np) - window_size
-                )
-                # print(current_cutoff_values["trend"])
-                # break
-
-            if len(np.unique(window)) == 1:
-                continue
-
-            dftest = adfuller(window, autolag="t-stat", regression="ctt")
-
-            if dftest[1] > 0.05:
-                res = "non stat"
-            else:
-                res = "    stat"
-            # print(window.tolist())
-            print(
-                f"{len(window)} : {res} {dftest[0]:.2f} {dftest[1]:.2f} {dftest[4]['5%']:.2f} "
-            )"""
         ax = sns.lineplot(current_row_np)
 
         linestyles = [
@@ -185,7 +178,19 @@ def _do_stuff(file_name, config):
             )
             text(cv, current_row.mean().max(), f"{ck}: {cv}", rotation=90, fontsize=12)
 
+        # ax.axhline(y=mean_from_poor_mens_plateau, lw=2, alpha=0.3, linestyle="--")
+        ax.axhline(y=np.mean(current_row_np), lw=2, alpha=0.3, linestyle="--")
+
         ax.set_title(f"{EXP_DATASET.name} - {k}")
+
+        ax.axvspan(0, current_cutoff_values["fix"], facecolor="red", alpha=0.2)
+        ax.axvspan(
+            current_cutoff_values["fix"],
+            len(current_row_np),
+            facecolor="blue",
+            alpha=0.2,
+        )
+
         # plt.show()
         # exit(-1)
         plt.savefig(
