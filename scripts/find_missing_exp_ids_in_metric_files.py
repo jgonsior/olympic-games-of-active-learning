@@ -1,30 +1,16 @@
-from collections import defaultdict
 import copy
 import csv
 import itertools
-import multiprocessing
-from os import setsid
 from pathlib import Path
-from re import M
 import sys
 import glob
-import warnings
 from joblib import Parallel, delayed
-from matplotlib import pyplot as plt
 import pandas as pd
-from tqdm import tqdm
-from datasets import DATASET
-from misc.plotting import set_seaborn_style, set_matplotlib_size
 
-from resources.data_types import AL_STRATEGY
 
 sys.dont_write_bytecode = True
 
 from misc.config import Config
-import numpy as np
-import seaborn as sns
-
-from scipy.stats import spearmanr
 
 
 config = Config()
@@ -97,14 +83,14 @@ def _do_stuff(exp_dataset, exp_strategy, config):
         )
 
         exp_ids_union = exp_ids_union.union(exp_ids_per_metric[metric_name])
-
+    print(len(exp_ids_union))
     exp_ids_intersection = copy.deepcopy(exp_ids_union)
+    print(len(exp_ids_intersection))
 
     for metric, exp_ids in exp_ids_per_metric.items():
         exp_ids_intersection = exp_ids_intersection.intersection(exp_ids)
 
     if len(exp_ids_intersection) < len(exp_ids_union):
-
         if not config.MISSING_EXP_IDS_IN_METRIC_FILES.exists():
             with open(config.MISSING_EXP_IDS_IN_METRIC_FILES, "a") as f:
                 w = csv.DictWriter(f, fieldnames=["metric_file"])

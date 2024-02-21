@@ -90,9 +90,9 @@ class CLASS_DISTRIBUTIONS(Base_Computed_Metric):
             ):
                 new_class_distributions = [0 for _ in self.classes[EXP_DATASET]]
                 for key, value in zip(k, class_distributions):
-                    new_class_distributions[self.classes[EXP_DATASET].index(key)] = (
-                        value
-                    )
+                    new_class_distributions[
+                        self.classes[EXP_DATASET].index(key)
+                    ] = value
                 class_distributions = new_class_distributions
 
             class_distributions = [

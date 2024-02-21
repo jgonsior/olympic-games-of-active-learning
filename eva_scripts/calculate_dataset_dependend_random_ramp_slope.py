@@ -1,18 +1,13 @@
-from collections import OrderedDict, defaultdict
+from collections import OrderedDict
 import csv
-from itertools import count
-from math import e
 import multiprocessing
 from pathlib import Path
-from re import I, S
-import re
 import sys
 import glob
 from typing import Dict, Tuple
 
 from joblib import Parallel, delayed
-from matplotlib import lines, pyplot as plt
-from matplotlib.hatch import VerticalHatch
+from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
