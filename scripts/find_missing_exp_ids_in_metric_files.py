@@ -106,7 +106,7 @@ def _do_stuff(exp_dataset, exp_strategy, config):
                         done_workload_df["EXP_UNIQUE_ID"] == broken_exp_id
                     ]
                     .to_numpy()
-                    .to_list()
+                    .tolist()
                 )
         return
         for metric, exp_ids in exp_ids_per_metric.items():
