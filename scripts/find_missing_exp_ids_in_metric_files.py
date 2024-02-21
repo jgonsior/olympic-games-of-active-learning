@@ -104,7 +104,9 @@ def _do_stuff(exp_dataset, exp_strategy, config):
                 w.writerow(
                     done_workload_df.loc[
                         done_workload_df["EXP_UNIQUE_ID"] == broken_exp_id
-                    ].to_list()
+                    ]
+                    .to_numpy()
+                    .to_list()
                 )
         return
         for metric, exp_ids in exp_ids_per_metric.items():
