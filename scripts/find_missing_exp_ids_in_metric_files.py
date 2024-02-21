@@ -6,6 +6,7 @@ import sys
 import glob
 from joblib import Parallel, delayed
 import pandas as pd
+import multiprocessing
 
 
 sys.dont_write_bytecode = True
@@ -14,6 +15,8 @@ from misc.config import Config
 
 
 config = Config()
+
+done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
 
 
 def _is_standard_metric(metric_path: str) -> bool:
@@ -83,24 +86,26 @@ def _do_stuff(exp_dataset, exp_strategy, config):
         )
 
         exp_ids_union = exp_ids_union.union(exp_ids_per_metric[metric_name])
-    print(len(exp_ids_union))
     exp_ids_intersection = copy.deepcopy(exp_ids_union)
 
     for metric, exp_ids in exp_ids_per_metric.items():
         exp_ids_intersection = exp_ids_intersection.intersection(exp_ids)
-    print(len(exp_ids_intersection))
 
     if len(exp_ids_intersection) < len(exp_ids_union):
         if not config.MISSING_EXP_IDS_IN_METRIC_FILES.exists():
             with open(config.MISSING_EXP_IDS_IN_METRIC_FILES, "a") as f:
-                w = csv.DictWriter(f, fieldnames=["metric_file"])
+                w = csv.DictWriter(f, fieldnames=done_workload_df.keys())
                 w.writeheader()
 
         with open(config.MISSING_EXP_IDS_IN_METRIC_FILES, "a") as f:
-            w = csv.DictWriter(f, fieldnames=["EXP_UNIQUE_ID"])
+            w = csv.DictWriter(f, fieldnames=done_workload_df.keys())
 
             for broken_exp_id in exp_ids_intersection:
-                w.writerow({"EXP_UNIQUE_ID": broken_exp_id})
+                w.writerow(
+                    done_workload_df.loc[
+                        done_workload_df["EXP_UNIQUE_ID"] == broken_exp_id
+                    ]
+                )
         return
         for metric, exp_ids in exp_ids_per_metric.items():
             if exp_ids_per_metric[metric].difference(exp_ids_intersection) > 0:
