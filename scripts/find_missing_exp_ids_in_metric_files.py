@@ -42,8 +42,9 @@ def _is_standard_metric(metric_path: str) -> bool:
         "weighted_recall",
         "learner_training_time",
         "query_selection_time",
-        "y_pred_test.csv",
-        "y_pred_train.csv",
+        "y_pred_test",
+        "y_pred_train",
+        "selected_indices",
     ]
 
     for sm in standard_metrics:
