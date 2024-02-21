@@ -85,10 +85,10 @@ def _do_stuff(exp_dataset, exp_strategy, config):
         exp_ids_union = exp_ids_union.union(exp_ids_per_metric[metric_name])
     print(len(exp_ids_union))
     exp_ids_intersection = copy.deepcopy(exp_ids_union)
-    print(len(exp_ids_intersection))
 
     for metric, exp_ids in exp_ids_per_metric.items():
         exp_ids_intersection = exp_ids_intersection.intersection(exp_ids)
+    print(len(exp_ids_intersection))
 
     if len(exp_ids_intersection) < len(exp_ids_union):
         if not config.MISSING_EXP_IDS_IN_METRIC_FILES.exists():
