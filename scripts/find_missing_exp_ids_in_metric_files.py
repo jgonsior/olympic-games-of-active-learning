@@ -101,11 +101,6 @@ def _do_stuff(exp_dataset, exp_strategy, config):
             w = csv.DictWriter(f, fieldnames=done_workload_df.keys())
 
             for broken_exp_id in exp_ids_intersection:
-                print(
-                    done_workload_df.loc[
-                        done_workload_df["EXP_UNIQUE_ID"] == broken_exp_id
-                    ].to_dict()
-                )
                 w.writerow(
                     done_workload_df.loc[
                         done_workload_df["EXP_UNIQUE_ID"] == broken_exp_id
