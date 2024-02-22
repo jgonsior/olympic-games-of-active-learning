@@ -27,10 +27,6 @@ done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
 print(done_workload_df.keys())
 
 
-# (EXP_DATASET, EXP_BATCH_SIZE, EXP_LEARNER_MODEL, EXP_TRAIN_TEST_BUCKET_SIZE, EXP_START_POINT):17
-cutoff_values: Dict[Tuple[str, int, int, int, int], float] = {}
-
-
 def _find_thresholds_and_plot_them(file_name, config):
     set_seaborn_style(font_size=10)
     metric_file = Path(file_name)
@@ -193,15 +189,13 @@ def _find_thresholds_and_plot_them(file_name, config):
 
 def _calculate_thresholds_and_save_them(file_name, config):
     metric_file = Path(file_name)
-    print(metric_file)
-    df = pd.read_csv(metric_file)
+    df = pd.read_csv(metric_file).drop_duplicates()
     # print(df)
 
     small_done_df = done_workload_df.loc[
         done_workload_df["EXP_UNIQUE_ID"].isin(df.EXP_UNIQUE_ID)
     ]
     EXP_DATASET = DATASET(small_done_df["EXP_DATASET"].iloc[0])
-
     del small_done_df["EXP_STRATEGY"]
     del small_done_df["EXP_DATASET"]
     del small_done_df["EXP_RANDOM_SEED"]
@@ -243,11 +237,12 @@ def _calculate_thresholds_and_save_them(file_name, config):
                 continue
 
         if cutoff_value is None:
-            cutoff_values = round(len(current_row_np) / 2)
+            cutoff_value = round(len(current_row_np) / 2)
 
         result = {kkk: vvv for kkk, vvv in zip(grouped.index.names, group)}
         del result[None]
         result["cutoff_value"] = cutoff_value
+        result["EXP_DATASET"] = EXP_DATASET
 
         _append_and_create(
             config.DATASET_DEPENDENT_RANDOM_RAMP_PLATEAU_THRESHOLD_PATH,
@@ -264,7 +259,27 @@ glob_list = [
 ]
 
 # Parallel(n_jobs=1, verbose=10)(
-Parallel(n_jobs=multiprocessing.cpu_count() - 4, verbose=10)(
+Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
     delayed(_calculate_thresholds_and_save_them)(file_name, config)
     for file_name in glob_list
 )
+
+# mergen done_workload_df and _dataset_dependent_random_ramp_plateau_threshold
+old_plateau_df = pd.read_csv(
+    config.DATASET_DEPENDENT_RANDOM_RAMP_PLATEAU_THRESHOLD_PATH
+)
+done_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
+
+del done_df["EXP_STRATEGY"]
+del done_df["EXP_RANDOM_SEED"]
+del done_df["EXP_NUM_QUERIES"]
+print(len(done_df))
+merged = pd.merge(
+    done_df,
+    old_plateau_df,
+    on=[kkk for kkk in old_plateau_df.columns if kkk != "cutoff_value"],
+    how="outer",
+)
+print(len(merged))
+print(merged.keys())
+print(merged["cutoff_value"].unique())

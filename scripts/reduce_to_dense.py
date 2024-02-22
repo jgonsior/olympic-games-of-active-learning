@@ -39,6 +39,9 @@ def _do_stuff(file_name: Path):
 
     a = len(df)
     df = df[df["EXP_UNIQUE_ID"].isin(dense_ids)]
+
+    df.drop_duplicates(inplace=True)
+
     if len(df) < a:
         print(f"{len(df)}<{a}: {file_name}")
 

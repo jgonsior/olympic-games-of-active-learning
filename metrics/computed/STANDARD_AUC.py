@@ -1,16 +1,27 @@
 from __future__ import annotations
 import glob
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, List, Tuple
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Tuple
 import pandas as pd
 
+from datasets import DATASET
 from metrics.computed.base_computed_metric import Base_Computed_Metric
 
 if TYPE_CHECKING:
-    pass
+    from misc.config import Config
 
 
 class STANDARD_AUC(Base_Computed_Metric):
+
+    _dataset_dependend_thresholds_df: pd.DataFrame
+
+    def __init__(self, config: Config) -> None:
+        super().__init__(config)
+
+        self._dataset_dependend_thresholds_df = pd.read_csv(
+            self.config.DATASET_DEPENDENT_RANDOM_RAMP_PLATEAU_THRESHOLD_PATH
+        )
+
     def _pre_appy_to_row_hook(self, df: pd.DataFrame) -> pd.DataFrame:
         if "0" in df.columns:
             del df["0"]
@@ -19,18 +30,12 @@ class STANDARD_AUC(Base_Computed_Metric):
             df = self._parse_using_ast_literal_eval(df, calculate_mean_too=True)
         return df
 
-    def range_diff(
-        self, row: pd.Series, range_start: int, range_end: int, EXP_DATASET: DATASET
-    ) -> pd.Series:
-        row = row.loc[row.index != "EXP_UNIQUE_ID"]
-        row1 = row[range_start]
-        row2 = row[range_end]
-
-        return row2 - row1
-
     def range_auc(
         self, row: pd.Series, range_start: int, range_end: int, EXP_DATASET: DATASET
     ) -> pd.Series:
+        # if range_start == "pre_computed":
+        # get precomputed per exp_unique_id
+
         row = row.loc[row.index != "EXP_UNIQUE_ID"]
         row = row[range_start:range_end]
 
@@ -74,63 +79,44 @@ class STANDARD_AUC(Base_Computed_Metric):
         ]
         results = []
 
-        print("I NEED TO DEFINE MORE CUT POINTS BESIDES 0-20!!")
-        print(
-            "And what about learning stability when having 100 iterations? Kinda pointless to only look at the last 5 iterations, need to be a cut point until this specific point as well"
-        )
-        print(
-            """
-              * Dataset specific thresholds
-              * Thresholds are NOT part of metric name to make it comparable among datasets
-              * I need: full, first_third, middle_third, last_third_stability, ramp_up, learning_stability, und jetzt noch irgendwas über die "wir gehen hoch phase", vielleicht pos_auc, oder neg_auc, oder ist das nicht schon nr_decreasing_al_cycles?
-              * ich bestimme pro datensatz wie viele AL cycles es überhaupt geben kann (unter berücksichtigung der batch size, indem ich mir die nan werte anschaue?)
-              """
-        )
-        exit(-1)
         for metric in all_existing_metric_names:
             results = [
                 *results,
                 *self._compute_single_metric_jobs(
                     existing_metric_names=[metric],
-                    new_metric_name="auc_0_100_" + metric,
+                    new_metric_name="final_value" + metric,
+                    apply_to_row=self.range_auc,
+                    additional_apply_to_row_kwargs={"range_start": -1, "range_end": -1},
+                ),
+                *self._compute_single_metric_jobs(
+                    existing_metric_names=[metric],
+                    new_metric_name="first_5" + metric,
                     apply_to_row=self.range_auc,
                     additional_apply_to_row_kwargs={"range_start": 0, "range_end": 5},
                 ),
                 *self._compute_single_metric_jobs(
                     existing_metric_names=[metric],
-                    new_metric_name="auc_0_10_" + metric,
+                    new_metric_name="last_5" + metric,
                     apply_to_row=self.range_auc,
-                    additional_apply_to_row_kwargs={"range_start": 0, "range_end": 5},
+                    additional_apply_to_row_kwargs={"range_start": -5, "range_end": -1},
                 ),
                 *self._compute_single_metric_jobs(
                     existing_metric_names=[metric],
-                    new_metric_name="auc_5_15_" + metric,
+                    new_metric_name="ramp_up_auc_" + metric,
                     apply_to_row=self.range_auc,
-                    additional_apply_to_row_kwargs={"range_start": 5, "range_end": 15},
+                    additional_apply_to_row_kwargs={
+                        "range_start": 0,
+                        "range_end": "pre_calculated",
+                    },
                 ),
                 *self._compute_single_metric_jobs(
                     existing_metric_names=[metric],
-                    new_metric_name="auc_15_20_" + metric,
+                    new_metric_name="plateau_auc_" + metric,
                     apply_to_row=self.range_auc,
-                    additional_apply_to_row_kwargs={"range_start": 15, "range_end": 20},
-                ),
-                *self._compute_single_metric_jobs(
-                    existing_metric_names=[metric],
-                    new_metric_name="auc_0_7_" + metric,
-                    apply_to_row=self.range_auc,
-                    additional_apply_to_row_kwargs={"range_start": 0, "range_end": 7},
-                ),
-                *self._compute_single_metric_jobs(
-                    existing_metric_names=[metric],
-                    new_metric_name="auc_7_14_" + metric,
-                    apply_to_row=self.range_auc,
-                    additional_apply_to_row_kwargs={"range_start": 7, "range_end": 14},
-                ),
-                *self._compute_single_metric_jobs(
-                    existing_metric_names=[metric],
-                    new_metric_name="auc_14_20_" + metric,
-                    apply_to_row=self.range_auc,
-                    additional_apply_to_row_kwargs={"range_start": 14, "range_end": 20},
+                    additional_apply_to_row_kwargs={
+                        "range_start": "pre_calculated",
+                        "range_end": -1,
+                    },
                 ),
                 *self._compute_single_metric_jobs(
                     existing_metric_names=[metric],
@@ -146,13 +132,7 @@ class STANDARD_AUC(Base_Computed_Metric):
                 ),
                 *self._compute_single_metric_jobs(
                     existing_metric_names=[metric],
-                    new_metric_name="learning_stability_20" + metric,
-                    apply_to_row=self.learning_stability,
-                    additional_apply_to_row_kwargs={"time_range": 20},
-                ),
-                *self._compute_single_metric_jobs(
-                    existing_metric_names=[metric],
-                    new_metric_name="auc_" + metric,
+                    new_metric_name="full_auc_" + metric,
                     apply_to_row=self.range_auc,
                     additional_apply_to_row_kwargs={"range_start": 0, "range_end": -1},
                 ),
