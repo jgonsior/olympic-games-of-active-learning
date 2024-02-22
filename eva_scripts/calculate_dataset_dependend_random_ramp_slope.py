@@ -13,6 +13,7 @@ import pandas as pd
 import seaborn as sns
 from datasets import DATASET
 from matplotlib.pyplot import text
+from misc.helpers import _append_and_create
 from misc.plotting import set_seaborn_style
 
 sys.dont_write_bytecode = True
@@ -25,24 +26,12 @@ config = Config()
 done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
 print(done_workload_df.keys())
 
-ramp_plateau_results_file = config.DATASET_DEPENDENT_RANDOM_RAMP_PLATEAU_THRESHOLD_PATH
-
-
-if not ramp_plateau_results_file.exists():
-    with open(ramp_plateau_results_file, "a") as f:
-        w = csv.DictWriter(f, fieldnames=["metric_file"])
-        w.writeheader()
-
-
-# read in accuracy files from random strategy, average them/smooth them
-# check all buckets of 5 AL cycles for stationary
-# when change from "stationary" to "non-stationary" --> we have a slope!
 
 # (EXP_DATASET, EXP_BATCH_SIZE, EXP_LEARNER_MODEL, EXP_TRAIN_TEST_BUCKET_SIZE, EXP_START_POINT):17
 cutoff_values: Dict[Tuple[str, int, int, int, int], float] = {}
 
 
-def _do_stuff(file_name, config):
+def _find_thresholds_and_plot_them(file_name, config):
     set_seaborn_style(font_size=10)
     metric_file = Path(file_name)
     print(metric_file)
@@ -202,6 +191,70 @@ def _do_stuff(file_name, config):
         exit(-1)
 
 
+def _calculate_thresholds_and_save_them(file_name, config):
+    metric_file = Path(file_name)
+    print(metric_file)
+    df = pd.read_csv(metric_file)
+    # print(df)
+
+    small_done_df = done_workload_df.loc[
+        done_workload_df["EXP_UNIQUE_ID"].isin(df.EXP_UNIQUE_ID)
+    ]
+    EXP_DATASET = DATASET(small_done_df["EXP_DATASET"].iloc[0])
+
+    del small_done_df["EXP_STRATEGY"]
+    del small_done_df["EXP_DATASET"]
+    del small_done_df["EXP_RANDOM_SEED"]
+    del small_done_df["EXP_NUM_QUERIES"]
+
+    grouped = small_done_df.groupby(
+        by=[
+            "EXP_BATCH_SIZE",
+            "EXP_LEARNER_MODEL",
+            "EXP_TRAIN_TEST_BUCKET_SIZE",
+            "EXP_START_POINT",
+        ]
+    )["EXP_UNIQUE_ID"].apply(lambda rrr: rrr)
+
+    for group, EXP_UNIQUE_ID in grouped.items():
+        current_row = df.loc[df["EXP_UNIQUE_ID"] == EXP_UNIQUE_ID]
+        del current_row["EXP_UNIQUE_ID"]
+        current_row_np = current_row.to_numpy()[0]
+        current_row_np = current_row_np[~np.isnan(current_row_np)]
+        # print(current_row_np)
+
+        average_improvement_over_all_time_steps = np.sum(current_row_np) / len(
+            current_row_np
+        )
+
+        window_size = 5
+        cutoff_value = None
+        for window_param in range(window_size, len(current_row_np)):
+            fixed_window = current_row_np[
+                (len(current_row_np) - window_param) : (
+                    len(current_row_np) - window_param + window_size
+                )
+            ]
+
+            fixed_average = np.mean(fixed_window)
+
+            if fixed_average > average_improvement_over_all_time_steps:
+                cutoff_value = len(current_row_np) - window_param
+                continue
+
+        if cutoff_value is None:
+            cutoff_values = round(len(current_row_np) / 2)
+
+        result = {kkk: vvv for kkk, vvv in zip(grouped.index.names, group)}
+        del result[None]
+        result["cutoff_value"] = cutoff_value
+
+        _append_and_create(
+            config.DATASET_DEPENDENT_RANDOM_RAMP_PLATEAU_THRESHOLD_PATH,
+            result,
+        )
+
+
 glob_list = [
     f
     for f in glob.glob(
@@ -211,6 +264,7 @@ glob_list = [
 ]
 
 # Parallel(n_jobs=1, verbose=10)(
-Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
-    delayed(_do_stuff)(file_name, config) for file_name in glob_list
+Parallel(n_jobs=multiprocessing.cpu_count() - 4, verbose=10)(
+    delayed(_calculate_thresholds_and_save_them)(file_name, config)
+    for file_name in glob_list
 )
