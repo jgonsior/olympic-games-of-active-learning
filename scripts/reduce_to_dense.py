@@ -40,7 +40,6 @@ def _do_stuff(file_name: Path):
     a = len(df)
     df = df[df["EXP_UNIQUE_ID"].isin(dense_ids)]
 
-    df.drop_duplicates(inplace=True)
     df = df.loc[~df.duplicated(subset="EXP_UNIQUE_ID")]
 
     if len(df) < a:
