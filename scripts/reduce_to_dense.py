@@ -31,7 +31,7 @@ print(len(glob_list))
 
 
 def _do_stuff(file_name: Path):
-    print(file_name)
+    # print(file_name)
     df = _get_df(file_name, config)
 
     if df is None:
