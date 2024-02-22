@@ -22,7 +22,7 @@ def _append_and_create(file_name: Path, content: Dict):
 # in case of errors -> skip file and return None
 def _get_df(file_name: Path, config: Config) -> Optional[pd.DataFrame]:
     try:
-        if file_name.name.endswith(".csv.xz"):
+        if file_name.name.endswith(".csv.xz") or file_name.name.endswith(".csv"):
             df = pd.read_csv(file_name)
         else:
             df = pd.read_parquet(file_name)

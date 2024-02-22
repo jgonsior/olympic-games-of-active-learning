@@ -17,12 +17,12 @@ from pathlib import Path
 pandarallel.initialize(progress_bar=True)
 config = Config()
 
-glob_list = _get_glob_list(config)
-
-glob_list.append(str(config.OVERALL_DONE_WORKLOAD_PATH))
-glob_list.append(str(config.OVERALL_FAILED_WORKLOAD_PATH))
-glob_list.append(str(config.OVERALL_STARTED_OOM_WORKLOAD_PATH))
-glob_list.append(str(config.WORKLOAD_FILE_PATH))
+# glob_list = _get_glob_list(config)
+glob_list = []
+glob_list.append(config.OVERALL_DONE_WORKLOAD_PATH)
+glob_list.append(config.OVERALL_FAILED_WORKLOAD_PATH)
+glob_list.append(config.OVERALL_STARTED_OOM_WORKLOAD_PATH)
+glob_list.append(config.WORKLOAD_FILE_PATH)
 
 dense_workload = pd.read_csv(config.DENSE_WORKLOAD_PATH)
 dense_ids = set(dense_workload.EXP_UNIQUE_ID.to_list())
@@ -31,7 +31,7 @@ print(len(glob_list))
 
 
 def _do_stuff(file_name: Path):
-    # print(file_name)
+    print(file_name)
     df = _get_df(file_name, config)
 
     if df is None:
