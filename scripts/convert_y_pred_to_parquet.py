@@ -32,7 +32,7 @@ def with_timeout(timeout):
     return decorator
 
 
-@with_timeout(100)
+# @with_timeout(100)
 def _do_stuff(file_name):
     if Path(file_name + ".parquet").exists():
         return

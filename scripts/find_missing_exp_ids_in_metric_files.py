@@ -8,7 +8,7 @@ from joblib import Parallel, delayed
 import pandas as pd
 import multiprocessing
 
-from misc.helpers import _get_glob_list
+from misc.helpers import _append_and_create, _get_df, _get_glob_list
 
 
 sys.dont_write_bytecode = True
@@ -81,45 +81,13 @@ def _do_stuff(exp_dataset, exp_strategy, config):
         exp_ids_intersection = exp_ids_intersection.intersection(exp_ids)
 
     if len(exp_ids_intersection) < len(exp_ids_union):
-        if not config.MISSING_EXP_IDS_IN_METRIC_FILES.exists():
-            with open(config.MISSING_EXP_IDS_IN_METRIC_FILES, "a") as f:
-                w = csv.DictWriter(f, fieldnames=done_workload_df.keys())
-                w.writeheader()
-
-        with open(config.MISSING_EXP_IDS_IN_METRIC_FILES, "a") as f:
-            w = csv.DictWriter(f, fieldnames=done_workload_df.keys())
-
-            for broken_exp_id in exp_ids_intersection:
-                w.writerow(
-                    *done_workload_df.loc[
-                        done_workload_df["EXP_UNIQUE_ID"] == broken_exp_id
-                    ].to_dict()
-                )
-        return
-        for metric, exp_ids in exp_ids_per_metric.items():
-            if exp_ids_per_metric[metric].difference(exp_ids_intersection) > 0:
-                for file_name in glob_list:
-                    if file_name.endswith(".csv.xz"):
-                        metric_df = pd.read_csv(file_name)
-                    else:
-                        metric_df = pd.read_parquet(file_name)
-
-                    metric_df = metric_df.loc[
-                        metric_df["EXP_UNIQUE_ID"].isin(exp_ids_intersection)
-                    ]
-
-                    if file_name.endswith(".csv.xz"):
-                        metric_df.to_csv(file_name, index=False)
-                    else:
-                        metric_df.to_parquet(file_name)
-
-        # we've got a problem
-
-    # find missing exp_ids as difference among all set
-
-    # remove those from all metric_dfs where they ARE existent
-
-    # rerun those experiments, merge .csv.xz and .csv
+        for broken_exp_id in exp_ids_intersection:
+            _append_and_create(
+                config.MISSING_EXP_IDS_IN_METRIC_FILES,
+                done_workload_df.loc[
+                    done_workload_df["EXP_UNIQUE_ID"] == broken_exp_id
+                ].to_dict(),
+            )
 
 
 Parallel(n_jobs=1, verbose=10)(
