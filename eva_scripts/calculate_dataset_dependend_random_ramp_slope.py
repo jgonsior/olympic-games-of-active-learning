@@ -194,7 +194,8 @@ def _calculate_thresholds_and_save_them(file_name, config):
 
     small_done_df = done_workload_df.loc[
         done_workload_df["EXP_UNIQUE_ID"].isin(df.EXP_UNIQUE_ID)
-    ]
+    ].drop_duplicates()
+
     EXP_DATASET = DATASET(small_done_df["EXP_DATASET"].iloc[0])
     del small_done_df["EXP_STRATEGY"]
     del small_done_df["EXP_DATASET"]
@@ -263,7 +264,6 @@ Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
     delayed(_calculate_thresholds_and_save_them)(file_name, config)
     for file_name in glob_list
 )
-
 # mergen done_workload_df and _dataset_dependent_random_ramp_plateau_threshold
 old_plateau_df = pd.read_csv(
     config.DATASET_DEPENDENT_RANDOM_RAMP_PLATEAU_THRESHOLD_PATH
@@ -273,13 +273,14 @@ done_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
 del done_df["EXP_STRATEGY"]
 del done_df["EXP_RANDOM_SEED"]
 del done_df["EXP_NUM_QUERIES"]
-print(len(done_df))
+
 merged = pd.merge(
     done_df,
     old_plateau_df,
     on=[kkk for kkk in old_plateau_df.columns if kkk != "cutoff_value"],
     how="outer",
 )
-print(len(merged))
-print(merged.keys())
-print(merged["cutoff_value"].unique())
+
+merged = merged[["EXP_UNIQUE_ID", "cutoff_value"]]
+
+merged.to_csv(config.DATASET_DEPENDENT_RANDOM_RAMP_PLATEAU_THRESHOLD_PATH, index=False)
