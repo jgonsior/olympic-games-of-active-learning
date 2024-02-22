@@ -2,6 +2,8 @@ import sys
 import glob
 import pandas as pd
 
+from misc.helpers import _get_df, _get_glob_list
+
 sys.dont_write_bytecode = True
 
 from misc.config import Config
@@ -27,6 +29,19 @@ glob_list = [
     *[f for f in glob.glob(str(config.OUTPUT_PATH) + "/**/*.csv", recursive=True)],
 ]
 
+glob_list = [
+    ggg
+    for ggg in glob_list
+    if not ggg.endswith("_workload.csv.xz") and not ggg.endswith("_workloads.csv.xz")
+]
+
+glob_list = _get_glob_list(config)
+
+glob_list.append(str(config.OVERALL_DONE_WORKLOAD_PATH))
+glob_list.append(str(config.OVERALL_FAILED_WORKLOAD_PATH))
+glob_list.append(str(config.OVERALL_STARTED_OOM_WORKLOAD_PATH))
+glob_list.append(str(config.WORKLOAD_FILE_PATH))
+
 dense_workload = pd.read_csv(config.DENSE_WORKLOAD_PATH)
 dense_ids = set(dense_workload.EXP_UNIQUE_ID.to_list())
 print(len(dense_ids))
@@ -35,12 +50,13 @@ print(len(glob_list))
 
 def _do_stuff(file_name: str):
     try:
-        if file_name.endswith(".csv.xz") or file_name.endswith(".csv"):
-            df = pd.read_csv(file_name)
-        elif file_name.endswith(".parquet"):
-            df = pd.read_parquet(file_name)
+        df = _get_df(Path(file_name), config)
+
+        if df is None:
+            return
+
         a = len(df)
-        df = df[~df["EXP_UNIQUE_ID"].isin(dense_ids)]
+        df = df[df["EXP_UNIQUE_ID"].isin(dense_ids)]
         if len(df) < a:
             print(f"{len(df)}<{a}: {file_name}")
 

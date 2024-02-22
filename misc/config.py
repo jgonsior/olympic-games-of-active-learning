@@ -114,6 +114,7 @@ class Config:
 
     DENSE_WORKLOAD_PATH: Path = "06_dense_workload.csv"  # type: ignore
     MISSING_EXP_IDS_IN_METRIC_FILES: Path = "07_missing_exp_ids.csv"  # type: ignore
+    BROKEN_CSV_FILE_PATH: Path = "07_broken_csv_file_found.csv"  # type: ignore
 
     RERUN_FAILED_WORKLOADS: bool = False
     RECALCULATE_UPDATED_EXP_GRID: bool = False
@@ -240,6 +241,7 @@ class Config:
         self.MISSING_EXP_IDS_IN_METRIC_FILES = (
             self.OUTPUT_PATH / self.MISSING_EXP_IDS_IN_METRIC_FILES
         )
+        self.BROKEN_CSV_FILE_PATH = self.OUTPUT_PATH / self.BROKEN_CSV_FILE_PATH
 
         self.OVERALL_FAILED_WORKLOAD_PATH = (
             self.OUTPUT_PATH / self.OVERALL_FAILED_WORKLOAD_PATH

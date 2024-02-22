@@ -8,8 +8,6 @@ from joblib import Parallel, delayed
 import pandas as pd
 import multiprocessing
 
-from misc.helpers import _get_glob_list
-
 
 sys.dont_write_bytecode = True
 
@@ -19,9 +17,15 @@ from misc.config import Config
 config = Config()
 
 done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
+duplicates = done_workload_df.loc[
+    done_workload_df.drop("EXP_UNIQUE_ID", axis=1).duplicated()
+]
+duplictated_exp_ids = duplicates["EXP_UNIQUE_ID"]
+
+exit(-1)
 
 
-def _is_standard_metric(metric_path: Path) -> bool:
+def _is_standard_metric(metric_path: str) -> bool:
     standard_metrics = [
         "accuracy",
         "weighted_recall",
@@ -39,7 +43,7 @@ def _is_standard_metric(metric_path: Path) -> bool:
     ]
 
     for sm in standard_metrics:
-        if f"/{sm}.csv" in metric_path.name:
+        if f"/{sm}.csv" in metric_path:
             return True
     return False
 
@@ -47,8 +51,24 @@ def _is_standard_metric(metric_path: Path) -> bool:
 def _do_stuff(exp_dataset, exp_strategy, config):
     if exp_strategy.name != "SKACTIVEML_DWUS":
         return
-
-    glob_list = _get_glob_list(config, limit=f"/{exp_strategy.name}/{exp_dataset.name}")
+    glob_list = [
+        *[
+            f
+            for f in glob.glob(
+                str(config.OUTPUT_PATH)
+                + f"/{exp_strategy.name}/{exp_dataset.name}/*.csv.xz",
+                recursive=True,
+            )
+        ],
+        *[
+            f
+            for f in glob.glob(
+                str(config.OUTPUT_PATH)
+                + f"/{exp_strategy.name}/{exp_dataset.name}/*.csv.xz.parquet",
+                recursive=True,
+            )
+        ],
+    ]
 
     if len(glob_list) == 0:
         return
@@ -63,13 +83,10 @@ def _do_stuff(exp_dataset, exp_strategy, config):
         metric_name = Path(file_name).name.removesuffix(".csv.xz")
         metric_name = Path(file_name).name.removesuffix(".csv.xz.parquet")
 
-        metric_df = _get_df(file_name, config)
-
-        if metric_df is None:
-            return
-
-        metric_dfs[metric_name] = metric_df
-
+        if file_name.endswith(".csv.xz"):
+            metric_dfs[metric_name] = pd.read_csv(file_name)
+        else:
+            metric_dfs[metric_name] = pd.read_parquet(file_name)
         exp_ids_per_metric[metric_name] = set(
             metric_dfs[metric_name]["EXP_UNIQUE_ID"].to_list()
         )
