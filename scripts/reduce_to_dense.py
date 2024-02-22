@@ -30,26 +30,29 @@ print(len(dense_ids))
 print(len(glob_list))
 
 
-def _do_stuff(file_name: str):
-    try:
-        df = _get_df(Path(file_name), config)
+def _do_stuff(file_name: Path):
+    print(file_name)
+    df = _get_df(file_name, config)
 
-        if df is None:
-            return
+    if df is None:
+        return
 
-        a = len(df)
-        df = df[df["EXP_UNIQUE_ID"].isin(dense_ids)]
-        if len(df) < a:
-            print(f"{len(df)}<{a}: {file_name}")
+    a = len(df)
+    df = df[df["EXP_UNIQUE_ID"].isin(dense_ids)]
+    if len(df) < a:
+        print(f"{len(df)}<{a}: {file_name}")
 
-            if len(df) == 0:
-                Path(file_name).unlink()
-            elif file_name.endswith(".csv.xz") or file_name.endswith(".csv"):
-                df.to_csv(file_name, index=False)
-            elif file_name.endswith(".parquet"):
-                df.to_parquet(file_name)
-    except:
-        print(f"ERROR: {file_name}")
+        file_name = str(file_name)
+
+        if len(df) == 0:
+            Path(file_name).unlink()
+        elif file_name.endswith(".csv.xz") or file_name.endswith(".csv"):
+            df.to_csv(file_name, index=False)
+        elif file_name.endswith(".parquet"):
+            df.to_parquet(file_name)
+        else:
+            print("EEEEEEEEHHHHHHHHHHHHHHHHh")
+            print(file_name)
 
 
 Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(

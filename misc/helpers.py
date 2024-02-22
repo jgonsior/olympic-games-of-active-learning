@@ -67,4 +67,4 @@ def _get_glob_list(
         ]
 
     glob_list = [Path(ggg) for ggg in glob_list]
-    return glob_list
+    return sorted(glob_list)
