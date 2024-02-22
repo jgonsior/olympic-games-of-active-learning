@@ -1,5 +1,5 @@
 import csv
-from glob import glob
+import glob
 from typing import Dict, List, Optional
 import pandas as pd
 from pyparsing import Path
