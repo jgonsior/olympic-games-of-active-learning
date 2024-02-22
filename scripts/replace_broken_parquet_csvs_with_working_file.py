@@ -26,7 +26,9 @@ for broken_csv_file in broken_csv_files["metric_file"]:
 
     original_y_pred = Path(
         "/home/thiele/exp_results/bkp_01_full_exp_jan/"
-        + broken_csv_file.name.removesuffix(".parquet")
+        + str(broken_csv_file)
+        .removesuffix(".parquet")
+        .removeprefix("/home/thiele/exp_results/full_exp_jan/")
     )
 
     df = pd.read_csv(original_y_pred)
