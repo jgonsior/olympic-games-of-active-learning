@@ -17,24 +17,6 @@ from pathlib import Path
 pandarallel.initialize(progress_bar=True)
 config = Config()
 
-
-glob_list = [
-    *[f for f in glob.glob(str(config.OUTPUT_PATH) + "/**/*.csv.xz", recursive=True)],
-    *[
-        f
-        for f in glob.glob(
-            str(config.OUTPUT_PATH) + "/**/*.csv.xz.parquet", recursive=True
-        )
-    ],
-    *[f for f in glob.glob(str(config.OUTPUT_PATH) + "/**/*.csv", recursive=True)],
-]
-
-glob_list = [
-    ggg
-    for ggg in glob_list
-    if not ggg.endswith("_workload.csv.xz") and not ggg.endswith("_workloads.csv.xz")
-]
-
 glob_list = _get_glob_list(config)
 
 glob_list.append(str(config.OVERALL_DONE_WORKLOAD_PATH))
