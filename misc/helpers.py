@@ -21,7 +21,7 @@ def _append_and_create(file_name: Path, content: Dict):
 # read in csv
 # in case of errors -> skip file and return None
 def _get_df(file_name: Path, config: Config) -> Optional[pd.DataFrame]:
-    print(file_name)
+    # print(file_name)
     try:
         if file_name.name.endswith(".csv.xz") or file_name.name.endswith(".csv"):
             df = pd.read_csv(file_name)

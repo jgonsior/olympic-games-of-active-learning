@@ -37,8 +37,8 @@ def _is_standard_metric(metric_path: str) -> bool:
 
 
 def _do_stuff(exp_dataset, exp_strategy, config):
-    if exp_strategy.name != "SMALLTEXT_PREDICTIONENTROPY":
-        return
+    # if exp_strategy.name != "SMALLTEXT_PREDICTIONENTROPY":
+    #    return
     glob_list = [
         f
         for f in glob.glob(
@@ -56,7 +56,7 @@ def _do_stuff(exp_dataset, exp_strategy, config):
 
     exp_ids = []
     for file_name in glob_list:
-        print(file_name)
+        # print(file_name)
         metric_name = Path(file_name).name.removesuffix(".csv.xz")
         metric_dfs[metric_name] = pd.read_csv(file_name).sort_values(by="EXP_UNIQUE_ID")
 
@@ -80,13 +80,6 @@ def _do_stuff(exp_dataset, exp_strategy, config):
         correlation_data = []
 
         for metric, metric_df in metric_dfs.items():
-            print(metric)
-            #  print(metric_df)
-            print(ix)
-            print(metric_df.iloc[ix])
-            print(metric_df.iloc[ix].to_list())
-            print(metric_df.iloc[ix].to_list()[:-1])
-            print("\n" * 3)
             correlation_data.append(
                 [
                     metric,
