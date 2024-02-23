@@ -25,5 +25,5 @@ def run_code(i):
 
 
 # with parallel_backend("loky", n_jobs=8):
-with parallel_backend("threading", n_jobs=multiprocessing.cpu_count()):
+with parallel_backend("loky", n_jobs=multiprocessing.cpu_count()):
     Parallel()(delayed(run_code)(i) for i in range(0, len(broken_exp_df)))

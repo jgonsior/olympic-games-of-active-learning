@@ -295,7 +295,14 @@ class Config:
         for k, v in yaml_config_params.items():
             v = str(v)
 
-            if v.startswith("['") and v.endswith("']") and "-" in v:
+            # what to do with exp_datasets containing -?
+            allowed_symbols = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "-"]
+            only_allowed = True
+
+            for vvv in v[2:-2]:
+                if vvv not in allowed_symbols:
+                    only_allowed = False
+            if v.startswith("['") and v.endswith("']") and "-" in v and only_allowed:
                 v = v[2:-2]
                 v = v.split("-")
                 yaml_config_params[k] = [iii for iii in range(int(v[0]), int(v[1]) + 1)]

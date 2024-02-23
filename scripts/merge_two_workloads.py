@@ -9,12 +9,14 @@ sys.dont_write_bytecode = True
 from misc.config import Config
 from pandarallel import pandarallel
 
-pandarallel.initialize(progress_bar=True)
 config = Config()
 
-# ensure that EXP_UNIQUE_IDs are different between both workloads
-# then merge the individual metric files together, but with new exp_unique_ids
-# then concat done_workload_df and open_workload_df and failed_workload_df
+
+# open .csv.xz and .csv
+# concat
+# deduplicate
+# special handling with ast.literal_eval for .parquet files
+# done?
 
 
 exit(-1)
