@@ -1,6 +1,11 @@
+import copy
+import itertools
+import multiprocessing
+from pathlib import Path
 import sys
 import glob
 
+from joblib import Parallel, delayed
 import pandas as pd
 
 
@@ -9,6 +14,8 @@ sys.dont_write_bytecode = True
 from misc.config import Config
 from pandarallel import pandarallel
 
+from misc.helpers import _append_and_create, _get_df, _get_glob_list
+
 config = Config()
 
 
@@ -16,26 +23,39 @@ config = Config()
 # concat
 # deduplicate
 # special handling with ast.literal_eval for .parquet files
-# done?
+# done?config = Config()
+
+done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
 
 
-exit(-1)
-overtime_exp_unique_ids = []
-for file_name in glob.glob(
-    str(config.OUTPUT_PATH) + "/**/query_selection_time.csv", recursive=True
-):
-    df = pd.read_csv(file_name)
-    col_names = [c for c in df.columns if c != "EXP_UNIQUE_ID"]
+def _do_stuff(exp_dataset, exp_strategy, config):
+    csv_glob_list = sorted(
+        [
+            Path(ggg)
+            for ggg in glob.glob(
+                str(config.OUTPUT_PATH)
+                + f"/{exp_strategy.name}/{exp_dataset.name}/*.csv",
+                recursive=True,
+            )
+        ]
+    )
 
-    for _, row in df.iterrows():
-        if (row[col_names] > config.EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT).any():
-            overtime_exp_unique_ids.append(row["EXP_UNIQUE_ID"])
+    if len(csv_glob_list) == 0:
+        return
+
+    for csv_file_name in csv_glob_list:
+        csv_df = _get_df(csv_file_name, config)
+
+        if "y_pred" in csv_file_name.name:
+            xz_df = _get_df(Path(str(csv_file_name) + ".xz.parquet"), config)
+        else:
+            xz_df = _get_df(Path(str(csv_file_name) + ".xz"), config)
 
 
-for file_name in glob.glob(str(config.OUTPUT_PATH) + "/**/*.csv", recursive=True):
-    print(file_name)
-    df = pd.read_csv(file_name)
-    a = len(df)
-    df = df[~df["EXP_UNIQUE_ID"].isin(overtime_exp_unique_ids)]
-    if len(df) < a:
-        df.to_csv(file_name, index=False)
+Parallel(n_jobs=1, verbose=10)(
+    # Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
+    delayed(_do_stuff)(exp_dataset, exp_strategy, config)
+    for (exp_dataset, exp_strategy) in itertools.product(
+        config.EXP_GRID_DATASET, config.EXP_GRID_STRATEGY
+    )
+)

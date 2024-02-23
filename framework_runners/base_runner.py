@@ -159,8 +159,7 @@ class AL_Experiment(ABC):
         early_stopped_due_to_runtime_limit = False
         error_was_being_raised = False
 
-        class NonExistentDummyException(Exception):
-            ...
+        class NonExistentDummyException(Exception): ...
 
         try:
             for iteration in range(0, total_amount_of_iterations):
@@ -178,7 +177,7 @@ class AL_Experiment(ABC):
 
                     early_stopped_due_to_runtime_limit = True
                     break
-        except NonExistentDummyException as err:
+        except Exception as err:
             error_was_being_raised = True
             import sys
 

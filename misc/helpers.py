@@ -41,7 +41,9 @@ def _get_df(file_name: Path, config: Config) -> Optional[pd.DataFrame]:
 
 
 def _get_glob_list(
-    config: Config, limit: str = "**", ignore_original_workloads=True
+    config: Config,
+    limit: str = "**",
+    ignore_original_workloads=True,
 ) -> List[Path]:
     glob_list = [
         *[
