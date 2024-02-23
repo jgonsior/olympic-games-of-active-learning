@@ -12,7 +12,6 @@ if TYPE_CHECKING:
 
 
 class STANDARD_AUC(Base_Computed_Metric):
-
     _dataset_dependend_thresholds_df: pd.DataFrame
 
     def __init__(self, config: Config) -> None:
@@ -44,7 +43,7 @@ class STANDARD_AUC(Base_Computed_Metric):
                 self._dataset_dependend_thresholds_df["EXP_UNIQUE_ID"]
                 == row["EXP_UNIQUE_ID"]
             ]["cutoff_value"]
-        TODO: check if indexing with -1 and -5 etc. works
+        # TODO: check if indexing with -1 and -5 etc. works
         row = row.loc[row.index != "EXP_UNIQUE_ID"]
         row = row[range_start:range_end]
 
