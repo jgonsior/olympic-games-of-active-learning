@@ -17,8 +17,8 @@ from pathlib import Path
 pandarallel.initialize(progress_bar=True)
 config = Config()
 
-# glob_list = _get_glob_list(config)
-glob_list = []
+glob_list = _get_glob_list(config)
+
 glob_list.append(config.OVERALL_DONE_WORKLOAD_PATH)
 glob_list.append(config.OVERALL_FAILED_WORKLOAD_PATH)
 glob_list.append(config.OVERALL_STARTED_OOM_WORKLOAD_PATH)
@@ -31,7 +31,7 @@ print(len(glob_list))
 
 
 def _do_stuff(file_name: Path):
-    print(file_name)
+    # print(file_name)
     df = _get_df(file_name, config)
 
     if df is None:

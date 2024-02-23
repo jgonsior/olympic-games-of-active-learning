@@ -6,7 +6,7 @@ from joblib import Parallel, delayed
 from matplotlib import pyplot as plt
 import pandas as pd
 from misc.plotting import set_seaborn_style, set_matplotlib_size
-
+import multiprocessing
 
 sys.dont_write_bytecode = True
 
@@ -37,7 +37,7 @@ def _is_standard_metric(metric_path: str) -> bool:
 
 
 def _do_stuff(exp_dataset, exp_strategy, config):
-    if exp_strategy.name != "SKACTIVEML_DWUS":
+    if exp_strategy.name != "SMALLTEXT_PREDICTIONENTROPY":
         return
     glob_list = [
         f
@@ -65,10 +65,12 @@ def _do_stuff(exp_dataset, exp_strategy, config):
         else:
             difference = set(
                 metric_dfs[metric_name]["EXP_UNIQUE_ID"].tolist()
-            ).difference(exp_ids)
-            if difference != 0:
+            ).symmetric_difference(exp_ids)
+            if len(difference) != 0:
                 # save exp_unique_id
                 # delete them for now from all dfs to minimum
+                print("exp_ids missing")
+                print(difference)
                 print(file_name)
                 exit(-1)
 
@@ -78,6 +80,13 @@ def _do_stuff(exp_dataset, exp_strategy, config):
         correlation_data = []
 
         for metric, metric_df in metric_dfs.items():
+            print(metric)
+            #  print(metric_df)
+            print(ix)
+            print(metric_df.iloc[ix])
+            print(metric_df.iloc[ix].to_list())
+            print(metric_df.iloc[ix].to_list()[:-1])
+            print("\n" * 3)
             correlation_data.append(
                 [
                     metric,
@@ -101,7 +110,7 @@ def _do_stuff(exp_dataset, exp_strategy, config):
 
 
 dfs = Parallel(n_jobs=1, verbose=10)(
-    # dfs = Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
+    #  dfs = Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
     delayed(_do_stuff)(exp_dataset, exp_strategy, config)
     for (exp_dataset, exp_strategy) in itertools.product(
         config.EXP_GRID_DATASET, config.EXP_GRID_STRATEGY

@@ -12,7 +12,6 @@ if TYPE_CHECKING:
 
 
 class STANDARD_AUC(Base_Computed_Metric):
-
     _dataset_dependend_thresholds_df: pd.DataFrame
 
     def __init__(self, config: Config) -> None:
