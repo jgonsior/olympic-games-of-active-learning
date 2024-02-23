@@ -1,3 +1,4 @@
+import ast
 import copy
 import itertools
 import multiprocessing
@@ -47,9 +48,31 @@ def _do_stuff(exp_dataset, exp_strategy, config):
         csv_df = _get_df(csv_file_name, config)
 
         if "y_pred" in csv_file_name.name:
+            cols_with_indice_lists = csv_df.columns.difference(["EXP_UNIQUE_ID"])
+
+            csv_df[cols_with_indice_lists] = (
+                csv_df[cols_with_indice_lists]
+                .fillna("[]")
+                .map(lambda x: ast.literal_eval(x))
+            )
+
+        if "y_pred" in csv_file_name.name:
             xz_df = _get_df(Path(str(csv_file_name) + ".xz.parquet"), config)
         else:
             xz_df = _get_df(Path(str(csv_file_name) + ".xz"), config)
+
+        xz_df = pd.concat([xz_df, csv_df], ignore_index=True).drop_duplicates(
+            subset="EXP_UNIQUE_ID"
+        )
+
+        if "y_pred" in csv_file_name.name:
+            xz_df.to_parquet(Path(str(csv_file_name) + ".xz.parquet"))
+        else:
+            xz_df.to_csv(
+                Path(str(csv_file_name) + ".xz", compression="infer", index=False)
+            )
+
+        csv_file_name.unlink()
 
 
 Parallel(n_jobs=1, verbose=10)(
