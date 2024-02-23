@@ -36,15 +36,13 @@ class STANDARD_AUC(Base_Computed_Metric):
             range_start = self._dataset_dependend_thresholds_df[
                 self._dataset_dependend_thresholds_df["EXP_UNIQUE_ID"]
                 == row["EXP_UNIQUE_ID"]
-            ]["cutoff_value"]
+            ]["cutoff_value"].iloc[0]
 
         if range_end == "pre_computed":
-            range_start = self._dataset_dependend_thresholds_df[
+            range_end = self._dataset_dependend_thresholds_df[
                 self._dataset_dependend_thresholds_df["EXP_UNIQUE_ID"]
                 == row["EXP_UNIQUE_ID"]
-            ]["cutoff_value"]
-        print("TODO: check if indexing with -1 and -5 etc. works")
-        exit(-1)
+            ]["cutoff_value"].iloc[0]
 
         row = row.loc[row.index != "EXP_UNIQUE_ID"]
         row = row[range_start:range_end]
@@ -77,11 +75,18 @@ class STANDARD_AUC(Base_Computed_Metric):
                 for a in glob.glob(str(self.config.OUTPUT_PATH / "*/*/*.csv.xz"))
             ]
         )
+
         all_existing_metric_names = [
             a.split(".")[0]
             for a in all_existing_metric_names
-            if not a.startswith("auc_")
-            and not a.startswith("learning_stability_")
+            if not a.startswith("ramp_up_auc_")
+            and not a.startswith("plateau_auc_")
+            and not a.startswith("final_value_")
+            and not a.startswith("first_5_")
+            and not a.startswith("last_5_")
+            and not a.startswith("learning_stability_5_")
+            and not a.startswith("learning_stability_10_")
+            and not a.startswith("full_auc_")
             and not a.startswith("pickled_learner_model")
             and not a.startswith("y_pred_train")
             and not a.startswith("y_pred_test")
@@ -94,29 +99,11 @@ class STANDARD_AUC(Base_Computed_Metric):
                 *results,
                 *self._compute_single_metric_jobs(
                     existing_metric_names=[metric],
-                    new_metric_name="final_value" + metric,
-                    apply_to_row=self.range_auc,
-                    additional_apply_to_row_kwargs={"range_start": -1, "range_end": -1},
-                ),
-                *self._compute_single_metric_jobs(
-                    existing_metric_names=[metric],
-                    new_metric_name="first_5" + metric,
-                    apply_to_row=self.range_auc,
-                    additional_apply_to_row_kwargs={"range_start": 0, "range_end": 5},
-                ),
-                *self._compute_single_metric_jobs(
-                    existing_metric_names=[metric],
-                    new_metric_name="last_5" + metric,
-                    apply_to_row=self.range_auc,
-                    additional_apply_to_row_kwargs={"range_start": -5, "range_end": -1},
-                ),
-                *self._compute_single_metric_jobs(
-                    existing_metric_names=[metric],
                     new_metric_name="ramp_up_auc_" + metric,
                     apply_to_row=self.range_auc,
                     additional_apply_to_row_kwargs={
                         "range_start": 0,
-                        "range_end": "pre_calculated",
+                        "range_end": "pre_computed",
                     },
                 ),
                 *self._compute_single_metric_jobs(
@@ -124,8 +111,32 @@ class STANDARD_AUC(Base_Computed_Metric):
                     new_metric_name="plateau_auc_" + metric,
                     apply_to_row=self.range_auc,
                     additional_apply_to_row_kwargs={
-                        "range_start": "pre_calculated",
-                        "range_end": -1,
+                        "range_start": "pre_computed",
+                        "range_end": None,
+                    },
+                ),
+                *self._compute_single_metric_jobs(
+                    existing_metric_names=[metric],
+                    new_metric_name="final_value_" + metric,
+                    apply_to_row=self.range_auc,
+                    additional_apply_to_row_kwargs={
+                        "range_start": -1,
+                        "range_end": None,
+                    },
+                ),
+                *self._compute_single_metric_jobs(
+                    existing_metric_names=[metric],
+                    new_metric_name="first_5_" + metric,
+                    apply_to_row=self.range_auc,
+                    additional_apply_to_row_kwargs={"range_start": 0, "range_end": 5},
+                ),
+                *self._compute_single_metric_jobs(
+                    existing_metric_names=[metric],
+                    new_metric_name="last_5_" + metric,
+                    apply_to_row=self.range_auc,
+                    additional_apply_to_row_kwargs={
+                        "range_start": -5,
+                        "range_end": None,
                     },
                 ),
                 *self._compute_single_metric_jobs(
@@ -144,7 +155,10 @@ class STANDARD_AUC(Base_Computed_Metric):
                     existing_metric_names=[metric],
                     new_metric_name="full_auc_" + metric,
                     apply_to_row=self.range_auc,
-                    additional_apply_to_row_kwargs={"range_start": 0, "range_end": -1},
+                    additional_apply_to_row_kwargs={
+                        "range_start": 0,
+                        "range_end": None,
+                    },
                 ),
             ]
         return results

@@ -53,7 +53,7 @@ def _do_stuff(file_name, config):
 
     for ix, row in df.iterrows():
         resulting_metric_file = (
-            config.EXP_ID_METRIC_CSV_FOLDER_PATH / f"{int(row.EXP_UNIQUE_ID)}.csv.xz"
+            config.EXP_ID_METRIC_CSV_FOLDER_PATH / f"{int(row.EXP_UNIQUE_ID)}.csv"
         )
 
         row_dict = {"metric": metric_name, **row.to_dict()}

@@ -81,14 +81,15 @@ def _process_a_single_strategy(
 
     new_df["EXP_UNIQUE_ID"] = exp_unique_id_column
 
-    if new_df.isnull().sum().sum() > 30:
-        print(apply_to_row)
-        print(new_df)
-        # exit(-1)
+    # if new_df.isnull().sum().sum() > 30:
+    #    print(apply_to_row)
+    #    print(new_df)
+    # exit(-1)
     # print(new_metric_path)
     # print(new_df)
     # return
     # save new df somehow
+    # return
     new_df.to_csv(
         new_metric_path,
         compression="infer",
@@ -104,8 +105,7 @@ class Base_Computed_Metric(ABC):
         self.done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
         self.config = config
 
-    def computed_metric_appendix(self) -> str:
-        ...
+    def computed_metric_appendix(self) -> str: ...
 
     def apply_to_row(self, row: pd.Series) -> pd.Series:
         pass
@@ -176,8 +176,7 @@ class Base_Computed_Metric(ABC):
     def _pre_appy_to_row_hook(self, df: pd.DataFrame) -> pd.DataFrame:
         return df
 
-    def _per_dataset_hook(self, EXP_DATASET: DATASET, **kwargs) -> None:
-        ...
+    def _per_dataset_hook(self, EXP_DATASET: DATASET, **kwargs) -> None: ...
 
     def _compute_single_metric_jobs(
         self,
