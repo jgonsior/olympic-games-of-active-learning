@@ -15,11 +15,7 @@ broken_exp_df = pd.read_csv(config.MISSING_EXP_IDS_IN_METRIC_FILES)
 
 
 def run_code(i):
-    print(
-        "TODO: 02_run_experiment muss ich per CLI argument übergeben, dass nicht in 01_workload.csv sondern in 06_broken_exp_id.csv geschaut wird"
-    )
-    return
-    cli = f"timeout {config.SLURM_TIME_LIMIT} python 02_run_experiment.py --EXP_TITLE {config.EXP_TITLE} --WORKER_INDEX {i}"
+    cli = f"python 02_run_experiment.py --EXP_TITLE {config.EXP_TITLE} --WORKER_INDEX {i} --WORKLOAD_FILE_PATH {config.MISSING_EXP_IDS_IN_METRIC_FILES}"
     print("#" * 100)
     print(i)
     print(cli)
@@ -28,6 +24,6 @@ def run_code(i):
     os.system(cli)
 
 
-with parallel_backend("loky", n_jobs=1):
-    # with parallel_backend("loky", n_jobs=multiprocessing.cpu_count()):
+# with parallel_backend("loky", n_jobs=8):
+with parallel_backend("threading", n_jobs=multiprocessing.cpu_count()):
     Parallel()(delayed(run_code)(i) for i in range(0, len(broken_exp_df)))
