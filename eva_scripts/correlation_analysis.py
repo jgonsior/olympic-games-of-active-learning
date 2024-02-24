@@ -37,130 +37,6 @@ column_combinations = [
 ]
 
 
-def _calculate_min_cutoffs():
-    font_size = 5.8
-
-    tex_fonts = {
-        # Use LaTeX to write all text
-        "text.usetex": True,
-        # "text.usetex": False,
-        "font.family": "times",
-        # Use 10pt font in plots, to match 10pt font in document
-        "axes.labelsize": font_size,
-        "font.size": font_size,
-        # Make the legend/label fonts a little smaller
-        "legend.fontsize": font_size,
-        "xtick.labelsize": font_size,
-        "ytick.labelsize": font_size,
-        "xtick.bottom": True,
-        # "figure.autolayout": True,
-    }
-
-    plt.rcParams.update(tex_fonts)  # type: ignore
-
-    sns.set_theme(
-        rc={"figure.figsize": (8.5 * 0.393, 6 * 0.393)}, style="white", context="paper"
-    )
-
-    min_cutoffs = {}
-    for cc in column_combinations:
-        if cc in ["EXP_NUM_QUERIES", "EXP_RANDOM_SEED"]:
-            continue
-        print(cc)
-        done_workload = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
-
-        exp_ids_present_per_combination = done_workload.groupby(
-            by=[c for c in column_combinations if c != cc]
-        )["EXP_UNIQUE_ID"].apply(len)
-
-        ax = sns.histplot(exp_ids_present_per_combination)
-
-        ax.get_yaxis().set_ticks([])
-        ax.set_ylabel("")
-        ax.set_xlabel("")
-        ax.set_title(f"{cc}")
-        # min_cutoffs[cc] = percentile_25
-        plt.savefig(f"plots/{cc}.jpg", dpi=300, bbox_inches="tight", pad_inches=0)
-        plt.clf()
-    print(min_cutoffs)
-
-
-def _get_dense_exp_ids(done_workload):
-    if config.DENSE_WORKLOAD_PATH.exists():
-        print(
-            f"{config.DENSE_WORKLOAD_PATH} exists already, not caluclating again. Delete if this is unintended. And keep up the good work, you're doing a great job and look amazingly beautiful today!"
-        )
-        return
-
-    cutoff_values = {
-        "EXP_STRATEGY": 39,
-        "EXP_DATASET": 95,
-        "EXP_BATCH_SIZE": 3,
-        "EXP_LEARNER_MODEL": 3,
-        "EXP_START_POINT": 20,
-        "EXP_TRAIN_TEST_BUCKET_SIZE": 5,
-    }
-
-    """
-    cutoff_values = {
-        "EXP_STRATEGY": 3,
-        "EXP_DATASET": 3,  # 90: 1141577
-        "EXP_BATCH_SIZE": 2,
-        "EXP_LEARNER_MODEL": 2,
-        "EXP_START_POINT": 2,
-        "EXP_TRAIN_TEST_BUCKET_SIZE": 2,
-    }"""
-
-    for param, cutoff_value in cutoff_values.items():
-        print(f"{param} - cutoff_value is {cutoff_value}")
-
-        data_for_hist = (
-            done_workload.groupby(by=[c for c in column_combinations if c != param])[
-                "EXP_UNIQUE_ID"
-            ]
-            .apply(list)
-            .apply(len)
-            .to_numpy()
-        )
-
-        Path(f"plots__cutoff").mkdir(exist_ok=True)
-
-        ax = sns.histplot(data_for_hist)
-        ax.axvline(cutoff_value, color="darkred")
-        ax.get_yaxis().set_ticks([])
-        ax.set_ylabel("")
-        ax.set_xlabel("")
-        ax.set_title(f"{param}: {cutoff_value}")
-        plt.savefig(
-            f"plots_cutoff/{param}.jpg",
-            dpi=300,
-            bbox_inches="tight",
-            pad_inches=0,
-        )
-        plt.clf()
-
-        exp_ids_present_per_combination = done_workload.groupby(
-            by=[c for c in column_combinations if c != param]
-        )["EXP_UNIQUE_ID"].apply(list)
-
-        exp_ids_present_per_combination = exp_ids_present_per_combination[
-            exp_ids_present_per_combination.apply(
-                lambda x: True if len(x) >= cutoff_value else False
-            )
-        ]
-
-        exp_ids_merged = set(
-            itertools.chain(*exp_ids_present_per_combination.to_list())
-        )
-
-        before = len(done_workload)
-        done_workload = done_workload.loc[
-            done_workload["EXP_UNIQUE_ID"].isin(exp_ids_merged)
-        ]
-        print(f"reduced from {before} to {len(done_workload)}")
-    done_workload.to_csv(config.DENSE_WORKLOAD_PATH, index=False)
-
-
 def _calculate_correlations(param_to_evaluate):
     dense_workload = pd.read_csv(
         config.DENSE_WORKLOAD_PATH,
@@ -273,9 +149,6 @@ def _calculate_correlations(param_to_evaluate):
     exit(-1)
 
 
-_calculate_min_cutoffs()
-_get_dense_exp_ids(done_workload)
-exit(-1)
 for cc in [
     "EXP_BATCH_SIZE",
     "EXP_DATASET",
@@ -288,24 +161,3 @@ for cc in [
     "METRICS",
 ]:
     _calculate_correlations(cc)
-# _get_dense_exp_ids(done_workload)
-exit(-1)
-
-minimal_set = None
-for row in exp_ids_present_per_dataset:
-    if minimal_set is None:
-        minimal_set = row
-    else:
-        minimal_set = minimal_set.intersection(row)
-
-print(minimal_set)
-
-exit(-1)
-exp_ids_present_per_strategy = (
-    done_workload.groupby(by=[c for c in column_combinations if c != "EXP_STRATEGY"])[
-        "EXP_STRATEGY"
-    ]
-    .apply(set)
-    .compute()
-)
-print(exp_ids_present_per_strategy)

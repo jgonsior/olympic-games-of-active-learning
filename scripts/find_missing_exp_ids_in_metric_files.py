@@ -48,7 +48,9 @@ def _is_standard_metric(metric_path: Path) -> bool:
 
 
 def _do_stuff(exp_dataset, exp_strategy, config):
-    glob_list = _get_glob_list(config, limit=f"/{exp_strategy.name}/{exp_dataset.name}")
+    glob_list = _get_glob_list(
+        config, limit=f"/{exp_strategy.name}/{exp_dataset.name}/*"
+    )
 
     if len(glob_list) == 0:
         return

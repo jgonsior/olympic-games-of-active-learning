@@ -43,20 +43,20 @@ def _get_df(file_name: Path, config: Config) -> Optional[pd.DataFrame]:
 
 def _get_glob_list(
     config: Config,
-    limit: str = "**",
+    limit: str = "**/*",
     ignore_original_workloads=True,
 ) -> List[Path]:
     glob_list = [
         *[
             ggg
             for ggg in glob.glob(
-                str(config.OUTPUT_PATH) + f"/{limit}/*.csv.xz", recursive=True
+                str(config.OUTPUT_PATH) + f"/{limit}.csv.xz", recursive=True
             )
         ],
         *[
             ggg
             for ggg in glob.glob(
-                str(config.OUTPUT_PATH) + f"/{limit}/*.csv.xz.parquet", recursive=True
+                str(config.OUTPUT_PATH) + f"/{limit}.csv.xz.parquet", recursive=True
             )
         ],
     ]
