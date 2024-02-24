@@ -102,8 +102,8 @@ def _do_stuff(exp_dataset, exp_strategy, config):
     return summed_up_corr_values
 
 
-dfs = Parallel(n_jobs=1, verbose=10)(
-    #  dfs = Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
+# dfs = Parallel(n_jobs=1, verbose=10)(
+dfs = Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
     delayed(_do_stuff)(exp_dataset, exp_strategy, config)
     for (exp_dataset, exp_strategy) in itertools.product(
         config.EXP_GRID_DATASET, config.EXP_GRID_STRATEGY
@@ -123,7 +123,7 @@ for df in dfs:
 result_folder = Path(config.OUTPUT_PATH / f"plots/")
 result_folder.mkdir(parents=True, exist_ok=True)
 
-summed_up_corr_values.to_csv(result_folder / "basic_metrics.csv")
+summed_up_corr_values.to_parquet(result_folder / "basic_metrics.parquet")
 
 summed_up_corr_values = summed_up_corr_values.map(lambda r: np.mean(r))
 summed_up_corr_values.loc[:, "Total"] = summed_up_corr_values.mean(axis=1)

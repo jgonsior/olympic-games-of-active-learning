@@ -142,7 +142,6 @@ class Base_Samples_Categorizer(ABC):
     def _get_Y_preds_iterator(self, dataset: DATASET) -> Iterable[pd.DataFrame]:
         _train_test_splits = self._get_train_test_splits(dataset)
         for strat in self.config.EXP_GRID_STRATEGY:
-            print(strat.name)
             y_pred_train_path = Path(
                 f"{self.config.OUTPUT_PATH}/{strat.name}/{dataset.name}/y_pred_train.csv.xz.parquet"
             )
@@ -156,12 +155,9 @@ class Base_Samples_Categorizer(ABC):
 
             cols_with_indice_lists = Y_pred_train.columns.difference(["EXP_UNIQUE_ID"])
 
-            print("done1")
             Y_pred_test = pd.read_parquet(
                 f"{self.config.OUTPUT_PATH}/{strat.name}/{dataset.name}/y_pred_test.csv.xz.parquet",
             )
-
-            print("done2")
 
             # get train_test_splits based on EXP_UNIQUE_ID
             exp_train_test_buckets = self.done_workload_df[
@@ -174,7 +170,6 @@ class Base_Samples_Categorizer(ABC):
                 on="EXP_UNIQUE_ID",
                 suffixes=["_train", "_test"],
             )
-            print("done3")
 
             exp_train_test_buckets = exp_train_test_buckets.merge(
                 _train_test_splits, how="left", on="EXP_TRAIN_TEST_BUCKET_SIZE"
@@ -182,7 +177,6 @@ class Base_Samples_Categorizer(ABC):
             Y_pred = Y_pred.merge(
                 exp_train_test_buckets, how="inner", on="EXP_UNIQUE_ID"
             )
-            print("done4")
 
             exp_unique_ids = Y_pred["EXP_UNIQUE_ID"]
             Y_pred = Y_pred.apply(
@@ -192,10 +186,8 @@ class Base_Samples_Categorizer(ABC):
                 axis=1,
                 result_type="expand",
             )
-            print("done5")
 
             Y_pred.set_index(exp_unique_ids, inplace=True)
-            print("done6")
 
             yield Y_pred
 

@@ -75,8 +75,8 @@ def _do_stuff(exp_dataset, exp_strategy, config):
         csv_file_name.unlink()
 
 
-Parallel(n_jobs=1, verbose=10)(
-    # Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
+# Parallel(n_jobs=1, verbose=10)(
+Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
     delayed(_do_stuff)(exp_dataset, exp_strategy, config)
     for (exp_dataset, exp_strategy) in itertools.product(
         config.EXP_GRID_DATASET, config.EXP_GRID_STRATEGY
