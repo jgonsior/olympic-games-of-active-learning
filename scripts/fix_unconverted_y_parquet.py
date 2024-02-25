@@ -3,7 +3,7 @@ import glob
 import multiprocessing
 from pathlib import Path
 import sys
-
+import numpy as np
 from joblib import Parallel, delayed
 import pandas as pd
 import functools
@@ -17,28 +17,30 @@ config = Config()
 
 
 def _do_stuff(file_name):
-    print(file_name)
+    from pandarallel import pandarallel
 
-    # from pandarallel import pandarallel
-
-    # pandarallel.initialize(
-    #    progress_bar=True, nb_workers=int(multiprocessing.cpu_count())
-    # )
+    pandarallel.initialize(
+        progress_bar=True, nb_workers=int(multiprocessing.cpu_count() / 2)
+    )
 
     a = pd.read_parquet(file_name)
 
-    if type(a.iloc[0][0]) == str:
-        print("oh oh")
-    else:
-        print(type(a.iloc[0][0]))
+    if len(a) == 0:
         return
+
+    if type(a.iloc[0]["0"]) == np.ndarray:
+        return
+    print(type(a.iloc[0]["0"]))
+    print(file_name)
 
     cols_with_indice_lists = a.columns.difference(["EXP_UNIQUE_ID"])
 
     a[cols_with_indice_lists] = (
-        a[cols_with_indice_lists].fillna("[]").map(lambda x: ast.literal_eval(x))
+        a[cols_with_indice_lists]
+        .fillna("[]")
+        .parallel_applymap(lambda x: ast.literal_eval(x))
     )
-    # a.to_parquet(file_name)
+    a.to_parquet(file_name)
 
 
 glob_list = [
