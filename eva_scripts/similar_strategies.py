@@ -165,8 +165,7 @@ def _do_stuff(exp_dataset, config):
     # return summed_up_corr_values
 
 
-Parallel(n_jobs=1, verbose=10)(
-    # Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
-    delayed(_do_stuff)(exp_dataset, config)
-    for exp_dataset in config.EXP_GRID_DATASET
+# Parallel(n_jobs=1, verbose=10)(
+Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
+    delayed(_do_stuff)(exp_dataset, config) for exp_dataset in config.EXP_GRID_DATASET
 )
