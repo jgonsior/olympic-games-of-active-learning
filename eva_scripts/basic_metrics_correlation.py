@@ -142,6 +142,10 @@ def _do_stuff(exp_dataset, exp_strategy, config):
 
     return summed_up_corr_values
 
+TODO: everywhere I get NAN
+also: the pd.corr caluclation is painfully slow and non_parallelized
+
+use np.corrcoeff(data.T)??
 
 # dfs = Parallel(n_jobs=1, verbose=10)(
 dfs = Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
