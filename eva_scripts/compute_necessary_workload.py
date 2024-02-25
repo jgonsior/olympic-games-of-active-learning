@@ -27,7 +27,7 @@ done_workload = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
 
 column_combinations = [
     "EXP_DATASET",
-    "EXP_STRATEGY",
+    # "EXP_STRATEGY",
     "EXP_RANDOM_SEED",
     "EXP_START_POINT",
     "EXP_NUM_QUERIES",
@@ -45,9 +45,16 @@ def _calculate_correlations(param_to_evaluate):
     print(f"Original: {len(dense_workload)}")
     print(param_to_evaluate)
 
+    # each row contains fingerprint -> I want to reduce this whole thing to a correlation among these fingerprints
+    # I calculate for each fingerprint, how good the individual strategies are -> I save the ranking values
+    # in the end I get a pd.DataFrame(colums=["fingerprint", "strat_a", "strat_b", "strat_c", …])
+    # and in each strat_a, strat_b, strat_c column I have the single_metric result for this strategy
+    # then I calculate the correlation between the time series of strategy results
+    # claudio frage: macht es Sinn darüber zu entscheiden, welche hyperparameter combinations ich verwenden soll?
     dense_workload_grouped = dense_workload.groupby(
-        by=[ddd for ddd in column_combinations if ddd != param_to_evaluate]
-    ).apply(lambda r: list(zip(r[param_to_evaluate], r["EXP_UNIQUE_ID"])))
+        # by=[ddd for ddd in column_combinations if ddd != param_to_evaluate]
+        by=column_combinations
+    ).apply(lambda r: list(zip(r["EXP_STRATEGY"], r["EXP_UNIQUE_ID"])))
 
     print(
         f"Calculating correlations for {param_to_evaluate}: {len(dense_workload_grouped)}"
@@ -61,6 +68,9 @@ def _calculate_correlations(param_to_evaluate):
         total=dense_workload_grouped.shape[0],
     )
     for _, row in pbar:
+
+        print(row)
+        exit(-1)
         path_glob = f"{config.OUTPUT_PATH}/{AL_STRATEGY(row.EXP_STRATEGY).name}/{DATASET(row.EXP_DATASET).name}/*.csv.xz"
 
         pbar.set_description(path_glob)
