@@ -45,6 +45,9 @@ class STANDARD_AUC(Base_Computed_Metric):
             ]["cutoff_value"].iloc[0]
 
         row = row.loc[row.index != "EXP_UNIQUE_ID"]
+
+        row = row.loc[row.notna()]
+
         row = row[range_start:range_end]
 
         return row.sum() / row.notna().sum(0)
