@@ -126,7 +126,7 @@ class Config:
     COMPUTED_METRICS: List[COMPUTED_METRIC]
     SAMPLES_CATEGORIZER: List[SAMPLES_CATEGORIZER]
 
-    EVA_METRICS_TO_CORRELATE: List[Union[Base_Metric, COMPUTED_METRIC]]
+    EVA_METRICS_TO_CORRELATE: Literal["standard", "extended", "auc"] = "standard"
 
     def __init__(self, no_cli_args: Optional[Dict[str, Any]] = None) -> None:
         if no_cli_args is not None:

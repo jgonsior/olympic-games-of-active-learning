@@ -18,7 +18,7 @@ import seaborn as sns
 config = Config()
 
 
-def _is_standard_metric(metric_path: str) -> bool:
+def _is_standard_metric(metric_path: str, config: Config) -> bool:
     standard_metrics = [
         "accuracy",
         "weighted_recall",
@@ -30,6 +30,47 @@ def _is_standard_metric(metric_path: str) -> bool:
         "weighted_recall",
     ]
 
+    if (
+        config.EVA_METRICS_TO_CORRELATE == "extended"
+        or config.EVA_METRICS_TO_CORRELATE == "auc"
+    ):
+
+        variant_prefixe = [
+            "biggest_drop_per_",
+            "nr_decreasing_al_cycles_per_",
+        ]
+
+        original_standard_metrics = standard_metrics.copy()
+        for vp in variant_prefixe:
+            standard_metrics = [
+                *standard_metrics,
+                *[vp + sss for sss in original_standard_metrics],
+            ]
+
+        if config.EVA_METRICS_TO_CORRELATE == "auc":
+            auc_prefixe = [
+                "final_value_",
+                "first_5_",
+                "full_auc_",
+                "last_5_",
+                "learning_stability_5_",
+                "learning_stability_10_",
+                "ramp_up_auc_",
+                "plateu_auc_",
+            ]
+
+            original_standard_metrics = standard_metrics.copy()
+
+            for vp in auc_prefixe:
+                standard_metrics = [
+                    *standard_metrics,
+                    *[vp + sss for sss in original_standard_metrics],
+                ]
+
+        standard_metrics = [
+            *standard_metrics,
+            *[sss + "_time_lag" for sss in standard_metrics],
+        ]
     for sm in standard_metrics:
         if f"/{sm}.csv" in metric_path:
             return True
@@ -46,7 +87,7 @@ def _do_stuff(exp_dataset, exp_strategy, config):
             + f"/{exp_strategy.name}/{exp_dataset.name}/*.csv.xz",
             recursive=True,
         )
-        if _is_standard_metric(f)
+        if _is_standard_metric(f, config)
     ]
 
     if len(glob_list) == 0:
@@ -123,7 +164,9 @@ for df in dfs:
 result_folder = Path(config.OUTPUT_PATH / f"plots/")
 result_folder.mkdir(parents=True, exist_ok=True)
 
-summed_up_corr_values.to_parquet(result_folder / "basic_metrics.parquet")
+summed_up_corr_values.to_parquet(
+    result_folder / f"{config.EVA_METRICS_TO_CORRELATE}.parquet"
+)
 
 summed_up_corr_values = summed_up_corr_values.map(lambda r: np.mean(r))
 summed_up_corr_values.loc[:, "Total"] = summed_up_corr_values.mean(axis=1)
@@ -136,5 +179,8 @@ fig = plt.figure(figsize=set_matplotlib_size())
 sns.heatmap(summed_up_corr_values, annot=True)
 
 plt.savefig(
-    result_folder / "basic_metrics.jpg", dpi=300, bbox_inches="tight", pad_inches=0
+    result_folder / f"{config.EVA_METRICS_TO_CORRELATE}.jpg",
+    dpi=300,
+    bbox_inches="tight",
+    pad_inches=0,
 )
