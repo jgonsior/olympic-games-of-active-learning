@@ -43,6 +43,7 @@ def _calculate_correlations(param_to_evaluate):
     )
 
     print(f"Original: {len(dense_workload)}")
+    print(param_to_evaluate)
 
     dense_workload_grouped = dense_workload.groupby(
         by=[ddd for ddd in column_combinations if ddd != param_to_evaluate]
@@ -52,7 +53,6 @@ def _calculate_correlations(param_to_evaluate):
         f"Calculating correlations for {param_to_evaluate}: {len(dense_workload_grouped)}"
     )
     print(dense_workload_grouped)
-    return
 
     combined_stats = []
 
@@ -158,6 +158,6 @@ for cc in [
     # "EXP_NUM_QUERIES",
     "EXP_LEARNER_MODEL",
     "EXP_TRAIN_TEST_BUCKET_SIZE",
-    "METRICS",
+    # "METRICS",
 ]:
     _calculate_correlations(cc)
