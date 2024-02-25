@@ -101,7 +101,7 @@ df = df.T
 df.columns = df.loc["fingerprint"].values
 df.drop(index="fingerprint", axis=0, inplace=True)
 
-df = df.corr()
+df = df.corr(method="spearman")
 print(df)
 print(non_al_cycle_keys)
 
@@ -113,9 +113,9 @@ df.to_parquet(result_folder / "fingerprint_correlations_based_on_single_metric.p
 # summed_up_corr_values.loc[:, "Total"] = summed_up_corr_values.mean(axis=1)
 # summed_up_corr_values.sort_values(by=["Total"], inplace=True)
 
-set_seaborn_style(font_size=8)
-fig = plt.figure(figsize=set_matplotlib_size())
-sns.heatmap(df, annot=True)
+# set_seaborn_style(font_size=8)
+fig = plt.figure(figsize=set_matplotlib_size(fraction=10))
+sns.heatmap(df, annot=False)
 
 plt.savefig(
     result_folder / "fingerprint_correlations_based_on_single_metric.jpg",
