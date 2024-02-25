@@ -145,6 +145,7 @@ class Base_Samples_Categorizer(ABC):
             y_pred_train_path = Path(
                 f"{self.config.OUTPUT_PATH}/{strat.name}/{dataset.name}/y_pred_train.csv.xz.parquet"
             )
+            print(y_pred_train_path)
             if not y_pred_train_path.exists():
                 print("Have you converted csv files to .xz?")
                 continue

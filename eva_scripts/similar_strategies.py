@@ -205,6 +205,10 @@ set_seaborn_style(font_size=8)
 fig = plt.figure(figsize=set_matplotlib_size())
 sns.heatmap(df, annot=True)
 
+# Parallel(n_jobs=1, verbose=10)(
+Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
+    delayed(_do_stuff)(exp_dataset, config) for exp_dataset in config.EXP_GRID_DATASET
+)
 plt.savefig(
     result_folder / "similar_strategies.jpg", dpi=300, bbox_inches="tight", pad_inches=0
 )
