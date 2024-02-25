@@ -21,6 +21,7 @@ from sklearn.isotonic import spearmanr
 from sklearn.metrics import jaccard_score
 
 from misc.helpers import _append_and_create, _get_df, _get_glob_list
+from misc.plotting import set_matplotlib_size, set_seaborn_style
 
 
 sys.dont_write_bytecode = True
@@ -131,8 +132,8 @@ def _do_stuff(exp_dataset, config):
             (
                 strat_a,
                 strat_b,
-                np.mean(jaccards),
-                np.mean(spearmans),
+                jaccards,
+                spearmans,
                 # np.mean(jaccards),
                 # np.std(jaccards),
             )
@@ -142,31 +143,68 @@ def _do_stuff(exp_dataset, config):
             (
                 strat_b,
                 strat_a,
-                np.mean(jaccards),
-                np.mean(spearmans),
+                jaccards,
+                spearmans,
                 # np.mean(jaccards),
                 # np.std(jaccards),
             )
         )
 
     for strat in selected_indices_per_strategy.keys():
-        table_data.append((strat, strat, 1, 1))
-    df = pd.DataFrame(
+        table_data.append((strat, strat, [1], [1]))
+    return table_data
+
+
+# table_datas = Parallel(n_jobs=1, verbose=10)(
+table_datas = Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
+    delayed(_do_stuff)(exp_dataset, config) for exp_dataset in config.EXP_GRID_DATASET
+)
+
+
+df = None
+
+for table_data in table_datas:
+    single_df = pd.DataFrame(
         table_data, columns=["strat_a", "strat_b", "jaccards", "spearmans"]
     )
-    df = df.pivot(index="strat_a", columns="strat_b", values="spearmans")
-    print(df)
-    sns.heatmap(df, annot=True)
-    # plt.show()
 
-    # how to combine results for multiple datasets? return lists of jaccards and spearmans and np.mean() later?
-    # or is sum of means the same?
-    # exit(-1)
-    # return summed_up_corr_values
+    if df is None:
+        df = single_df
+        continue
 
+    df = pd.merge(single_df, df, on=["strat_a", "strat_b"], how="outer")
+    df["jaccards_x"] = df["jaccards_x"].fillna("").apply(list)
+    df["spearmans_x"] = df["spearmans_x"].fillna("").apply(list)
 
-Parallel(n_jobs=1, verbose=10)(
-    # Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
-    delayed(_do_stuff)(exp_dataset, config)
-    for exp_dataset in config.EXP_GRID_DATASET
+    df["jaccards"] = df[["jaccards_x", "jaccards_y"]].apply(
+        lambda row: [*row["jaccards_x"], *row["jaccards_y"]], axis=1
+    )
+    df["spearmans"] = df[["spearmans_x", "spearmans_y"]].apply(
+        lambda row: [*row["spearmans_x"], *row["spearmans_y"]], axis=1
+    )
+    del df["jaccards_x"]
+    del df["jaccards_y"]
+    del df["spearmans_x"]
+    del df["spearmans_y"]
+
+df = df.pivot(index="strat_a", columns="strat_b", values="spearmans")
+
+print(df)
+
+result_folder = Path(config.OUTPUT_PATH / f"plots/")
+result_folder.mkdir(parents=True, exist_ok=True)
+
+df.to_parquet(result_folder / "similar_strategies.parquet")
+df = df.map(lambda r: np.mean(r))
+# summed_up_corr_values.loc[:, "Total"] = summed_up_corr_values.mean(axis=1)
+# summed_up_corr_values.sort_values(by=["Total"], inplace=True)
+
+print(df)
+
+set_seaborn_style(font_size=8)
+fig = plt.figure(figsize=set_matplotlib_size())
+sns.heatmap(df, annot=True)
+
+plt.savefig(
+    result_folder / "similar_strategies.jpg", dpi=300, bbox_inches="tight", pad_inches=0
 )
