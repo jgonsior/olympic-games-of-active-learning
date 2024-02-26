@@ -229,7 +229,7 @@ def create_fingerprint_joined_timeseries_csv_files(
         for non_al_cycle_key in non_al_cycle_keys:
             del metric_df[non_al_cycle_key]
 
-        ts_file = Path(config.OUTPUT_PATH / f"_ts/{metric_name}.csv")
+        ts_file = Path(config.OUTPUT_PATH / f"_TS/{metric_name}.csv")
 
         contents = ""
         for _, row in metric_df.iterrows():
