@@ -30,9 +30,9 @@ from misc.config import Config
 config = Config()
 
 
-# df = _get_done_workload_joined_with_metric(["weighted_f1-score"], config)
-# df = _get_done_workload_joined_with_metric(["weighted_f1-score"], config)
-df = get_done_workload_joined_with_metric(["full_auc_weighted_f1-score"], config)
+# df = get_done_workload_joined_with_metric("weighted_f1-score], config)
+# df = get_done_workload_joined_with_metric("weighted_f1-score], config)
+df = get_done_workload_joined_with_metric("full_auc_weighted_f1-score", config)
 print(df)
 
 
@@ -88,6 +88,8 @@ for target_to_evaluate in targets_to_evaluate:
     df.columns.name = None
     df.index = df["fingerprint"]
     del df["fingerprint"]
+
+    # TODO das hier schon eher machen (vor pivot?) um nur die Zeilen zu entfernen die na sind
     df.dropna(inplace=True)
 
     # print(df.corr(method="spearman"))
