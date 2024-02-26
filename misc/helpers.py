@@ -83,7 +83,7 @@ def get_glob_list(
 
 
 def get_done_workload_joined_with_metric(
-    metric_names: List[str], config: Config
+    metric_name: str, config: Config
 ) -> pd.DataFrame:
     done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
 
@@ -92,6 +92,8 @@ def get_done_workload_joined_with_metric(
 
     def _do_stuff(file_name: Path, config: Config, done_workload_df: pd.DataFrame):
         print(file_name)
+
+        metric_name = file_name.name.removesuffix(".parquet").removesuffix(".csv.xz")
 
         metric_df = get_df(file_name, config)
 
@@ -102,12 +104,48 @@ def get_done_workload_joined_with_metric(
             metric_df, done_workload_df, on=["EXP_UNIQUE_ID"], how="left"
         )
 
-        metric_df
+        return metric_df
+
+    glob_list = get_glob_list(config, limit=f"**/{metric_name}")
+
+    # metric_dfs = Parallel(n_jobs=1, verbose=10)(
+    metric_dfs = Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
+        delayed(_do_stuff)(file_name, config, done_workload_df)
+        for file_name in glob_list
+    )
+
+    df = pd.concat(metric_dfs).reset_index(drop=True)
+
+    return df
+
+
+def get_done_workload_joined_with_multiple_metrics(
+    metric_names: List[str], config: Config
+) -> pd.DataFrame:
+    done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
+
+    del done_workload_df["EXP_RANDOM_SEED"]
+    del done_workload_df["EXP_NUM_QUERIES"]
+
+    def _do_stuff(file_name: Path, config: Config, done_workload_df: pd.DataFrame):
+        print(file_name)
+
+        metric_name = file_name.name.removesuffix(".parquet").removesuffix(".csv.xz")
+
+        metric_df = get_df(file_name, config)
+
+        if metric_df is None:
+            return
+
+        metric_df = pd.merge(
+            metric_df, done_workload_df, on=["EXP_UNIQUE_ID"], how="left"
+        )
 
         return metric_df
 
+    glob_list = []
     for metric_name in metric_names:
-        glob_list = get_glob_list(config, limit=f"**/{metric_name}")
+        glob_list = [*glob_list, *get_glob_list(config, limit=f"**/{metric_name}")]
 
     # metric_dfs = Parallel(n_jobs=1, verbose=10)(
     metric_dfs = Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(

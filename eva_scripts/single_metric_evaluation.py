@@ -30,9 +30,9 @@ from misc.config import Config
 config = Config()
 
 
-# df = _get_done_workload_joined_with_metric(["weighted_f1-score"], config)
-# df = _get_done_workload_joined_with_metric(["weighted_f1-score"], config)
-df = get_done_workload_joined_with_metric(["full_auc_weighted_f1-score"], config)
+# df = get_done_workload_joined_with_metric("weighted_f1-score], config)
+# df = get_done_workload_joined_with_metric("weighted_f1-score], config)
+df = get_done_workload_joined_with_metric("full_auc_weighted_f1-score", config)
 print(df)
 
 

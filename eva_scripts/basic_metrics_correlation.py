@@ -5,6 +5,10 @@ import glob
 from joblib import Parallel, delayed
 from matplotlib import pyplot as plt
 import pandas as pd
+from misc.helpers import (
+    get_done_workload_joined_with_metric,
+    get_done_workload_joined_with_multiple_metrics,
+)
 from misc.plotting import set_seaborn_style, set_matplotlib_size
 import multiprocessing
 
@@ -18,7 +22,7 @@ import seaborn as sns
 config = Config()
 
 
-def _is_standard_metric(metric_path: str, config: Config) -> bool:
+for modus in ["standard", "extended", "auc"]:
     standard_metrics = [
         "accuracy",
         "weighted_recall",
@@ -30,10 +34,7 @@ def _is_standard_metric(metric_path: str, config: Config) -> bool:
         "weighted_recall",
     ]
 
-    if (
-        config.EVA_METRICS_TO_CORRELATE == "extended"
-        or config.EVA_METRICS_TO_CORRELATE == "auc"
-    ):
+    if modus == "extended" or modus == "auc":
         variant_prefixe = [
             "biggest_drop_per_",
             "nr_decreasing_al_cycles_per_",
@@ -46,7 +47,7 @@ def _is_standard_metric(metric_path: str, config: Config) -> bool:
                 *[vp + sss for sss in original_standard_metrics],
             ]
 
-        if config.EVA_METRICS_TO_CORRELATE == "auc":
+        if modus == "auc":
             auc_prefixe = [
                 "final_value_",
                 "first_5_",
@@ -59,7 +60,7 @@ def _is_standard_metric(metric_path: str, config: Config) -> bool:
             ]
 
             original_standard_metrics = standard_metrics.copy()
-
+            standard_metrics = []
             for vp in auc_prefixe:
                 standard_metrics = [
                     *standard_metrics,
@@ -70,10 +71,16 @@ def _is_standard_metric(metric_path: str, config: Config) -> bool:
             *standard_metrics,
             *[sss + "_time_lag" for sss in standard_metrics],
         ]
-    for sm in standard_metrics:
-        if f"/{sm}.csv" in metric_path:
-            return True
-    return False
+
+    print(modus)
+    df = get_done_workload_joined_with_multiple_metrics(standard_metrics, config)
+
+    print(df)
+    print(df.columns)
+    print()
+    exit(-1)
+exit(-1)
+df = get_done_workload_joined_with_metric(["selected_indices"], config)
 
 
 def _do_stuff(exp_dataset, exp_strategy, config):
