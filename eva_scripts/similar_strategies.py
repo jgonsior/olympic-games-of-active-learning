@@ -30,7 +30,6 @@ from misc.config import Config
 
 
 config = Config()
-print("TODO: sollte neu mit fingerprint/timeseries correlation gemacht werden")
 done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
 
 

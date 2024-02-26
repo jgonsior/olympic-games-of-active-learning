@@ -100,11 +100,16 @@ for modus in ["standard"]:  # ["extended", "standard", "auc"]:
 
     for non_al_cycle_key in non_al_cycle_keys:
         del df[non_al_cycle_key]
+
+    print(df)
     df = df.melt(id_vars=["metric_name", "fingerprint"], value_vars=metric_keys)
+    print(df)
 
     df["fingerprint"] = df[["fingerprint", "variable"]].parallel_apply(
         lambda row: "_".join(row.values), axis=1
     )
+    print(df)
+    exit(-1)
 
     del df["variable"]
 
