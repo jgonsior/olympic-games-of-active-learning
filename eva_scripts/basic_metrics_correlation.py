@@ -7,6 +7,7 @@ from joblib import Parallel, delayed
 from matplotlib import pyplot as plt
 import pandas as pd
 from misc.helpers import (
+    create_fingerprint_joined_timeseries_csv_files,
     get_done_workload_joined_with_metric,
     get_done_workload_joined_with_multiple_metrics,
     save_correlation_plot,
@@ -76,7 +77,9 @@ for modus in ["standard"]:  # ["extended", "standard", "auc"]:
         ]
 
     print(modus)
-    df = get_done_workload_joined_with_multiple_metrics(standard_metrics, config)
+    create_fingerprint_joined_timeseries_csv_files(standard_metrics, config)
+
+    exit(-1)
     del df["EXP_UNIQUE_ID"]
 
     print(df)

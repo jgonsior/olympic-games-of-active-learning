@@ -27,6 +27,16 @@ def append_and_create(file_name: Path, content: Dict):
         w.writerow(content)
 
 
+def append_and_create_manually(file_name: Path, content: str, headers: str):
+    if not file_name.exists():
+        file_name.parent.mkdir(parents=True, exist_ok=True)
+        with open(file_name, "w") as f:
+            f.write(headers)
+
+    with open(file_name, "a") as f:
+        f.write(content)
+
+
 # read in csv
 # in case of errors -> skip file and return None
 def get_df(file_name: Path, config: Config) -> Optional[pd.DataFrame]:
@@ -166,6 +176,83 @@ def get_done_workload_joined_with_multiple_metrics(
     df = pd.concat(metric_dfs).reset_index(drop=True)
 
     return df
+
+
+def create_fingerprint_joined_timeseries_csv_files(
+    metric_names: List[str], config: Config
+):
+    done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
+
+    del done_workload_df["EXP_RANDOM_SEED"]
+    del done_workload_df["EXP_NUM_QUERIES"]
+
+    def _do_stuff(file_name: Path, config: Config, done_workload_df: pd.DataFrame):
+        print(file_name)
+
+        metric_name = file_name.name.removesuffix(".parquet").removesuffix(".csv.xz")
+
+        metric_df = get_df(file_name, config)
+
+        if metric_df is None:
+            return
+
+        metric_columns = [mmm for mmm in metric_df.columns]
+        metric_columns.remove("EXP_UNIQUE_ID")
+
+        metric_df[metric_columns] = metric_df[metric_columns].apply(
+            pd.to_numeric, downcast="float"
+        )
+
+        metric_df = pd.merge(
+            metric_df, done_workload_df, on=["EXP_UNIQUE_ID"], how="left"
+        )
+
+        del metric_df["EXP_UNIQUE_ID"]
+
+        non_al_cycle_keys = [
+            "EXP_DATASET",
+            "EXP_STRATEGY",
+            "EXP_BATCH_SIZE",
+            "EXP_LEARNER_MODEL",
+            "EXP_TRAIN_TEST_BUCKET_SIZE",
+            "EXP_START_POINT",
+        ]
+
+        # replace non_al_cycle_keys by single string fingerprint as key
+        metric_df["fingerprint"] = metric_df[non_al_cycle_keys].apply(
+            lambda row: "_".join(row.values.astype(str)),
+            axis=1,
+        )
+
+        for non_al_cycle_key in non_al_cycle_keys:
+            del metric_df[non_al_cycle_key]
+
+        ts_file = Path(config.OUTPUT_PATH / f"_ts/{metric_name}.csv")
+
+        contents = ""
+        for _, row in metric_df.iterrows():
+            row = row.to_list()
+
+            fingerprint = row[-1]
+
+            for ix, v in enumerate(row[:-1]):
+                if np.isnan(v):
+                    continue
+                contents += f"{fingerprint}_{ix},{v}\n"
+
+        append_and_create_manually(ts_file, contents, headers="fingerprint,value\n")
+
+    glob_list = []
+    for metric_name in metric_names:
+        glob_list = [*glob_list, *get_glob_list(config, limit=f"**/{metric_name}")]
+    glob_list = set(glob_list)
+
+    print(len(glob_list))
+    # metric_dfs = Parallel(n_jobs=1, verbose=10)(
+    Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
+        delayed(_do_stuff)(file_name, config, done_workload_df)
+        for file_name in glob_list
+    )
 
 
 def save_correlation_plot(
