@@ -27,11 +27,10 @@ def append_and_create(file_name: Path, content: Dict):
         w.writerow(content)
 
 
-def append_and_create_manually(file_name: Path, content: str, headers: str):
+def append_and_create_manually(file_name: Path, content: str):
     if not file_name.exists():
         file_name.parent.mkdir(parents=True, exist_ok=True)
-        with open(file_name, "w") as f:
-            f.write(headers)
+        file_name.touch(exist_ok=True)
 
     with open(file_name, "a") as f:
         f.write(content)
@@ -229,7 +228,7 @@ def create_fingerprint_joined_timeseries_csv_files(
         for non_al_cycle_key in non_al_cycle_keys:
             del metric_df[non_al_cycle_key]
 
-        ts_file = Path(config.OUTPUT_PATH / f"_TS/{metric_name}.csv")
+        ts_file = config.CORRELATION_TS_PATH / f"{metric_name}.csv"
 
         contents = ""
         for _, row in metric_df.iterrows():
@@ -242,12 +241,12 @@ def create_fingerprint_joined_timeseries_csv_files(
                     continue
                 contents += f"{fingerprint}_{ix},{v}\n"
 
-        append_and_create_manually(ts_file, contents, headers="fingerprint,value\n")
+        append_and_create_manually(ts_file, contents)
 
     glob_list = []
     for metric_name in metric_names:
         glob_list = [*glob_list, *get_glob_list(config, limit=f"**/{metric_name}")]
-    glob_list = set(glob_list)
+    glob_list = sorted(set(glob_list))
 
     print(len(glob_list))
     # metric_dfs = Parallel(n_jobs=1, verbose=10)(

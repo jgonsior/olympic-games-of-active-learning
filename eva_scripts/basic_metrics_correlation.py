@@ -1,6 +1,7 @@
 from ast import mod
 import itertools
 from pathlib import Path
+import subprocess
 import sys
 import glob
 from joblib import Parallel, delayed
@@ -78,6 +79,12 @@ for modus in ["standard"]:  # ["extended", "standard", "auc"]:
 
     print(modus)
     create_fingerprint_joined_timeseries_csv_files(standard_metrics, config)
+
+    print("Sorting files")
+    command = (
+        "find " + str(config.CORRELATION_TS_PATH) + "/ -type f -exec sort {} -o {} \;"
+    )
+    subprocess.run(command, shell=True, text=True)
 
     exit(-1)
     del df["EXP_UNIQUE_ID"]

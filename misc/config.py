@@ -125,6 +125,7 @@ class Config:
     METRICS: List[Base_Metric]
     COMPUTED_METRICS: List[COMPUTED_METRIC]
     SAMPLES_CATEGORIZER: List[SAMPLES_CATEGORIZER]
+    CORRELATION_TS_PATH: Path = "_TS"  # ignore
 
     def __init__(self, no_cli_args: Optional[Dict[str, Any]] = None) -> None:
         if no_cli_args is not None:
@@ -256,6 +257,8 @@ class Config:
         self.EXP_ID_METRIC_CSV_FOLDER_PATH = (
             self.OUTPUT_PATH / self.EXP_ID_METRIC_CSV_FOLDER_PATH
         )
+
+        self.CORRELATION_TS_PATH = self.OUTPUT_PATH / self.CORRELATION_TS_PATH
 
         self.OUTPUT_PATH.mkdir(parents=True, exist_ok=True)
 
