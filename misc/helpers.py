@@ -7,6 +7,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
 from pyparsing import Path
+from scipy.fft import idct
 
 from datasets import DATASET
 from misc.config import Config
@@ -208,36 +209,18 @@ def create_fingerprint_joined_timeseries_csv_files(
             metric_df, done_workload_df, on=["EXP_UNIQUE_ID"], how="left"
         )
 
-        del metric_df["EXP_UNIQUE_ID"]
-
-        non_al_cycle_keys = [
-            "EXP_DATASET",
-            "EXP_STRATEGY",
-            "EXP_BATCH_SIZE",
-            "EXP_LEARNER_MODEL",
-            "EXP_TRAIN_TEST_BUCKET_SIZE",
-            "EXP_START_POINT",
-        ]
-
-        # replace non_al_cycle_keys by single string fingerprint as key
-        metric_df["fingerprint"] = metric_df[non_al_cycle_keys].apply(
-            lambda row: "_".join(row.values.astype(str)),
-            axis=1,
-        )
-
-        for non_al_cycle_key in non_al_cycle_keys:
-            del metric_df[non_al_cycle_key]
-
         ts_file = config.CORRELATION_TS_PATH / f"{metric_name}.csv"
 
         contents = ""
         for _, row in metric_df.iterrows():
             row = row.to_list()
 
-            fingerprint = row[-1]
+            non_metric_values = ",".join([str(int(rrr)) for rrr in row[-7:]])
 
-            for ix, v in enumerate(row[:-1]):nu
-                contents += f"{fingerprint}_{ix},{v}\n"
+            for ix, v in enumerate(row[:-7]):
+                if np.isnan(v):
+                    continue
+                contents += f"{ix}_{non_metric_values},{v}\n"
 
         append_and_create_manually(ts_file, contents)
 
@@ -256,6 +239,7 @@ def create_fingerprint_joined_timeseries_csv_files(
             str(config.CORRELATION_TS_PATH) + f"/*.csv", recursive=True
         )
     ]
+
     glob_list = [ggg for ggg in glob_list if ggg.name not in existent_ts_files]
     print(len(glob_list))
 

@@ -89,19 +89,39 @@ for modus in ["standard", "extended", "auc"]:
     )
     subprocess.run(command, shell=True, text=True)
 
-    print("Reading in csv files")
+    print("computing intersection")
+    shared_unique_ids = None
 
+    for sm in standard_metrics:
+        ts = pd.read_csv(
+            config.CORRELATION_TS_PATH / f"{sm}.csv",
+            header=None,
+            index_col=False,
+            delimiter=",",
+            usecols=[0],
+        )
+        if shared_unique_ids is None:
+            shared_unique_ids = set(ts.iloc[:, 0].to_list())
+        else:
+            shared_unique_ids = shared_unique_ids.intersection(
+                set(ts.iloc[:, 0].to_list())
+            )
+
+    print("Reading in ts csv files")
     timeseriesses = []
     for sm in standard_metrics:
-        ts = np.loadtxt(
+        ts = pd.read_csv(
             config.CORRELATION_TS_PATH / f"{sm}.csv",
+            header=None,
+            index_col=False,
             delimiter=",",
-            dtype="float32",
-            usecols=1,
+            dtype={0: str, 1: np.float32},
+            usecols=[0, 7],
         )
-        timeseriesses.append(ts)
-
+        ts = ts.loc[ts[0].isin(shared_unique_ids)]
+        timeseriesses.append(ts.iloc[:, 1].values)
     timeseriesses = np.array(timeseriesses)
+
     print("numpied")
     corrmat = np.corrcoef(timeseriesses)
 
