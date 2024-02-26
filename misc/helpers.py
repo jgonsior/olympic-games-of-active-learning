@@ -189,7 +189,7 @@ def create_fingerprint_joined_timeseries_csv_files(
     del done_workload_df["EXP_NUM_QUERIES"]
 
     def _do_stuff(file_name: Path, config: Config, done_workload_df: pd.DataFrame):
-        print(file_name)
+        # print(file_name)
 
         metric_name = file_name.name.removesuffix(".parquet").removesuffix(".csv.xz")
 
@@ -209,7 +209,7 @@ def create_fingerprint_joined_timeseries_csv_files(
             metric_df, done_workload_df, on=["EXP_UNIQUE_ID"], how="left"
         )
 
-        ts_file = config.CORRELATION_TS_PATH / f"{metric_name}.csv"
+        ts_file = config.CORRELATION_TS_PATH / f"{metric_name}.unsorted.csv"
 
         contents = ""
         for _, row in metric_df.iterrows():
@@ -234,12 +234,19 @@ def create_fingerprint_joined_timeseries_csv_files(
     print(len(glob_list))
 
     existent_ts_files = [
-        ggg.split("/")[-1] + ".xz"
-        for ggg in glob.glob(
-            str(config.CORRELATION_TS_PATH) + f"/*.csv", recursive=True
-        )
+        *[
+            ggg.split("/")[-1].split(".")[0] + ".csv.xz"
+            for ggg in glob.glob(
+                str(config.CORRELATION_TS_PATH) + f"/*.unsorted.csv", recursive=True
+            )
+        ],
+        *[
+            ggg.split("/")[-1].split(".")[0] + ".csv.xz"
+            for ggg in glob.glob(
+                str(config.CORRELATION_TS_PATH) + f"/*.csv", recursive=True
+            )
+        ],
     ]
-
     glob_list = [ggg for ggg in glob_list if ggg.name not in existent_ts_files]
     print(len(glob_list))
 

@@ -11,6 +11,7 @@ from misc.helpers import (
     create_fingerprint_joined_timeseries_csv_files,
     get_done_workload_joined_with_metric,
     get_done_workload_joined_with_multiple_metrics,
+    get_glob_list,
     save_correlation_plot,
 )
 from misc.plotting import set_seaborn_style, set_matplotlib_size
@@ -80,14 +81,14 @@ for modus in ["standard", "extended", "auc"]:
     create_fingerprint_joined_timeseries_csv_files(standard_metrics, config)
 
     print("Sorting files")
-    command = (
-        "find "
-        + str(config.CORRELATION_TS_PATH)
-        + "/ -type f -exec sort --parallel "
-        + str(multiprocessing.cpu_count())
-        + " {} -o {} \;"
-    )
-    subprocess.run(command, shell=True, text=True)
+
+    for f in glob.glob(
+        str(config.CORRELATION_TS_PATH) + f"/*.unsorted.csv", recursive=True
+    ):
+        command = f"sort --parallel {multiprocessing.cpu_count()} {f} -o {f.split('.')[0]}.csv"
+        print(command)
+        subprocess.run(command, shell=True, text=True)
+        Path(f).unlink()
 
     print("computing intersection")
     shared_unique_ids = None
