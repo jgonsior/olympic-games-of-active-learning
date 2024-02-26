@@ -3,7 +3,7 @@ import glob
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Tuple
 import pandas as pd
-
+import numpy as np
 from datasets import DATASET
 from metrics.computed.base_computed_metric import Base_Computed_Metric
 
@@ -33,20 +33,25 @@ class STANDARD_AUC(Base_Computed_Metric):
         self, row: pd.Series, range_start: int, range_end: int, EXP_DATASET: DATASET
     ) -> pd.Series:
         if range_start == "pre_computed":
-            range_start = int(
-                self._dataset_dependend_thresholds_df[
-                    self._dataset_dependend_thresholds_df["EXP_UNIQUE_ID"]
-                    == row["EXP_UNIQUE_ID"]
-                ]["cutoff_value"].iloc[0]
-            )
+            range_start = self._dataset_dependend_thresholds_df[
+                self._dataset_dependend_thresholds_df["EXP_UNIQUE_ID"]
+                == row["EXP_UNIQUE_ID"]
+            ]["cutoff_value"].iloc[0]
+
+            if np.isnan(range_start):
+                range_start = len(row) / 2
+
+            range_start = int(range_start)
 
         if range_end == "pre_computed":
-            range_end = int(
-                self._dataset_dependend_thresholds_df[
-                    self._dataset_dependend_thresholds_df["EXP_UNIQUE_ID"]
-                    == row["EXP_UNIQUE_ID"]
-                ]["cutoff_value"].iloc[0]
-            )
+            range_end = self._dataset_dependend_thresholds_df[
+                self._dataset_dependend_thresholds_df["EXP_UNIQUE_ID"]
+                == row["EXP_UNIQUE_ID"]
+            ]["cutoff_value"].iloc[0]
+
+            if np.isnan(range_end):
+                range_end = len(row) / 2
+            range_end = int(range_end)
 
         row = row.loc[row.index != "EXP_UNIQUE_ID"]
 
