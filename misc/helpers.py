@@ -154,7 +154,9 @@ def get_done_workload_joined_with_multiple_metrics(
             pd.to_numeric, downcast="float"
         )
 
-        metric_df["metric_name"] = metric_name
+        metric_df["metric_name"] = pd.Series(
+            [metric_name for _ in range(len(metric_df.index))]
+        )
 
         metric_df = pd.merge(
             metric_df, done_workload_df, on=["EXP_UNIQUE_ID"], how="left"

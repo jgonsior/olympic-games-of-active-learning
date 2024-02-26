@@ -100,6 +100,7 @@ for modus in ["standard"]:  # ["extended", "standard", "auc"]:
         lambda row: "_".join(row.values.astype(str)),
         axis=1,
     )
+    print("fingerprints")
 
     for non_al_cycle_key in non_al_cycle_keys:
         del df[non_al_cycle_key]
@@ -108,6 +109,7 @@ for modus in ["standard"]:  # ["extended", "standard", "auc"]:
     df = df.melt(id_vars=["metric_name", "fingerprint"], value_vars=metric_keys)
     print(df)
 
+    print("melted")
     df["fingerprint"] = df[["fingerprint", "variable"]].parallel_apply(
         lambda row: "_".join(row.values), axis=1
     )
@@ -121,7 +123,7 @@ for modus in ["standard"]:  # ["extended", "standard", "auc"]:
     df = df.pivot(
         index="fingerprint", columns="metric_name", values="value"
     ).reset_index()
-
+    print("pivoted")
     df.columns.name = None
     df.index = df["fingerprint"]
     del df["fingerprint"]
@@ -132,8 +134,10 @@ for modus in ["standard"]:  # ["extended", "standard", "auc"]:
     # print(df.corr())
 
     data = df.to_numpy()
+    print("numpied")
     corrmat = np.corrcoef(data.T)
-
+    print("corrmatted")
     save_correlation_plot(
         data=corrmat, title=modus, keys=df.columns.to_list(), config=config, total=True
     )
+    exit(-1)
