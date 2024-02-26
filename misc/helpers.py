@@ -236,9 +236,7 @@ def create_fingerprint_joined_timeseries_csv_files(
 
             fingerprint = row[-1]
 
-            for ix, v in enumerate(row[:-1]):
-                if np.isnan(v):
-                    continue
+            for ix, v in enumerate(row[:-1]):nu
                 contents += f"{fingerprint}_{ix},{v}\n"
 
         append_and_create_manually(ts_file, contents)
@@ -248,7 +246,19 @@ def create_fingerprint_joined_timeseries_csv_files(
         glob_list = [*glob_list, *get_glob_list(config, limit=f"**/{metric_name}")]
     glob_list = sorted(set(glob_list))
 
+    # remove those from glob list which already exist as timeseries
+
     print(len(glob_list))
+
+    existent_ts_files = [
+        ggg.split("/")[-1] + ".xz"
+        for ggg in glob.glob(
+            str(config.CORRELATION_TS_PATH) + f"/*.csv", recursive=True
+        )
+    ]
+    glob_list = [ggg for ggg in glob_list if ggg.name not in existent_ts_files]
+    print(len(glob_list))
+
     # metric_dfs = Parallel(n_jobs=1, verbose=10)(
     Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
         delayed(_do_stuff)(file_name, config, done_workload_df)
@@ -276,6 +286,7 @@ def save_correlation_plot(
         data_df.sort_values(by=["Total"], inplace=True)
 
     print(data_df)
+    print(result_folder / f"{title}.jpg")
     set_seaborn_style(font_size=8)
     # plt.figure(figsize=set_matplotlib_size(fraction=10))
     plt.figure(figsize=set_matplotlib_size(fraction=1))

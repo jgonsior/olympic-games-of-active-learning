@@ -27,7 +27,7 @@ pandarallel.initialize(nb_workers=multiprocessing.cpu_count(), progress_bar=True
 config = Config()
 
 
-for modus in ["standard"]:  # ["extended", "standard", "auc"]:
+for modus in ["standard", "extended", "auc"]:
     standard_metrics = [
         "accuracy",
         "weighted_recall",
@@ -36,7 +36,6 @@ for modus in ["standard"]:  # ["extended", "standard", "auc"]:
         "macro_recall",
         "weighted_f1-score",
         "weighted_precision",
-        "weighted_recall",
     ]
 
     if modus == "extended" or modus == "auc":
@@ -82,69 +81,31 @@ for modus in ["standard"]:  # ["extended", "standard", "auc"]:
 
     print("Sorting files")
     command = (
-        "find " + str(config.CORRELATION_TS_PATH) + "/ -type f -exec sort {} -o {} \;"
+        "find "
+        + str(config.CORRELATION_TS_PATH)
+        + "/ -type f -exec sort --parallel "
+        + str(multiprocessing.cpu_count())
+        + " {} -o {} \;"
     )
     subprocess.run(command, shell=True, text=True)
 
-    exit(-1)
-    del df["EXP_UNIQUE_ID"]
+    print("Reading in csv files")
 
-    print(df)
+    timeseriesses = []
+    for sm in standard_metrics:
+        ts = np.loadtxt(
+            config.CORRELATION_TS_PATH / f"{sm}.csv",
+            delimiter=",",
+            dtype="float32",
+            usecols=1,
+        )
+        timeseriesses.append(ts)
 
-    non_al_cycle_keys = [
-        "EXP_DATASET",
-        "EXP_STRATEGY",
-        "EXP_BATCH_SIZE",
-        "EXP_LEARNER_MODEL",
-        "EXP_TRAIN_TEST_BUCKET_SIZE",
-        "EXP_START_POINT",
-    ]
-
-    metric_keys = [kkk for kkk in df.columns if kkk not in non_al_cycle_keys]
-
-    # replace non_al_cycle_keys by single string fingerprint as key
-    df["fingerprint"] = df[non_al_cycle_keys].parallel_apply(
-        lambda row: "_".join(row.values.astype(str)),
-        axis=1,
-    )
-    print("fingerprints")
-
-    for non_al_cycle_key in non_al_cycle_keys:
-        del df[non_al_cycle_key]
-
-    print(df)
-    df = df.melt(id_vars=["metric_name", "fingerprint"], value_vars=metric_keys)
-    print(df)
-
-    print("melted")
-    df["fingerprint"] = df[["fingerprint", "variable"]].parallel_apply(
-        lambda row: "_".join(row.values), axis=1
-    )
-    print(df)
-    exit(-1)
-
-    del df["variable"]
-
-    df.dropna(inplace=True)
-
-    df = df.pivot(
-        index="fingerprint", columns="metric_name", values="value"
-    ).reset_index()
-    print("pivoted")
-    df.columns.name = None
-    df.index = df["fingerprint"]
-    del df["fingerprint"]
-    df.dropna(inplace=True)
-
-    # exit(-1)
-    # print(df.corr(method="spearman"))
-    # print(df.corr())
-
-    data = df.to_numpy()
+    timeseriesses = np.array(timeseriesses)
     print("numpied")
-    corrmat = np.corrcoef(data.T)
+    corrmat = np.corrcoef(timeseriesses)
+
     print("corrmatted")
     save_correlation_plot(
-        data=corrmat, title=modus, keys=df.columns.to_list(), config=config, total=True
+        data=corrmat, title=modus, keys=standard_metrics, config=config, total=True
     )
-    exit(-1)
