@@ -215,12 +215,15 @@ def create_fingerprint_joined_timeseries_csv_files(
         for _, row in metric_df.iterrows():
             row = row.to_list()
 
-            non_metric_values = ",".join([str(int(rrr)) for rrr in row[-7:]])
+            non_metric_values = [str(int(rrr)) for rrr in row[-7:]]
+            non_metric_values = [non_metric_values[0], ",".join(non_metric_values[1:])]
 
             for ix, v in enumerate(row[:-7]):
                 if np.isnan(v):
                     continue
-                contents += f"{ix}_{non_metric_values},{v}\n"
+                contents += (
+                    f"{non_metric_values[0]}_{ix},{non_metric_values[1]},{ix},{v}\n"
+                )
 
         append_and_create_manually(ts_file, contents)
 
