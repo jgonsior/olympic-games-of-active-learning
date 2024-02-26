@@ -88,6 +88,8 @@ for target_to_evaluate in targets_to_evaluate:
     df.columns.name = None
     df.index = df["fingerprint"]
     del df["fingerprint"]
+
+    # TODO das hier schon eher machen (vor pivot?) um nur die Zeilen zu entfernen die na sind
     df.dropna(inplace=True)
 
     # print(df.corr(method="spearman"))

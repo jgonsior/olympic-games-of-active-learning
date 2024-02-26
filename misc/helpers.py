@@ -137,6 +137,8 @@ def get_done_workload_joined_with_multiple_metrics(
         if metric_df is None:
             return
 
+        metric_df["metric_name"] = metric_name
+
         metric_df = pd.merge(
             metric_df, done_workload_df, on=["EXP_UNIQUE_ID"], how="left"
         )
@@ -146,6 +148,7 @@ def get_done_workload_joined_with_multiple_metrics(
     glob_list = []
     for metric_name in metric_names:
         glob_list = [*glob_list, *get_glob_list(config, limit=f"**/{metric_name}")]
+    glob_list = set(glob_list)
 
     # metric_dfs = Parallel(n_jobs=1, verbose=10)(
     metric_dfs = Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
@@ -159,7 +162,7 @@ def get_done_workload_joined_with_multiple_metrics(
 
 
 def save_correlation_plot(
-    data: np.ndarray, title: str, keys: List[str], config: Config
+    data: np.ndarray, title: str, keys: List[str], config: Config, total=False
 ):
     if title == "EXP_STRATEGY":
         keys = [AL_STRATEGY(int(kkk)).name for kkk in keys]
@@ -173,13 +176,13 @@ def save_correlation_plot(
 
     data_df.to_parquet(result_folder / f"{title}.parquet")
 
-    # summed_up_corr_values = summed_up_corr_values.map(lambda r: np.nanmean(r))
-    # summed_up_corr_values.loc[:, "Total"] = summed_up_corr_values.mean(axis=1)
-    # summed_up_corr_values.sort_values(by=["Total"], inplace=True)
+    if total:
+        data_df.loc[:, "Total"] = data_df.mean(axis=1)
+        data_df.sort_values(by=["Total"], inplace=True)
 
     print(data_df)
     set_seaborn_style(font_size=8)
-    fig = plt.figure(figsize=set_matplotlib_size())
+    fig = plt.figure(figsize=set_matplotlib_size(fraction=3))
     ax = sns.heatmap(data_df, annot=True)
 
     ax.set_title(title)
