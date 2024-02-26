@@ -33,16 +33,20 @@ class STANDARD_AUC(Base_Computed_Metric):
         self, row: pd.Series, range_start: int, range_end: int, EXP_DATASET: DATASET
     ) -> pd.Series:
         if range_start == "pre_computed":
-            range_start = self._dataset_dependend_thresholds_df[
-                self._dataset_dependend_thresholds_df["EXP_UNIQUE_ID"]
-                == row["EXP_UNIQUE_ID"]
-            ]["cutoff_value"].iloc[0]
+            range_start = int(
+                self._dataset_dependend_thresholds_df[
+                    self._dataset_dependend_thresholds_df["EXP_UNIQUE_ID"]
+                    == row["EXP_UNIQUE_ID"]
+                ]["cutoff_value"].iloc[0]
+            )
 
         if range_end == "pre_computed":
-            range_end = self._dataset_dependend_thresholds_df[
-                self._dataset_dependend_thresholds_df["EXP_UNIQUE_ID"]
-                == row["EXP_UNIQUE_ID"]
-            ]["cutoff_value"].iloc[0]
+            range_end = int(
+                self._dataset_dependend_thresholds_df[
+                    self._dataset_dependend_thresholds_df["EXP_UNIQUE_ID"]
+                    == row["EXP_UNIQUE_ID"]
+                ]["cutoff_value"].iloc[0]
+            )
 
         row = row.loc[row.index != "EXP_UNIQUE_ID"]
 
