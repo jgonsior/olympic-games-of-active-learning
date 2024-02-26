@@ -20,7 +20,7 @@ import seaborn as sns
 from sklearn.isotonic import spearmanr
 from sklearn.metrics import jaccard_score
 
-from misc.helpers import _append_and_create, _get_df, _get_glob_list
+from misc.helpers import append_and_create, get_df, get_glob_list
 from misc.plotting import set_matplotlib_size, set_seaborn_style
 
 
@@ -39,7 +39,7 @@ def _flatten(xss):
 
 
 def _do_stuff(exp_dataset, config):
-    glob_list = _get_glob_list(config, limit=f"**/{exp_dataset.name}/selected_indices")
+    glob_list = get_glob_list(config, limit=f"**/{exp_dataset.name}/selected_indices")
 
     if len(glob_list) == 0:
         return
@@ -50,7 +50,7 @@ def _do_stuff(exp_dataset, config):
 
         strategy_name = file_name.parent.parent.name
 
-        selected_indices_df = _get_df(file_name, config)
+        selected_indices_df = get_df(file_name, config)
 
         if selected_indices_df is None:
             return

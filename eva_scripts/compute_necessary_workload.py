@@ -14,7 +14,7 @@ import seaborn as sns
 from sklearn.isotonic import spearmanr
 from sklearn.metrics import jaccard_score
 
-from misc.helpers import _append_and_create, _get_df, _get_glob_list
+from misc.helpers import append_and_create, get_df, get_glob_list
 from misc.plotting import set_matplotlib_size, set_seaborn_style
 
 sys.dont_write_bytecode = True
@@ -63,7 +63,7 @@ def _do_stuff(file_name: Path, config: Config, done_workload_df: pd.DataFrame):
 
     strategy_name = file_name.parent.parent.name
 
-    metric_df = _get_df(file_name, config)
+    metric_df = get_df(file_name, config)
 
     if metric_df is None:
         return
@@ -73,7 +73,7 @@ def _do_stuff(file_name: Path, config: Config, done_workload_df: pd.DataFrame):
     return metric_df
 
 
-glob_list = _get_glob_list(config, limit=f"**/full_auc_accuracy")
+glob_list = get_glob_list(config, limit=f"**/full_auc_accuracy")
 
 # metric_dfs = Parallel(n_jobs=1, verbose=10)(
 metric_dfs = Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(

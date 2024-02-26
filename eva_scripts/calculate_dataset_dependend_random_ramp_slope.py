@@ -13,7 +13,7 @@ import pandas as pd
 import seaborn as sns
 from datasets import DATASET
 from matplotlib.pyplot import text
-from misc.helpers import _append_and_create
+from misc.helpers import append_and_create
 from misc.plotting import set_seaborn_style
 
 sys.dont_write_bytecode = True
@@ -245,7 +245,7 @@ def _calculate_thresholds_and_save_them(file_name, config):
         result["cutoff_value"] = cutoff_value
         result["EXP_DATASET"] = EXP_DATASET
 
-        _append_and_create(
+        append_and_create(
             config.DATASET_DEPENDENT_RANDOM_RAMP_PLATEAU_THRESHOLD_PATH,
             result,
         )

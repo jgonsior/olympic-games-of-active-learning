@@ -34,7 +34,6 @@ def _is_standard_metric(metric_path: str, config: Config) -> bool:
         config.EVA_METRICS_TO_CORRELATE == "extended"
         or config.EVA_METRICS_TO_CORRELATE == "auc"
     ):
-
         variant_prefixe = [
             "biggest_drop_per_",
             "nr_decreasing_al_cycles_per_",
@@ -133,19 +132,23 @@ def _do_stuff(exp_dataset, exp_strategy, config):
         correlation_matrix.drop(index=0, axis=0, inplace=True)
         correlation_matrix.dropna(how="all", inplace=True)
 
-        corr_values = correlation_matrix.corr().map(lambda r: [r])
+        # print(correlation_matrix)
 
+        corr_values = correlation_matrix.corr().map(lambda r: [r])
         if summed_up_corr_values is None:
             summed_up_corr_values = corr_values
         else:
             summed_up_corr_values = summed_up_corr_values + corr_values
 
+    print(summed_up_corr_values)
+    exit(-1)
     return summed_up_corr_values
 
-TODO: everywhere I get NAN
-also: the pd.corr caluclation is painfully slow and non_parallelized
 
-use np.corrcoeff(data.T)??
+# TODO: everywhere I get NAN
+# also: the pd.corr caluclation is painfully slow and non_parallelized
+
+# use np.corrcoeff(data.T)??
 
 # dfs = Parallel(n_jobs=1, verbose=10)(
 dfs = Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
@@ -172,7 +175,7 @@ summed_up_corr_values.to_parquet(
     result_folder / f"{config.EVA_METRICS_TO_CORRELATE}.parquet"
 )
 
-summed_up_corr_values = summed_up_corr_values.map(lambda r: np.mean(r))
+summed_up_corr_values = summed_up_corr_values.map(lambda r: np.nanmean(r))
 summed_up_corr_values.loc[:, "Total"] = summed_up_corr_values.mean(axis=1)
 summed_up_corr_values.sort_values(by=["Total"], inplace=True)
 

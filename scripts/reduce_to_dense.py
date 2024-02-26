@@ -2,7 +2,7 @@ import sys
 import glob
 import pandas as pd
 
-from misc.helpers import _get_df, _get_glob_list
+from misc.helpers import get_df, get_glob_list
 
 sys.dont_write_bytecode = True
 
@@ -17,7 +17,7 @@ from pathlib import Path
 pandarallel.initialize(progress_bar=True)
 config = Config()
 
-glob_list = _get_glob_list(config)
+glob_list = get_glob_list(config)
 
 glob_list.append(config.OVERALL_DONE_WORKLOAD_PATH)
 glob_list.append(config.OVERALL_FAILED_WORKLOAD_PATH)
@@ -32,7 +32,7 @@ print(len(glob_list))
 
 def _do_stuff(file_name: Path):
     # print(file_name)
-    df = _get_df(file_name, config)
+    df = get_df(file_name, config)
 
     if df is None:
         return

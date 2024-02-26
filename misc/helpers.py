@@ -1,13 +1,22 @@
 import csv
 import glob
+import multiprocessing
 from typing import Dict, List, Optional
+from joblib import Parallel, delayed
+from matplotlib import pyplot as plt
+import numpy as np
 import pandas as pd
 from pyparsing import Path
 
+from datasets import DATASET
 from misc.config import Config
+from misc.plotting import set_matplotlib_size, set_seaborn_style
+import seaborn as sns
+
+from resources.data_types import AL_STRATEGY
 
 
-def _append_and_create(file_name: Path, content: Dict):
+def append_and_create(file_name: Path, content: Dict):
     if not file_name.exists():
         with open(file_name, "w") as f:
             w = csv.DictWriter(f, fieldnames=content.keys())
@@ -20,7 +29,7 @@ def _append_and_create(file_name: Path, content: Dict):
 
 # read in csv
 # in case of errors -> skip file and return None
-def _get_df(file_name: Path, config: Config) -> Optional[pd.DataFrame]:
+def get_df(file_name: Path, config: Config) -> Optional[pd.DataFrame]:
     # print(file_name)
     try:
         if file_name.name.endswith(".csv.xz") or file_name.name.endswith(".csv"):
@@ -31,7 +40,7 @@ def _get_df(file_name: Path, config: Config) -> Optional[pd.DataFrame]:
         error_message = f"ERROR: {err.__class__.__name__} - {err.args}"
         print(error_message)
 
-        _append_and_create(
+        append_and_create(
             config.BROKEN_CSV_FILE_PATH,
             {"metric_file": file_name, "error_message": error_message},
         )
@@ -41,7 +50,7 @@ def _get_df(file_name: Path, config: Config) -> Optional[pd.DataFrame]:
     return df
 
 
-def _get_glob_list(
+def get_glob_list(
     config: Config,
     limit: str = "**/*",
     ignore_original_workloads=True,
@@ -71,3 +80,75 @@ def _get_glob_list(
 
     glob_list = [Path(ggg) for ggg in glob_list]
     return sorted(glob_list)
+
+
+def get_done_workload_joined_with_metric(
+    metric_names: List[str], config: Config
+) -> pd.DataFrame:
+    done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
+
+    del done_workload_df["EXP_RANDOM_SEED"]
+    del done_workload_df["EXP_NUM_QUERIES"]
+
+    def _do_stuff(file_name: Path, config: Config, done_workload_df: pd.DataFrame):
+        print(file_name)
+
+        metric_df = get_df(file_name, config)
+
+        if metric_df is None:
+            return
+
+        metric_df = pd.merge(
+            metric_df, done_workload_df, on=["EXP_UNIQUE_ID"], how="left"
+        )
+
+        metric_df
+
+        return metric_df
+
+    for metric_name in metric_names:
+        glob_list = get_glob_list(config, limit=f"**/{metric_name}")
+
+    # metric_dfs = Parallel(n_jobs=1, verbose=10)(
+    metric_dfs = Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
+        delayed(_do_stuff)(file_name, config, done_workload_df)
+        for file_name in glob_list
+    )
+
+    df = pd.concat(metric_dfs).reset_index(drop=True)
+
+    return df
+
+
+def save_correlation_plot(
+    data: np.ndarray, title: str, keys: List[str], config: Config
+):
+    if title == "EXP_STRATEGY":
+        keys = [AL_STRATEGY(int(kkk)).name for kkk in keys]
+    elif title == "EXP_DATASET":
+        keys = [DATASET(int(kkk)).name for kkk in keys]
+
+    result_folder = Path(config.OUTPUT_PATH / f"plots/")
+    result_folder.mkdir(parents=True, exist_ok=True)
+
+    data_df = pd.DataFrame(data=data, columns=keys, index=keys)
+
+    data_df.to_parquet(result_folder / f"{title}.parquet")
+
+    # summed_up_corr_values = summed_up_corr_values.map(lambda r: np.nanmean(r))
+    # summed_up_corr_values.loc[:, "Total"] = summed_up_corr_values.mean(axis=1)
+    # summed_up_corr_values.sort_values(by=["Total"], inplace=True)
+
+    print(data_df)
+    set_seaborn_style(font_size=8)
+    fig = plt.figure(figsize=set_matplotlib_size())
+    ax = sns.heatmap(data_df, annot=True)
+
+    ax.set_title(title)
+
+    plt.savefig(
+        result_folder / f"{title}.jpg",
+        dpi=300,
+        bbox_inches="tight",
+        pad_inches=0,
+    )

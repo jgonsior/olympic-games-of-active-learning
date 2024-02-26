@@ -8,7 +8,7 @@ from joblib import Parallel, delayed
 import pandas as pd
 import multiprocessing
 
-from misc.helpers import _append_and_create, _get_df, _get_glob_list
+from misc.helpers import append_and_create, get_df, get_glob_list
 
 
 sys.dont_write_bytecode = True
@@ -48,7 +48,7 @@ def _is_standard_metric(metric_path: Path) -> bool:
 
 
 def _do_stuff(exp_dataset, exp_strategy, config):
-    glob_list = _get_glob_list(
+    glob_list = get_glob_list(
         config, limit=f"/{exp_strategy.name}/{exp_dataset.name}/*"
     )
 
@@ -68,7 +68,7 @@ def _do_stuff(exp_dataset, exp_strategy, config):
         else:
             metric_name = file_name.name.removesuffix(".csv.xz")
 
-        metric_df = _get_df(file_name, config)
+        metric_df = get_df(file_name, config)
 
         if metric_df is None:
             return
@@ -95,7 +95,7 @@ def _do_stuff(exp_dataset, exp_strategy, config):
 
             if len(potential_rows_to_be_deleted) > 0:
                 row_to_be_deleted = potential_rows_to_be_deleted.iloc[0]
-                _append_and_create(
+                append_and_create(
                     config.MISSING_EXP_IDS_IN_METRIC_FILES,
                     row_to_be_deleted.to_dict(),
                 )

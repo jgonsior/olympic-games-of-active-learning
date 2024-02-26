@@ -105,7 +105,8 @@ class Base_Computed_Metric(ABC):
         self.done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
         self.config = config
 
-    def computed_metric_appendix(self) -> str: ...
+    def computed_metric_appendix(self) -> str:
+        ...
 
     def apply_to_row(self, row: pd.Series) -> pd.Series:
         pass
@@ -176,7 +177,8 @@ class Base_Computed_Metric(ABC):
     def _pre_appy_to_row_hook(self, df: pd.DataFrame) -> pd.DataFrame:
         return df
 
-    def _per_dataset_hook(self, EXP_DATASET: DATASET, **kwargs) -> None: ...
+    def _per_dataset_hook(self, EXP_DATASET: DATASET, **kwargs) -> None:
+        ...
 
     def _compute_single_metric_jobs(
         self,

@@ -9,7 +9,7 @@ import pandas as pd
 from sklearn import metrics
 from tomlkit import TOMLDocument
 
-from misc.helpers import _append_and_create, _get_df, _get_glob_list
+from misc.helpers import append_and_create, get_df, get_glob_list
 
 sys.dont_write_bytecode = True
 
@@ -36,11 +36,11 @@ failed_exp_ids = set(
 dense_exp_ids = set(pd.read_csv(config.DENSE_WORKLOAD_PATH)["EXP_UNIQUE_ID"].to_list())
 open_exp_ids = set(pd.read_csv(config.WORKLOAD_FILE_PATH)["EXP_UNIQUE_ID"].to_list())
 
-glob_list = _get_glob_list(config)
+glob_list = get_glob_list(config)
 
 
 def _do_stuff(file_name: Path):
-    metric_df = _get_df(file_name, config)
+    metric_df = get_df(file_name, config)
 
     if metric_df is None:
         return
@@ -48,7 +48,7 @@ def _do_stuff(file_name: Path):
     exp_ids_in_metric_file = set(metric_df["EXP_UNIQUE_ID"].to_list())
 
     if len(exp_ids_in_metric_file.difference(done_exp_ids)) > 0:
-        _append_and_create(
+        append_and_create(
             config.MISSING_EXP_IDS_IN_METRIC_FILES,
             {
                 "metric_file": file_name,
@@ -57,7 +57,7 @@ def _do_stuff(file_name: Path):
             },
         )
     if len(exp_ids_in_metric_file.difference(oom_exp_ids)) > 0:
-        _append_and_create(
+        append_and_create(
             config.MISSING_EXP_IDS_IN_METRIC_FILES,
             {
                 "metric_file": file_name,
@@ -66,7 +66,7 @@ def _do_stuff(file_name: Path):
             },
         )
     if len(exp_ids_in_metric_file.difference(failed_exp_ids)) > 0:
-        _append_and_create(
+        append_and_create(
             config.MISSING_EXP_IDS_IN_METRIC_FILES,
             {
                 "metric_file": file_name,
@@ -75,7 +75,7 @@ def _do_stuff(file_name: Path):
             },
         )
     if len(exp_ids_in_metric_file.difference(dense_exp_ids)) > 0:
-        _append_and_create(
+        append_and_create(
             config.MISSING_EXP_IDS_IN_METRIC_FILES,
             {
                 "metric_file": file_name,
@@ -84,7 +84,7 @@ def _do_stuff(file_name: Path):
             },
         )
     if len(exp_ids_in_metric_file.difference(open_exp_ids)) > 0:
-        _append_and_create(
+        append_and_create(
             config.MISSING_EXP_IDS_IN_METRIC_FILES,
             {
                 "metric_file": file_name,

@@ -15,7 +15,7 @@ sys.dont_write_bytecode = True
 from misc.config import Config
 from pandarallel import pandarallel
 
-from misc.helpers import _append_and_create, _get_df, _get_glob_list
+from misc.helpers import append_and_create, get_df, get_glob_list
 
 config = Config()
 
@@ -45,7 +45,7 @@ def _do_stuff(exp_dataset, exp_strategy, config):
         return
 
     for csv_file_name in csv_glob_list:
-        csv_df = _get_df(csv_file_name, config)
+        csv_df = get_df(csv_file_name, config)
 
         if "y_pred" in csv_file_name.name:
             cols_with_indice_lists = csv_df.columns.difference(["EXP_UNIQUE_ID"])
@@ -57,9 +57,9 @@ def _do_stuff(exp_dataset, exp_strategy, config):
             )
 
         if "y_pred" in csv_file_name.name:
-            xz_df = _get_df(Path(str(csv_file_name) + ".xz.parquet"), config)
+            xz_df = get_df(Path(str(csv_file_name) + ".xz.parquet"), config)
         else:
-            xz_df = _get_df(Path(str(csv_file_name) + ".xz"), config)
+            xz_df = get_df(Path(str(csv_file_name) + ".xz"), config)
 
         xz_df = pd.concat([xz_df, csv_df], ignore_index=True).drop_duplicates(
             subset="EXP_UNIQUE_ID"
