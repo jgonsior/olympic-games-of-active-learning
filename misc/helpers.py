@@ -137,6 +137,13 @@ def get_done_workload_joined_with_multiple_metrics(
         if metric_df is None:
             return
 
+        metric_columns = [mmm for mmm in metric_df.columns]
+        metric_columns.remove("EXP_UNIQUE_ID")
+
+        metric_df[metric_columns] = metric_df[metric_columns].apply(
+            pd.to_numeric, downcast="float"
+        )
+
         metric_df["metric_name"] = metric_name
 
         metric_df = pd.merge(
@@ -182,8 +189,9 @@ def save_correlation_plot(
 
     print(data_df)
     set_seaborn_style(font_size=8)
-    fig = plt.figure(figsize=set_matplotlib_size(fraction=3))
-    ax = sns.heatmap(data_df, annot=True)
+    # plt.figure(figsize=set_matplotlib_size(fraction=10))
+    plt.figure(figsize=set_matplotlib_size(fraction=1))
+    ax = sns.heatmap(data_df, annot=True, fmt=".2f")
 
     ax.set_title(title)
 

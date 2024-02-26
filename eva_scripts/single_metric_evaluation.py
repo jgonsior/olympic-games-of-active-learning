@@ -30,18 +30,17 @@ from misc.config import Config
 config = Config()
 
 
-# df = get_done_workload_joined_with_metric("weighted_f1-score], config)
-# df = get_done_workload_joined_with_metric("weighted_f1-score], config)
-df = get_done_workload_joined_with_metric("full_auc_weighted_f1-score", config)
+df = get_done_workload_joined_with_metric("weighted_f1-score", config)
+# df = get_done_workload_joined_with_metric("full_auc_weighted_f1-score", config)
 print(df)
 
 
 targets_to_evaluate = [
+    "EXP_TRAIN_TEST_BUCKET_SIZE",
     "EXP_DATASET",
     "EXP_STRATEGY",
     "EXP_BATCH_SIZE",
     "EXP_LEARNER_MODEL",
-    "EXP_TRAIN_TEST_BUCKET_SIZE",
     "EXP_START_POINT",
 ]
 original_df = df.copy()

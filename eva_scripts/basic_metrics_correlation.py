@@ -19,12 +19,13 @@ sys.dont_write_bytecode = True
 from misc.config import Config
 import numpy as np
 import seaborn as sns
+from pandarallel import pandarallel
 
-
+pandarallel.initialize(nb_workers=multiprocessing.cpu_count(), progress_bar=True)
 config = Config()
 
 
-for modus in ["extended", "standard", "auc"]:
+for modus in ["standard"]:  # ["extended", "standard", "auc"]:
     standard_metrics = [
         "accuracy",
         "weighted_recall",
@@ -92,15 +93,16 @@ for modus in ["extended", "standard", "auc"]:
     metric_keys = [kkk for kkk in df.columns if kkk not in non_al_cycle_keys]
 
     # replace non_al_cycle_keys by single string fingerprint as key
-    df["fingerprint"] = df[non_al_cycle_keys].apply(
-        lambda row: "_".join(row.values.astype(str)), axis=1
+    df["fingerprint"] = df[non_al_cycle_keys].parallel_apply(
+        lambda row: "_".join(row.values.astype(str)),
+        axis=1,
     )
 
     for non_al_cycle_key in non_al_cycle_keys:
         del df[non_al_cycle_key]
-    df = pd.melt(df, id_vars=["metric_name", "fingerprint"], value_vars=metric_keys)
+    df = df.melt(id_vars=["metric_name", "fingerprint"], value_vars=metric_keys)
 
-    df["fingerprint"] = df[["fingerprint", "variable"]].apply(
+    df["fingerprint"] = df[["fingerprint", "variable"]].parallel_apply(
         lambda row: "_".join(row.values), axis=1
     )
 
