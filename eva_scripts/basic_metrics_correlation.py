@@ -32,7 +32,7 @@ for modus in ["standard", "extended", "auc"]:
     ]
 
     if modus == "extended" or modus == "auc":
-        standard_metrics = ["weighted_f1-score"]
+        standard_metrics = ["macro_f1-score"]
         variant_prefixe = [
             "biggest_drop_per_",
             "nr_decreasing_al_cycles_per_",
@@ -72,7 +72,6 @@ for modus in ["standard", "extended", "auc"]:
 
     log_and_time(modus)
     create_fingerprint_joined_timeseries_csv_files(standard_metrics, config)
-
     log_and_time("Sorting files")
 
     for f in glob.glob(
