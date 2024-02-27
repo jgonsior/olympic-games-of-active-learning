@@ -82,7 +82,7 @@ for target_to_evaluate in targets_to_evaluate:
         else:
             shared_fingerprints = shared_fingerprints.intersection(tmp_fingerprints)
 
-    log_and_time("Done calculating shared fingerprints")
+    log_and_time(f"Done calculating shared fingerprints - {len(shared_fingerprints)}")
 
     limited_ts = {}
     for target_value in ts[target_to_evaluate].unique():
@@ -90,8 +90,9 @@ for target_to_evaluate in targets_to_evaluate:
             (ts["fingerprint"].isin(shared_fingerprints))
             & (ts[target_to_evaluate] == target_value)
         ]["metric_value"].to_numpy()
+
     log_and_time("Done indexing ts")
-    print(limited_ts)
+
     limited_ts_np = np.array([*limited_ts.values()])
 
     corrmat = np.corrcoef(limited_ts_np)
