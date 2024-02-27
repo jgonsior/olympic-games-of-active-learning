@@ -1,10 +1,8 @@
 from collections import OrderedDict
-import csv
 import multiprocessing
 from pathlib import Path
 import sys
 import glob
-from typing import Dict, Tuple
 
 from joblib import Parallel, delayed
 from matplotlib import pyplot as plt

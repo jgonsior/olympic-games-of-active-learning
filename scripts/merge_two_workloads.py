@@ -1,5 +1,4 @@
 import ast
-import copy
 import itertools
 import multiprocessing
 from pathlib import Path
@@ -13,9 +12,8 @@ import pandas as pd
 sys.dont_write_bytecode = True
 
 from misc.config import Config
-from pandarallel import pandarallel
 
-from misc.helpers import append_and_create, get_df, get_glob_list
+from misc.helpers import get_df
 
 config = Config()
 
