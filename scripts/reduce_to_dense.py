@@ -1,5 +1,4 @@
 import sys
-import glob
 import pandas as pd
 
 from misc.helpers import get_df, get_glob_list
