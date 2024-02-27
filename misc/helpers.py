@@ -1,14 +1,15 @@
 import csv
+from datetime import timedelta
 import glob
 import multiprocessing
+import time
 from typing import Dict, List, Optional
 from joblib import Parallel, delayed
 from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
 from pyparsing import Path
-from scipy.fft import idct
-
+from timeit import default_timer as timer
 from datasets import DATASET
 from misc.config import Config
 from misc.plotting import set_matplotlib_size, set_seaborn_style
@@ -294,3 +295,12 @@ def save_correlation_plot(
         bbox_inches="tight",
         pad_inches=0,
     )
+
+
+def log_and_time(log_message: str):
+    if not hasattr(log_and_time, "last_time"):
+        log_and_time.last_time = timer()
+    now = timer()
+    print(f"{timedelta(seconds=now - log_and_time.last_time)}: {log_message}")
+
+    log_and_time.last_time = now

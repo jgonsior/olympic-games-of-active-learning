@@ -12,6 +12,7 @@ from misc.helpers import (
     get_done_workload_joined_with_metric,
     get_done_workload_joined_with_multiple_metrics,
     get_glob_list,
+    log_and_time,
     save_correlation_plot,
 )
 from misc.plotting import set_seaborn_style, set_matplotlib_size
@@ -77,10 +78,10 @@ for modus in ["standard", "extended", "auc"]:
             *[sss + "_time_lag" for sss in standard_metrics],
         ]
 
-    print(modus)
+    log_and_time(modus)
     create_fingerprint_joined_timeseries_csv_files(standard_metrics, config)
 
-    print("Sorting files")
+    log_and_time("Sorting files")
 
     for f in glob.glob(
         str(config.CORRELATION_TS_PATH) + f"/*.unsorted.csv", recursive=True
@@ -90,7 +91,7 @@ for modus in ["standard", "extended", "auc"]:
         subprocess.run(command, shell=True, text=True)
         Path(f).unlink()
 
-    print("computing intersection")
+    log_and_time("computing intersection")
     shared_unique_ids = None
 
     for sm in standard_metrics:
@@ -108,7 +109,7 @@ for modus in ["standard", "extended", "auc"]:
                 set(ts.iloc[:, 0].to_list())
             )
 
-    print("Reading in ts csv files")
+    log_and_time("Reading in ts csv files")
     timeseriesses = []
     for sm in standard_metrics:
         ts = pd.read_csv(
@@ -123,10 +124,10 @@ for modus in ["standard", "extended", "auc"]:
         timeseriesses.append(ts.iloc[:, 1].values)
     timeseriesses = np.array(timeseriesses)
 
-    print("numpied")
+    log_and_time("numpied")
     corrmat = np.corrcoef(timeseriesses)
 
-    print("corrmatted")
+    log_and_time("corrmatted")
     save_correlation_plot(
         data=corrmat, title=modus, keys=standard_metrics, config=config, total=True
     )
