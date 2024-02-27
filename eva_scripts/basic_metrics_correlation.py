@@ -41,6 +41,7 @@ for modus in ["standard", "extended", "auc"]:
     ]
 
     if modus == "extended" or modus == "auc":
+        standard_metrics = ["weighted_f1-score"]
         variant_prefixe = [
             "biggest_drop_per_",
             "nr_decreasing_al_cycles_per_",
@@ -62,7 +63,7 @@ for modus in ["standard", "extended", "auc"]:
                 "learning_stability_5_",
                 "learning_stability_10_",
                 "ramp_up_auc_",
-                "plateu_auc_",
+                "plateau_auc_",
             ]
 
             original_standard_metrics = standard_metrics.copy()

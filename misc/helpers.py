@@ -238,19 +238,12 @@ def create_fingerprint_joined_timeseries_csv_files(
     print(len(glob_list))
 
     existent_ts_files = [
-        *[
-            ggg.split("/")[-1].split(".")[0] + ".csv.xz"
-            for ggg in glob.glob(
-                str(config.CORRELATION_TS_PATH) + f"/*.unsorted.csv", recursive=True
-            )
-        ],
-        *[
-            ggg.split("/")[-1].split(".")[0] + ".csv.xz"
-            for ggg in glob.glob(
-                str(config.CORRELATION_TS_PATH) + f"/*.csv", recursive=True
-            )
-        ],
+        ggg.split("/")[-1].split(".")[0] + ".csv.xz"
+        for ggg in glob.glob(
+            str(config.CORRELATION_TS_PATH) + f"/*.csv", recursive=True
+        )
     ]
+
     glob_list = [ggg for ggg in glob_list if ggg.name not in existent_ts_files]
     print(len(glob_list))
 
@@ -284,7 +277,10 @@ def save_correlation_plot(
     print(result_folder / f"{title}.jpg")
     set_seaborn_style(font_size=8)
     # plt.figure(figsize=set_matplotlib_size(fraction=10))
-    plt.figure(figsize=set_matplotlib_size(fraction=1))
+
+    print(len(keys))
+    # calculate fraction based on length of keys
+    plt.figure(figsize=set_matplotlib_size(fraction=len(keys) / 12))
     ax = sns.heatmap(data_df, annot=True, fmt=".2f")
 
     ax.set_title(title)
