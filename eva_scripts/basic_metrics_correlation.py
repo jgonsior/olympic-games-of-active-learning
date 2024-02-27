@@ -86,7 +86,7 @@ for modus in ["standard", "extended", "auc"]:
         str(config.CORRELATION_TS_PATH) + f"/*.unsorted.csv", recursive=True
     ):
         command = f"sort --parallel {multiprocessing.cpu_count()} {f} -o {f.split('.')[0]}.csv"
-        print(command)
+        # print(command)
         subprocess.run(command, shell=True, text=True)
         Path(f).unlink()
 
@@ -117,7 +117,7 @@ for modus in ["standard", "extended", "auc"]:
             index_col=False,
             delimiter=",",
             dtype={0: str, 1: np.float32},
-            usecols=[0, 7],
+            usecols=[0, 8],
         )
         ts = ts.loc[ts[0].isin(shared_unique_ids)]
         timeseriesses.append(ts.iloc[:, 1].values)
