@@ -1,9 +1,12 @@
+import multiprocessing
+from re import T
 import sys
 import numpy as np
 import pandas as pd
 
 from misc.helpers import (
     get_done_workload_joined_with_metric,
+    log_and_time,
     save_correlation_plot,
 )
 
@@ -12,12 +15,13 @@ sys.dont_write_bytecode = True
 from misc.config import Config
 
 config = Config()
+from pandarallel import pandarallel
 
+pandarallel.initialize(
+    nb_workers=multiprocessing.cpu_count(), progress_bar=True, use_memory_fs=True
+)
 
-df = get_done_workload_joined_with_metric("weighted_f1-score", config)
-# df = get_done_workload_joined_with_metric("full_auc_weighted_f1-score", config)
-print(df)
-
+standard_metric = "weighted_f1-score"
 
 targets_to_evaluate = [
     "EXP_TRAIN_TEST_BUCKET_SIZE",
@@ -27,107 +31,72 @@ targets_to_evaluate = [
     "EXP_LEARNER_MODEL",
     "EXP_START_POINT",
 ]
-original_df = df.copy()
-for target_to_evaluate in targets_to_evaluate:
-    df = original_df.copy()
-    # create fingerprints for everything EXCEPT EXP_BATCH_SIZE
-    del df["EXP_UNIQUE_ID"]
 
-    non_al_cycle_keys = [
+ts = pd.read_csv(
+    config.CORRELATION_TS_PATH / f"{standard_metric}.csv",
+    header=None,
+    index_col=False,
+    names=[
+        # "EXP_UNIQUE_ID_ix",
         "EXP_DATASET",
         "EXP_STRATEGY",
+        "EXP_START_POINT",
         "EXP_BATCH_SIZE",
         "EXP_LEARNER_MODEL",
         "EXP_TRAIN_TEST_BUCKET_SIZE",
-        "EXP_START_POINT",
-    ]
+        "ix",
+        "metric_value",
+    ],
+    usecols=[1, 2, 3, 4, 5, 6, 7, 8],
+    delimiter=",",
+)
 
-    metric_keys = [kkk for kkk in df.columns if kkk not in non_al_cycle_keys]
+ts_orig = ts.copy()
 
-    non_al_cycle_keys.remove(target_to_evaluate)
+for target_to_evaluate in targets_to_evaluate:
+    log_and_time(target_to_evaluate)
 
-    # replace non_al_cycle_keys by single string fingerprint as key
-    df["fingerprint"] = df[non_al_cycle_keys].apply(
-        lambda row: "_".join(row.values.astype(str)), axis=1
+    ts = ts_orig.copy()
+
+    fingerprint_cols = list(ts.columns)
+    fingerprint_cols.remove("metric_value")
+    fingerprint_cols.remove(target_to_evaluate)
+    print(ts.dtypes)
+    ts["fingerprint"] = ts[fingerprint_cols].parallel_apply(
+        lambda row: "_".join([str(rrr) for rrr in row]), axis=1
     )
 
-    for non_al_cycle_key in non_al_cycle_keys:
-        del df[non_al_cycle_key]
+    log_and_time("Done fingerprinting")
 
-    df = pd.melt(
-        df, id_vars=[target_to_evaluate, "fingerprint"], value_vars=metric_keys
-    )
+    for fg_col in fingerprint_cols:
+        del ts[fg_col]
 
-    df["fingerprint"] = df[["fingerprint", "variable"]].apply(
-        lambda row: "_".join(row.values), axis=1
-    )
+    shared_fingerprints = None
+    for target_value in ts[target_to_evaluate].unique():
+        tmp_fingerprints = set(
+            ts.loc[ts[target_to_evaluate] == target_value]["fingerprint"].to_list()
+        )
 
-    del df["variable"]
+        if shared_fingerprints is None:
+            shared_fingerprints = tmp_fingerprints
+        else:
+            shared_fingerprints = shared_fingerprints.intersection(tmp_fingerprints)
 
-    df = df.pivot(
-        index="fingerprint", columns=target_to_evaluate, values="value"
-    ).reset_index()
+    log_and_time("Done calculating shared fingerprints")
 
-    df.columns.name = None
-    df.index = df["fingerprint"]
-    del df["fingerprint"]
+    limited_ts = {}
+    for target_value in ts[target_to_evaluate].unique():
+        limited_ts[target_value] = ts.loc[
+            (ts["fingerprint"].isin(shared_fingerprints))
+            & (ts[target_to_evaluate] == target_value)
+        ]["metric_value"].to_numpy()
+    log_and_time("Done indexing ts")
+    print(limited_ts)
+    limited_ts_np = np.array([*limited_ts.values()])
 
-    # TODO das hier schon eher machen (vor pivot?) um nur die Zeilen zu entfernen die na sind
-    df.dropna(inplace=True)
-
-    # print(df.corr(method="spearman"))
-    # print(df.corr())
-
-    data = df.to_numpy()
-    corrmat = np.corrcoef(data.T)
+    corrmat = np.corrcoef(limited_ts_np)
+    log_and_time("Done correlation computations")
 
     save_correlation_plot(
-        data=corrmat, title=target_to_evaluate, keys=df.columns.to_list(), config=config
+        data=corrmat, title=target_to_evaluate, keys=[*limited_ts.keys()], config=config
     )
-
-
-"""
-ich iteriere darüber
-und dann schaue ich zeile für zeile ob für eine Metrik (full_auc?) wie die Werte für batch_size 1,5,10 miteinander correlieren
-vielleicht kann ich auch jede metrik datei der Reihe nach einlesen und kann darüber gleich das obige berechnen
-
-ja, das geht
-
-ich will eigentlich haben 05_done_workload.csv erweitert um full_auc als neue spalte
-
-dann lösche ich exp_unique_id
-dann habe ich drei riesige zeitreihen, eine für 1, 5, 10
-und als Werte jeweils die von den einzelnen fingerprints
---> und dann schaue ich halt nach, wie das ganze miteinander korreliert?
-
-und das ganze dann auch für datasets, strategies, learner_model etc. machen
-
-
-
-mit derselben Idee kann ich auch die Metriken (auc zumindest) evaluieeren! pro metrik eine Zeitreihe über die fingerprints
-und für die standard/extended metriken klappt das ja auch, weil ich hier einfach pro fingerprint 100 werte habe
-
-aktuell mache ich das was ich hier mache, nur schrittweise für portiönchen von immer je 100 elementen der großen zeitreihe
-und dann nehme ich den Mittelwert der Zeitreihe
-
-
-#####################################
-grundidee:
-eine zeitreihe enthält so viele werte wie ich fingerprints habe
-und dann vergleiche ich die zeitreihen
-
-und für die metriken sind die fingerprints halt die originale done_workload_df, nur dann erweitert um die ganzen metriken
-
-Claudio fragen ob a) correlation über diese große gemittelte zeitreihe sinn macht
-                    a2) nehme ich nur eine basic metric in die große gemittelte zeitreihe, oder nehme ich mehrere (was sie dann doppelt so lang machen würde)?
-                  b) wie ich die basic_metrics.jpg correlation matrix interpretiere
-                    ist f1_score besser als accuracy? anscheinend ja?
-                  c) macht meine Idee um den Datensatz zu reduzieren so Sinn??
-# each row contains fingerprint -> I want to reduce this whole thing to a correlation among these fingerprints
-# I calculate for each fingerprint, how good the individual strategies are -> I save the ranking values
-# in the end I get a pd.DataFrame(colums=["fingerprint", "strat_a", "strat_b", "strat_c", …])
-# and in each strat_a, strat_b, strat_c column I have the single_metric result for this strategy
-# then I calculate the correlation between the time series of strategy results
-# claudio frage: macht es Sinn darüber zu entscheiden, welche hyperparameter combinations ich verwenden soll?
-
-"""
