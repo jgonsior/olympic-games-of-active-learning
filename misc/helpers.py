@@ -278,7 +278,6 @@ def save_correlation_plot(
     set_seaborn_style(font_size=8)
     # plt.figure(figsize=set_matplotlib_size(fraction=10))
 
-    print(len(keys))
     # calculate fraction based on length of keys
     plt.figure(figsize=set_matplotlib_size(fraction=len(keys) / 12))
     ax = sns.heatmap(data_df, annot=True, fmt=".2f")
