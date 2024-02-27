@@ -71,6 +71,10 @@ for target_to_evaluate in targets_to_evaluate:
     for fg_col in fingerprint_cols:
         del ts[fg_col]
 
+    ts = ts.sort_values(by="fingerprint")
+    print(ts)
+    log_and_time("Done sorting")
+
     shared_fingerprints = None
     for target_value in ts[target_to_evaluate].unique():
         tmp_fingerprints = set(
