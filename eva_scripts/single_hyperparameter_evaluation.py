@@ -37,7 +37,6 @@ ts = pd.read_csv(
     header=None,
     index_col=False,
     names=[
-        # "EXP_UNIQUE_ID_ix",
         "EXP_DATASET",
         "EXP_STRATEGY",
         "EXP_START_POINT",
@@ -45,9 +44,10 @@ ts = pd.read_csv(
         "EXP_LEARNER_MODEL",
         "EXP_TRAIN_TEST_BUCKET_SIZE",
         "ix",
+        # "EXP_UNIQUE_ID_ix",
         "metric_value",
     ],
-    usecols=[1, 2, 3, 4, 5, 6, 7, 8],
+    usecols=[0, 1, 2, 3, 4, 5, 6, 8],
     delimiter=",",
 )
 
@@ -71,9 +71,9 @@ for target_to_evaluate in targets_to_evaluate:
     for fg_col in fingerprint_cols:
         del ts[fg_col]
 
-    ts = ts.sort_values(by="fingerprint")
+    # ts = ts.sort_values(by="fingerprint")
     print(ts)
-    log_and_time("Done sorting")
+    # log_and_time("Done sorting")
 
     shared_fingerprints = None
     for target_value in ts[target_to_evaluate].unique():
