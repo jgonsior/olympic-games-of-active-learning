@@ -24,7 +24,20 @@ config = Config()
 # special handling with ast.literal_eval for .parquet files
 # done?config = Config()
 
+
+print(f"Merging {config.OUTPUT_PATH} and {config.SECOND_MERGE_PATH}")
+
+
 done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
+second_done_workload_df = pd.read_csv(
+    config.SECOND_MERGE_PATH + "/" + config.OVERALL_DONE_WORKLOAD_PATH.name
+)
+
+merged_workload_df = pd.concat(
+    [done_workload_df, second_done_workload_df], ignore_index=True
+).drop_duplicates(subset="EXP_UNIQUE_ID")
+
+merged_workload_df.to_csv(config.OVERALL_DONE_WORKLOAD_PATH, index=False)
 
 
 def _do_stuff(exp_dataset, exp_strategy, config):
@@ -32,8 +45,8 @@ def _do_stuff(exp_dataset, exp_strategy, config):
         [
             Path(ggg)
             for ggg in glob.glob(
-                str(config.OUTPUT_PATH)
-                + f"/{exp_strategy.name}/{exp_dataset.name}/*.csv",
+                config.SECOND_MERGE_PATH
+                + f"/{exp_strategy.name}/{exp_dataset.name}/*.csv.xz",
                 recursive=True,
             )
         ]
@@ -54,23 +67,30 @@ def _do_stuff(exp_dataset, exp_strategy, config):
                 .map(lambda x: ast.literal_eval(x))
             )
 
+        original_csv_path = (
+            config.OUTPUT_PATH
+            / csv_file_name.parent.parent
+            / csv_file_name.parent
+            / csv_file_name.name
+        )
+
         if "y_pred" in csv_file_name.name:
-            xz_df = get_df(Path(str(csv_file_name) + ".xz.parquet"), config)
+            xz_df = get_df(Path(str(original_csv_path) + ".parquet"), config)
         else:
-            xz_df = get_df(Path(str(csv_file_name) + ".xz"), config)
+            xz_df = get_df(Path(str(original_csv_path)), config)
 
         xz_df = pd.concat([xz_df, csv_df], ignore_index=True).drop_duplicates(
             subset="EXP_UNIQUE_ID"
         )
 
         if "y_pred" in csv_file_name.name:
-            xz_df.to_parquet(Path(str(csv_file_name) + ".xz.parquet"))
+            xz_df.to_parquet(Path(str(original_csv_path) + ".parquet"))
         else:
             xz_df.to_csv(
-                Path(str(csv_file_name) + ".xz", compression="infer", index=False)
+                Path(str(original_csv_path) + ".xz", compression="infer", index=False)
             )
 
-        csv_file_name.unlink()
+        # csv_file_name.unlink()
 
 
 # Parallel(n_jobs=1, verbose=10)(

@@ -126,6 +126,7 @@ class Config:
     COMPUTED_METRICS: List[COMPUTED_METRIC]
     SAMPLES_CATEGORIZER: List[SAMPLES_CATEGORIZER]
     CORRELATION_TS_PATH: Path = "_TS"  # ignore
+    SECOND_MERGE_PATH: str
 
     def __init__(self, no_cli_args: Optional[Dict[str, Any]] = None) -> None:
         if no_cli_args is not None:
