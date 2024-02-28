@@ -91,7 +91,7 @@ for modus in ["standard", "extended", "auc"]:
             header=None,
             index_col=False,
             delimiter=",",
-            usecols=[0],
+            usecols=[7],
         )
         if shared_unique_ids is None:
             shared_unique_ids = set(ts.iloc[:, 0].to_list())
@@ -109,9 +109,9 @@ for modus in ["standard", "extended", "auc"]:
             index_col=False,
             delimiter=",",
             dtype={0: str, 1: np.float32},
-            usecols=[0, 8],
+            usecols=[7, 8],
         )
-        ts = ts.loc[ts[0].isin(shared_unique_ids)]
+        ts = ts.loc[ts[7].isin(shared_unique_ids)]
         timeseriesses.append(ts.iloc[:, 1].values)
     timeseriesses = np.array(timeseriesses)
 

@@ -222,7 +222,7 @@ def create_fingerprint_joined_timeseries_csv_files(
                 if np.isnan(v):
                     continue
                 contents += (
-                    f"{non_metric_values[0]}_{ix},{non_metric_values[1]},{ix},{v}\n"
+                    f"{non_metric_values[1]},{ix},{non_metric_values[0]}_{ix},{v}\n"
                 )
 
         append_and_create_manually(ts_file, contents)
