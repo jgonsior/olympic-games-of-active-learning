@@ -240,7 +240,7 @@ def create_fingerprint_joined_timeseries_csv_files(
     existent_ts_files = [
         ggg.split("/")[-1].split(".")[0] + ".csv.xz"
         for ggg in glob.glob(
-            str(config.CORRELATION_TS_PATH) + f"/*.csv", recursive=True
+            str(config.CORRELATION_TS_PATH) + f"/*.parquet", recursive=True
         )
     ]
 
