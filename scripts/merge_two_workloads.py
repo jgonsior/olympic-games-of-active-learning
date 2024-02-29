@@ -82,7 +82,7 @@ def _do_stuff(exp_dataset, exp_strategy, config):
         else:
             xz_df.to_csv(original_csv_path, index=False)
 
-        # csv_file_name.unlink()
+        csv_file_name.unlink()
 
 
 #  Parallel(n_jobs=1, verbose=10)(
