@@ -28,18 +28,6 @@ config = Config()
 print(f"Merging {config.OUTPUT_PATH} and {config.SECOND_MERGE_PATH}")
 
 
-done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
-second_done_workload_df = pd.read_csv(
-    config.SECOND_MERGE_PATH + "/" + config.OVERALL_DONE_WORKLOAD_PATH.name
-)
-
-merged_workload_df = pd.concat(
-    [done_workload_df, second_done_workload_df], ignore_index=True
-).drop_duplicates(subset="EXP_UNIQUE_ID")
-
-merged_workload_df.to_csv(config.OVERALL_DONE_WORKLOAD_PATH, index=False)
-
-
 def _do_stuff(exp_dataset, exp_strategy, config):
     csv_glob_list = sorted(
         [
@@ -56,6 +44,7 @@ def _do_stuff(exp_dataset, exp_strategy, config):
         return
 
     for csv_file_name in csv_glob_list:
+        print(csv_file_name)
         csv_df = get_df(csv_file_name, config)
 
         if "y_pred" in csv_file_name.name:
@@ -69,8 +58,8 @@ def _do_stuff(exp_dataset, exp_strategy, config):
 
         original_csv_path = (
             config.OUTPUT_PATH
-            / csv_file_name.parent.parent
-            / csv_file_name.parent
+            / csv_file_name.parent.parent.name
+            / csv_file_name.parent.name
             / csv_file_name.name
         )
 
@@ -82,21 +71,36 @@ def _do_stuff(exp_dataset, exp_strategy, config):
         xz_df = pd.concat([xz_df, csv_df], ignore_index=True).drop_duplicates(
             subset="EXP_UNIQUE_ID"
         )
+        #  xz_df = csv_df
+
+        #  if xz_df is
+        if "Unnamed: " in xz_df.columns:
+            del xz_df["Unnamed: 0"]
 
         if "y_pred" in csv_file_name.name:
             xz_df.to_parquet(Path(str(original_csv_path) + ".parquet"))
         else:
-            xz_df.to_csv(
-                Path(str(original_csv_path) + ".xz", compression="infer", index=False)
-            )
+            xz_df.to_csv(original_csv_path, index=False)
 
         # csv_file_name.unlink()
 
 
-# Parallel(n_jobs=1, verbose=10)(
+#  Parallel(n_jobs=1, verbose=10)(
 Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
     delayed(_do_stuff)(exp_dataset, exp_strategy, config)
     for (exp_dataset, exp_strategy) in itertools.product(
         config.EXP_GRID_DATASET, config.EXP_GRID_STRATEGY
     )
 )
+
+
+done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
+second_done_workload_df = pd.read_csv(
+    config.SECOND_MERGE_PATH + "/" + config.OVERALL_DONE_WORKLOAD_PATH.name
+)
+
+merged_workload_df = pd.concat(
+    [done_workload_df, second_done_workload_df], ignore_index=True
+).drop_duplicates(subset="EXP_UNIQUE_ID")
+
+merged_workload_df.to_csv(config.OVERALL_DONE_WORKLOAD_PATH, index=False)

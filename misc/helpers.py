@@ -49,6 +49,7 @@ def get_df(file_name: Path, config: Config) -> Optional[pd.DataFrame]:
     except Exception as err:
         error_message = f"ERROR: {err.__class__.__name__} - {err.args}"
         print(error_message)
+        print(err)
 
         append_and_create(
             config.BROKEN_CSV_FILE_PATH,
