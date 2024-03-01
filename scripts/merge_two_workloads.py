@@ -1,4 +1,5 @@
 import ast
+import functools
 import itertools
 import multiprocessing
 from pathlib import Path
@@ -28,6 +29,23 @@ config = Config()
 print(f"Merging {config.OUTPUT_PATH} and {config.SECOND_MERGE_PATH}")
 
 
+def with_timeout(timeout):
+    def decorator(decorated):
+        @functools.wraps(decorated)
+        def inner(*args, **kwargs):
+            pool = multiprocessing.pool.ThreadPool(1)
+            async_result = pool.apply_async(decorated, args, kwargs)
+            try:
+                return async_result.get(timeout)
+            except multiprocessing.TimeoutError:
+                return
+
+        return inner
+
+    return decorator
+
+
+@with_timeout(100)
 def _do_stuff(exp_dataset, exp_strategy, config):
     csv_glob_list = sorted(
         [
@@ -47,13 +65,20 @@ def _do_stuff(exp_dataset, exp_strategy, config):
         print(csv_file_name)
         csv_df = get_df(csv_file_name, config)
 
-        if "y_pred" in csv_file_name.name:
+        if not "y_pred" in csv_file_name.name:
             continue
+
+        if "y_pred" in csv_file_name.name:
             cols_with_indice_lists = csv_df.columns.difference(["EXP_UNIQUE_ID"])
 
+            # from pandarallel import pandarallel
+
+            # pandarallel.initialize(
+            #    progress_bar=True, nb_workers=int(multiprocessing.cpu_count())
+            # )
             csv_df[cols_with_indice_lists] = (
-                csv_df[cols_with_indice_lists]
-                .fillna("[]")
+                csv_df[cols_with_indice_lists].fillna("[]")
+                # .parallel_map(lambda x: ast.literal_eval(x))
                 .map(lambda x: ast.literal_eval(x))
             )
 

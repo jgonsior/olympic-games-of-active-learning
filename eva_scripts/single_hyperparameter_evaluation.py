@@ -32,11 +32,9 @@ targets_to_evaluate = [
     "EXP_START_POINT",
 ]
 
-ts = pd.read_csv(
-    config.CORRELATION_TS_PATH / f"{standard_metric}.csv",
-    header=None,
-    index_col=False,
-    names=[
+ts = pd.read_parquet(
+    config.CORRELATION_TS_PATH / f"{standard_metric}.parquet",
+    columns=[
         "EXP_DATASET",
         "EXP_STRATEGY",
         "EXP_START_POINT",
@@ -47,8 +45,6 @@ ts = pd.read_csv(
         # "EXP_UNIQUE_ID_ix",
         "metric_value",
     ],
-    usecols=[0, 1, 2, 3, 4, 5, 6, 8],
-    delimiter=",",
 )
 
 ts_orig = ts.copy()

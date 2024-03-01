@@ -87,7 +87,23 @@ for modus in ["standard", "extended", "auc"]:
     for f in glob.glob(
         str(config.CORRELATION_TS_PATH) + f"/*.to_parquet.csv", recursive=True
     ):
-        ts = pd.read_csv(f, header=None, index_col=False, delimiter=",")
+        ts = pd.read_csv(
+            f,
+            header=None,
+            index_col=False,
+            delimiter=",",
+            names=[
+                "EXP_DATASET",
+                "EXP_STRATEGY",
+                "EXP_START_POINT",
+                "EXP_BATCH_SIZE",
+                "EXP_LEARNER_MODEL",
+                "EXP_TRAIN_TEST_BUCKET_SIZE",
+                "ix",
+                "EXP_UNIQUE_ID_ix",
+                "metric_value",
+            ],
+        )
         ts.to_parquet(f"{f.split('.')[0]}.parquet")
         Path(f).unlink()
 
@@ -97,13 +113,13 @@ for modus in ["standard", "extended", "auc"]:
     for sm in standard_metrics:
         ts = pd.read_parquet(
             config.CORRELATION_TS_PATH / f"{sm}.parquet",
-            columns=["7"],
+            columns=["EXP_UNIQUE_ID_ix"],
         )
         if shared_unique_ids is None:
-            shared_unique_ids = set(ts.iloc[:, 0].to_list())
+            shared_unique_ids = set(ts["EXP_UNIQUE_ID_ix"].to_list())
         else:
             shared_unique_ids = shared_unique_ids.intersection(
-                set(ts.iloc[:, 0].to_list())
+                set(ts["EXP_UNIQUE_ID_ix"].to_list())
             )
 
     log_and_time("Reading in ts csv files")
@@ -111,11 +127,11 @@ for modus in ["standard", "extended", "auc"]:
     for sm in standard_metrics:
         ts = pd.read_parquet(
             config.CORRELATION_TS_PATH / f"{sm}.parquet",
-            columns=["7", "8"],
+            columns=["EXP_UNIQUE_ID_ix", "metric_value"],
         )
         print(ts)
-        ts = ts.loc[ts[7].isin(shared_unique_ids)]
-        timeseriesses.append(ts.iloc[:, 1].values)
+        ts = ts.loc[ts["EXP_UNIQUE_ID_ix"].isin(shared_unique_ids)]
+        timeseriesses.append(ts["metric_value"].values)
     timeseriesses = np.array(timeseriesses)
 
     log_and_time("numpied")
