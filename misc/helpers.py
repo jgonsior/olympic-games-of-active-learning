@@ -347,7 +347,7 @@ def create_workload(
         END=int(len(df) / SLURM_ITERATIONS_PER_BATCH),
         SLURM_OFFSET=0,
         SLURM_ITERATIONS_PER_BATCH=SLURM_ITERATIONS_PER_BATCH,
-        PYTHON_FILE=Path(sys.argv[0]).name,
+        PYTHON_FILE=Path(sys.argv[0]).name.removeprefix(".py"),
         HPC_OUTPUT_PATH=config.HPC_OUTPUT_PATH,
         HPC_WS_PATH=config.HPC_WS_PATH,
         HPC_PYTHON_PATH=config.HPC_PYTHON_PATH,
