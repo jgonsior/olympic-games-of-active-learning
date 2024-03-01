@@ -10,6 +10,9 @@ from joblib import Parallel, delayed
 import numpy as np
 import pandas as pd
 
+from datasets import DATASET
+from resources.data_types import AL_STRATEGY
+
 
 sys.dont_write_bytecode = True
 
@@ -57,7 +60,7 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
                 Path(ggg)
                 for ggg in glob.glob(
                     config.SECOND_MERGE_PATH
-                    + f"/{exp_strategy.name}/{exp_dataset.name}/*.csv",
+                    + f"/{AL_STRATEGY(exp_strategy).name}/{DATASET(exp_dataset).name}/*.csv",
                     recursive=True,
                 )
             ]
