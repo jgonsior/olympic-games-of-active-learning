@@ -19,6 +19,6 @@ cd {{HPC_WS_PATH}}code
 i=$(( {{ SLURM_OFFSET }} + $SLURM_ARRAY_TASK_ID * {{ SLURM_ITERATIONS_PER_BATCH }} ))
 end=$(($i+{{ SLURM_ITERATIONS_PER_BATCH }}))
 for ((j = $i ; j < $end ; j++)); do
-    MPLCONFIGPATH={{HPC_WS_PATH}}cache {{HPC_PYTHON_PATH}} -m {{SCRIPTS_PATH}}.{{str(PYTHON_FILE).removeprefix(".py")}} --EXP_TITLE {{EXP_TITLE}} --RUNNING_ENVIRONMENT hpc --WORKER_INDEX $j --EVA_MODE slurm
+    MPLCONFIGPATH={{HPC_WS_PATH}}cache {{HPC_PYTHON_PATH}} -m {{SCRIPTS_PATH}}.{{str(PYTHON_FILE).removeprefix(".py")}} --EXP_TITLE {{EXP_TITLE}} --RUNNING_ENVIRONMENT hpc --WORKER_INDEX $j --EVA_MODE slurm {{CLI_ARGS}}
 done
 exit 0

@@ -47,6 +47,7 @@ if config.EVA_MODE == "create":
         SLURM_ITERATIONS_PER_BATCH=1,
         SCRIPTS_PATH="scripts",
         SLURM_NR_THREADS=128,
+        CLI_ARGS=f"--SECOND_MERGE_PATH {config.SECOND_MERGE_PATH}",
     )
 elif config.EVA_MODE in ["local", "slurm", "single"]:
 

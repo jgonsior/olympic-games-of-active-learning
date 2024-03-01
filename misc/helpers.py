@@ -309,6 +309,7 @@ def create_workload(
     SLURM_ITERATIONS_PER_BATCH: int,
     SCRIPTS_PATH: str,
     SLURM_NR_THREADS: int,
+    CLI_ARGS: str = "",
     # SLURM_MEMORY: int,
 ):
     df = pd.DataFrame(workload)
@@ -354,6 +355,7 @@ def create_workload(
         str=str,
         SCRIPTS_PATH=SCRIPTS_PATH,
         HPC_SLURM_PROJECT=config.HPC_SLURM_PROJECT,
+        CLI_ARGS=CLI_ARGS,
     )
 
     print(rendered_template)
