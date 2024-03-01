@@ -48,6 +48,7 @@ def _do_stuff(exp_dataset, exp_strategy, config):
         csv_df = get_df(csv_file_name, config)
 
         if "y_pred" in csv_file_name.name:
+            continue
             cols_with_indice_lists = csv_df.columns.difference(["EXP_UNIQUE_ID"])
 
             csv_df[cols_with_indice_lists] = (
@@ -86,7 +87,7 @@ def _do_stuff(exp_dataset, exp_strategy, config):
 
 
 #  Parallel(n_jobs=1, verbose=10)(
-Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
+Parallel(n_jobs=int(multiprocessing.cpu_count()), verbose=10)(
     delayed(_do_stuff)(exp_dataset, exp_strategy, config)
     for (exp_dataset, exp_strategy) in itertools.product(
         config.EXP_GRID_DATASET, config.EXP_GRID_STRATEGY
