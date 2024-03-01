@@ -67,6 +67,7 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
         )
 
         if len(csv_glob_list) == 0:
+            print("empty")
             return
 
         from pandarallel import pandarallel
