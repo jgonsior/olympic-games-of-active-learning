@@ -63,10 +63,11 @@ def _do_stuff(exp_dataset, exp_strategy, config):
 
     for csv_file_name in csv_glob_list:
         print(csv_file_name)
-        csv_df = get_df(csv_file_name, config)
 
         if not "y_pred" in csv_file_name.name:
             continue
+
+        csv_df = get_df(csv_file_name, config)
 
         if "y_pred" in csv_file_name.name:
             cols_with_indice_lists = csv_df.columns.difference(["EXP_UNIQUE_ID"])
