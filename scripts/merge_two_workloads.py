@@ -66,6 +66,11 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
             ]
         )
 
+        print(
+            config.SECOND_MERGE_PATH
+            + f"/{AL_STRATEGY(exp_strategy).name}/{DATASET(exp_dataset).name}/*.csv"
+        )
+
         if len(csv_glob_list) == 0:
             print("empty")
             return
