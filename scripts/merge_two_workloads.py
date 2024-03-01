@@ -105,7 +105,7 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
             )
 
             if "y_pred" in csv_file_name.name:
-                xz_df = get_df(Path(str(original_csv_path) + ".parquet"), config)
+                xz_df = get_df(Path(str(original_csv_path) + ".xz.parquet"), config)
             else:
                 xz_df = get_df(Path(str(original_csv_path)), config)
 
@@ -117,7 +117,7 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
                 del xz_df["Unnamed: 0"]
 
             if "y_pred" in csv_file_name.name:
-                xz_df.to_parquet(Path(str(original_csv_path) + ".parquet"))
+                xz_df.to_parquet(Path(str(original_csv_path) + ".xz.parquet"))
             else:
                 xz_df.to_csv(Path(str(original_csv_path) + ".xz"), index=False)
 
