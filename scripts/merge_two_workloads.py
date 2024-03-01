@@ -45,7 +45,7 @@ def with_timeout(timeout):
     return decorator
 
 
-@with_timeout(100)
+# @with_timeout(100)
 def _do_stuff(exp_dataset, exp_strategy, config):
     csv_glob_list = sorted(
         [
@@ -61,25 +61,25 @@ def _do_stuff(exp_dataset, exp_strategy, config):
     if len(csv_glob_list) == 0:
         return
 
+    from pandarallel import pandarallel
+
+    pandarallel.initialize(progress_bar=True, nb_workers=13)
+
     for csv_file_name in csv_glob_list:
         print(csv_file_name)
-        csv_df = get_df(csv_file_name, config)
-
         if not "y_pred" in csv_file_name.name:
             continue
+
+        csv_df = get_df(csv_file_name, config)
 
         if "y_pred" in csv_file_name.name:
             cols_with_indice_lists = csv_df.columns.difference(["EXP_UNIQUE_ID"])
 
-            # from pandarallel import pandarallel
-
-            # pandarallel.initialize(
-            #    progress_bar=True, nb_workers=int(multiprocessing.cpu_count())
-            # )
             csv_df[cols_with_indice_lists] = (
-                csv_df[cols_with_indice_lists].fillna("[]")
-                # .parallel_map(lambda x: ast.literal_eval(x))
-                .map(lambda x: ast.literal_eval(x))
+                csv_df[cols_with_indice_lists]
+                .fillna("[]")
+                .parallel_map(lambda x: ast.literal_eval(x))
+                # .map(lambda x: ast.literal_eval(x))
             )
 
         original_csv_path = (
@@ -112,7 +112,8 @@ def _do_stuff(exp_dataset, exp_strategy, config):
 
 
 #  Parallel(n_jobs=1, verbose=10)(
-Parallel(n_jobs=int(multiprocessing.cpu_count()), verbose=10)(
+# Parallel(n_jobs=int(multiprocessing.cpu_count()), verbose=10)(
+Parallel(n_jobs=20, verbose=10)(
     delayed(_do_stuff)(exp_dataset, exp_strategy, config)
     for (exp_dataset, exp_strategy) in itertools.product(
         config.EXP_GRID_DATASET, config.EXP_GRID_STRATEGY
