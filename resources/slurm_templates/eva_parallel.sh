@@ -1,0 +1,24 @@
+#!/bin/bash
+#SBATCH --time={{SLURM_TIME_LIMIT}}   # walltime
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --tasks-per-node=1
+#SBATCH --cpus-per-task={{ SLURM_NR_THREADS }}
+#SBATCH -A {{ HPC_SLURM_PROJECT }}
+#SBATCH --output {{HPC_OUTPUT_PATH}}/{{EXP_TITLE}}/{{EVA_SCRIPT_WORKLOAD_DIR}}/02_{{EVA_NAME}}_out.txt
+#SBATCH --error {{HPC_OUTPUT_PATH}}/{{EXP_TITLE}}/{{EVA_SCRIPT_WORKLOAD_DIR}}/02_{{EVA_NAME}}_error.txt
+#SBATCH --array {{ START }}-{{ END-1 }}
+
+
+#module load Python/3.8.6
+
+export PYTHONDONTWRITEBYTECODE=1
+
+cd {{HPC_WS_PATH}}code
+
+i=$(( {{ SLURM_OFFSET }} + $SLURM_ARRAY_TASK_ID * {{ SLURM_ITERATIONS_PER_BATCH }} ))
+end=$(($i+{{ SLURM_ITERATIONS_PER_BATCH }}))
+for ((j = $i ; j < $end ; j++)); do
+    MPLCONFIGPATH={{HPC_WS_PATH}}cache {{HPC_PYTHON_PATH}} -m {{SCRIPTS_PATH}}.{{str(PYTHON_FILE).removeprefix(".py")}} --EXP_TITLE {{EXP_TITLE}} --RUNNING_ENVIRONMENT hpc --WORKER_INDEX $j --EVA_MODE slurm
+done
+exit 0

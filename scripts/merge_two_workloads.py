@@ -7,6 +7,7 @@ import sys
 import glob
 
 from joblib import Parallel, delayed
+import numpy as np
 import pandas as pd
 
 
@@ -14,121 +15,119 @@ sys.dont_write_bytecode = True
 
 from misc.config import Config
 
-from misc.helpers import get_df
+from misc.helpers import _combine_results, create_workload, run_from_workload, get_df
 
 config = Config()
 
 
-# open .csv.xz and .csv
-# concat
-# deduplicate
-# special handling with ast.literal_eval for .parquet files
-# done?config = Config()
-
-
 print(f"Merging {config.OUTPUT_PATH} and {config.SECOND_MERGE_PATH}")
 
+config.EVA_NAME = "MERGE_TWO_WORKLOADS"
 
-def with_timeout(timeout):
-    def decorator(decorated):
-        @functools.wraps(decorated)
-        def inner(*args, **kwargs):
-            pool = multiprocessing.pool.ThreadPool(1)
-            async_result = pool.apply_async(decorated, args, kwargs)
-            try:
-                return async_result.get(timeout)
-            except multiprocessing.TimeoutError:
-                return
+config.EVA_SCRIPT_WORKLOAD_DIR = config.EVA_SCRIPT_WORKLOAD_DIR / config.EVA_NAME
 
-        return inner
-
-    return decorator
-
-
-# @with_timeout(100)
-def _do_stuff(exp_dataset, exp_strategy, config):
-    csv_glob_list = sorted(
-        [
-            Path(ggg)
-            for ggg in glob.glob(
-                config.SECOND_MERGE_PATH
-                + f"/{exp_strategy.name}/{exp_dataset.name}/*.csv.xz",
-                recursive=True,
-            )
-        ]
-    )
-
-    if len(csv_glob_list) == 0:
-        return
-
-    from pandarallel import pandarallel
-
-    pandarallel.initialize(progress_bar=True, nb_workers=13)
-
-    for csv_file_name in csv_glob_list:
-        print(csv_file_name)
-
-        if not "y_pred" in csv_file_name.name:
-            continue
-
-        csv_df = get_df(csv_file_name, config)
-
-        if "y_pred" in csv_file_name.name:
-            cols_with_indice_lists = csv_df.columns.difference(["EXP_UNIQUE_ID"])
-
-            csv_df[cols_with_indice_lists] = (
-                csv_df[cols_with_indice_lists]
-                .fillna("[]")
-                .parallel_map(lambda x: ast.literal_eval(x))
-                # .map(lambda x: ast.literal_eval(x))
-            )
-
-        original_csv_path = (
-            config.OUTPUT_PATH
-            / csv_file_name.parent.parent.name
-            / csv_file_name.parent.name
-            / csv_file_name.name
-        )
-
-        if "y_pred" in csv_file_name.name:
-            xz_df = get_df(Path(str(original_csv_path) + ".parquet"), config)
-        else:
-            xz_df = get_df(Path(str(original_csv_path)), config)
-
-        xz_df = pd.concat([xz_df, csv_df], ignore_index=True).drop_duplicates(
-            subset="EXP_UNIQUE_ID"
-        )
-        #  xz_df = csv_df
-
-        #  if xz_df is
-        if "Unnamed: " in xz_df.columns:
-            del xz_df["Unnamed: 0"]
-
-        if "y_pred" in csv_file_name.name:
-            xz_df.to_parquet(Path(str(original_csv_path) + ".parquet"))
-        else:
-            xz_df.to_csv(original_csv_path, index=False)
-
-        csv_file_name.unlink()
-
-
-#  Parallel(n_jobs=1, verbose=10)(
-# Parallel(n_jobs=int(multiprocessing.cpu_count()), verbose=10)(
-Parallel(n_jobs=20, verbose=10)(
-    delayed(_do_stuff)(exp_dataset, exp_strategy, config)
-    for (exp_dataset, exp_strategy) in itertools.product(
-        config.EXP_GRID_DATASET, config.EXP_GRID_STRATEGY
-    )
+config.EVA_SCRIPT_OPEN_WORKLOAD_FILE = (
+    config.EVA_SCRIPT_WORKLOAD_DIR / config.EVA_SCRIPT_OPEN_WORKLOAD_FILE
+)
+config.EVA_SCRIPT_DONE_WORKLOAD_FILE = (
+    config.EVA_SCRIPT_WORKLOAD_DIR / config.EVA_SCRIPT_DONE_WORKLOAD_FILE
 )
 
+if not config.EVA_SCRIPT_WORKLOAD_DIR.exists():
+    config.EVA_SCRIPT_WORKLOAD_DIR.mkdir(parents=True)
 
-done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
-second_done_workload_df = pd.read_csv(
-    config.SECOND_MERGE_PATH + "/" + config.OVERALL_DONE_WORKLOAD_PATH.name
-)
+if config.EVA_MODE == "create":
+    workload = [
+        iii
+        for iii in itertools.product(config.EXP_GRID_DATASET, config.EXP_GRID_STRATEGY)
+    ]
+    create_workload(
+        workload,
+        config=config,
+        SLURM_ITERATIONS_PER_BATCH=1,
+        SCRIPTS_PATH="scripts",
+        SLURM_NR_THREADS=128,
+    )
+elif config.EVA_MODE in ["local", "slurm", "single"]:
 
-merged_workload_df = pd.concat(
-    [done_workload_df, second_done_workload_df], ignore_index=True
-).drop_duplicates(subset="EXP_UNIQUE_ID")
+    def do_stuff(exp_dataset, exp_strategy, config):
+        print(exp_dataset)
+        print(exp_strategy)
+        return {5}
 
-merged_workload_df.to_csv(config.OVERALL_DONE_WORKLOAD_PATH, index=False)
+        csv_glob_list = sorted(
+            [
+                Path(ggg)
+                for ggg in glob.glob(
+                    config.SECOND_MERGE_PATH
+                    + f"/{exp_strategy.name}/{exp_dataset.name}/*.csv",
+                    recursive=True,
+                )
+            ]
+        )
+
+        if len(csv_glob_list) == 0:
+            return
+
+        from pandarallel import pandarallel
+
+        pandarallel.initialize(progress_bar=True, nb_workers=13)
+
+        for csv_file_name in csv_glob_list:
+            print(csv_file_name)
+
+            # if not "y_pred" in csv_file_name.name:
+            #    continue
+
+            csv_df = get_df(csv_file_name, config)
+
+            if "y_pred" in csv_file_name.name:
+                cols_with_indice_lists = csv_df.columns.difference(["EXP_UNIQUE_ID"])
+
+                csv_df[cols_with_indice_lists] = (
+                    csv_df[cols_with_indice_lists]
+                    .fillna("[]")
+                    .parallel_map(lambda x: ast.literal_eval(x))
+                    # .map(lambda x: ast.literal_eval(x))
+                )
+
+            original_csv_path = (
+                config.OUTPUT_PATH
+                / csv_file_name.parent.parent.name
+                / csv_file_name.parent.name
+                / csv_file_name.name
+            )
+
+            if "y_pred" in csv_file_name.name:
+                xz_df = get_df(Path(str(original_csv_path) + ".parquet"), config)
+            else:
+                xz_df = get_df(Path(str(original_csv_path)), config)
+
+            xz_df = pd.concat([xz_df, csv_df], ignore_index=True).drop_duplicates(
+                subset="EXP_UNIQUE_ID"
+            )
+
+            if "Unnamed: " in xz_df.columns:
+                del xz_df["Unnamed: 0"]
+
+            if "y_pred" in csv_file_name.name:
+                xz_df.to_parquet(Path(str(original_csv_path) + ".parquet"))
+            else:
+                xz_df.to_csv(Path(str(original_csv_path) + ".xz"), index=False)
+
+            csv_file_name.unlink()
+
+    run_from_workload(do_stuff=do_stuff, config=config)
+elif config.EVA_MODE == "combine":
+    result_df = _combine_results(config=config)
+
+    done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
+    second_done_workload_df = pd.read_csv(
+        config.SECOND_MERGE_PATH + "/" + config.OVERALL_DONE_WORKLOAD_PATH.name
+    )
+
+    merged_workload_df = pd.concat(
+        [done_workload_df, second_done_workload_df], ignore_index=True
+    ).drop_duplicates(subset="EXP_UNIQUE_ID")
+
+    merged_workload_df.to_csv(config.OVERALL_DONE_WORKLOAD_PATH, index=False)

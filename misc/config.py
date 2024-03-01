@@ -128,6 +128,12 @@ class Config:
     CORRELATION_TS_PATH: Path = "_TS"  # ignore
     SECOND_MERGE_PATH: str
 
+    EVA_MODE: Literal["create", "local", "slurm", "single", "combine"] = "create"
+    EVA_SCRIPT_WORKLOAD_DIR: Path = "workloads"  # ignore
+    EVA_SCRIPT_OPEN_WORKLOAD_FILE: Path = "01_open.csv"  # ignore
+    EVA_SCRIPT_DONE_WORKLOAD_FILE: Path = "03_done.csv"  # ignore
+    EVA_NAME: str
+
     def __init__(self, no_cli_args: Optional[Dict[str, Any]] = None) -> None:
         if no_cli_args is not None:
             self._parse_non_cli_arguments(no_cli_args)
@@ -260,6 +266,8 @@ class Config:
         )
 
         self.CORRELATION_TS_PATH = self.OUTPUT_PATH / self.CORRELATION_TS_PATH
+
+        self.EVA_SCRIPT_WORKLOAD_DIR = self.OUTPUT_PATH / self.EVA_SCRIPT_WORKLOAD_DIR
 
         self.OUTPUT_PATH.mkdir(parents=True, exist_ok=True)
 

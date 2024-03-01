@@ -2,7 +2,9 @@ import csv
 from datetime import timedelta
 import glob
 import multiprocessing
-from typing import Dict, List, Optional
+import sys
+from typing import Any, Callable, Dict, List, Optional
+from jinja2 import Template
 from joblib import Parallel, delayed
 from matplotlib import pyplot as plt
 import numpy as np
@@ -299,3 +301,97 @@ def log_and_time(log_message: str):
     print(f"{timedelta(seconds=now - log_and_time.last_time)}: {log_message}")
 
     log_and_time.last_time = now
+
+
+def create_workload(
+    workload: List[Any],
+    config: Config,
+    SLURM_ITERATIONS_PER_BATCH: int,
+    SCRIPTS_PATH: str,
+    SLURM_NR_THREADS: int,
+    # SLURM_MEMORY: int,
+):
+    df = pd.DataFrame(workload)
+
+    # if DONE exists only rerun those who are actually new
+    if config.EVA_SCRIPT_DONE_WORKLOAD_FILE.exists():
+        done_df = pd.read_csv(
+            config.EVA_SCRIPT_DONE_WORKLOAD_FILE,
+            index_col=None,
+            header=0,
+            usecols=[iii for iii in range(0, len(workload[0]))],
+        )
+
+        for _, r in done_df.iterrows():
+
+            mask = True
+            for k, v in enumerate(r.to_list()):
+                mask &= df[k] == v
+            df = df.loc[~mask]
+
+    df.to_csv(config.EVA_SCRIPT_OPEN_WORKLOAD_FILE, index=False)
+    print(f"Created workload of {len(df)}")
+
+    # create slurm file
+    slurm_template = Template(
+        Path("resources/slurm_templates/eva_parallel.sh").read_text()
+    )
+    rendered_template = slurm_template.render(
+        SLURM_TIME_LIMIT="100:00:00",
+        SLURM_NR_THREADS=SLURM_NR_THREADS,
+        # SLURM_MEMORY=SLURM_MEMORY,
+        EVA_SCRIPT_WORKLOAD_DIR=config.EVA_SCRIPT_WORKLOAD_DIR.parent.name,
+        EVA_NAME=config.EVA_NAME,
+        START=0,
+        END=int(len(df) / SLURM_ITERATIONS_PER_BATCH),
+        SLURM_OFFSET=0,
+        SLURM_ITERATIONS_PER_BATCH=SLURM_ITERATIONS_PER_BATCH,
+        PYTHON_FILE=Path(sys.argv[0]).name,
+        HPC_OUTPUT_PATH=config.HPC_OUTPUT_PATH,
+        HPC_WS_PATH=config.HPC_WS_PATH,
+        HPC_PYTHON_PATH=config.HPC_PYTHON_PATH,
+        EXP_TITLE=config.EXP_TITLE,
+        str=str,
+        SCRIPTS_PATH=SCRIPTS_PATH,
+        HPC_SLURM_PROJECT=config.HPC_SLURM_PROJECT,
+    )
+
+    print(rendered_template)
+
+    Path(config.EVA_SCRIPT_WORKLOAD_DIR / "02_slurm.slurm").write_text(
+        rendered_template
+    )
+
+
+def run_from_workload(do_stuff: Callable, config: Config):
+    if config.EVA_MODE == "local":
+        skip_rows = None
+    else:
+        skip_rows = lambda xxx: xxx not in [0, config.WORKER_INDEX + 1]
+
+    workload_df = pd.read_csv(
+        config.EVA_SCRIPT_OPEN_WORKLOAD_FILE,
+        header=0,
+        index_col=None,
+        skiprows=skip_rows,
+    )
+
+    def do_stuff_wrapper(*args, do_stuff, config: Config):
+        res = {kkk: vvv for kkk, vvv in enumerate(args)}
+        res["result"] = do_stuff(*args, config)
+
+        append_and_create(config.EVA_SCRIPT_DONE_WORKLOAD_FILE, res)
+
+    if config.EVA_MODE == "local":
+        Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
+            delayed(do_stuff_wrapper)(*wl, do_stuff=do_stuff, config=config)
+            for wl in workload_df.to_numpy().tolist()
+        )
+    elif config.EVA_MODE == "single" or config.EVA_MODE == "slurm":
+        do_stuff_wrapper(
+            *workload_df.loc[0].to_list(), do_stuff=do_stuff, config=config
+        )
+
+
+def _combine_results(config: Config) -> pd.DataFrame:
+    return
