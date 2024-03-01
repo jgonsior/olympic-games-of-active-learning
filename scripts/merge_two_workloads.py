@@ -77,7 +77,7 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
 
         from pandarallel import pandarallel
 
-        pandarallel.initialize(progress_bar=True, nb_workers=13)
+        pandarallel.initialize(progress_bar=True, nb_workers=256)
 
         for csv_file_name in csv_glob_list:
             print(csv_file_name)
@@ -93,7 +93,7 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
                 csv_df[cols_with_indice_lists] = (
                     csv_df[cols_with_indice_lists]
                     .fillna("[]")
-                    .parallel_map(lambda x: ast.literal_eval(x))
+                    .parallel_applymap(lambda x: ast.literal_eval(x))
                     # .map(lambda x: ast.literal_eval(x))
                 )
 
