@@ -51,10 +51,6 @@ if config.EVA_MODE == "create":
 elif config.EVA_MODE in ["local", "slurm", "single"]:
 
     def do_stuff(exp_dataset, exp_strategy, config):
-        print(exp_dataset)
-        print(exp_strategy)
-        return {5}
-
         csv_glob_list = sorted(
             [
                 Path(ggg)
@@ -116,6 +112,7 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
                 xz_df.to_csv(Path(str(original_csv_path) + ".xz"), index=False)
 
             csv_file_name.unlink()
+        return None
 
     run_from_workload(do_stuff=do_stuff, config=config)
 elif config.EVA_MODE == "combine":
