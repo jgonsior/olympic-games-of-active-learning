@@ -384,6 +384,7 @@ def run_from_workload(do_stuff: Callable, config: Config):
         res = {kkk: vvv for kkk, vvv in enumerate(args)}
         res["result"] = do_stuff(*args, config)
 
+        print("WORKLOAD JOB DONE")
         append_and_create(config.EVA_SCRIPT_DONE_WORKLOAD_FILE, res)
 
     if config.EVA_MODE == "local":

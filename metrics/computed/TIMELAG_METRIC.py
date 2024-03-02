@@ -8,7 +8,7 @@ from datasets import DATASET
 from metrics.computed.base_computed_metric import Base_Computed_Metric
 
 if TYPE_CHECKING:
-    pass
+    from resources.data_types import AL_STRATEGY
 
 
 class TIMELAG_METRIC(Base_Computed_Metric):
@@ -26,7 +26,7 @@ class TIMELAG_METRIC(Base_Computed_Metric):
         row.drop(labels=["0"], inplace=True)
         return row
 
-    def get_all_metric_jobs(self) -> List[Tuple[Callable, List[Any]]]:
+    def compute_metrics(self, exp_dataset: DATASET, exp_strategy: AL_STRATEGY):
         all_existing_metric_names = set(
             [
                 Path(a).name
@@ -44,14 +44,12 @@ class TIMELAG_METRIC(Base_Computed_Metric):
             and not a.endswith("y_pred_train.csv.xz")
             and not a.endswith("selected_indices.csv.xz")
         ]
-        results = []
+
         for metric in all_existing_metric_names:
-            results = [
-                *results,
-                *self._compute_single_metric_jobs(
-                    existing_metric_names=[metric],
-                    new_metric_name=metric + "_time_lag",
-                    apply_to_row=self.time_lag,
-                ),
-            ]
-        return results
+            self._compute_single_metric_jobs(
+                existing_metric_names=[metric],
+                new_metric_name=metric + "_time_lag",
+                apply_to_row=self.time_lag,
+                exp_dataset=exp_dataset,
+                exp_strategy=exp_strategy,
+            )

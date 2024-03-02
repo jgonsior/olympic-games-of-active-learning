@@ -11,7 +11,7 @@ from typing import Any, Callable, Dict, TYPE_CHECKING, List, Tuple
 
 
 if TYPE_CHECKING:
-    pass
+    from resources.data_types import AL_STRATEGY
 
 
 class MISMATCH_TRAIN_TEST(Base_Computed_Metric):
@@ -47,19 +47,6 @@ class MISMATCH_TRAIN_TEST(Base_Computed_Metric):
 
     def computed_metric_appendix(self) -> str:
         return "mismatch_train_test"
-
-    def _pre_appy_to_row_hook(self, df: pd.DataFrame) -> pd.DataFrame:
-        column_names_which_are_al_cycles = list(df.columns)
-        column_names_which_are_al_cycles.remove("EXP_UNIQUE_ID")
-
-        df[column_names_which_are_al_cycles] = df[column_names_which_are_al_cycles].map(
-            lambda x: "[]" if pd.isna(x) else x
-        )
-        df.loc[:, column_names_which_are_al_cycles] = df.loc[
-            :, column_names_which_are_al_cycles
-        ].apply(lambda x: [ast.literal_eval(iii) for iii in x], axis=0)
-
-        return df
 
     def mismatch_train_test(self, row: pd.Series, EXP_DATASET: DATASET) -> pd.Series:
         unique_id = row["EXP_UNIQUE_ID"]
@@ -97,9 +84,13 @@ class MISMATCH_TRAIN_TEST(Base_Computed_Metric):
 
         return pd.Series(results)
 
-    def get_all_metric_jobs(self) -> List[Tuple[Callable, List[Any]]]:
-        return self._compute_single_metric_jobs(
+    def compute_metrics(self, exp_dataset: DATASET, exp_strategy: AL_STRATEGY):
+        self._per_dataset_hook(exp_dataset)
+
+        self._compute_single_metric_jobs(
             existing_metric_names=["y_pred_train", "y_pred_test"],
             new_metric_name="mismatch_train_test",
             apply_to_row=self.mismatch_train_test,
+            exp_dataset=exp_dataset,
+            exp_strategy=exp_strategy,
         )
