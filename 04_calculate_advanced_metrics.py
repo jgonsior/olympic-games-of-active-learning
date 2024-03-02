@@ -1,10 +1,7 @@
-import copy
 import itertools
-import multiprocessing
 import sys
 from typing import List, Tuple
 
-from joblib import Parallel, delayed
 
 from datasets import DATASET
 from resources.data_types import AL_STRATEGY, COMPUTED_METRIC
@@ -13,14 +10,10 @@ sys.dont_write_bytecode = True
 import importlib
 
 from misc.config import Config
-from pandarallel import pandarallel
 from misc.helpers import (
-    combine_results,
     create_workload,
     prepare_eva_pathes,
     run_from_workload,
-    get_df,
-    save_correlation_plot,
 )
 
 config = Config()

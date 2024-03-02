@@ -398,10 +398,6 @@ def run_from_workload(do_stuff: Callable, config: Config):
         )
 
 
-def combine_results(config: Config) -> pd.DataFrame:
-    return
-
-
 def prepare_eva_pathes(eva_name: str, config: Config):
     config.EVA_NAME = eva_name
     config.EVA_SCRIPT_WORKLOAD_DIR = config.EVA_SCRIPT_WORKLOAD_DIR / config.EVA_NAME
