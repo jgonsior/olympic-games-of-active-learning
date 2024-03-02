@@ -157,7 +157,9 @@ class Config:
             np.random.seed(self.RANDOM_SEED)
             random.seed(self.RANDOM_SEED)
 
-        if self.WORKER_INDEX is not None:
+        if self.WORKER_INDEX is not None and str(sys.argv[0]).endswith(
+            "02_run_experiment.py"
+        ):
             self.load_workload()
 
             self.METRIC_RESULTS_FOLDER = (
