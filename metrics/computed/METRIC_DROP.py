@@ -7,7 +7,7 @@ from datasets import DATASET
 from metrics.computed.base_computed_metric import Base_Computed_Metric
 
 if TYPE_CHECKING:
-    pass
+    from resources.data_types import AL_STRATEGY
 
 
 class METRIC_DROP(Base_Computed_Metric):
@@ -53,20 +53,19 @@ class METRIC_DROP(Base_Computed_Metric):
         row = row[:-1]
         return row
 
-    def get_all_metric_jobs(self) -> List[Tuple[Callable, List[Any]]]:
-        results = []
+    def compute_metrics(self, exp_dataset: DATASET, exp_strategy: AL_STRATEGY):
         for basic_metric in self.metrics:
-            results = [
-                *results,
-                *self._compute_single_metric_jobs(
-                    existing_metric_names=[basic_metric],
-                    new_metric_name="biggest_drop_per_" + basic_metric,
-                    apply_to_row=self.biggest_drop,
-                ),
-                *self._compute_single_metric_jobs(
-                    existing_metric_names=[basic_metric],
-                    new_metric_name="nr_decreasing_al_cycles_per_" + basic_metric,
-                    apply_to_row=self.nr_decreasing_al_cycles,
-                ),
-            ]
-        return results
+            self._compute_single_metric_jobs(
+                existing_metric_names=[basic_metric],
+                new_metric_name="biggest_drop_per_" + basic_metric,
+                apply_to_row=self.biggest_drop,
+                exp_dataset=exp_dataset,
+                exp_strategy=exp_strategy,
+            )
+            self._compute_single_metric_jobs(
+                existing_metric_names=[basic_metric],
+                new_metric_name="nr_decreasing_al_cycles_per_" + basic_metric,
+                apply_to_row=self.nr_decreasing_al_cycles,
+                exp_dataset=exp_dataset,
+                exp_strategy=exp_strategy,
+            )

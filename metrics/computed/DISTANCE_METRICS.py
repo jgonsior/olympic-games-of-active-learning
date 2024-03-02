@@ -12,7 +12,7 @@ from typing import Any, Callable, Dict, List, TYPE_CHECKING, Tuple
 
 
 if TYPE_CHECKING:
-    pass
+    from resources.data_types import AL_STRATEGY
 
 
 class DISTANCE_METRICS(Base_Computed_Metric):
@@ -128,21 +128,27 @@ class DISTANCE_METRICS(Base_Computed_Metric):
                 row[ix] = sum(distances) / len(distances)
         return row
 
-    def get_all_metric_jobs(self) -> List[Tuple[Callable, List[Any]]]:
-        return [
-            *self._compute_single_metric_jobs(
-                existing_metric_names=["selected_indices"],
-                new_metric_name="avg_dist_batch",
-                apply_to_row=self.avg_dist_batch,
-            ),
-            *self._compute_single_metric_jobs(
-                existing_metric_names=["selected_indices"],
-                new_metric_name="avg_dist_labeled",
-                apply_to_row=self.avg_dist_labeled,
-            ),
-            *self._compute_single_metric_jobs(
-                existing_metric_names=["selected_indices"],
-                new_metric_name="avg_dist_unlabeled",
-                apply_to_row=self.avg_dist_unlabeled,
-            ),
-        ]
+    def compute_metrics(self, exp_dataset: DATASET, exp_strategy: AL_STRATEGY):
+        self._per_dataset_hook(exp_dataset)
+
+        self._compute_single_metric_jobs(
+            existing_metric_names=["selected_indices"],
+            new_metric_name="avg_dist_batch",
+            apply_to_row=self.avg_dist_batch,
+            exp_dataset=exp_dataset,
+            exp_strategy=exp_strategy,
+        )
+        self._compute_single_metric_jobs(
+            existing_metric_names=["selected_indices"],
+            new_metric_name="avg_dist_labeled",
+            apply_to_row=self.avg_dist_labeled,
+            exp_dataset=exp_dataset,
+            exp_strategy=exp_strategy,
+        )
+        self._compute_single_metric_jobs(
+            existing_metric_names=["selected_indices"],
+            new_metric_name="avg_dist_unlabeled",
+            apply_to_row=self.avg_dist_unlabeled,
+            exp_dataset=exp_dataset,
+            exp_strategy=exp_strategy,
+        )

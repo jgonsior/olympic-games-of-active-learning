@@ -11,7 +11,7 @@ from typing import Any, Callable, Dict, List, TYPE_CHECKING, Literal, Tuple
 from scipy.spatial import distance
 
 if TYPE_CHECKING:
-    pass
+    from resources.data_types import AL_STRATEGY
 
 
 class CLASS_DISTRIBUTIONS(Base_Computed_Metric):
@@ -90,9 +90,9 @@ class CLASS_DISTRIBUTIONS(Base_Computed_Metric):
             ):
                 new_class_distributions = [0 for _ in self.classes[EXP_DATASET]]
                 for key, value in zip(k, class_distributions):
-                    new_class_distributions[
-                        self.classes[EXP_DATASET].index(key)
-                    ] = value
+                    new_class_distributions[self.classes[EXP_DATASET].index(key)] = (
+                        value
+                    )
                 class_distributions = new_class_distributions
 
             class_distributions = [
@@ -142,26 +142,34 @@ class CLASS_DISTRIBUTIONS(Base_Computed_Metric):
             row, metric="chebyshev", batch=False, EXP_DATASET=EXP_DATASET
         )
 
-    def get_all_metric_jobs(self) -> List[Tuple[Callable, List[Any]]]:
-        return [
-            *self._compute_single_metric_jobs(
-                existing_metric_names=["selected_indices"],
-                new_metric_name="class_distributions_chebyshev_batch",
-                apply_to_row=self.unifclass_distributions_chebyshev_batch,
-            ),
-            *self._compute_single_metric_jobs(
-                existing_metric_names=["selected_indices"],
-                new_metric_name="class_distributions_manhattan_batch",
-                apply_to_row=self.class_distributions_manhattan_batch,
-            ),
-            *self._compute_single_metric_jobs(
-                existing_metric_names=["selected_indices"],
-                new_metric_name="class_distributions_chebyshev_added_up",
-                apply_to_row=self.unifclass_distributions_chebyshev_added_up,
-            ),
-            *self._compute_single_metric_jobs(
-                existing_metric_names=["selected_indices"],
-                new_metric_name="class_distributions_manhattan_added_up",
-                apply_to_row=self.class_distributions_manhattan_added_up,
-            ),
-        ]
+    def compute_metrics(self, exp_dataset: DATASET, exp_strategy: AL_STRATEGY):
+        self._per_dataset_hook(exp_dataset)
+
+        self._compute_single_metric_jobs(
+            existing_metric_names=["selected_indices"],
+            new_metric_name="class_distributions_chebyshev_batch",
+            apply_to_row=self.unifclass_distributions_chebyshev_batch,
+            exp_dataset=exp_dataset,
+            exp_strategy=exp_strategy,
+        )
+        self._compute_single_metric_jobs(
+            existing_metric_names=["selected_indices"],
+            new_metric_name="class_distributions_manhattan_batch",
+            apply_to_row=self.class_distributions_manhattan_batch,
+            exp_dataset=exp_dataset,
+            exp_strategy=exp_strategy,
+        )
+        self._compute_single_metric_jobs(
+            existing_metric_names=["selected_indices"],
+            new_metric_name="class_distributions_chebyshev_added_up",
+            apply_to_row=self.unifclass_distributions_chebyshev_added_up,
+            exp_dataset=exp_dataset,
+            exp_strategy=exp_strategy,
+        )
+        self._compute_single_metric_jobs(
+            existing_metric_names=["selected_indices"],
+            new_metric_name="class_distributions_manhattan_added_up",
+            apply_to_row=self.class_distributions_manhattan_added_up,
+            exp_dataset=exp_dataset,
+            exp_strategy=exp_strategy,
+        )

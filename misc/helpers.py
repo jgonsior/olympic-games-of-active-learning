@@ -311,6 +311,7 @@ def create_workload(
     SLURM_NR_THREADS: int,
     CLI_ARGS: str = "",
     # SLURM_MEMORY: int,
+    script_type: str = "script",
 ):
     df = pd.DataFrame(workload)
 
@@ -356,6 +357,7 @@ def create_workload(
         SCRIPTS_PATH=SCRIPTS_PATH,
         HPC_SLURM_PROJECT=config.HPC_SLURM_PROJECT,
         CLI_ARGS=CLI_ARGS,
+        script_type=script_type,
     )
 
     print(rendered_template)
@@ -382,6 +384,7 @@ def run_from_workload(do_stuff: Callable, config: Config):
         res = {kkk: vvv for kkk, vvv in enumerate(args)}
         res["result"] = do_stuff(*args, config)
 
+        print("WORKLOAD JOB DONE")
         append_and_create(config.EVA_SCRIPT_DONE_WORKLOAD_FILE, res)
 
     if config.EVA_MODE == "local":

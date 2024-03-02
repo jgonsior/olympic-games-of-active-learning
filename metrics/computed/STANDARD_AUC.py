@@ -9,6 +9,7 @@ from metrics.computed.base_computed_metric import Base_Computed_Metric
 
 if TYPE_CHECKING:
     from misc.config import Config
+    from resources.data_types import AL_STRATEGY
 
 
 class STANDARD_AUC(Base_Computed_Metric):
@@ -80,7 +81,8 @@ class STANDARD_AUC(Base_Computed_Metric):
 
         return ls
 
-    def get_all_metric_jobs(self) -> List[Tuple[Callable, List[Any]]]:
+    def compute_metrics(self, exp_dataset: DATASET, exp_strategy: AL_STRATEGY):
+
         all_existing_metric_names = set(
             [
                 Path(a).name
@@ -104,73 +106,83 @@ class STANDARD_AUC(Base_Computed_Metric):
             and not a.startswith("y_pred_test")
             and not a.startswith("selected_indices")
         ]
-        results = []
-
         for metric in all_existing_metric_names:
-            results = [
-                *results,
-                *self._compute_single_metric_jobs(
-                    existing_metric_names=[metric],
-                    new_metric_name="ramp_up_auc_" + metric,
-                    apply_to_row=self.range_auc,
-                    additional_apply_to_row_kwargs={
-                        "range_start": 0,
-                        "range_end": "pre_computed",
-                    },
-                ),
-                *self._compute_single_metric_jobs(
-                    existing_metric_names=[metric],
-                    new_metric_name="plateau_auc_" + metric,
-                    apply_to_row=self.range_auc,
-                    additional_apply_to_row_kwargs={
-                        "range_start": "pre_computed",
-                        "range_end": None,
-                    },
-                ),
-                *self._compute_single_metric_jobs(
-                    existing_metric_names=[metric],
-                    new_metric_name="final_value_" + metric,
-                    apply_to_row=self.range_auc,
-                    additional_apply_to_row_kwargs={
-                        "range_start": -1,
-                        "range_end": None,
-                    },
-                ),
-                *self._compute_single_metric_jobs(
-                    existing_metric_names=[metric],
-                    new_metric_name="first_5_" + metric,
-                    apply_to_row=self.range_auc,
-                    additional_apply_to_row_kwargs={"range_start": 0, "range_end": 5},
-                ),
-                *self._compute_single_metric_jobs(
-                    existing_metric_names=[metric],
-                    new_metric_name="last_5_" + metric,
-                    apply_to_row=self.range_auc,
-                    additional_apply_to_row_kwargs={
-                        "range_start": -5,
-                        "range_end": None,
-                    },
-                ),
-                *self._compute_single_metric_jobs(
-                    existing_metric_names=[metric],
-                    new_metric_name="learning_stability_5_" + metric,
-                    apply_to_row=self.learning_stability,
-                    additional_apply_to_row_kwargs={"time_range": 5},
-                ),
-                *self._compute_single_metric_jobs(
-                    existing_metric_names=[metric],
-                    new_metric_name="learning_stability_10_" + metric,
-                    apply_to_row=self.learning_stability,
-                    additional_apply_to_row_kwargs={"time_range": 10},
-                ),
-                *self._compute_single_metric_jobs(
-                    existing_metric_names=[metric],
-                    new_metric_name="full_auc_" + metric,
-                    apply_to_row=self.range_auc,
-                    additional_apply_to_row_kwargs={
-                        "range_start": 0,
-                        "range_end": None,
-                    },
-                ),
-            ]
-        return results
+            self._compute_single_metric_jobs(
+                existing_metric_names=[metric],
+                new_metric_name="ramp_up_auc_" + metric,
+                apply_to_row=self.range_auc,
+                additional_apply_to_row_kwargs={
+                    "range_start": 0,
+                    "range_end": "pre_computed",
+                },
+                exp_dataset=exp_dataset,
+                exp_strategy=exp_strategy,
+            )
+            self._compute_single_metric_jobs(
+                existing_metric_names=[metric],
+                new_metric_name="plateau_auc_" + metric,
+                apply_to_row=self.range_auc,
+                additional_apply_to_row_kwargs={
+                    "range_start": "pre_computed",
+                    "range_end": None,
+                },
+                exp_dataset=exp_dataset,
+                exp_strategy=exp_strategy,
+            )
+            self._compute_single_metric_jobs(
+                existing_metric_names=[metric],
+                new_metric_name="final_value_" + metric,
+                apply_to_row=self.range_auc,
+                additional_apply_to_row_kwargs={
+                    "range_start": -1,
+                    "range_end": None,
+                },
+                exp_dataset=exp_dataset,
+                exp_strategy=exp_strategy,
+            )
+            self._compute_single_metric_jobs(
+                existing_metric_names=[metric],
+                new_metric_name="first_5_" + metric,
+                apply_to_row=self.range_auc,
+                additional_apply_to_row_kwargs={"range_start": 0, "range_end": 5},
+                exp_dataset=exp_dataset,
+                exp_strategy=exp_strategy,
+            )
+            self._compute_single_metric_jobs(
+                existing_metric_names=[metric],
+                new_metric_name="last_5_" + metric,
+                apply_to_row=self.range_auc,
+                additional_apply_to_row_kwargs={
+                    "range_start": -5,
+                    "range_end": None,
+                },
+                exp_dataset=exp_dataset,
+                exp_strategy=exp_strategy,
+            )
+            self._compute_single_metric_jobs(
+                existing_metric_names=[metric],
+                new_metric_name="learning_stability_5_" + metric,
+                apply_to_row=self.learning_stability,
+                additional_apply_to_row_kwargs={"time_range": 5},
+                exp_dataset=exp_dataset,
+                exp_strategy=exp_strategy,
+            )
+            self._compute_single_metric_jobs(
+                existing_metric_names=[metric],
+                new_metric_name="learning_stability_10_" + metric,
+                apply_to_row=self.learning_stability,
+                additional_apply_to_row_kwargs={"time_range": 10},
+                exp_dataset=exp_dataset,
+                exp_strategy=exp_strategy,
+            )
+            self._compute_single_metric_jobs(
+                existing_metric_names=[metric],
+                new_metric_name="full_auc_" + metric,
+                apply_to_row=self.range_auc,
+                additional_apply_to_row_kwargs={
+                    "range_start": 0,
+                    "range_end": None,
+                },
+                exp_dataset=exp_dataset,
+                exp_strategy=exp_strategy,
+            )

@@ -19,6 +19,9 @@ cd {{HPC_WS_PATH}}code
 i=$(( {{ SLURM_OFFSET }} + $SLURM_ARRAY_TASK_ID * {{ SLURM_ITERATIONS_PER_BATCH }} ))
 end=$(($i+{{ SLURM_ITERATIONS_PER_BATCH }}))
 for ((j = $i ; j < $end ; j++)); do
-    MPLCONFIGPATH={{HPC_WS_PATH}}cache {{HPC_PYTHON_PATH}} -m {{SCRIPTS_PATH}}.{{PYTHON_FILE}} --EXP_TITLE {{EXP_TITLE}} --RUNNING_ENVIRONMENT hpc --WORKER_INDEX $j --EVA_MODE slurm {{CLI_ARGS}}
+    {% if script_type == "script" %}MPLCONFIGPATH={{HPC_WS_PATH}}cache {{HPC_PYTHON_PATH}} -m {{SCRIPTS_PATH}}.{{PYTHON_FILE}} --EXP_TITLE {{EXP_TITLE}} --RUNNING_ENVIRONMENT hpc --WORKER_INDEX $j --EVA_MODE slurm {{CLI_ARGS}}{% endif %}
+    {% if script_type == "dataset_categorization" %}MPLCONFIGPATH={{HPC_WS_PATH}}cache {{HPC_PYTHON_PATH}} {{PYTHON_FILE}}.py --EXP_TITLE {{EXP_TITLE}} --RUNNING_ENVIRONMENT hpc --WORKER_INDEX $j --EVA_MODE slurm {{CLI_ARGS}}{% endif %}
+    {% if script_type == "metrics" %}MPLCONFIGPATH={{HPC_WS_PATH}}cache {{HPC_PYTHON_PATH}} {{PYTHON_FILE}}.py --EXP_TITLE {{EXP_TITLE}} --RUNNING_ENVIRONMENT hpc --WORKER_INDEX $j --EVA_MODE slurm {{CLI_ARGS}}{% endif %}
+
 done
 exit 0

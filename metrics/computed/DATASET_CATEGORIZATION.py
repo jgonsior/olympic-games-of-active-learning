@@ -11,6 +11,7 @@ from typing import Any, Callable, Dict, TYPE_CHECKING, List, Tuple
 
 if TYPE_CHECKING:
     from resources.data_types import SAMPLES_CATEGORIZER
+    from resources.data_types import AL_STRATEGY
 
 
 class DATASET_CATEGORIZATION(Base_Computed_Metric):
@@ -55,20 +56,18 @@ class DATASET_CATEGORIZATION(Base_Computed_Metric):
         # exit(-1)
         return row
 
-    def get_all_metric_jobs(self) -> List[Tuple[Callable, List[Any]]]:
+    def compute_metrics(self, exp_dataset: DATASET, exp_strategy: AL_STRATEGY):
         from resources.data_types import SAMPLES_CATEGORIZER
 
-        result = []
         for samples_categorizer in SAMPLES_CATEGORIZER:
-            result = [
-                *result,
-                *self._compute_single_metric_jobs(
-                    existing_metric_names=["selected_indices"],
-                    new_metric_name=f"{samples_categorizer.name}",
-                    apply_to_row=self.count_batch_sample_categories,
-                    additional_apply_to_row_kwargs={
-                        "samples_categorizer": samples_categorizer
-                    },
-                ),
-            ]
-        return result
+            self._per_dataset_hook(exp_dataset, samples_categorizer)
+            self._compute_single_metric_jobs(
+                existing_metric_names=["selected_indices"],
+                new_metric_name=f"{samples_categorizer.name}",
+                apply_to_row=self.count_batch_sample_categories,
+                additional_apply_to_row_kwargs={
+                    "samples_categorizer": samples_categorizer
+                },
+                exp_dataset=exp_dataset,
+                exp_strategy=exp_strategy,
+            )
