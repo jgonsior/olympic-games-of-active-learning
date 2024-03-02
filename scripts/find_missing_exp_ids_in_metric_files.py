@@ -58,6 +58,7 @@ def _do_stuff(exp_dataset, exp_strategy, config):
 
     exp_ids_union = set()
     for file_name in glob_list:
+        print(file_name)
         if not _is_standard_metric(file_name):
             print(f"Not standard metric: {file_name}")
 
@@ -80,9 +81,13 @@ def _do_stuff(exp_dataset, exp_strategy, config):
         exp_ids_union = exp_ids_union.union(exp_ids_per_metric[metric_name])
 
     exp_ids_intersection = copy.deepcopy(exp_ids_union)
+    print(len(exp_ids_union))
 
     for _, exp_ids in exp_ids_per_metric.items():
         exp_ids_intersection = exp_ids_intersection.intersection(exp_ids)
+        print(len(exp_ids))
+    print(len(exp_ids_intersection))
+    exit(-1)
 
     difference = exp_ids_union.symmetric_difference(exp_ids_intersection)
     if len(difference) > 0:
@@ -99,8 +104,8 @@ def _do_stuff(exp_dataset, exp_strategy, config):
                 )
 
 
-# Parallel(n_jobs=1, verbose=10)(
-Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
+Parallel(n_jobs=1, verbose=10)(
+    #  Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
     delayed(_do_stuff)(exp_dataset, exp_strategy, config)
     for (exp_dataset, exp_strategy) in itertools.product(
         config.EXP_GRID_DATASET, config.EXP_GRID_STRATEGY
