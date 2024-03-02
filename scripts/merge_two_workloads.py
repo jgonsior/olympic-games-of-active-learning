@@ -75,9 +75,9 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
             print("empty")
             return
 
-        #  from pandarallel import pandarallel
+        from pandarallel import pandarallel
 
-        #  pandarallel.initialize(progress_bar=True, nb_workers=20)
+        pandarallel.initialize(progress_bar=True, nb_workers=20, use_memory_fs=True)
 
         for csv_file_name in csv_glob_list:
             print(csv_file_name)
@@ -91,9 +91,10 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
                 cols_with_indice_lists = csv_df.columns.difference(["EXP_UNIQUE_ID"])
 
                 csv_df[cols_with_indice_lists] = (
-                    csv_df[cols_with_indice_lists].fillna("[]")
-                    #  .parallel_applymap(lambda x: ast.literal_eval(x))
-                    .map(lambda x: ast.literal_eval(x))
+                    csv_df[cols_with_indice_lists]
+                    .fillna("[]")
+                    .parallel_applymap(lambda x: ast.literal_eval(x))
+                    #  .map(lambda x: ast.literal_eval(x))
                 )
 
             original_csv_path = (
@@ -107,6 +108,13 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
                 xz_df = get_df(Path(str(original_csv_path) + ".xz.parquet"), config)
             else:
                 xz_df = get_df(Path(str(original_csv_path)), config)
+
+            # xz_df[cols_with_indice_lists] = (
+            #    xz_df[cols_with_indice_lists]
+            #    .fillna("[]")
+            #    .parallel_applymap(lambda x: ast.literal_eval(x))
+            #    #  .map(lambda x: ast.literal_eval(x))
+            # )
 
             xz_df = pd.concat([xz_df, csv_df], ignore_index=True).drop_duplicates(
                 subset="EXP_UNIQUE_ID"

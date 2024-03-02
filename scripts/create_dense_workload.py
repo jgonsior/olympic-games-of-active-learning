@@ -73,6 +73,8 @@ def _calculate_min_cutoffs():
             by=[c for c in column_combinations if c != cc]
         )["EXP_UNIQUE_ID"].apply(len)
 
+        print(exp_ids_present_per_combination.unique())
+
         ax = sns.histplot(exp_ids_present_per_combination)
 
         ax.get_yaxis().set_ticks([])
@@ -93,12 +95,12 @@ def _get_dense_exp_ids(done_workload):
         return
 
     cutoff_values = {
-        "EXP_STRATEGY": 39,
-        "EXP_DATASET": 95,
-        "EXP_BATCH_SIZE": 3,
-        "EXP_LEARNER_MODEL": 3,
-        "EXP_START_POINT": 20,
+        "EXP_STRATEGY": 30,
+        "EXP_DATASET": 89,
         "EXP_TRAIN_TEST_BUCKET_SIZE": 5,
+        "EXP_START_POINT": 20,
+        "EXP_BATCH_SIZE": 6,
+        "EXP_LEARNER_MODEL": 3,
     }
 
     """
@@ -273,7 +275,7 @@ def _calculate_correlations(param_to_evaluate):
     exit(-1)
 
 
-_calculate_min_cutoffs()
+#  _calculate_min_cutoffs()
 _get_dense_exp_ids(done_workload)
 exit(-1)
 for cc in [
