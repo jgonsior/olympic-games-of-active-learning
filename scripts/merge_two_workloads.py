@@ -31,7 +31,7 @@ config = Config()
 
 print(f"Merging {config.OUTPUT_PATH} and {config.SECOND_MERGE_PATH}")
 
-prepare_eva_pathes("MERGE_TWO_WORKLOADS")
+prepare_eva_pathes("MERGE_TWO_WORKLOADS", config)
 
 if config.EVA_MODE == "create":
     workload = [
