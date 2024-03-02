@@ -18,26 +18,20 @@ sys.dont_write_bytecode = True
 
 from misc.config import Config
 
-from misc.helpers import _combine_results, create_workload, run_from_workload, get_df
+from misc.helpers import (
+    combine_results,
+    create_workload,
+    prepare_eva_pathes,
+    run_from_workload,
+    get_df,
+)
 
 config = Config()
 
 
 print(f"Merging {config.OUTPUT_PATH} and {config.SECOND_MERGE_PATH}")
 
-config.EVA_NAME = "MERGE_TWO_WORKLOADS"
-
-config.EVA_SCRIPT_WORKLOAD_DIR = config.EVA_SCRIPT_WORKLOAD_DIR / config.EVA_NAME
-
-config.EVA_SCRIPT_OPEN_WORKLOAD_FILE = (
-    config.EVA_SCRIPT_WORKLOAD_DIR / config.EVA_SCRIPT_OPEN_WORKLOAD_FILE
-)
-config.EVA_SCRIPT_DONE_WORKLOAD_FILE = (
-    config.EVA_SCRIPT_WORKLOAD_DIR / config.EVA_SCRIPT_DONE_WORKLOAD_FILE
-)
-
-if not config.EVA_SCRIPT_WORKLOAD_DIR.exists():
-    config.EVA_SCRIPT_WORKLOAD_DIR.mkdir(parents=True)
+prepare_eva_pathes("MERGE_TWO_WORKLOADS")
 
 if config.EVA_MODE == "create":
     workload = [
@@ -126,7 +120,7 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
 
     run_from_workload(do_stuff=do_stuff, config=config)
 elif config.EVA_MODE == "combine":
-    result_df = _combine_results(config=config)
+    result_df = combine_results(config=config)
 
     done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
     second_done_workload_df = pd.read_csv(

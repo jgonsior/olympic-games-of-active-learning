@@ -395,5 +395,19 @@ def run_from_workload(do_stuff: Callable, config: Config):
         )
 
 
-def _combine_results(config: Config) -> pd.DataFrame:
+def combine_results(config: Config) -> pd.DataFrame:
     return
+
+
+def prepare_eva_pathes(eva_name: str, config: Config):
+    config.EVA_NAME = eva_name
+    config.EVA_SCRIPT_WORKLOAD_DIR = config.EVA_SCRIPT_WORKLOAD_DIR / config.EVA_NAME
+    config.EVA_SCRIPT_OPEN_WORKLOAD_FILE = (
+        config.EVA_SCRIPT_WORKLOAD_DIR / config.EVA_SCRIPT_OPEN_WORKLOAD_FILE
+    )
+    config.EVA_SCRIPT_DONE_WORKLOAD_FILE = (
+        config.EVA_SCRIPT_WORKLOAD_DIR / config.EVA_SCRIPT_DONE_WORKLOAD_FILE
+    )
+
+    if not config.EVA_SCRIPT_WORKLOAD_DIR.exists():
+        config.EVA_SCRIPT_WORKLOAD_DIR.mkdir(parents=True)
