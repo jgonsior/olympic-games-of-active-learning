@@ -18,12 +18,13 @@ config = Config()
 
 
 def _do_stuff(file_name, config):
-    print(file_name)
     other_parquet_file = Path(
         str(file_name).removesuffix(".csv.xz.parquet") + ".csv.parquet"
     )
     if not other_parquet_file.exists():
         return
+    print(file_name)
+    print(other_parquet_file)
     dfa = pd.read_parquet(file_name)
     dfb = pd.read_parquet(other_parquet_file)
 

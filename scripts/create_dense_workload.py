@@ -95,12 +95,12 @@ def _get_dense_exp_ids(done_workload):
         return
 
     cutoff_values = {
-        "EXP_STRATEGY": 30,
-        "EXP_DATASET": 89,
-        "EXP_TRAIN_TEST_BUCKET_SIZE": 5,
         "EXP_START_POINT": 20,
+        "EXP_TRAIN_TEST_BUCKET_SIZE": 5,
         "EXP_BATCH_SIZE": 6,
         "EXP_LEARNER_MODEL": 3,
+        "EXP_STRATEGY": 30,
+        "EXP_DATASET": 92,
     }
 
     """

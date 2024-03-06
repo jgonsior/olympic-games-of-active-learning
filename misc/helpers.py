@@ -235,6 +235,9 @@ def create_fingerprint_joined_timeseries_csv_files(
         glob_list = [*glob_list, *get_glob_list(config, limit=f"**/{metric_name}")]
     glob_list = sorted(set(glob_list))
 
+    #  print(glob_list[:10])
+    #  print(glob_list[-10:])
+
     # remove those from glob list which already exist as timeseries
 
     print(len(glob_list))
@@ -245,6 +248,7 @@ def create_fingerprint_joined_timeseries_csv_files(
             str(config.CORRELATION_TS_PATH) + f"/*.parquet", recursive=True
         )
     ]
+    #  print(existent_ts_files[:10])
 
     glob_list = [ggg for ggg in glob_list if ggg.name not in existent_ts_files]
     print(len(glob_list))
@@ -325,7 +329,6 @@ def create_workload(
         )
 
         for _, r in done_df.iterrows():
-
             mask = True
             for k, v in enumerate(r.to_list()):
                 mask &= df[k] == v

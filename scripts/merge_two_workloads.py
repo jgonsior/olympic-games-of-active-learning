@@ -101,7 +101,7 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
             if "y_pred" in csv_file_name.name:
                 xz_df = get_df(Path(str(original_csv_path) + ".xz.parquet"), config)
             else:
-                xz_df = get_df(Path(str(original_csv_path)), config)
+                xz_df = get_df(Path(str(original_csv_path) + ".xz"), config)
 
             # xz_df[cols_with_indice_lists] = (
             #    xz_df[cols_with_indice_lists]
@@ -127,6 +127,9 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
 
     run_from_workload(do_stuff=do_stuff, config=config)
 elif config.EVA_MODE == "combine":
+    print(DATASET(93).name)
+    print(AL_STRATEGY(65).name)
+    exit(-1)
     result_df = combine_results(config=config)
 
     done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)

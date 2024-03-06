@@ -20,7 +20,7 @@ pandarallel.initialize(nb_workers=multiprocessing.cpu_count(), progress_bar=True
 config = Config()
 
 
-for modus in ["standard", "extended", "auc"]:
+for modus in ["extended", "standard", "extended", "auc"]:
     standard_metrics = [
         "accuracy",
         "weighted_recall",
@@ -125,6 +125,7 @@ for modus in ["standard", "extended", "auc"]:
     log_and_time("Reading in ts csv files")
     timeseriesses = []
     for sm in standard_metrics:
+        log_and_time(f"Reading in {sm}")
         ts = pd.read_parquet(
             config.CORRELATION_TS_PATH / f"{sm}.parquet",
             columns=["EXP_UNIQUE_ID_ix", "metric_value"],
