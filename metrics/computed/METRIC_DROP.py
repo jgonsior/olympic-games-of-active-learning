@@ -11,13 +11,13 @@ if TYPE_CHECKING:
 
 class METRIC_DROP(Base_Computed_Metric):
     metrics = [
-        "accuracy",
+        # "accuracy",
         "macro_f1-score",
-        "weighted_f1-score",
-        "macro_precision",
-        "weighted_precision",
-        "macro_recall",
-        "weighted_recall",
+        # "weighted_f1-score",
+        # "macro_precision",
+        # "weighted_precision",
+        # "macro_recall",
+        # "weighted_recall",
     ]
 
     def computed_metric_appendix(self) -> str:

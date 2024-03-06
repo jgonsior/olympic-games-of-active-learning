@@ -116,6 +116,7 @@ elif config.EVA_MODE == "combine":
     plt.hist(bins[:-1], bins, weights=counts)
     plt.show()
 
+    # now I need to decide which correlation qualifie as "dense" and which don't
     exit(0)
     corrmatt = np.ones(shape=(len(ts_df), len(ts_df)))
 
