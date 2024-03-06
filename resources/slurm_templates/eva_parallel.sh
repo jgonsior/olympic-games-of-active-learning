@@ -5,8 +5,8 @@
 #SBATCH --tasks-per-node=1
 #SBATCH --cpus-per-task={{ SLURM_NR_THREADS }}
 #SBATCH -A {{ HPC_SLURM_PROJECT }}
-#SBATCH --output {{HPC_OUTPUT_PATH}}/{{EXP_TITLE}}/{{EVA_SCRIPT_WORKLOAD_DIR}}/{{EVA_NAME}}/02_%a_out.txt
-#SBATCH --error {{HPC_OUTPUT_PATH}}/{{EXP_TITLE}}/{{EVA_SCRIPT_WORKLOAD_DIR}}/{{EVA_NAME}}/02_%a_error.txt
+#SBATCH --output {{HPC_OUTPUT_PATH}}/{{EXP_TITLE}}/{{EVA_SCRIPT_WORKLOAD_DIR}}/{{EVA_NAME}}/logs/02_%a_out.txt
+#SBATCH --error {{HPC_OUTPUT_PATH}}/{{EXP_TITLE}}/{{EVA_SCRIPT_WORKLOAD_DIR}}/{{EVA_NAME}}/logs/02_%a_error.txt
 #SBATCH --array {{ START }}-{{ END-1 }}
 
 
