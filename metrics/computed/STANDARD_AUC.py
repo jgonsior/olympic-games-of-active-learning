@@ -1,7 +1,7 @@
 from __future__ import annotations
 import glob
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, List, Tuple
+from typing import TYPE_CHECKING
 import pandas as pd
 import numpy as np
 from datasets import DATASET
@@ -105,6 +105,12 @@ class STANDARD_AUC(Base_Computed_Metric):
             and not a.startswith("y_pred_train")
             and not a.startswith("y_pred_test")
             and not a.startswith("selected_indices")
+            and not "accuracy" in a
+            and not "weighted_f1-score" in a
+            and not "macro_precision" in a
+            and not "weighted_precision" in a
+            and not "macro_recall" in a
+            and not "weighted_recall" in a
         ]
         for metric in all_existing_metric_names:
             self._compute_single_metric_jobs(

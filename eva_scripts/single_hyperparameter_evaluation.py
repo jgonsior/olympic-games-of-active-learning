@@ -1,11 +1,9 @@
 import multiprocessing
-from re import T
 import sys
 import numpy as np
 import pandas as pd
 
 from misc.helpers import (
-    get_done_workload_joined_with_metric,
     log_and_time,
     save_correlation_plot,
 )

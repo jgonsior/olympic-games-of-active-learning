@@ -7,7 +7,7 @@ from datasets import DATASET
 import dask.dataframe as dd
 from metrics.computed.base_computed_metric import Base_Computed_Metric
 
-from typing import Any, Callable, Dict, List, TYPE_CHECKING, Literal, Tuple
+from typing import Dict, List, TYPE_CHECKING, Literal
 from scipy.spatial import distance
 
 if TYPE_CHECKING:

@@ -1,7 +1,7 @@
 from __future__ import annotations
 import glob
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, List, Tuple
+from typing import TYPE_CHECKING
 import pandas as pd
 from datasets import DATASET
 
@@ -36,13 +36,25 @@ class TIMELAG_METRIC(Base_Computed_Metric):
         all_existing_metric_names = [
             a.split(".")[0]
             for a in all_existing_metric_names
-            if not a.startswith("auc_")
-            and not a.startswith("learning_stability_")
+            if not a.startswith("ramp_up_auc_")
+            and not a.startswith("plateau_auc_")
+            and not a.startswith("final_value_")
+            and not a.startswith("first_5_")
+            and not a.startswith("last_5_")
+            and not a.startswith("learning_stability_5_")
+            and not a.startswith("learning_stability_10_")
+            and not a.startswith("full_auc_")
             and not a.startswith("pickled_learner_model")
+            and not a.startswith("y_pred_train")
+            and not a.startswith("y_pred_test")
+            and not a.startswith("selected_indices")
             and not a.endswith("_time_lag.csv.xz")
-            and not a.endswith("y_pred_test.csv.xz")
-            and not a.endswith("y_pred_train.csv.xz")
-            and not a.endswith("selected_indices.csv.xz")
+            and not "accuracy" in a
+            and not "weighted_f1-score" in a
+            and not "macro_precision" in a
+            and not "weighted_precision" in a
+            and not "macro_recall" in a
+            and not "weighted_recall" in a
         ]
 
         for metric in all_existing_metric_names:
