@@ -341,6 +341,7 @@ def create_workload(
     slurm_template = Template(
         Path("resources/slurm_templates/eva_parallel.sh").read_text()
     )
+    print(config.EVA_NAME)
     rendered_template = slurm_template.render(
         SLURM_TIME_LIMIT="100:00:00",
         SLURM_NR_THREADS=SLURM_NR_THREADS,
