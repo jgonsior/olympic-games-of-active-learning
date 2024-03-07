@@ -77,7 +77,10 @@ for modus in ["extended", "standard", "extended", "auc"]:
     for f in glob.glob(
         str(config.CORRELATION_TS_PATH) + f"/*.unsorted.csv", recursive=True
     ):
-        command = f"sort --parallel {multiprocessing.cpu_count()} {f} -o {f.split('.')[0]}.to_parquet.csv"
+        command = (
+            "sort -T /tmp -T {pwd}"
+            + f" --parallel {multiprocessing.cpu_count()} {f} -o {f.split('.')[0]}.to_parquet.csv"
+        )
         # print(command)
         subprocess.run(command, shell=True, text=True)
         Path(f).unlink()
