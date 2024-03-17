@@ -49,8 +49,8 @@ class TIMELAG_METRIC(Base_Computed_Metric):
             and not a.startswith("y_pred_test")
             and not a.startswith("selected_indices")
             and not a.endswith("_time_lag.csv.xz")
-            and not "accuracy" in a
-            and not "weighted_f1-score" in a
+            #  and not "accuracy" in a
+            #  and not "weighted_f1-score" in a
             and not "macro_precision" in a
             and not "weighted_precision" in a
             and not "macro_recall" in a

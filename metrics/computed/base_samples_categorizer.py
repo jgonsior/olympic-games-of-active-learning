@@ -606,7 +606,12 @@ class IMPROVES_ACCURACY_BY(Base_Samples_Categorizer):
         for accuracy_df, selected_indices_df in self._get_metrics_iterator(
             dataset=dataset,
             strategies=strategies_to_consider,
-            metrics=["macro_f1-score", "selected_indices"],
+            metrics=[
+                #  "weighted_f1-score",
+                "accuracy",
+                #  "macro_f1-score",
+                "selected_indices",
+            ],
         ):
             selected_indices_df = self._convert_df_to_python_types(selected_indices_df)
 

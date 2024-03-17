@@ -20,7 +20,8 @@ pandarallel.initialize(nb_workers=multiprocessing.cpu_count(), progress_bar=True
 config = Config()
 
 
-for modus in ["extended", "standard", "extended", "auc"]:
+#  for modus in ["auc", "extended", "standard"]:
+for modus in ["standard", "extended", "auc", "auc2"]:
     standard_metrics = [
         "accuracy",
         "weighted_recall",
@@ -31,12 +32,19 @@ for modus in ["extended", "standard", "extended", "auc"]:
         "weighted_precision",
     ]
 
-    if modus == "extended" or modus == "auc":
-        standard_metrics = ["macro_f1-score"]
+    if modus == "extended" or modus == "auc" or modus == "auc2":
+        #  standard_metrics = ["macro_f1-score"]
+
+        if modus == "auc":
+            standard_metrics = ["weighted_f1-score", "macro_f1-score", "accuracy"]
+        elif modus == "auc2":
+            standard_metrics = ["weighted_f1-score"]
+        #  standard_metrics = ["accuracy"]
         variant_prefixe = [
             "biggest_drop_per_",
             "nr_decreasing_al_cycles_per_",
         ]
+        #  TODO variant_prefixe klappt ni
 
         original_standard_metrics = standard_metrics.copy()
         for vp in variant_prefixe:
@@ -44,7 +52,7 @@ for modus in ["extended", "standard", "extended", "auc"]:
                 *standard_metrics,
                 *[vp + sss for sss in original_standard_metrics],
             ]
-
+        print(standard_metrics)
         if modus == "auc":
             auc_prefixe = [
                 "final_value_",
@@ -77,10 +85,7 @@ for modus in ["extended", "standard", "extended", "auc"]:
     for f in glob.glob(
         str(config.CORRELATION_TS_PATH) + f"/*.unsorted.csv", recursive=True
     ):
-        command = (
-            "sort -T /tmp -T {pwd}"
-            + f" --parallel {multiprocessing.cpu_count()} {f} -o {f.split('.')[0]}.to_parquet.csv"
-        )
+        command = f"sort -T {config.CORRELATION_TS_PATH} --parallel {multiprocessing.cpu_count()} {f} -o {f.split('.')[0]}.to_parquet.csv"
         # print(command)
         subprocess.run(command, shell=True, text=True)
         Path(f).unlink()

@@ -29,48 +29,73 @@ prepare_eva_pathes("workload_reduction", config)
 
 
 standard_metric = "full_auc_macro_f1-score"
+#  standard_metric = "macro_f1-score"
 
 if config.EVA_MODE == "create":
-    ts = pd.read_parquet(
-        config.CORRELATION_TS_PATH / f"{standard_metric}.parquet",
-        columns=[
-            "EXP_DATASET",
-            "EXP_STRATEGY",
-            "EXP_START_POINT",
-            "EXP_BATCH_SIZE",
-            "EXP_LEARNER_MODEL",
-            "EXP_TRAIN_TEST_BUCKET_SIZE",
-            "ix",
-            # "EXP_UNIQUE_ID_ix",
-            "metric_value",
-        ],
-    )
+    if Path(config.EVA_SCRIPT_WORKLOAD_DIR / "ts.csv").exists():
+        with open(Path(config.EVA_SCRIPT_WORKLOAD_DIR / "ts.csv"), "r") as f:
+            length = sum(1 for _ in f)
+    else:
+        ts = pd.read_parquet(
+            config.CORRELATION_TS_PATH / f"{standard_metric}.parquet",
+            columns=[
+                "EXP_DATASET",
+                "EXP_STRATEGY",
+                "EXP_START_POINT",
+                "EXP_BATCH_SIZE",
+                "EXP_LEARNER_MODEL",
+                "EXP_TRAIN_TEST_BUCKET_SIZE",
+                "ix",
+                # "EXP_UNIQUE_ID_ix",
+                "metric_value",
+            ],
+        )
 
-    fingerprint_cols = list(ts.columns)
-    fingerprint_cols.remove("metric_value")
-    fingerprint_cols.remove("EXP_STRATEGY")
+        fingerprint_cols = list(ts.columns)
+        fingerprint_cols.remove("metric_value")
+        fingerprint_cols.remove("EXP_STRATEGY")
 
-    from pandarallel import pandarallel
+        from pandarallel import pandarallel
 
-    pandarallel.initialize(
-        nb_workers=multiprocessing.cpu_count(), progress_bar=True, use_memory_fs=True
-    )
+        pandarallel.initialize(
+            nb_workers=multiprocessing.cpu_count(),
+            progress_bar=True,
+            use_memory_fs=True,
+        )
 
-    ts["fingerprint"] = ts[fingerprint_cols].parallel_apply(
-        lambda row: "_".join([str(rrr) for rrr in row]), axis=1
-    )
+        ts["fingerprint"] = ts[fingerprint_cols].parallel_apply(
+            lambda row: "_".join([str(rrr) for rrr in row]), axis=1
+        )
 
-    for fg_col in fingerprint_cols:
-        del ts[fg_col]
+        for fg_col in fingerprint_cols:
+            del ts[fg_col]
 
-    ts = ts.pivot(
-        index="fingerprint", columns="EXP_STRATEGY", values="metric_value"
-    ).reset_index()
-    print(ts)
+        ts = ts.pivot(
+            index="fingerprint", columns="EXP_STRATEGY", values="metric_value"
+        ).reset_index()
+        print(ts)
 
-    ts.to_csv(config.EVA_SCRIPT_WORKLOAD_DIR / "ts.csv", index=None)
+        ts.to_csv(config.EVA_SCRIPT_WORKLOAD_DIR / "ts.csv", index=None)
 
-    workload = [iii for iii in itertools.combinations(ts.index, 2)]
+        length = len(ts)
+        del ts
+
+    print("done reading")
+    workload = itertools.combinations(range(0, length), 2)
+
+    # i = 0
+    # for row in workload:
+    #    if i % 1000000 == 0:
+    #        print(i)
+    #    i += 1
+    # exit(-1)
+    with open(config.EVA_SCRIPT_OPEN_WORKLOAD_FILE, "w") as f:
+        f.write("0,1\n")
+        for row in workload:
+            f.write(f"{row[0]},{row[1]}\n")
+
+    exit(-1)
+    print("done yielding")
     create_workload(
         workload,
         config=config,

@@ -82,7 +82,6 @@ class STANDARD_AUC(Base_Computed_Metric):
         return ls
 
     def compute_metrics(self, exp_dataset: DATASET, exp_strategy: AL_STRATEGY):
-
         all_existing_metric_names = set(
             [
                 Path(a).name
@@ -105,8 +104,8 @@ class STANDARD_AUC(Base_Computed_Metric):
             and not a.startswith("y_pred_train")
             and not a.startswith("y_pred_test")
             and not a.startswith("selected_indices")
-            and not "accuracy" in a
-            and not "weighted_f1-score" in a
+            #  and not "accuracy" in a
+            #  and not "weighted_f1-score" in a
             and not "macro_precision" in a
             and not "weighted_precision" in a
             and not "macro_recall" in a

@@ -9,14 +9,14 @@ from joblib import Parallel, delayed
 from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
-from pyparsing import Path
+from pathlib import Path
 from timeit import default_timer as timer
 from datasets import DATASET
 from misc.config import Config
 from misc.plotting import set_matplotlib_size, set_seaborn_style
 import seaborn as sns
 
-from resources.data_types import AL_STRATEGY
+from resources.data_types import AL_STRATEGY, LEARNER_MODEL
 
 
 def append_and_create(file_name: Path, content: Dict):
@@ -68,6 +68,7 @@ def get_glob_list(
     limit: str = "**/*",
     ignore_original_workloads=True,
 ) -> List[Path]:
+    print(str(config.OUTPUT_PATH) + f"/{limit}.csv.xz")
     glob_list = [
         *[
             ggg
@@ -234,13 +235,12 @@ def create_fingerprint_joined_timeseries_csv_files(
     for metric_name in metric_names:
         glob_list = [*glob_list, *get_glob_list(config, limit=f"**/{metric_name}")]
     glob_list = sorted(set(glob_list))
-
     #  print(glob_list[:10])
     #  print(glob_list[-10:])
 
     # remove those from glob list which already exist as timeseries
 
-    print(len(glob_list))
+    #  print(len(glob_list))
 
     existent_ts_files = [
         ggg.split("/")[-1].split(".")[0] + ".csv.xz"
@@ -264,14 +264,27 @@ def save_correlation_plot(
     data: np.ndarray, title: str, keys: List[str], config: Config, total=False
 ):
     if title == "EXP_STRATEGY":
-        keys = [AL_STRATEGY(int(kkk)).name for kkk in keys]
+        try:
+            keys = [AL_STRATEGY(int(kkk)).name for kkk in keys]
+        except:
+            keys = keys
     elif title == "EXP_DATASET":
-        keys = [DATASET(int(kkk)).name for kkk in keys]
+        try:
+            keys = [DATASET(int(kkk)).name for kkk in keys]
+        except:
+            keys = keys
+    elif title == "EXP_LEARNER_MODEL":
+        try:
+            keys = [LEARNER_MODEL(int(kkk)).name for kkk in keys]
+        except:
+            keys = keys
 
     result_folder = Path(config.OUTPUT_PATH / f"plots/")
     result_folder.mkdir(parents=True, exist_ok=True)
 
     data_df = pd.DataFrame(data=data, columns=keys, index=keys)
+    data_df = data_df.sort_index(axis=0)
+    data_df = data_df.sort_index(axis=1)
 
     data_df.to_parquet(result_folder / f"{title}.parquet")
 
@@ -385,11 +398,14 @@ def run_from_workload(do_stuff: Callable, config: Config):
     )
 
     def do_stuff_wrapper(*args, do_stuff, config: Config):
+        #  try:
         res = {kkk: vvv for kkk, vvv in enumerate(args)}
         res["result"] = do_stuff(*args, config)
 
         print("WORKLOAD JOB DONE")
         append_and_create(config.EVA_SCRIPT_DONE_WORKLOAD_FILE, res)
+        #  except:
+        #  print("ERROR" * 100)
 
     if config.EVA_MODE == "local":
         Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
