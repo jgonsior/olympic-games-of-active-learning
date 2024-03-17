@@ -31,6 +31,7 @@ open_dataset_categorization_path = Path(
 
 for _, broken_csv in broken_csvs.iterrows():
     broken_csv = Path(broken_csv["metric_file"])
+    broken_csv.unlink()
     dataset_categorization = broken_csv.name.removesuffix(".csv.xz")
 
     dc_list = [sc.name for sc in SAMPLES_CATEGORIZER]
