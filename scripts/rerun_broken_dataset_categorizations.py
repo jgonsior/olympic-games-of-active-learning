@@ -37,6 +37,9 @@ for _, broken_csv in broken_csvs.iterrows():
     if dataset_categorization in dc_list:
         dataset_categorization = "DATASET_CATEGORIZATION"
 
+    if dataset_categorization.endswith("_time_lag"):
+        dataset_categorization = "TIMELAG_METRIC"
+
     strategy_enum_int = AL_STRATEGY[broken_csv.parent.parent.name]
     dataset_enum_int = DATASET[broken_csv.parent.name]
 
