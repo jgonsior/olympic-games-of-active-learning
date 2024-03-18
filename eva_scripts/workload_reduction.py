@@ -81,28 +81,17 @@ if config.EVA_MODE == "create":
         del ts
 
     print("done reading")
-    workload = itertools.combinations(range(0, length), 2)
 
-    # i = 0
-    # for row in workload:
-    #    if i % 1000000 == 0:
-    #        print(i)
-    #    i += 1
-    # exit(-1)
-    with open(config.EVA_SCRIPT_OPEN_WORKLOAD_FILE, "w") as f:
-        f.write("0,1\n")
-        for row in workload:
-            f.write(f"{row[0]},{row[1]}\n")
+    workload = []
+    for iii in range(0, length - 2, 2):
+        workload.append([iii, iii + 1])
 
-    exit(-1)
-    print("done yielding")
     create_workload(
         workload,
         config=config,
         SLURM_ITERATIONS_PER_BATCH=1000,
         SCRIPTS_PATH="scripts",
         SLURM_NR_THREADS=128,
-        CLI_ARGS=f"--SECOND_MERGE_PATH {config.SECOND_MERGE_PATH}",
     )
 elif config.EVA_MODE in ["local", "slurm", "single"]:
 
@@ -140,7 +129,7 @@ elif config.EVA_MODE == "combine":
         print(f"{b}:\t{c}")
     plt.hist(bins[:-1], bins, weights=counts)
     plt.show()
-
+    print("WIP")
     # now I need to decide which correlation qualifie as "dense" and which don't
     exit(0)
     corrmatt = np.ones(shape=(len(ts_df), len(ts_df)))
