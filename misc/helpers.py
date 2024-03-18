@@ -1,3 +1,4 @@
+import ast
 import csv
 from datetime import timedelta
 import glob
@@ -205,9 +206,10 @@ def create_fingerprint_joined_timeseries_csv_files(
         metric_columns = [mmm for mmm in metric_df.columns]
         metric_columns.remove("EXP_UNIQUE_ID")
 
-        metric_df[metric_columns] = metric_df[metric_columns].apply(
-            pd.to_numeric, downcast="float"
-        )
+        if "selected_indices" != metric_name:
+            metric_df[metric_columns] = metric_df[metric_columns].apply(
+                pd.to_numeric, downcast="float"
+            )
 
         metric_df = pd.merge(
             metric_df, done_workload_df, on=["EXP_UNIQUE_ID"], how="left"
@@ -221,10 +223,14 @@ def create_fingerprint_joined_timeseries_csv_files(
 
             non_metric_values = [str(int(rrr)) for rrr in row[-7:]]
             non_metric_values = [non_metric_values[0], ",".join(non_metric_values[1:])]
-
             for ix, v in enumerate(row[:-7]):
-                if np.isnan(v):
+                if metric_name == "selected_indices" and str(v) == "nan":
                     continue
+                elif metric_name != "selected_indices" and np.isnan(v):
+                    continue
+
+                if metric_name == "selected_indices":
+                    v = f'"{v}"'
                 contents += (
                     f"{non_metric_values[1]},{ix},{non_metric_values[0]}_{ix},{v}\n"
                 )
@@ -253,7 +259,7 @@ def create_fingerprint_joined_timeseries_csv_files(
     glob_list = [ggg for ggg in glob_list if ggg.name not in existent_ts_files]
     print(len(glob_list))
 
-    # metric_dfs = Parallel(n_jobs=1, verbose=10)(
+    # Parallel(n_jobs=1, verbose=10)(
     Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
         delayed(_do_stuff)(file_name, config, done_workload_df)
         for file_name in glob_list

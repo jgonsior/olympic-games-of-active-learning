@@ -1,9 +1,11 @@
 import multiprocessing
+import subprocess
 import sys
 import numpy as np
 import pandas as pd
 from pathlib import Path
 from misc.helpers import (
+    create_fingerprint_joined_timeseries_csv_files,
     log_and_time,
     save_correlation_plot,
 )
@@ -20,6 +22,7 @@ pandarallel.initialize(
 )
 
 standard_metric = "weighted_f1-score"
+standard_metric = "selected_indices"
 
 targets_to_evaluate = [
     "EXP_BATCH_SIZE",
@@ -29,6 +32,59 @@ targets_to_evaluate = [
     "EXP_STRATEGY",
     "EXP_START_POINT",
 ]
+
+
+if not Path(config.CORRELATION_TS_PATH / f"{standard_metric}.parquet").exists():
+
+    unsorted_f = config.CORRELATION_TS_PATH / f"{standard_metric}.unsorted.csv"
+    unparqueted_f = config.CORRELATION_TS_PATH / f"{standard_metric}.to_parquet.csv"
+
+    if not unsorted_f.exists() and not unparqueted_f.exists():
+        log_and_time("Create selected indices ts")
+        create_fingerprint_joined_timeseries_csv_files(
+            metric_names=[standard_metric], config=config
+        )
+
+    if not unparqueted_f.exists():
+        log_and_time("Created, now sorting")
+        command = f"sort -T {config.CORRELATION_TS_PATH} --parallel {multiprocessing.cpu_count()} {unsorted_f} -o {config.CORRELATION_TS_PATH}/{standard_metric}.to_parquet.csv"
+        print(command)
+        subprocess.run(command, shell=True, text=True)
+        unsorted_f.unlink()
+
+    log_and_time("sorted, now parqueting")
+    ts = pd.read_csv(
+        unparqueted_f,
+        header=None,
+        index_col=False,
+        delimiter=",",
+        names=[
+            "EXP_DATASET",
+            "EXP_STRATEGY",
+            "EXP_START_POINT",
+            "EXP_BATCH_SIZE",
+            "EXP_LEARNER_MODEL",
+            "EXP_TRAIN_TEST_BUCKET_SIZE",
+            "ix",
+            "EXP_UNIQUE_ID_ix",
+            "metric_value",
+        ],
+    )
+    ts["metric_value"] = ts["metric_value"].apply(
+        lambda xxx: (
+            np.fromstring(
+                str(xxx).removeprefix("[").removesuffix("]"),
+                dtype=np.int32,
+                sep=",",
+            )
+        )
+    )
+
+    f = Path(config.CORRELATION_TS_PATH / f"{standard_metric}.parquet")
+    ts.to_parquet(f)
+    unparqueted_f.unlink()
+exit(-1)
+
 
 ts = pd.read_parquet(
     config.CORRELATION_TS_PATH / f"{standard_metric}.parquet",
