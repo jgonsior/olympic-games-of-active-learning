@@ -83,8 +83,6 @@ if not Path(config.CORRELATION_TS_PATH / f"{standard_metric}.parquet").exists():
     f = Path(config.CORRELATION_TS_PATH / f"{standard_metric}.parquet")
     ts.to_parquet(f)
     unparqueted_f.unlink()
-exit(-1)
-
 
 ts = pd.read_parquet(
     config.CORRELATION_TS_PATH / f"{standard_metric}.parquet",
@@ -160,6 +158,7 @@ for target_to_evaluate in targets_to_evaluate:
 
         limited_ts_np = np.array([*limited_ts.values()])
 
+        print(limited_ts_np)
         corrmat = np.corrcoef(limited_ts_np)
         log_and_time("Done correlation computations")
 
