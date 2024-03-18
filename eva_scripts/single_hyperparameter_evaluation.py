@@ -103,7 +103,7 @@ ts_orig = ts.copy()
 
 for target_to_evaluate in targets_to_evaluate:
     correlation_data_path = Path(
-        config.OUTPUT_PATH / f"plots/{target_to_evaluate}.parquet"
+        config.OUTPUT_PATH / f"plots/{target_to_evaluate}_{standard_metric}.parquet"
     )
     log_and_time(target_to_evaluate)
     if correlation_data_path.exists():
@@ -165,5 +165,8 @@ for target_to_evaluate in targets_to_evaluate:
         keys = [*limited_ts.keys()]
 
     save_correlation_plot(
-        data=corrmat, title=target_to_evaluate, keys=keys, config=config
+        data=corrmat,
+        title=f"{target_to_evaluate} - {standard_metric}",
+        keys=keys,
+        config=config,
     )
