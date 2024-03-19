@@ -1,6 +1,8 @@
 import multiprocessing
+from re import T
 import subprocess
 import sys
+from annotated_types import DocInfo
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -24,9 +26,16 @@ pandarallel.initialize(
 standard_metric = "weighted_f1-score"
 standard_metric = "selected_indices"
 
+"""selected indices macht NUR Sinn bei learner model, strategy, start_point
+bei batch_size werden unterschiedlich viele geholt, doof
+bei dataset sind die indices ni vergleichbar
+bei train_test_bucket sind die indices auch ni vergleichbar
+aber bei start_point schon!
+"""
+
 targets_to_evaluate = [
-    "EXP_BATCH_SIZE",
     "EXP_LEARNER_MODEL",
+    "EXP_BATCH_SIZE",
     "EXP_DATASET",
     "EXP_TRAIN_TEST_BUCKET_SIZE",
     "EXP_STRATEGY",
@@ -102,6 +111,12 @@ ts = pd.read_parquet(
 ts_orig = ts.copy()
 
 for target_to_evaluate in targets_to_evaluate:
+    if (
+        target_to_evaluate in ["EXP_BATCH_SIZE", "EXP_DATASET"]
+        and standard_metric == "selected_indices"
+    ):
+        continue
+
     correlation_data_path = Path(
         config.OUTPUT_PATH / f"plots/{target_to_evaluate}_{standard_metric}.parquet"
     )
@@ -152,13 +167,23 @@ for target_to_evaluate in targets_to_evaluate:
             limited_ts[target_value] = ts.loc[
                 (ts["fingerprint"].isin(shared_fingerprints))
                 & (ts[target_to_evaluate] == target_value)
-            ]["metric_value"].to_numpy()
+            ]["metric_value"]
+
+            if standard_metric != "selected_indices":
+                limited_ts[target_value] = limited_ts[target_value].to_numpy()
+            else:
+                # flatten
+                limited_ts[target_value] = [
+                    x for xs in limited_ts[target_value] for x in xs
+                ]
 
         log_and_time("Done indexing ts")
 
-        limited_ts_np = np.array([*limited_ts.values()])
+        if standard_metric == "selected_indices":
+            limited_ts_np = [*limited_ts.values()]
+        else:
+            limited_ts_np = np.array([*limited_ts.values()])
 
-        print(limited_ts_np)
         corrmat = np.corrcoef(limited_ts_np)
         log_and_time("Done correlation computations")
 
