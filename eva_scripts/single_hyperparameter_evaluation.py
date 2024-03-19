@@ -172,9 +172,11 @@ for target_to_evaluate in targets_to_evaluate:
                 index="fingerprint", columns=target_to_evaluate, values="metric_value"
             )
 
-            def _calculate_jaccard(x1, x2):
-                if np.isnan(x1).any() or np.isnan(x2).any():
+            def _calculate_jaccard(r):
+                if r.isna().any():
                     return 0
+
+                x1, x2 = r.to_list()
 
                 a = set(x1)
                 b = set(x2)
@@ -182,18 +184,25 @@ for target_to_evaluate in targets_to_evaluate:
 
             corrmat = []
 
-            for c1, c2 in combinations(ts.columns, 2):
+            for c1, c2 in combinations([ttt for ttt in ts.columns], 2):
                 print(f"{c1} - {c2}")
                 c1c = ts[c1]
                 c2c = ts[c2]
 
-                jaccards = 0
+                a = ts[[c1, c2]].parallel_apply(_calculate_jaccard, axis=1)
+                # print(a)
+
+                jaccards = a.mean()
+                # print(jaccards)
+                # exit(-1)
+
+                """jaccards = 0
                 j_length = 0
                 for cc1, cc2 in zip(c1c, c2c):
                     j_length += 1
                     jaccards += _calculate_jaccard(cc1, cc2)
 
-                jaccards = jaccards / j_length
+                jaccards = jaccards / j_length"""
 
                 corrmat.append((c1, c2, jaccards))
                 corrmat.append((c2, c1, jaccards))
