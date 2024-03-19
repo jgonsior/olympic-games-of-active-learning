@@ -173,37 +173,28 @@ for target_to_evaluate in targets_to_evaluate:
             )
 
             def _calculate_jaccard(r):
-                if r.isna().any():
-                    return 0
-
-                x1, x2 = r.to_list()
-
-                a = set(x1)
-                b = set(x2)
-                return len(a.intersection(b)) / len(a.union(b))
+                js = []
+                for c1, c2 in combinations(r.to_list(), 2):
+                    if np.isnan(c1).any() or np.isnan(c2).any():
+                        js.append(0)
+                    else:
+                        a = set(c1)
+                        b = set(c2)
+                        js.append(len(a.intersection(b)) / len(a.union(b)))
+                return pd.Series(js)
 
             corrmat = []
 
-            for c1, c2 in combinations([ttt for ttt in ts.columns], 2):
-                print(f"{c1} - {c2}")
-                c1c = ts[c1]
-                c2c = ts[c2]
+            jaccards = ts.parallel_apply(_calculate_jaccard, axis=1)
+            jaccards.columns = [
+                (ccc[0], ccc[1]) for ccc in combinations(ts.columns.to_list(), 2)
+            ]
 
-                a = ts[[c1, c2]].parallel_apply(_calculate_jaccard, axis=1)
-                # print(a)
+            sums = jaccards.sum() / len(jaccards)
 
-                jaccards = a.mean()
-                # print(jaccards)
-                # exit(-1)
-
-                """jaccards = 0
-                j_length = 0
-                for cc1, cc2 in zip(c1c, c2c):
-                    j_length += 1
-                    jaccards += _calculate_jaccard(cc1, cc2)
-
-                jaccards = jaccards / j_length"""
-
+            for ix, jaccards in sums.items():
+                c1 = ix[0]
+                c2 = ix[1]
                 corrmat.append((c1, c2, jaccards))
                 corrmat.append((c2, c1, jaccards))
 
