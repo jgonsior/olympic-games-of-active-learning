@@ -25,7 +25,7 @@ config = Config()
 from pandarallel import pandarallel
 
 pandarallel.initialize(
-    nb_workers=multiprocessing.cpu_count(), progress_bar=True, use_memory_fs=False
+    nb_workers=multiprocessing.cpu_count(), progress_bar=True, use_memory_fs=True
 )
 
 standard_metric = "weighted_f1-score"
