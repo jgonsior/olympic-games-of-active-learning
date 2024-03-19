@@ -196,7 +196,8 @@ for target_to_evaluate in targets_to_evaluate:
                 return [(c1, c2, jaccards), (c2, c1, jaccards)]
 
             corrmat = Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
-                delayed(_do_stuff)(c1, c2) for c1, c2 in combinations(ts.columns, 2)
+                delayed(_do_stuff)(c1, c2)
+                for c1, c2 in combinations([ttt for ttt in ts.columns], 2)
             )
 
             # flatten
