@@ -180,33 +180,20 @@ for target_to_evaluate in targets_to_evaluate:
                 b = set(x2)
                 return len(a.intersection(b)) / len(a.union(b))
 
-            def _do_stuff(c1, c2):
+            corrmat = []
+
+            for c1, c2 in combinations(ts.columns, 2):
                 print(f"{c1} - {c2}")
                 c1c = ts[c1]
                 c2c = ts[c2]
 
-                jaccards = 0
-                j_length = 0
-                for cc1, cc2 in zip(c1c, c2c):
-                    j_length += 1
-                    jaccards += _calculate_jaccard(cc1, cc2)
+                jaccards = Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
+                    delayed(_calculate_jaccard)(cc1, cc2) for cc1, cc2 in zip(c1c, c2c)
+                )
+                jaccards = np.sum(jaccards) / len(jaccards)
 
-                jaccards = jaccards / j_length
-
-                return [(c1, c2, jaccards), (c2, c1, jaccards)]
-
-            corrmat = Parallel(
-                n_jobs=multiprocessing.cpu_count(),
-                verbose=10,
-                backend="threading",
-            )(
-                delayed(_do_stuff)(c1, c2)
-                for c1, c2 in combinations([ttt for ttt in ts.columns], 2)
-            )
-
-            # flatten
-            corrmat = [x for xs in corrmat for x in xs]
-            print(corrmat)
+                corrmat.append((c1, c2, jaccards))
+                corrmat.append((c2, c1, jaccards))
 
             corrmat = (
                 pd.DataFrame(data=corrmat).pivot(index=0, columns=1, values=2).fillna(1)
