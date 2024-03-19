@@ -21,7 +21,8 @@ config = Config()
 
 
 #  for modus in ["auc", "extended", "standard"]:
-for modus in ["standard", "extended", "auc", "auc2"]:
+#  for modus in ["standard", "extended", "auc", "auc2"]:
+for modus in ["extended", "auc", "auc2"]:
     standard_metrics = [
         "accuracy",
         "weighted_recall",
@@ -35,7 +36,7 @@ for modus in ["standard", "extended", "auc", "auc2"]:
     if modus == "extended" or modus == "auc" or modus == "auc2":
         #  standard_metrics = ["macro_f1-score"]
 
-        if modus == "auc":
+        if modus == "auc" or modus == "extended":
             standard_metrics = ["weighted_f1-score", "macro_f1-score", "accuracy"]
         elif modus == "auc2":
             standard_metrics = ["weighted_f1-score"]

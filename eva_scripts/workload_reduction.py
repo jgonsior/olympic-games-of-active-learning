@@ -83,7 +83,7 @@ if config.EVA_MODE == "create":
     print("done reading")
 
     workload = []
-    for iii in range(0, length - 2, 2):
+    for iii in range(1, length - 2, 2):
         workload.append([iii, iii + 1])
 
     create_workload(
