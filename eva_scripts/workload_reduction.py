@@ -122,8 +122,10 @@ elif config.EVA_MODE == "combine":
     )
 
     done_df = pd.read_csv(config.EVA_SCRIPT_DONE_WORKLOAD_FILE, header=0)
+    done_df = pd.read_csv(config.EVA_SCRIPT_WORKLOAD_DIR / "03_done_01.csv", header=0)
+    done_df.dropna(inplace=True)
 
-    counts, bins = np.histogram(done_df["result"].to_numpy(), bins=100)
+    counts, bins = np.histogram(done_df["result"].to_numpy(), bins=200)
 
     for c, b in zip(counts, bins):
         print(f"{b}:\t{c}")
