@@ -269,17 +269,17 @@ def create_fingerprint_joined_timeseries_csv_files(
 def save_correlation_plot(
     data: np.ndarray, title: str, keys: List[str], config: Config, total=False
 ):
-    if title == "EXP_STRATEGY":
+    if title.startswith("EXP_STRATEGY"):
         try:
             keys = [AL_STRATEGY(int(kkk)).name for kkk in keys]
         except:
             keys = keys
-    elif title == "EXP_DATASET":
+    elif title.startswith("EXP_DATASET"):
         try:
             keys = [DATASET(int(kkk)).name for kkk in keys]
         except:
             keys = keys
-    elif title == "EXP_LEARNER_MODEL":
+    elif title.startswith("EXP_LEARNER_MODEL"):
         try:
             keys = [LEARNER_MODEL(int(kkk)).name for kkk in keys]
         except:
