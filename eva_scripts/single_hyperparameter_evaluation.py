@@ -187,10 +187,13 @@ for target_to_evaluate in targets_to_evaluate:
                 c1c = ts[c1]
                 c2c = ts[c2]
 
-                jaccards = Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
-                    delayed(_calculate_jaccard)(cc1, cc2) for cc1, cc2 in zip(c1c, c2c)
-                )
-                jaccards = np.sum(jaccards) / len(jaccards)
+                jaccards = 0
+                j_length = 0
+                for cc1, cc2 in zip(c1c, c2c):
+                    j_length += 1
+                    jaccards += _calculate_jaccard(cc1, cc2)
+
+                jaccards = jaccards / j_length
 
                 corrmat.append((c1, c2, jaccards))
                 corrmat.append((c2, c1, jaccards))
