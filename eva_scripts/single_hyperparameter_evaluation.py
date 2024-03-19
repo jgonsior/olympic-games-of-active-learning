@@ -189,9 +189,9 @@ for target_to_evaluate in targets_to_evaluate:
 
         keys = [*limited_ts.keys()]
 
-    save_correlation_plot(
-        data=corrmat,
-        title=f"{target_to_evaluate} - {standard_metric}",
-        keys=keys,
-        config=config,
-    )
+        save_correlation_plot(
+            data=corrmat,
+            title=f"{target_to_evaluate} - {standard_metric}",
+            keys=keys,
+            config=config,
+        )
