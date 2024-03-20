@@ -117,8 +117,9 @@ for standard_metric in standard_metrics:
         ],
     )
 
-    if standard_metric != "weighted_f1-score":
-        ts["metric_value"] = ts["metric_value"].parallel_apply(lambda x: x[0])
+    # if standard_metric != "weighted_f1-score":
+    #    print(ts)
+    #    ts["metric_value"] = ts["metric_value"].parallel_apply(lambda x: x[0])
 
     ts_orig = ts.copy()
     for target_to_evaluate in targets_to_evaluate:
