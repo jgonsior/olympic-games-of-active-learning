@@ -21,16 +21,6 @@ dataset_dependend_thresholds_df = pd.read_csv(
     config.DATASET_DEPENDENT_RANDOM_RAMP_PLATEAU_THRESHOLD_PATH
 )
 
-dataset_dependend_thresholds_df.dropna(inplace=True)
-print(type(dataset_dependend_thresholds_df["cutoff_value"].iloc[0]))
-
-dataset_dependend_thresholds_df["cutoff_value"] = dataset_dependend_thresholds_df[
-    "cutoff_value"
-].parallel_apply(lambda x: int(x))
-
-print(dataset_dependend_thresholds_df)
-print(type(dataset_dependend_thresholds_df["cutoff_value"].iloc[0]))
-
 selected_indices_ts = pd.read_parquet(
     config.CORRELATION_TS_PATH / f"selected_indices.parquet"
 )
@@ -81,13 +71,13 @@ for auc in auc_names:
             selected_indices_ts["metric_value"] = selected_indices_ts[
                 ["selected_indices", "cutoff_value"]
             ].parallel_apply(
-                lambda x: x["selected_indices"][: x["cutoff_value"]], axis=1
+                lambda x: x["selected_indices"][: int(x["cutoff_value"])], axis=1
             )
         case "plateau_auc_":
             selected_indices_ts["metric_value"] = selected_indices_ts[
                 ["selected_indices", "cutoff_value"]
             ].parallel_apply(
-                lambda x: x["selected_indices"][x["cutoff_value"] :], axis=1
+                lambda x: x["selected_indices"][int(x["cutoff_value"]) :], axis=1
             )
 
     cols_to_save = [
