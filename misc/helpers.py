@@ -186,12 +186,21 @@ def get_done_workload_joined_with_multiple_metrics(
 
 
 def create_fingerprint_joined_timeseries_csv_files(
-    metric_names: List[str], config: Config
+    metric_names: List[str],
+    config: Config,
 ):
     done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
 
     del done_workload_df["EXP_RANDOM_SEED"]
     del done_workload_df["EXP_NUM_QUERIES"]
+
+    def _join_al_cycles_to_auc_like(row):
+        result = ""
+        for r in row:
+            if pd.notna(r):
+                result = result + ", " + str(r).removeprefix("[").removesuffix("]")
+
+        return "[" + result.removeprefix(", ").replace(",", "") + "]"
 
     def _do_stuff(file_name: Path, config: Config, done_workload_df: pd.DataFrame):
         # print(file_name)
@@ -210,6 +219,15 @@ def create_fingerprint_joined_timeseries_csv_files(
             metric_df[metric_columns] = metric_df[metric_columns].apply(
                 pd.to_numeric, downcast="float"
             )
+        else:
+            metric_df.insert(
+                0,
+                "selected_indices",
+                metric_df[metric_columns].apply(_join_al_cycles_to_auc_like, axis=1),
+            )
+
+            for metric_column in metric_columns:
+                del metric_df[metric_column]
 
         metric_df = pd.merge(
             metric_df, done_workload_df, on=["EXP_UNIQUE_ID"], how="left"
@@ -219,22 +237,22 @@ def create_fingerprint_joined_timeseries_csv_files(
 
         contents = ""
         for _, row in metric_df.iterrows():
-            row = row.to_list()
 
             non_metric_values = [str(int(rrr)) for rrr in row[-7:]]
-            non_metric_values = [non_metric_values[0], ",".join(non_metric_values[1:])]
+            non_metric_values = [
+                non_metric_values[0],
+                ",".join(non_metric_values[1:]),
+            ]
+
             for ix, v in enumerate(row[:-7]):
                 if metric_name == "selected_indices" and str(v) == "nan":
                     continue
                 elif metric_name != "selected_indices" and np.isnan(v):
                     continue
 
-                if metric_name == "selected_indices":
-                    v = f'"{v}"'
                 contents += (
                     f"{non_metric_values[1]},{ix},{non_metric_values[0]}_{ix},{v}\n"
                 )
-
         append_and_create_manually(ts_file, contents)
 
     glob_list = []
@@ -259,8 +277,8 @@ def create_fingerprint_joined_timeseries_csv_files(
     glob_list = [ggg for ggg in glob_list if ggg.name not in existent_ts_files]
     print(len(glob_list))
 
-    # Parallel(n_jobs=1, verbose=10)(
-    Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
+    # Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
+    Parallel(n_jobs=1, verbose=10)(
         delayed(_do_stuff)(file_name, config, done_workload_df)
         for file_name in glob_list
     )

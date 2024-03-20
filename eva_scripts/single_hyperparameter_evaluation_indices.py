@@ -28,7 +28,6 @@ pandarallel.initialize(
     nb_workers=multiprocessing.cpu_count(), progress_bar=True, use_memory_fs=False
 )
 
-standard_metric = "weighted_f1-score"
 standard_metric = "selected_indices"
 
 """selected indices macht NUR Sinn bei learner model, strategy, start_point
@@ -41,8 +40,8 @@ aber bei start_point schon!
 targets_to_evaluate = [
     "EXP_STRATEGY",
     "EXP_LEARNER_MODEL",
-    "EXP_BATCH_SIZE",
-    "EXP_DATASET",
+    # "EXP_BATCH_SIZE",
+    # "EXP_DATASET",
     "EXP_TRAIN_TEST_BUCKET_SIZE",
     "EXP_START_POINT",
 ]
@@ -87,9 +86,9 @@ if not Path(config.CORRELATION_TS_PATH / f"{standard_metric}.parquet").exists():
     ts["metric_value"] = ts["metric_value"].apply(
         lambda xxx: (
             np.fromstring(
-                str(xxx).removeprefix("[").removesuffix("]"),
+                xxx.removeprefix("[").removesuffix("]"),
                 dtype=np.int32,
-                sep=",",
+                sep=" ",
             )
         )
     )
@@ -107,7 +106,7 @@ ts = pd.read_parquet(
         "EXP_BATCH_SIZE",
         "EXP_LEARNER_MODEL",
         "EXP_TRAIN_TEST_BUCKET_SIZE",
-        "ix",
+        # "ix",
         # "EXP_UNIQUE_ID_ix",
         "metric_value",
     ],
@@ -116,12 +115,6 @@ ts = pd.read_parquet(
 ts_orig = ts.copy()
 
 for target_to_evaluate in targets_to_evaluate:
-    if (
-        target_to_evaluate in ["EXP_BATCH_SIZE", "EXP_DATASET"]
-        and standard_metric == "selected_indices"
-    ):
-        continue
-
     correlation_data_path = Path(
         config.OUTPUT_PATH / f"plots/{target_to_evaluate}_{standard_metric}.parquet"
     )
@@ -167,61 +160,41 @@ for target_to_evaluate in targets_to_evaluate:
             f"Done calculating shared fingerprints - {len(shared_fingerprints)}"
         )
 
-        if standard_metric == "selected_indices":
-            ts = ts.pivot(
-                index="fingerprint", columns=target_to_evaluate, values="metric_value"
-            )
+        ts = ts.pivot(
+            index="fingerprint", columns=target_to_evaluate, values="metric_value"
+        )
 
-            def _calculate_jaccard(r):
-                js = []
-                for c1, c2 in combinations(r.to_list(), 2):
-                    if np.isnan(c1).any() or np.isnan(c2).any():
-                        js.append(0)
-                    else:
-                        a = set(c1)
-                        b = set(c2)
-                        js.append(len(a.intersection(b)) / len(a.union(b)))
-                return pd.Series(js)
+        def _calculate_jaccard(r):
+            js = []
+            for c1, c2 in combinations(r.to_list(), 2):
+                if np.isnan(c1).any() or np.isnan(c2).any():
+                    js.append(0)
+                else:
+                    a = set(c1)
+                    b = set(c2)
+                    js.append(len(a.intersection(b)) / len(a.union(b)))
+            return pd.Series(js)
 
-            corrmat = []
+        corrmat = []
 
-            jaccards = ts.parallel_apply(_calculate_jaccard, axis=1)
-            jaccards.columns = [
-                (ccc[0], ccc[1]) for ccc in combinations(ts.columns.to_list(), 2)
-            ]
+        jaccards = ts.parallel_apply(_calculate_jaccard, axis=1)
+        jaccards.columns = [
+            (ccc[0], ccc[1]) for ccc in combinations(ts.columns.to_list(), 2)
+        ]
 
-            sums = jaccards.sum() / len(jaccards)
+        sums = jaccards.sum() / len(jaccards)
 
-            for ix, jaccards in sums.items():
-                c1 = ix[0]
-                c2 = ix[1]
-                corrmat.append((c1, c2, jaccards))
-                corrmat.append((c2, c1, jaccards))
+        for ix, jaccards in sums.items():
+            c1 = ix[0]
+            c2 = ix[1]
+            corrmat.append((c1, c2, jaccards))
+            corrmat.append((c2, c1, jaccards))
 
-            corrmat = (
-                pd.DataFrame(data=corrmat).pivot(index=0, columns=1, values=2).fillna(1)
-            ).to_numpy()
+        corrmat = (
+            pd.DataFrame(data=corrmat).pivot(index=0, columns=1, values=2).fillna(1)
+        ).to_numpy()
 
-            keys = [ttt for ttt in ts.columns]
-        else:
-            limited_ts = {}
-            for target_value in ts[target_to_evaluate].unique():
-                limited_ts[target_value] = ts.loc[
-                    (ts["fingerprint"].isin(shared_fingerprints))
-                    & (ts[target_to_evaluate] == target_value)
-                ]["metric_value"].to_numpy()
-
-            log_and_time("Done indexing ts")
-
-            if standard_metric == "selected_indices":
-                limited_ts_np = [*limited_ts.values()]
-            else:
-                limited_ts_np = np.array([*limited_ts.values()])
-
-            corrmat = np.corrcoef(limited_ts_np)
-            log_and_time("Done correlation computations")
-
-            keys = [*limited_ts.keys()]
+        keys = [ttt for ttt in ts.columns]
 
         save_correlation_plot(
             data=corrmat,
