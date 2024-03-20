@@ -3,7 +3,6 @@ import sys
 from typing import Tuple
 
 
-
 sys.dont_write_bytecode = True
 
 from misc.config import Config
@@ -26,7 +25,6 @@ prepare_eva_pathes("DATASET_CATEGORIZATIONS", config)
 
 
 if config.EVA_MODE == "create":
-
     if config.SAMPLES_CATEGORIZER == ["_ALL"]:
         config.SAMPLES_CATEGORIZER = [sc.name for sc in SAMPLES_CATEGORIZER]
 

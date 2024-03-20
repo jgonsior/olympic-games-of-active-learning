@@ -1,4 +1,3 @@
-import ast
 import csv
 from datetime import timedelta
 import glob
@@ -237,7 +236,6 @@ def create_fingerprint_joined_timeseries_csv_files(
 
         contents = ""
         for _, row in metric_df.iterrows():
-
             non_metric_values = [str(int(rrr)) for rrr in row[-7:]]
             non_metric_values = [
                 non_metric_values[0],

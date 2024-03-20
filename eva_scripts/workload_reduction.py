@@ -1,22 +1,17 @@
 import csv
-import itertools
 from pathlib import Path
 import sys
-from joblib import Parallel, delayed
 from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
 import multiprocessing
-import seaborn as sns
 
 from misc.helpers import (
     create_workload,
     prepare_eva_pathes,
     run_from_workload,
-    get_df,
     save_correlation_plot,
 )
-from misc.plotting import set_matplotlib_size
 from scipy.stats import pearsonr
 
 sys.dont_write_bytecode = True

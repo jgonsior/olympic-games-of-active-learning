@@ -8,8 +8,6 @@ from joblib import Parallel, delayed
 sys.dont_write_bytecode = True
 
 from misc.config import Config
-from pandarallel import pandarallel
-import shutil
 import pandas as pd
 
 config = Config()

@@ -1,16 +1,10 @@
-from itertools import combinations, combinations_with_replacement
 import multiprocessing
-from re import T
 import subprocess
 import sys
-import timeit
-from annotated_types import DocInfo
-from joblib import Parallel, delayed
 import numpy as np
 import pandas as pd
 from pathlib import Path
 
-from sklearn.metrics import jaccard_score
 from misc.helpers import (
     create_fingerprint_joined_timeseries_csv_files,
     log_and_time,
@@ -48,7 +42,6 @@ targets_to_evaluate = [
 
 
 if not Path(config.CORRELATION_TS_PATH / f"{standard_metric}.parquet").exists():
-
     unsorted_f = config.CORRELATION_TS_PATH / f"{standard_metric}.unsorted.csv"
     unparqueted_f = config.CORRELATION_TS_PATH / f"{standard_metric}.to_parquet.csv"
 
