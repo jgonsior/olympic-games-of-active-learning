@@ -277,8 +277,8 @@ def create_fingerprint_joined_timeseries_csv_files(
     glob_list = [ggg for ggg in glob_list if ggg.name not in existent_ts_files]
     print(len(glob_list))
 
-    # Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
-    Parallel(n_jobs=1, verbose=10)(
+    # Parallel(n_jobs=1, verbose=10)(
+    Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
         delayed(_do_stuff)(file_name, config, done_workload_df)
         for file_name in glob_list
     )

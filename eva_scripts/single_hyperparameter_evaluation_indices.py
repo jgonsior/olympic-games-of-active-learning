@@ -1,10 +1,9 @@
 from itertools import combinations, combinations_with_replacement
 import multiprocessing
-from re import T
 import subprocess
 import sys
 import timeit
-from annotated_types import DocInfo
+from scipy.stats import kendalltau
 from joblib import Parallel, delayed
 import numpy as np
 import pandas as pd
@@ -175,9 +174,20 @@ for target_to_evaluate in targets_to_evaluate:
                     js.append(len(a.intersection(b)) / len(a.union(b)))
             return pd.Series(js)
 
+        def _calculate_rank_correlation(r):
+            js = []
+            for c1, c2 in combinations(r.to_list(), 2):
+                if np.isnan(c1).any() or np.isnan(c2).any():
+                    js.append(0)
+                else:
+                    ken = kendalltau(c1, c2)
+
+                    js.append(ken)
+            return pd.Series(js)
+
         corrmat = []
 
-        jaccards = ts.parallel_apply(_calculate_jaccard, axis=1)
+        jaccards = ts.parallel_apply(_calculate_rank_correlation, axis=1)
         jaccards.columns = [
             (ccc[0], ccc[1]) for ccc in combinations(ts.columns.to_list(), 2)
         ]
