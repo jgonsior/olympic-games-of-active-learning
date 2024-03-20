@@ -56,7 +56,6 @@ for standard_metric in standard_metrics:
     ]
 
     if not Path(config.CORRELATION_TS_PATH / f"{standard_metric}.parquet").exists():
-
         unsorted_f = config.CORRELATION_TS_PATH / f"{standard_metric}.unsorted.csv"
         unparqueted_f = config.CORRELATION_TS_PATH / f"{standard_metric}.to_parquet.csv"
 
@@ -199,7 +198,6 @@ for standard_metric in standard_metrics:
             ]
 
             for rank_measure in ["statistic", "pvalue", "jaccard"]:
-
                 if rank_measure == "statistic":
                     jaccards2 = jaccards.parallel_applymap(lambda x: x[0])
                 elif rank_measure == "pvalue":
