@@ -183,6 +183,7 @@ for target_to_evaluate in targets_to_evaluate:
         ]
 jaccard nur bis zum plateau punkt berechnen, ab da wird ja eh nur noch quatsch hinzugefügt -> neue metrik "selected indices plateau? oder selected_indices.parquet einlesen, und dann einmalig überall abcutten mittel parallel_apply?"
 die single_hyperparameter_metric analyse über nach tmit f1_score, f1_score_full_auc, f1_score_rampu_up, f1_score_last_5 etc. --> darüber schauen welche metriken Sinn ergeben, für welche kann ich ähnliche strategien erkennen?
+--> selected_indices für die ganzen auc werte erstellen!
         for rank_measure in ["statistic", "pvalue", "jaccard"]:
 
             if rank_measure == "statistic":
