@@ -163,52 +163,52 @@ for target_to_evaluate in targets_to_evaluate:
             index="fingerprint", columns=target_to_evaluate, values="metric_value"
         )
 
-        def _calculate_jaccard(r):
+        def _calculate_rank_correlations(r):
             js = []
             for c1, c2 in combinations(r.to_list(), 2):
                 if np.isnan(c1).any() or np.isnan(c2).any():
-                    js.append(0)
-                else:
-                    a = set(c1)
-                    b = set(c2)
-                    js.append(len(a.intersection(b)) / len(a.union(b)))
-            return pd.Series(js)
-
-        def _calculate_rank_correlation(r):
-            js = []
-            for c1, c2 in combinations(r.to_list(), 2):
-                if np.isnan(c1).any() or np.isnan(c2).any():
-                    js.append(0)
+                    js.append([0, 0, 0])
                 else:
                     ken = kendalltau(c1, c2)
+                    a = set(c1)
+                    b = set(c2)
+                    jaccard = len(a.intersection(b)) / len(a.union(b))
 
-                    js.append(ken)
+                    js.append([ken.statistic, ken.pvalue, jaccard])
             return pd.Series(js)
 
-        corrmat = []
-
-        jaccards = ts.parallel_apply(_calculate_rank_correlation, axis=1)
+        jaccards = ts.parallel_apply(_calculate_rank_correlations, axis=1)
         jaccards.columns = [
             (ccc[0], ccc[1]) for ccc in combinations(ts.columns.to_list(), 2)
         ]
 
-        sums = jaccards.sum() / len(jaccards)
+        for rank_measure in ["statistic", "pvalue", "jaccard"]:
 
-        for ix, jaccards in sums.items():
-            c1 = ix[0]
-            c2 = ix[1]
-            corrmat.append((c1, c2, jaccards))
-            corrmat.append((c2, c1, jaccards))
+            if rank_measure == "statistic":
+                jaccards2 = jaccards.parallel_applymap(lambda x: x[0])
+            elif rank_measure == "pvalue":
+                jaccards2 = jaccards.parallel_applymap(lambda x: x[1])
+            elif rank_measure == "jaccard":
+                jaccards2 = jaccards.parallel_applymap(lambda x: x[2])
 
-        corrmat = (
-            pd.DataFrame(data=corrmat).pivot(index=0, columns=1, values=2).fillna(1)
-        ).to_numpy()
+            sums = jaccards2.sum() / len(jaccards2)
 
-        keys = [ttt for ttt in ts.columns]
+            corrmat = []
+            for ix, jaccards3 in sums.items():
+                c1 = ix[0]
+                c2 = ix[1]
+                corrmat.append((c1, c2, jaccards3))
+                corrmat.append((c2, c1, jaccards3))
 
-        save_correlation_plot(
-            data=corrmat,
-            title=f"{target_to_evaluate} - {standard_metric}",
-            keys=keys,
-            config=config,
-        )
+            corrmat = (
+                pd.DataFrame(data=corrmat).pivot(index=0, columns=1, values=2).fillna(1)
+            ).to_numpy()
+
+            keys = [ttt for ttt in ts.columns]
+
+            save_correlation_plot(
+                data=corrmat,
+                title=f"{target_to_evaluate} - {standard_metric} - {rank_measure}",
+                keys=keys,
+                config=config,
+            )
