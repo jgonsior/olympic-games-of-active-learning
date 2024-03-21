@@ -213,4 +213,4 @@ elif config.EVA_MODE == "reduce":
             ori_done_df = pd.concat([last_last_done_df, ori_done_df])
     print(len(ori_done_df))
     config.EVA_SCRIPT_DONE_WORKLOAD_FILE.unlink()
-    done_df.to_csv(archived_done_path, index=False)
+    ori_done_df.to_csv(archived_done_path, index=False)
