@@ -80,13 +80,30 @@ if config.EVA_MODE == "create":
 
     print("done reading")
 
+    if config.WORKER_INDEX > 0:
+        last_done_df = pd.read_csv(
+            config.EVA_SCRIPT_WORKLOAD_DIR / f"03_done_{config.WORKER_INDEX-1}.csv"
+        )
+
     workload = []
     last_one = False
     for iii, jjj in zip(ix_df["0"][:-1], ix_df["0"][1:]):
         if last_one:
             last_one = False
             continue
-        workload.append([iii, jjj])
+
+        if config.WORKER_INDEX > 0:
+            if (
+                len(
+                    last_done_df.loc[
+                        (last_done_df["0"] == iii) & (last_done_df["1"] == jjj)
+                    ]
+                )
+                == 0
+            ):
+                workload.append([iii, jjj])
+        else:
+            workload.append([iii, jjj])
 
     create_workload(
         workload,
@@ -110,10 +127,12 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
         cols_without_fingerprint = list(ts.columns)
         cols_without_fingerprint.remove("fingerprint")
 
-        stat = pearsonr(
-            ts.iloc[0][cols_without_fingerprint].to_numpy(),
-            ts.iloc[1][cols_without_fingerprint].to_numpy(),
-        )[0]
+        stat = abs(
+            pearsonr(
+                ts.iloc[0][cols_without_fingerprint].to_numpy(),
+                ts.iloc[1][cols_without_fingerprint].to_numpy(),
+            )[0]
+        )
 
         return stat
 
@@ -168,7 +187,7 @@ elif config.EVA_MODE == "reduce":
     done_df = pd.read_csv(config.EVA_SCRIPT_DONE_WORKLOAD_FILE, header=0)
     done_df.dropna(inplace=True)
 
-    done_df = done_df.loc[done_df["result"] >= 0.9]
+    done_df = done_df.loc[done_df["result"] >= 0.75]
 
     ix_path = Path(config.EVA_SCRIPT_WORKLOAD_DIR / f"ts_ix_{config.WORKER_INDEX}.csv")
     new_ix_path = Path(
