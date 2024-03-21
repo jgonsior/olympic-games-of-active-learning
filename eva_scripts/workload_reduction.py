@@ -85,6 +85,13 @@ if config.EVA_MODE == "create":
             config.EVA_SCRIPT_WORKLOAD_DIR / f"03_done_{config.WORKER_INDEX-1}.csv"
         )
 
+    if config.WORKER_INDEX > 1:
+        last_last_done_df = pd.read_csv(
+            config.EVA_SCRIPT_WORKLOAD_DIR / f"03_done_{config.WORKER_INDEX-2}.csv"
+        )
+
+        last_done_df = pd.concat([last_done_df, last_last_done_df])
+
     workload = []
     last_one = False
     for iii, jjj in zip(ix_df["0"][:-1], ix_df["0"][1:]):
