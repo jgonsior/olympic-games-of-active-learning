@@ -197,6 +197,13 @@ elif config.EVA_MODE == "reduce":
     ts_ix = pd.read_csv(ix_path)
     ts_ix = ts_ix.loc[~ts_ix["0"].isin(done_df["1"])]
 
+    last_ts_ix = pd.read_csv(
+        config.EVA_SCRIPT_WORKLOAD_DIR / f"ts_ix_{config.WORKER_INDEX-1}.csv"
+    )
+
+    if len(last_ts_ix) == len(ts_ix):
+        ts_ix = ts_ix.sample(frac=1)
+
     ts_ix.to_csv(new_ix_path, index=False)
 
     archived_done_path = (
