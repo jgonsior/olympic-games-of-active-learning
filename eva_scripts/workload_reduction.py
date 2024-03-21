@@ -183,19 +183,26 @@ elif config.EVA_MODE == "reduce":
     ts_df = pd.read_csv(
         config.EVA_SCRIPT_WORKLOAD_DIR / "ts.csv", header=0, usecols=[0]
     )
-
-    ori_done_df = pd.read_csv(config.EVA_SCRIPT_DONE_WORKLOAD_FILE, header=0)
-    ori_done_df.dropna(inplace=True)
-
-    done_df = ori_done_df.loc[ori_done_df["result"] >= 0.75]
-
     ix_path = Path(config.EVA_SCRIPT_WORKLOAD_DIR / f"ts_ix_{config.WORKER_INDEX}.csv")
     new_ix_path = Path(
         config.EVA_SCRIPT_WORKLOAD_DIR / f"ts_ix_{config.WORKER_INDEX+1}.csv"
     )
 
-    ts_ix = pd.read_csv(ix_path)
-    ts_ix = ts_ix.loc[~ts_ix["0"].isin(done_df["1"])]
+    try:
+        ori_done_df = pd.read_csv(config.EVA_SCRIPT_DONE_WORKLOAD_FILE, header=0)
+        ori_done_df.dropna(inplace=True)
+        done_df = ori_done_df.loc[ori_done_df["result"] >= 0.75]
+
+        ts_ix = pd.read_csv(ix_path)
+        ts_ix = ts_ix.loc[~ts_ix["0"].isin(done_df["1"])]
+    except:
+        ori_done_df = pd.read_csv(
+            config.EVA_SCRIPT_WORKLOAD_DIR / f"03_done_{config.WORKER_INDEX-1}.csv",
+            header=0,
+        )
+        ori_done_df = ori_done_df[0:0]
+
+        ts_ix = pd.read_csv(ix_path)
 
     if config.WORKER_INDEX > 0:
         last_ts_ix = pd.read_csv(
@@ -220,5 +227,8 @@ elif config.EVA_MODE == "reduce":
 
             ori_done_df = pd.concat([last_last_done_df, ori_done_df])
     print(len(ori_done_df))
-    config.EVA_SCRIPT_DONE_WORKLOAD_FILE.unlink()
+    try:
+        config.EVA_SCRIPT_DONE_WORKLOAD_FILE.unlink()
+    except:
+        print("hm")
     ori_done_df.to_csv(archived_done_path, index=False)
