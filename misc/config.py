@@ -128,7 +128,9 @@ class Config:
     CORRELATION_TS_PATH: Path = "_TS"  # ignore
     SECOND_MERGE_PATH: str
 
-    EVA_MODE: Literal["create", "local", "slurm", "single", "combine"] = "create"
+    EVA_MODE: Literal[
+        "create", "local", "slurm", "single", "reduce", "analyze_plot"
+    ] = "create"
     EVA_SCRIPT_WORKLOAD_DIR: Path = "workloads"  # ignore
     EVA_SCRIPT_OPEN_WORKLOAD_FILE: Path = "01_open.csv"  # ignore
     EVA_SCRIPT_DONE_WORKLOAD_FILE: Path = "03_done.csv"  # ignore

@@ -27,9 +27,9 @@ standard_metric = "full_auc_macro_f1-score"
 #  standard_metric = "macro_f1-score"
 
 if config.EVA_MODE == "create":
+    ix_path = Path(config.EVA_SCRIPT_WORKLOAD_DIR / f"ts_ix_{config.WORKER_INDEX}.csv")
     if Path(config.EVA_SCRIPT_WORKLOAD_DIR / "ts.csv").exists():
-        with open(Path(config.EVA_SCRIPT_WORKLOAD_DIR / "ts.csv"), "r") as f:
-            length = sum(1 for _ in f)
+        ix_df = pd.read_csv(ix_path)
     else:
         ts = pd.read_parquet(
             config.CORRELATION_TS_PATH / f"{standard_metric}.parquet",
@@ -71,15 +71,22 @@ if config.EVA_MODE == "create":
         print(ts)
 
         ts.to_csv(config.EVA_SCRIPT_WORKLOAD_DIR / "ts.csv", index=None)
+        ix_df = pd.DataFrame(ts.index)
+        ix_df.rename(columns={0: "0"}, inplace=True)
 
-        length = len(ts)
+        ix_df.to_csv(ix_path, index=None)
+
         del ts
 
     print("done reading")
 
     workload = []
-    for iii in range(1, length - 2, 2):
-        workload.append([iii, iii + 1])
+    last_one = False
+    for iii, jjj in zip(ix_df["0"][:-1], ix_df["0"][1:]):
+        if last_one:
+            last_one = False
+            continue
+        workload.append([iii, jjj])
 
     create_workload(
         workload,
@@ -111,13 +118,12 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
         return stat
 
     run_from_workload(do_stuff=do_stuff, config=config)
-elif config.EVA_MODE == "combine":
+elif config.EVA_MODE == "analyze_plot":
     ts_df = pd.read_csv(
         config.EVA_SCRIPT_WORKLOAD_DIR / "ts.csv", header=0, usecols=[0]
     )
 
     done_df = pd.read_csv(config.EVA_SCRIPT_DONE_WORKLOAD_FILE, header=0)
-    done_df = pd.read_csv(config.EVA_SCRIPT_WORKLOAD_DIR / "03_done_01.csv", header=0)
     done_df.dropna(inplace=True)
 
     counts, bins = np.histogram(done_df["result"].to_numpy(), bins=200)
@@ -153,3 +159,28 @@ elif config.EVA_MODE == "combine":
         total=True,
         config=config,
     )
+
+elif config.EVA_MODE == "reduce":
+    ts_df = pd.read_csv(
+        config.EVA_SCRIPT_WORKLOAD_DIR / "ts.csv", header=0, usecols=[0]
+    )
+
+    done_df = pd.read_csv(config.EVA_SCRIPT_DONE_WORKLOAD_FILE, header=0)
+    done_df.dropna(inplace=True)
+
+    done_df = done_df.loc[done_df["result"] >= 0.9]
+
+    ix_path = Path(config.EVA_SCRIPT_WORKLOAD_DIR / f"ts_ix_{config.WORKER_INDEX}.csv")
+    new_ix_path = Path(
+        config.EVA_SCRIPT_WORKLOAD_DIR / f"ts_ix_{config.WORKER_INDEX+1}.csv"
+    )
+
+    ts_ix = pd.read_csv(ix_path)
+    ts_ix = ts_ix.loc[~ts_ix["0"].isin(done_df["1"])]
+
+    ts_ix.to_csv(new_ix_path, index=False)
+
+    archived_done_path = (
+        config.EVA_SCRIPT_WORKLOAD_DIR / f"03_done_{config.WORKER_INDEX}.csv"
+    )
+    config.EVA_SCRIPT_DONE_WORKLOAD_FILE.rename(archived_done_path)

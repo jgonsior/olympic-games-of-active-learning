@@ -35,7 +35,7 @@ standard_metrics = [
     f"{fff}{standard_metric}"
     for fff in [
         "first_5_",
-        "last_5_",
+        yo"last_5_",
         "ramp_up_auc_",
         "plateau_auc_",
     ]
