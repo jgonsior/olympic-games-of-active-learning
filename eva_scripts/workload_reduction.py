@@ -27,6 +27,7 @@ standard_metric = "full_auc_macro_f1-score"
 #  standard_metric = "macro_f1-score"
 
 if config.EVA_MODE == "create":
+    # --> create braucht ewig (6h für 12 bei riesiger done_workload datei -> auf parquet ausweichen!)
     ix_path = Path(config.EVA_SCRIPT_WORKLOAD_DIR / f"ts_ix_{config.WORKER_INDEX}.csv")
     if Path(config.EVA_SCRIPT_WORKLOAD_DIR / "ts.csv").exists():
         ix_df = pd.read_csv(ix_path)
@@ -81,8 +82,8 @@ if config.EVA_MODE == "create":
     print("done reading")
 
     if config.WORKER_INDEX > 0:
-        last_done_df = pd.read_csv(
-            config.EVA_SCRIPT_WORKLOAD_DIR / f"03_done_{config.WORKER_INDEX-1}.csv"
+        last_done_df = pd.read_parquet(
+            config.EVA_SCRIPT_WORKLOAD_DIR / f"03_done_{config.WORKER_INDEX-1}.parquet"
         )
 
     workload = []
@@ -197,7 +198,7 @@ elif config.EVA_MODE == "reduce":
         ts_ix = ts_ix.loc[~ts_ix["0"].isin(done_df["1"])]
     except:
         ori_done_df = pd.read_csv(
-            config.EVA_SCRIPT_WORKLOAD_DIR / f"03_done_{config.WORKER_INDEX-1}.csv",
+            config.EVA_SCRIPT_WORKLOAD_DIR / f"03_done_{config.WORKER_INDEX-1}.parquet",
             header=0,
         )
         ori_done_df = ori_done_df[0:0]
@@ -215,20 +216,21 @@ elif config.EVA_MODE == "reduce":
     ts_ix.to_csv(new_ix_path, index=False)
 
     archived_done_path = (
-        config.EVA_SCRIPT_WORKLOAD_DIR / f"03_done_{config.WORKER_INDEX}.csv"
+        config.EVA_SCRIPT_WORKLOAD_DIR / f"03_done_{config.WORKER_INDEX}.parquet"
     )
     print(len(ori_done_df))
     if config.WORKER_INDEX > 0:
 
         for i in range(0, config.WORKER_INDEX):
-            last_last_done_df = pd.read_csv(
-                config.EVA_SCRIPT_WORKLOAD_DIR / f"03_done_{i}.csv"
+            last_last_done_df = pd.read_parquet(
+                config.EVA_SCRIPT_WORKLOAD_DIR / f"03_done_{i}.parquet"
             )
 
             ori_done_df = pd.concat([last_last_done_df, ori_done_df])
+            ori_done_df.drop_duplicates(inplace=True)
     print(len(ori_done_df))
     try:
         config.EVA_SCRIPT_DONE_WORKLOAD_FILE.unlink()
     except:
         print("hm")
-    ori_done_df.to_csv(archived_done_path, index=False)
+    ori_done_df.to_parquet(archived_done_path)
