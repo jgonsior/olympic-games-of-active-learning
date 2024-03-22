@@ -197,9 +197,8 @@ elif config.EVA_MODE == "reduce":
         ts_ix = pd.read_csv(ix_path)
         ts_ix = ts_ix.loc[~ts_ix["0"].isin(done_df["1"])]
     except:
-        ori_done_df = pd.read_csv(
+        ori_done_df = pd.read_parquet(
             config.EVA_SCRIPT_WORKLOAD_DIR / f"03_done_{config.WORKER_INDEX-1}.parquet",
-            header=0,
         )
         ori_done_df = ori_done_df[0:0]
 
