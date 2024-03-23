@@ -160,7 +160,7 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
     del workload_df["ts_ix_x"]
     del workload_df["ts_ix_y"]
 
-    def do_stuff_pearson(row: pd.Series):
+    def do_stuff(row: pd.Series):
         a = np.array([rrr[1] for rrr in row.items() if rrr[0].endswith("_x")])
         b = np.array([rrr[1] for rrr in row.items() if rrr[0].endswith("_y")])
 
@@ -171,7 +171,7 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
 
         return pd.Series([stat.statistic, stat.pvalue])
 
-    def do_stuff(row: pd.Series):
+    def do_stuff_kendall(row: pd.Series):
         a = np.array([rrr[1] for rrr in row.items() if rrr[0].endswith("_x")])
         b = np.array([rrr[1] for rrr in row.items() if rrr[0].endswith("_y")])
 
