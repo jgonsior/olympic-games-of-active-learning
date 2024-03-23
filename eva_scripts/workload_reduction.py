@@ -12,7 +12,7 @@ from misc.helpers import (
     run_from_workload,
     save_correlation_plot,
 )
-from scipy.stats import pearsonr
+from scipy.stats import pearsonr, kendalltau
 
 sys.dont_write_bytecode = True
 
@@ -160,7 +160,7 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
     del workload_df["ts_ix_x"]
     del workload_df["ts_ix_y"]
 
-    def do_stuff(row: pd.Series):
+    def do_stuff_pearson(row: pd.Series):
         a = np.array([rrr[1] for rrr in row.items() if rrr[0].endswith("_x")])
         b = np.array([rrr[1] for rrr in row.items() if rrr[0].endswith("_y")])
 
@@ -168,6 +168,14 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
         a = a[bad]
         b = b[bad]
         stat = pearsonr(a, b)
+
+        return pd.Series([stat.statistic, stat.pvalue])
+
+    def do_stuff(row: pd.Series):
+        a = [rrr[1] for rrr in row.items() if rrr[0].endswith("_x")]
+        b = [rrr[1] for rrr in row.items() if rrr[0].endswith("_y")]
+
+        stat = kendalltau(a, b, nan_policy="omit")
 
         return pd.Series([stat.statistic, stat.pvalue])
 
