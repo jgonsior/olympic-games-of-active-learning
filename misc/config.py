@@ -134,6 +134,7 @@ class Config:
     EVA_SCRIPT_WORKLOAD_DIR: Path = "workloads"  # ignore
     EVA_SCRIPT_OPEN_WORKLOAD_FILE: Path = "01_open.csv"  # ignore
     EVA_SCRIPT_DONE_WORKLOAD_FILE: Path = "03_done.csv"  # ignore
+    EVA_WORKLOAD_REDUCTION_THRESHOLD: float = 0.95
     EVA_NAME: str
 
     def __init__(self, no_cli_args: Optional[Dict[str, Any]] = None) -> None:

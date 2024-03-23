@@ -406,7 +406,7 @@ def create_workload(
     )
 
 
-def run_from_workload(do_stuff: Callable, config: Config):
+def run_from_workload(do_stuff: Callable, config: Config, return_list=False):
     if config.EVA_MODE == "local":
         skip_rows = None
     else:
@@ -419,10 +419,15 @@ def run_from_workload(do_stuff: Callable, config: Config):
         skiprows=skip_rows,
     )
 
-    def do_stuff_wrapper(*args, do_stuff, config: Config):
+    def do_stuff_wrapper(*args, do_stuff, return_list, config: Config):
         #  try:
         res = {kkk: vvv for kkk, vvv in enumerate(args)}
         res["result"] = do_stuff(*args, config)
+
+        if return_list:
+            for ix, rrr in enumerate(res["result"]):
+                res[f"result_{ix}"] = rrr
+            del res["result"]
 
         print("WORKLOAD JOB DONE")
         append_and_create(config.EVA_SCRIPT_DONE_WORKLOAD_FILE, res)
@@ -431,12 +436,17 @@ def run_from_workload(do_stuff: Callable, config: Config):
 
     if config.EVA_MODE == "local":
         Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
-            delayed(do_stuff_wrapper)(*wl, do_stuff=do_stuff, config=config)
+            delayed(do_stuff_wrapper)(
+                *wl, do_stuff=do_stuff, config=config, return_list=return_list
+            )
             for wl in workload_df.to_numpy().tolist()
         )
     elif config.EVA_MODE == "single" or config.EVA_MODE == "slurm":
         do_stuff_wrapper(
-            *workload_df.loc[0].to_list(), do_stuff=do_stuff, config=config
+            *workload_df.loc[0].to_list(),
+            do_stuff=do_stuff,
+            config=config,
+            return_list=return_list,
         )
 
 
