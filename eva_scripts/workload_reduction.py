@@ -172,8 +172,12 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
         return pd.Series([stat.statistic, stat.pvalue])
 
     def do_stuff(row: pd.Series):
-        a = [rrr[1] for rrr in row.items() if rrr[0].endswith("_x")]
-        b = [rrr[1] for rrr in row.items() if rrr[0].endswith("_y")]
+        a = np.array([rrr[1] for rrr in row.items() if rrr[0].endswith("_x")])
+        b = np.array([rrr[1] for rrr in row.items() if rrr[0].endswith("_y")])
+
+        bad = ~np.logical_or(np.isnan(a), np.isnan(b))
+        a = a[bad]
+        b = b[bad]
 
         stat = kendalltau(a, b, nan_policy="omit")
 
