@@ -128,25 +128,30 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
         cols_without_fingerprint = list(ts.columns)
         cols_without_fingerprint.remove("fingerprint")
 
-        stat = abs(
-            pearsonr(
-                ts.iloc[0][cols_without_fingerprint].to_numpy(),
-                ts.iloc[1][cols_without_fingerprint].to_numpy(),
-            )[0]
+        stat = pearsonr(
+            ts.iloc[0][cols_without_fingerprint].to_numpy(),
+            ts.iloc[1][cols_without_fingerprint].to_numpy(),
         )
 
-        return stat
+        return stat.statistic, stat.pvalue
 
-    run_from_workload(do_stuff=do_stuff, config=config)
+    run_from_workload(do_stuff=do_stuff, config=config, return_list=True)
 elif config.EVA_MODE == "analyze_plot":
     ts_df = pd.read_csv(
         config.EVA_SCRIPT_WORKLOAD_DIR / "ts.csv", header=0, usecols=[0]
     )
 
-    done_df = pd.read_csv(config.EVA_SCRIPT_DONE_WORKLOAD_FILE, header=0)
+    done_df = pd.read_parquet(
+        config.EVA_SCRIPT_WORKLOAD_DIR / f"03_done_{config.WORKER_INDEX}.parquet",
+    )
+    # done_df = pd.read_csv(config.EVA_SCRIPT_DONE_WORKLOAD_FILE)
+    print(done_df)
+    done_df.sort_values(by=["0", "1"], inplace=True)
+    done_df.to_csv("test.csv", index=False)
+    exit(-1)
     done_df.dropna(inplace=True)
 
-    counts, bins = np.histogram(done_df["result"].to_numpy(), bins=200)
+    counts, bins = np.histogram(done_df["result_1"].to_numpy(), bins=200)
 
     for c, b in zip(counts, bins):
         print(f"{b}:\t{c}")
@@ -192,10 +197,16 @@ elif config.EVA_MODE == "reduce":
     try:
         ori_done_df = pd.read_csv(config.EVA_SCRIPT_DONE_WORKLOAD_FILE, header=0)
         ori_done_df.dropna(inplace=True)
-        done_df = ori_done_df.loc[ori_done_df["result"] >= 0.75]
+
+        # we keep all those where we don't have a correlation
+        done_df = ori_done_df.loc[
+            (ori_done_df["result_0"] > config.EVA_WORKLOAD_REDUCTION_THRESHOLD)
+            & ((ori_done_df["result_1"] < 0.05))
+        ]
 
         ts_ix = pd.read_csv(ix_path)
         ts_ix = ts_ix.loc[~ts_ix["0"].isin(done_df["1"])]
+
     except:
         ori_done_df = pd.read_parquet(
             config.EVA_SCRIPT_WORKLOAD_DIR / f"03_done_{config.WORKER_INDEX-1}.parquet",
