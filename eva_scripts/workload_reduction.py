@@ -106,6 +106,8 @@ if config.EVA_MODE == "create":
         else:
             workload.append([iii, jjj])
 
+    print("done removing old stuff")
+
     create_workload(
         workload,
         config=config,
