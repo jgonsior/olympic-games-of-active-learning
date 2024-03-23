@@ -80,12 +80,23 @@ if config.EVA_MODE == "create":
         del ts
 
     print("done reading")
+    ix_df["1"] = ix_df["0"][1:].reset_index()["0"]
+    ix_df = ix_df[:-1]
+    ix_df = ix_df.iloc[::2]
+    ix_df["1"] = ix_df["1"].astype(int)
 
     if config.WORKER_INDEX > 0:
         last_done_df = pd.read_parquet(
             config.EVA_SCRIPT_WORKLOAD_DIR / f"03_done_{config.WORKER_INDEX-1}.parquet"
         )
 
+        ix_df = (
+            pd.merge(ix_df, last_done_df[["0", "1"]], indicator=True, how="outer")
+            .query('_merge=="left_only"')
+            .drop("_merge", axis=1)
+        )
+    ix_df.to_csv(config.EVA_SCRIPT_OPEN_WORKLOAD_FILE, index=False)
+    exit(-1)
     workload = []
     last_one = False
     for iii, jjj in zip(ix_df["0"][:-1], ix_df["0"][1:]):
@@ -107,6 +118,8 @@ if config.EVA_MODE == "create":
             workload.append([iii, jjj])
 
     print("done removing old stuff")
+
+    exit(-1)
 
     create_workload(
         workload,
