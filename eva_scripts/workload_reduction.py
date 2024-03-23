@@ -24,7 +24,7 @@ prepare_eva_pathes("workload_reduction", config)
 
 
 standard_metric = "full_auc_macro_f1-score"
-standard_metric = "last_5_macro_f1-score"
+# standard_metric = "last_5_macro_f1-score"
 # standard_metric = "macro_f1-score"
 
 if config.EVA_MODE == "create":
@@ -278,7 +278,7 @@ elif config.EVA_MODE == "reduce":
         # we keep all those where we don't have a correlation
         done_df = ori_done_df.loc[
             (ori_done_df["result_0"] > config.EVA_WORKLOAD_REDUCTION_THRESHOLD)
-            & ((ori_done_df["result_1"] < 0.05))
+            # & ((ori_done_df["result_1"] < 0.05))
         ]
 
         ts_ix = pd.read_csv(ix_path)
