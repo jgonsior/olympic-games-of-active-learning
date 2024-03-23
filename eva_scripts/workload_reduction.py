@@ -24,10 +24,10 @@ prepare_eva_pathes("workload_reduction", config)
 
 
 standard_metric = "full_auc_macro_f1-score"
-#  standard_metric = "macro_f1-score"
+standard_metric = "first_5_macro_f1-score"
+# standard_metric = "macro_f1-score"
 
 if config.EVA_MODE == "create":
-    # --> create braucht ewig (6h für 12 bei riesiger done_workload datei -> auf parquet ausweichen!)
     ix_path = Path(config.EVA_SCRIPT_WORKLOAD_DIR / f"ts_ix_{config.WORKER_INDEX}.csv")
     if Path(config.EVA_SCRIPT_WORKLOAD_DIR / "ts.csv").exists():
         ix_df = pd.read_csv(ix_path)
