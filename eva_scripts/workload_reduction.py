@@ -128,12 +128,10 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
         cols_without_fingerprint = list(ts.columns)
         cols_without_fingerprint.remove("fingerprint")
 
-        stat = abs(
-            pearsonr(
-                ts.iloc[0][cols_without_fingerprint].to_numpy(),
-                ts.iloc[1][cols_without_fingerprint].to_numpy(),
-            )[0]
-        )
+        stat = pearsonr(
+            ts.iloc[0][cols_without_fingerprint].to_numpy(),
+            ts.iloc[1][cols_without_fingerprint].to_numpy(),
+        )[0]
 
         return stat
 
@@ -192,7 +190,7 @@ elif config.EVA_MODE == "reduce":
     try:
         ori_done_df = pd.read_csv(config.EVA_SCRIPT_DONE_WORKLOAD_FILE, header=0)
         ori_done_df.dropna(inplace=True)
-        done_df = ori_done_df.loc[ori_done_df["result"] >= 0.75]
+        done_df = ori_done_df.loc[ori_done_df["result"] <= 0.9]
 
         ts_ix = pd.read_csv(ix_path)
         ts_ix = ts_ix.loc[~ts_ix["0"].isin(done_df["1"])]
@@ -219,7 +217,6 @@ elif config.EVA_MODE == "reduce":
     )
     print(len(ori_done_df))
     if config.WORKER_INDEX > 0:
-
         for i in range(0, config.WORKER_INDEX):
             last_last_done_df = pd.read_parquet(
                 config.EVA_SCRIPT_WORKLOAD_DIR / f"03_done_{i}.parquet"
