@@ -24,7 +24,7 @@ prepare_eva_pathes("workload_reduction", config)
 
 
 standard_metric = "full_auc_macro_f1-score"
-standard_metric = "plateau_auc_macro_f1-score"
+standard_metric = "last_5_f1-score"
 # standard_metric = "macro_f1-score"
 
 if config.EVA_MODE == "create":
