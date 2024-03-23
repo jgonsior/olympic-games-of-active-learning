@@ -130,7 +130,7 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
     ts = pd.read_csv(
         config.EVA_SCRIPT_WORKLOAD_DIR / "ts.csv",
         header=0,
-    ).dropna(axis=1)
+    )
     del ts["fingerprint"]
 
     ts["ts_ix"] = ts.index
@@ -146,9 +146,12 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
     del workload_df["ts_ix_y"]
 
     def do_stuff(row: pd.Series):
-        a = [rrr[1] for rrr in row.items() if rrr[0].endswith("_x")]
-        b = [rrr[1] for rrr in row.items() if rrr[0].endswith("_y")]
+        a = np.array([rrr[1] for rrr in row.items() if rrr[0].endswith("_x")])
+        b = np.array([rrr[1] for rrr in row.items() if rrr[0].endswith("_y")])
 
+        bad = ~np.logical_or(np.isnan(a), np.isnan(b))
+        a = a[bad]
+        b = b[bad]
         stat = pearsonr(a, b)
 
         return pd.Series([stat.statistic, stat.pvalue])
