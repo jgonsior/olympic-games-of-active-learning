@@ -114,6 +114,53 @@ if config.EVA_MODE == "create":
         SLURM_NR_THREADS=128,
     )
 elif config.EVA_MODE in ["local", "slurm", "single"]:
+    from pandarallel import pandarallel
+
+    pandarallel.initialize(
+        nb_workers=multiprocessing.cpu_count(), progress_bar=True, use_memory_fs=False
+    )
+    workload_df = pd.read_csv(
+        config.EVA_SCRIPT_OPEN_WORKLOAD_FILE,
+        header=0,
+        index_col=None,
+    )
+    workload_df.rename(columns={"0": "ix", "1": "ix2"}, inplace=True)
+
+    # enhance by fingerprints
+    ts = pd.read_csv(
+        config.EVA_SCRIPT_WORKLOAD_DIR / "ts.csv",
+        header=0,
+    ).dropna(axis=1)
+    del ts["fingerprint"]
+
+    ts["ts_ix"] = ts.index
+
+    workload_df = pd.merge(
+        left=workload_df, right=ts, left_on="ix", right_on="ts_ix", how="left"
+    )
+    workload_df = pd.merge(
+        left=workload_df, right=ts, left_on="ix2", right_on="ts_ix", how="left"
+    )
+
+    del workload_df["ts_ix_x"]
+    del workload_df["ts_ix_y"]
+
+    def do_stuff(row: pd.Series):
+        a = [rrr[1] for rrr in row.items() if rrr[0].endswith("_x")]
+        b = [rrr[1] for rrr in row.items() if rrr[0].endswith("_y")]
+
+        stat = pearsonr(a, b)
+
+        return pd.Series([stat.statistic, stat.pvalue])
+
+    # print(workload_df)
+    result = pd.DataFrame(workload_df.parallel_apply(do_stuff, axis=1))
+    result.rename(columns={0: "result_0", 1: "result_1"}, inplace=True)
+
+    result["0"] = workload_df["ix"]
+    result["1"] = workload_df["ix2"]
+    result.to_csv(config.EVA_SCRIPT_DONE_WORKLOAD_FILE, index=False)
+    exit(-1)
 
     def do_stuff(fingerprint1, fingerprint2, config):
         fingerprint1 = int(fingerprint1) + 1
