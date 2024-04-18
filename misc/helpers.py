@@ -307,7 +307,6 @@ def save_correlation_plot(
     data_df = pd.DataFrame(data=data, columns=keys, index=keys)
     data_df = data_df.sort_index(axis=0)
     data_df = data_df.sort_index(axis=1)
-
     data_df.to_parquet(result_folder / f"{title}.parquet")
 
     if total:

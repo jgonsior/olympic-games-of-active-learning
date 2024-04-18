@@ -20,69 +20,38 @@ pandarallel.initialize(nb_workers=multiprocessing.cpu_count(), progress_bar=True
 config = Config()
 
 
-#  for modus in ["auc", "extended", "standard"]:
-# for modus in ["standard", "extended", "auc", "auc2"]:
-# for modus in ["auc2"]:
-for modus in ["standard"]:
-    standard_metrics = [
-        "accuracy",
-        "weighted_recall",
-        "macro_f1-score",
-        "macro_precision",
-        "macro_recall",
-        "weighted_f1-score",
-        "weighted_precision",
+for standard_metric in [
+    "accuracy",
+    "weighted_recall",
+    "macro_f1-score",
+    "macro_precision",
+    "macro_recall",
+    "weighted_f1-score",
+    "weighted_precision",
+]:
+
+    auc_prefixe = [
+        "final_value_",
+        "first_5_",
+        "full_auc_",
+        "last_5_",
+        "learning_stability_5_",
+        "learning_stability_10_",
+        "ramp_up_auc_",
+        "plateau_auc_",
     ]
 
-    if modus == "extended" or modus == "auc" or modus == "auc2":
-        #  standard_metrics = ["macro_f1-score"]
-
-        if modus == "auc" or modus == "extended":
-            standard_metrics = ["weighted_f1-score", "macro_f1-score", "accuracy"]
-        elif modus == "auc2":
-            standard_metrics = ["weighted_f1-score"]
-
-        """variant_prefixe = [
-            "biggest_drop_per_",
-            "nr_decreasing_al_cycles_per_",
-        ]
-        print(standard_metrics)
-        original_standard_metrics = standard_metrics.copy()
-        for vp in variant_prefixe:
-            standard_metrics = [
-                *standard_metrics,
-                *[vp + sss for sss in original_standard_metrics],
-            ]
-        """
-        # print(standard_metrics)
-
-        if modus == "auc" or modus == "auc2":
-            auc_prefixe = [
-                "final_value_",
-                "first_5_",
-                "full_auc_",
-                "last_5_",
-                "learning_stability_5_",
-                "learning_stability_10_",
-                "ramp_up_auc_",
-                "plateau_auc_",
-            ]
-
-            original_standard_metrics = standard_metrics.copy()
-            standard_metrics = []
-            for vp in auc_prefixe:
-                standard_metrics = [
-                    *standard_metrics,
-                    *[vp + sss for sss in original_standard_metrics],
-                ]
-
-        """standard_metrics = [
+    original_standard_metrics = [standard_metric]
+    standard_metrics = []
+    for vp in auc_prefixe:
+        standard_metrics = [
             *standard_metrics,
-            *[sss + "_time_lag" for sss in standard_metrics],
-        ]"""
+            *[vp + sss for sss in original_standard_metrics],
+        ]
+
     print(standard_metrics)
 
-    log_and_time(modus)
+    log_and_time(standard_metric)
     create_fingerprint_joined_timeseries_csv_files(standard_metrics, config)
     log_and_time("Sorting files")
 
@@ -152,5 +121,9 @@ for modus in ["standard"]:
 
     log_and_time("corrmatted")
     save_correlation_plot(
-        data=corrmat, title=modus, keys=standard_metrics, config=config, total=True
+        data=corrmat,
+        title=f"AUC: {standard_metric}",
+        keys=standard_metrics,
+        config=config,
+        total=True,
     )
