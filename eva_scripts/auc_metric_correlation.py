@@ -49,7 +49,7 @@ for standard_metric in [
             *[vp + sss for sss in original_standard_metrics],
         ]
 
-    print(standard_metrics)
+    standard_metrics.append(standard_metric)
 
     log_and_time(standard_metric)
     create_fingerprint_joined_timeseries_csv_files(standard_metrics, config)
@@ -90,6 +90,8 @@ for standard_metric in [
 
     log_and_time("computing intersection")
     shared_unique_ids = None
+
+    standard_metrics.remove(standard_metric)
 
     for sm in standard_metrics:
         ts = pd.read_parquet(
