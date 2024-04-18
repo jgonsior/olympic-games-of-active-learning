@@ -122,7 +122,7 @@ for standard_metric in [
     log_and_time("corrmatted")
     save_correlation_plot(
         data=corrmat,
-        title=f"AUC: {standard_metric}",
+        title=f"AUC/{standard_metric}",
         keys=standard_metrics,
         config=config,
         total=True,

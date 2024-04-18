@@ -152,5 +152,9 @@ for modus in ["standard"]:
 
     log_and_time("corrmatted")
     save_correlation_plot(
-        data=corrmat, title=modus, keys=standard_metrics, config=config, total=True
+        data=corrmat,
+        title="basic_metrics/Standard Metrics",
+        keys=standard_metrics,
+        config=config,
+        total=True,
     )
