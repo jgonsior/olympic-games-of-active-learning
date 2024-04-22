@@ -147,9 +147,13 @@ for standard_metric in standard_metrics:
                 del ts[fg_col]
 
             # ts = ts.sort_values(by="fingerprint")
-            print(ts)
-            # log_and_time("Done sorting")
 
+            if type(ts.iloc[0]["metric_value"]) == np.ndarray:
+                ts["metric_value"] = ts["metric_value"].parallel_apply(
+                    lambda aaa: aaa[0]
+                )
+
+            # log_and_time("Done sorting")
             shared_fingerprints = None
             for target_value in ts[target_to_evaluate].unique():
                 tmp_fingerprints = set(
