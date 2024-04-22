@@ -285,17 +285,17 @@ def create_fingerprint_joined_timeseries_csv_files(
 def save_correlation_plot(
     data: np.ndarray, title: str, keys: List[str], config: Config, total=False
 ):
-    if title.startswith("EXP_STRATEGY"):
+    if "EXP_STRATEGY" in title:
         try:
             keys = [AL_STRATEGY(int(kkk)).name for kkk in keys]
         except:
             keys = keys
-    elif title.startswith("EXP_DATASET"):
+    elif "EXP_DATASET" in title:
         try:
             keys = [DATASET(int(kkk)).name for kkk in keys]
         except:
             keys = keys
-    elif title.startswith("EXP_LEARNER_MODEL"):
+    elif "EXP_LEARNER_MODEL" in title:
         try:
             keys = [LEARNER_MODEL(int(kkk)).name for kkk in keys]
         except:
@@ -307,7 +307,7 @@ def save_correlation_plot(
     data_df = pd.DataFrame(data=data, columns=keys, index=keys)
     data_df = data_df.sort_index(axis=0)
     data_df = data_df.sort_index(axis=1)
-    Path(result_folder / f"{title}").parent.mkdir(exist_ok=True)
+    Path(result_folder / f"{title}").parent.mkdir(exist_ok=True, parents=True)
     data_df.to_parquet(result_folder / f"{title}.parquet")
 
     if total:

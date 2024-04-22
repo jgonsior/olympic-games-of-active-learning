@@ -35,14 +35,14 @@ standard_metrics = [
     f"{fff}{standard_metric}"
     for fff in [
         "first_5_",
-        yo"last_5_",
+        "last_5_",
         "ramp_up_auc_",
         "plateau_auc_",
     ]
 ]
 
 standard_metrics.append(standard_metric)
-# standard_metrics = [standard_metric]
+standard_metrics = [standard_metric]
 
 for standard_metric in standard_metrics:
     log_and_time(f"Calculating for {standard_metric}")
@@ -51,7 +51,7 @@ for standard_metric in standard_metrics:
         "EXP_LEARNER_MODEL",
         # "EXP_BATCH_SIZE",
         # "EXP_DATASET",
-        "EXP_TRAIN_TEST_BUCKET_SIZE",
+        # "EXP_TRAIN_TEST_BUCKET_SIZE",
         "EXP_START_POINT",
     ]
 
@@ -71,7 +71,7 @@ for standard_metric in standard_metrics:
             print(command)
             subprocess.run(command, shell=True, text=True)
             unsorted_f.unlink()
-
+        print(unparqueted_f)
         log_and_time("sorted, now parqueting")
         ts = pd.read_csv(
             unparqueted_f,
@@ -90,6 +90,7 @@ for standard_metric in standard_metrics:
                 "metric_value",
             ],
         )
+        print(ts["metric_value"])
         ts["metric_value"] = ts["metric_value"].apply(
             lambda xxx: (
                 np.fromstring(
@@ -123,7 +124,8 @@ for standard_metric in standard_metrics:
 
     for target_to_evaluate in targets_to_evaluate:
         correlation_data_path = Path(
-            config.OUTPUT_PATH / f"plots/{target_to_evaluate}_{standard_metric}.parquet"
+            config.OUTPUT_PATH
+            / f"plots/single_hyperparameter/{target_to_evaluate}/{standard_metric}_statistic.parquet"
         )
         log_and_time(target_to_evaluate)
         if correlation_data_path.exists():
@@ -174,6 +176,7 @@ for standard_metric in standard_metrics:
             ts = ts.pivot(
                 index="fingerprint", columns=target_to_evaluate, values="metric_value"
             )
+            print(ts)
 
             def _calculate_rank_correlations(r):
                 js = []
@@ -224,7 +227,7 @@ for standard_metric in standard_metrics:
 
                 save_correlation_plot(
                     data=corrmat,
-                    title=f"{target_to_evaluate} - {standard_metric} - {rank_measure}",
+                    title=f"single_hyperparameter/{target_to_evaluate}/{standard_metric}_{rank_measure}",
                     keys=keys,
                     config=config,
                 )

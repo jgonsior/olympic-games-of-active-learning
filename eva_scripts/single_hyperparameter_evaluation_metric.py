@@ -117,14 +117,11 @@ for standard_metric in standard_metrics:
         ],
     )
 
-    # if standard_metric != "weighted_f1-score":
-    #    print(ts)
-    #    ts["metric_value"] = ts["metric_value"].parallel_apply(lambda x: x[0])
-
     ts_orig = ts.copy()
     for target_to_evaluate in targets_to_evaluate:
         correlation_data_path = Path(
-            config.OUTPUT_PATH / f"plots/{target_to_evaluate}_{standard_metric}.parquet"
+            config.OUTPUT_PATH
+            / f"plots/single_hyperparameter/{target_to_evaluate}/{standard_metric}.parquet"
         )
         log_and_time(target_to_evaluate)
         if correlation_data_path.exists():
@@ -190,7 +187,7 @@ for standard_metric in standard_metrics:
 
             save_correlation_plot(
                 data=corrmat,
-                title=f"{target_to_evaluate} - {standard_metric}",
+                title=f"single_hyperparameter/{target_to_evaluate}/{standard_metric}",
                 keys=keys,
                 config=config,
             )
