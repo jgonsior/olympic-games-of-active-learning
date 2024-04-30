@@ -3,6 +3,7 @@ import multiprocessing
 import subprocess
 import sys
 import timeit
+from typing import Literal
 from git import Object
 from scipy.stats import kendalltau
 from joblib import Parallel, delayed
@@ -30,21 +31,13 @@ pandarallel.initialize(
 
 standard_metric = "selected_indices"
 
-
-standard_metrics = [
-    f"{fff}{standard_metric}"
-    for fff in [
-        "first_5_",
-        "last_5_",
-        "ramp_up_auc_",
-        "plateau_auc_",
-    ]
-]
-
-standard_metrics.append(standard_metric)
-standard_metrics = [standard_metric]
-
-for standard_metric in standard_metrics:
+for auc_prefix in [
+    "full_auc_",
+    "first_5_",
+    "last_5_",
+    "ramp_up_auc_",
+    "plateau_auc_",
+]:
     log_and_time(f"Calculating for {standard_metric}")
     targets_to_evaluate = [
         "EXP_STRATEGY",
@@ -115,7 +108,7 @@ for standard_metric in standard_metrics:
             "EXP_LEARNER_MODEL",
             "EXP_TRAIN_TEST_BUCKET_SIZE",
             # "ix",
-            # "EXP_UNIQUE_ID_ix",
+            "EXP_UNIQUE_ID_ix",
             "metric_value",
         ],
     )
@@ -125,7 +118,7 @@ for standard_metric in standard_metrics:
     for target_to_evaluate in targets_to_evaluate:
         correlation_data_path = Path(
             config.OUTPUT_PATH
-            / f"plots/single_hyperparameter/{target_to_evaluate}/{standard_metric}_statistic.parquet"
+            / f"plots/single_hyperparameter/{target_to_evaluate}/{auc_prefix}_{standard_metric}_statistic.parquet"
         )
         log_and_time(target_to_evaluate)
         if correlation_data_path.exists():
@@ -137,8 +130,14 @@ for standard_metric in standard_metrics:
         else:
             ts = ts_orig.copy()
 
+            ts["EXP_UNIQUE_ID"] = ts["EXP_UNIQUE_ID_ix"].parallel_apply(
+                lambda e_ix: int(e_ix.split("_")[0])
+            )
+            del ts["EXP_UNIQUE_ID_ix"]
+
             fingerprint_cols = list(ts.columns)
             fingerprint_cols.remove("metric_value")
+            fingerprint_cols.remove("EXP_UNIQUE_ID")
             fingerprint_cols.remove(target_to_evaluate)
             print(ts.dtypes)
             ts["fingerprint"] = ts[fingerprint_cols].parallel_apply(
@@ -173,10 +172,57 @@ for standard_metric in standard_metrics:
                 f"Done calculating shared fingerprints - {len(shared_fingerprints)}"
             )
 
+            # TODO: auc_prefix entfernen
+            dataset_dependent_ramp_plateau_threshold_df = pd.read_csv(
+                config.DATASET_DEPENDENT_RANDOM_RAMP_PLATEAU_THRESHOLD_PATH
+            )
+            ts = ts.merge(
+                dataset_dependent_ramp_plateau_threshold_df,
+                left_on="EXP_UNIQUE_ID",
+                right_on="EXP_UNIQUE_ID",
+            )
+            del ts["EXP_UNIQUE_ID"]
+
+            def _apply_ramp_up_or_plateau(
+                ramp_up_or_plateau: Literal["ramp_up", "plateau"], row: pd.Series
+            ) -> pd.Series:
+
+                if ramp_up_or_plateau == "ramp_up":
+                    row["metric_value"] = metric_value[0 : row["cutoff_value"]]
+                elif ramp_up_or_plateau == "plateau":
+                    row["metric_value"] = metric_value[row["cutoff_value"] :]
+                return row
+
+            def _apply_ramp_up(row: pd.Series) -> pd.Series:
+                return _apply_ramp_up_or_plateau(ramp_up_or_plateau="ramp_up", row=row)
+
+            def _apply_plateau(row: pd.Series) -> pd.Series:
+                return _apply_ramp_up_or_plateau(ramp_up_or_plateau="plateau", row=row)
+
+            match auc_prefix:
+                case "full_auc_":
+                    ts["metric_value"] = ts["metric_value"].parallel_apply(
+                        lambda lll: lll
+                    )
+                case "first_5_":
+                    ts["metric_value"] = ts["metric_value"].parallel_apply(
+                        lambda lll: lll[:5]
+                    )
+                case "last_5_":
+                    ts["metric_value"] = ts["metric_value"].parallel_apply(
+                        lambda lll: lll[-5:]
+                    )
+                case "ramp_up_auc_":
+                    ts = ts.parallel_apply(_apply_ramp_up)
+                case "plateau_auc_":
+                    ts = ts.parallel_apply(_apply_plateau)
+                case _:
+                    ts = None
+            del ts["cutoff_value"]
+
             ts = ts.pivot(
                 index="fingerprint", columns=target_to_evaluate, values="metric_value"
             )
-            print(ts)
 
             def _calculate_rank_correlations(r):
                 js = []
@@ -227,7 +273,7 @@ for standard_metric in standard_metrics:
 
                 save_correlation_plot(
                     data=corrmat,
-                    title=f"single_hyperparameter/{target_to_evaluate}/{standard_metric}_{rank_measure}",
+                    title=f"single_hyperparameter/{target_to_evaluate}/{auc_prefix}_{standard_metric}_{rank_measure}",
                     keys=keys,
                     config=config,
                 )
