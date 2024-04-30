@@ -150,7 +150,7 @@ for auc_prefix in [
                 del ts[fg_col]
 
             # ts = ts.sort_values(by="fingerprint")
-            print(ts)
+            # print(ts)
             # log_and_time("Done sorting")
 
             shared_fingerprints = None
@@ -183,14 +183,15 @@ for auc_prefix in [
             )
             del ts["EXP_UNIQUE_ID"]
 
+            print(ts)
+
             def _apply_ramp_up_or_plateau(
                 ramp_up_or_plateau: Literal["ramp_up", "plateau"], row: pd.Series
             ) -> pd.Series:
-
                 if ramp_up_or_plateau == "ramp_up":
-                    row["metric_value"] = metric_value[0 : row["cutoff_value"]]
+                    row["metric_value"] = row["metric_value"][0 : row["cutoff_value"]]
                 elif ramp_up_or_plateau == "plateau":
-                    row["metric_value"] = metric_value[row["cutoff_value"] :]
+                    row["metric_value"] = row["metric_value"][row["cutoff_value"] :]
                 return row
 
             def _apply_ramp_up(row: pd.Series) -> pd.Series:
@@ -213,9 +214,9 @@ for auc_prefix in [
                         lambda lll: lll[-5:]
                     )
                 case "ramp_up_auc_":
-                    ts = ts.parallel_apply(_apply_ramp_up)
+                    ts = ts.parallel_apply(_apply_ramp_up, axis=1)
                 case "plateau_auc_":
-                    ts = ts.parallel_apply(_apply_plateau)
+                    ts = ts.parallel_apply(_apply_plateau, axis=1)
                 case _:
                     ts = None
             del ts["cutoff_value"]
