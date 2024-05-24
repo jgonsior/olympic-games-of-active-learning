@@ -176,8 +176,8 @@ for standard_metric in standard_metrics:
             limited_ts = {}
             for target_value in ts[target_to_evaluate].unique():
                 limited_ts[target_value] = ts.loc[
-                    (ts["fingerprint"].isin(shared_fingerprints))
-                    & (ts[target_to_evaluate] == target_value)
+                    (ts[target_to_evaluate] == target_value)
+                    & (ts["fingerprint"].isin(shared_fingerprints))
                 ]["metric_value"].to_numpy()
 
             log_and_time("Done indexing ts")

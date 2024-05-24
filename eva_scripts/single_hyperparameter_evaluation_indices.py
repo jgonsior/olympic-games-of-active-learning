@@ -37,15 +37,16 @@ for auc_prefix in [
     "last_5_",
     "ramp_up_auc_",
     "plateau_auc_",
+    "final_value_",
 ]:
     log_and_time(f"Calculating for {standard_metric}")
     targets_to_evaluate = [
-        "EXP_STRATEGY",
-        "EXP_LEARNER_MODEL",
+        "EXP_STRATEGY",  # gibt es strategie ähnlichkeiten?
+        "EXP_LEARNER_MODEL",  # gibt es ähnlichkeiten zwischen den learner modellen?
         # "EXP_BATCH_SIZE",
         # "EXP_DATASET",
         # "EXP_TRAIN_TEST_BUCKET_SIZE",
-        "EXP_START_POINT",
+        "EXP_START_POINT",  # wurden vom selben startpunkt ausgehend diesselben datenpunkte ausgewählt?
     ]
 
     if not Path(config.CORRELATION_TS_PATH / f"{standard_metric}.parquet").exists():
@@ -139,7 +140,7 @@ for auc_prefix in [
             fingerprint_cols.remove("metric_value")
             fingerprint_cols.remove("EXP_UNIQUE_ID")
             fingerprint_cols.remove(target_to_evaluate)
-            print(ts.dtypes)
+
             ts["fingerprint"] = ts[fingerprint_cols].parallel_apply(
                 lambda row: "_".join([str(rrr) for rrr in row]), axis=1
             )
@@ -183,15 +184,28 @@ for auc_prefix in [
             )
             del ts["EXP_UNIQUE_ID"]
 
-            print(ts)
-
             def _apply_ramp_up_or_plateau(
                 ramp_up_or_plateau: Literal["ramp_up", "plateau"], row: pd.Series
             ) -> pd.Series:
                 if ramp_up_or_plateau == "ramp_up":
-                    row["metric_value"] = row["metric_value"][0 : row["cutoff_value"]]
+
+                    range_start = row["cutoff_value"]
+                    if np.isnan(range_start):
+                        range_start = len(row) / 2
+
+                    range_start = int(range_start)
+                    row["metric_value"] = row["metric_value"][0:range_start].tolist()
                 elif ramp_up_or_plateau == "plateau":
-                    row["metric_value"] = row["metric_value"][row["cutoff_value"] :]
+                    range_start = row["cutoff_value"]
+                    if np.isnan(range_start):
+                        range_start = len(row) / 2
+
+                    range_start = int(range_start)
+                    row["metric_value"] = row["metric_value"][range_start:]
+                else:
+                    print("ramp_up or plateau speeling error")
+                    exit(-1)
+
                 return row
 
             def _apply_ramp_up(row: pd.Series) -> pd.Series:
@@ -213,8 +227,12 @@ for auc_prefix in [
                     ts["metric_value"] = ts["metric_value"].parallel_apply(
                         lambda lll: lll[-5:]
                     )
+                case "final_value_":
+                    ts["metric_value"] = ts["metric_value"].parallel_apply(
+                        lambda lll: lll[-1:]
+                    )
                 case "ramp_up_auc_":
-                    ts = ts.parallel_apply(_apply_ramp_up, axis=1)
+                    ts = ts.apply(_apply_ramp_up, axis=1)
                 case "plateau_auc_":
                     ts = ts.parallel_apply(_apply_plateau, axis=1)
                 case _:
