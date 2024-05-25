@@ -1,15 +1,20 @@
 import multiprocessing
 import subprocess
 import sys
+from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
 from pathlib import Path
 
+from datasets import DATASET
 from misc.helpers import (
     create_fingerprint_joined_timeseries_csv_files,
     log_and_time,
     save_correlation_plot,
 )
+from misc.plotting import set_matplotlib_size, set_seaborn_style
+from resources.data_types import AL_STRATEGY
+import seaborn as sns
 
 sys.dont_write_bytecode = True
 
@@ -111,7 +116,38 @@ for auc_prefix in [
         .reset_index()
     )
     ts = ts.pivot(index="EXP_DATASET", columns="EXP_STRATEGY", values="metric_value")
-    ts = ts.parallel_apply(np.mean)
+    ts = ts.parallel_applymap(np.mean)
+    # ts = ts.parallel_applymap(np.median)
+
+    ts.columns = [AL_STRATEGY(int(kkk)).name for kkk in ts.columns]
+
+    destination_path = Path(config.OUTPUT_PATH / f"plots/final_leaderboard")
+    destination_path.mkdir(exist_ok=True, parents=True)
+
+    ts = ts.set_index([[DATASET(int(kkk)).name for kkk in ts.index]])
+
+    ts = ts.T
+    ts.loc[:, "Total"] = ts.mean(axis=1)
+    ts.sort_values(by=["Total"], inplace=True)
+    ts = ts.T
     print(ts)
 
+    print(destination_path / f"{standard_metric}.jpg")
+    set_seaborn_style(font_size=8)
+    # plt.figure(figsize=set_matplotlib_size(fraction=10))
+
+    # calculate fraction based on length of keys
+    plt.figure(figsize=set_matplotlib_size(fraction=len(ts.columns) / 12))
+    ax = sns.heatmap(ts, annot=True, fmt=".2f")
+
+    ax.set_title(f"Final leaderboard: {standard_metric}")
+
+    ts.to_parquet(destination_path / f"{standard_metric}.parquet")
+
+    plt.savefig(
+        destination_path / f"{standard_metric}.jpg",
+        dpi=300,
+        bbox_inches="tight",
+        pad_inches=0,
+    )
     # goal: dataframe where each column is an EXP_STRATEGY and each row is a DATASET --> rest is aggregated over all params
