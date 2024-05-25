@@ -20,6 +20,11 @@ from misc.helpers import get_df, get_glob_list
 from misc.plotting import set_matplotlib_size, set_seaborn_style
 
 
+print(
+    "Deprecated, included in single_hyperparemetrs_evaluation_indices --> EXP_STRATEGY/full_auc_selected_indices_statistic --> ich schaue mir alle selected indicse an und dann wie die korrelieren etc."
+)
+exit(-1)
+
 sys.dont_write_bytecode = True
 
 from misc.config import Config

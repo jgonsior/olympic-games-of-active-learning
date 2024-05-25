@@ -3,6 +3,7 @@ import multiprocessing
 import subprocess
 import sys
 import timeit
+from turtle import st
 from typing import Literal
 from git import Object
 from scipy.stats import kendalltau
@@ -173,7 +174,6 @@ for auc_prefix in [
                 f"Done calculating shared fingerprints - {len(shared_fingerprints)}"
             )
 
-            # TODO: auc_prefix entfernen
             dataset_dependent_ramp_plateau_threshold_df = pd.read_csv(
                 config.DATASET_DEPENDENT_RANDOM_RAMP_PLATEAU_THRESHOLD_PATH
             )
