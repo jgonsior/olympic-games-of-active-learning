@@ -31,8 +31,9 @@ orig_standard_metric = "weighted_f1-score"
 
 
 # what are the different ways for leaderboard?
-# aggregation over aggregation
-# ranking only (pearson vs spearman)
+# DONE aggregation over aggregation
+# ranking only (spearman instead of pearson)
+# normalize datasets first
 
 for auc_prefix in [
     "full_auc_",
@@ -110,6 +111,9 @@ for auc_prefix in [
             "metric_value",
         ],
     )
+
+    # shared fingerprints!!
+
     ts = (
         ts.groupby(by=["EXP_DATASET", "EXP_STRATEGY"])["metric_value"]
         .apply(lambda lll: np.array([llllll for llllll in lll]).flatten())
@@ -137,8 +141,8 @@ for auc_prefix in [
     # plt.figure(figsize=set_matplotlib_size(fraction=10))
 
     # calculate fraction based on length of keys
-    plt.figure(figsize=set_matplotlib_size(fraction=len(ts.columns) / 12))
-    ax = sns.heatmap(ts, annot=True, fmt=".2f")
+    plt.figure(figsize=set_matplotlib_size(fraction=len(ts.columns) / 6))
+    ax = sns.heatmap(ts, annot=True, fmt=".2%")
 
     ax.set_title(f"Final leaderboard: {standard_metric}")
 
