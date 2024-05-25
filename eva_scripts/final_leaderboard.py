@@ -114,6 +114,11 @@ for auc_prefix in [
 
     # shared fingerprints!!
 
+    @todo shared fingerprints hier betrachten!
+    was mache ich mit lücken? z. B. quire :/
+    lücken wegen error -> alles weg?
+    lücken wegen timeout -> 0%? oder so viel wie random bei iteration 0 hat?
+
     ts = (
         ts.groupby(by=["EXP_DATASET", "EXP_STRATEGY"])["metric_value"]
         .apply(lambda lll: np.array([llllll for llllll in lll]).flatten())

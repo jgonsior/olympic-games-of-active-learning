@@ -174,6 +174,8 @@ for auc_prefix in [
                 f"Done calculating shared fingerprints - {len(shared_fingerprints)}"
             )
 
+            ts = ts.loc[(ts["fingerprint"].isin(shared_fingerprints))]
+
             dataset_dependent_ramp_plateau_threshold_df = pd.read_csv(
                 config.DATASET_DEPENDENT_RANDOM_RAMP_PLATEAU_THRESHOLD_PATH
             )
