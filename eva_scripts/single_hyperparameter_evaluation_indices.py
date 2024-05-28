@@ -33,12 +33,12 @@ pandarallel.initialize(
 standard_metric = "selected_indices"
 
 for auc_prefix in [
+    "final_value_",
+    "ramp_up_auc_",
+    "plateau_auc_",
     "full_auc_",
     "first_5_",
     "last_5_",
-    "ramp_up_auc_",
-    "plateau_auc_",
-    "final_value_",
 ]:
     log_and_time(f"Calculating for {standard_metric}")
     targets_to_evaluate = [
@@ -234,7 +234,7 @@ for auc_prefix in [
                         lambda lll: lll[-1:]
                     )
                 case "ramp_up_auc_":
-                    ts = ts.apply(_apply_ramp_up, axis=1)
+                    ts = ts.parallel_apply(_apply_ramp_up, axis=1)
                 case "plateau_auc_":
                     ts = ts.parallel_apply(_apply_plateau, axis=1)
                 case _:

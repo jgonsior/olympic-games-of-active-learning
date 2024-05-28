@@ -111,13 +111,30 @@ for auc_prefix in [
             "metric_value",
         ],
     )
+    print(ts)
 
-    # shared fingerprints!!
+    Problem: bevor ich shared fingerprints berechne --> erstmall muss ich fingerprints für alles berechnen, dann kann ich rausschmeißen, hehe
+    exit(-1)
 
-    @todo shared fingerprints hier betrachten!
-    was mache ich mit lücken? z. B. quire :/
-    lücken wegen error -> alles weg?
-    lücken wegen timeout -> 0%? oder so viel wie random bei iteration 0 hat?
+    shared_fingerprints = None
+    for target_value in ts[target_to_evaluate].unique():
+        tmp_fingerprints = set(
+            ts.loc[ts[target_to_evaluate] == target_value]["fingerprint"].to_list()
+        )
+
+        if shared_fingerprints is None:
+            shared_fingerprints = tmp_fingerprints
+        else:
+            shared_fingerprints = shared_fingerprints.intersection(tmp_fingerprints)
+
+    log_and_time(f"Done calculating shared fingerprints - {len(shared_fingerprints)}")
+
+    ts = ts.loc[(ts["fingerprint"].isin(shared_fingerprints))]
+
+    # @todo shared fingerprints hier betrachten!
+    # was mache ich mit lücken? z. B. quire :/
+    # lücken wegen error -> alles weg?
+    # lücken wegen timeout -> 0%? oder so viel wie random bei iteration 0 hat?
 
     ts = (
         ts.groupby(by=["EXP_DATASET", "EXP_STRATEGY"])["metric_value"]
