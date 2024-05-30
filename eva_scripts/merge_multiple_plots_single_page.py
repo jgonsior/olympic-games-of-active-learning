@@ -58,13 +58,19 @@ for plot_folder in glob.glob(str(plot_path.resolve()) + "/**", recursive=True):
     nrows = 6
     px = 1 / plt.rcParams["figure.dpi"]
 
+    additional_sizing_factor = len(df) / 4
+
     fig, axs = plt.subplots(
         ncols=nrows,
         nrows=math.ceil(len(dfs) / nrows),
         sharex="all",
         sharey="all",
         # figsize=(math.ceil(len(dfs) / nrows) * 20, nrows * 5),  # (breite, höhe)
-        figsize=(3840 * px, 1600 * px),
+        # figsize=(3840 * px, 1600 * px),
+        figsize=(
+            math.ceil(len(dfs) / nrows) * additional_sizing_factor * 8,
+            nrows * additional_sizing_factor,
+        ),
     )
 
     cbar_ax = fig.add_axes([0.91, 0.3, 0.03, 0.4])
@@ -82,13 +88,14 @@ for plot_folder in glob.glob(str(plot_path.resolve()) + "/**", recursive=True):
             vmax=1,
             cbar=i == 0,
             cbar_ax=None if i else cbar_ax,
+            square=True,
         )
         axis.set_title(title)
 
     fig.suptitle(plot_type_title)
 
     plt.savefig(
-        f"{config.OUTPUT_PATH}/plots/{plot_type_title.replace('/', '--')}_merged.jpg",
+        f"{config.OUTPUT_PATH}/plots/{plot_type_title.replace('/', '--')}_merged.pdf",
         # dpi=300,
     )
     print(plot_type_title)
