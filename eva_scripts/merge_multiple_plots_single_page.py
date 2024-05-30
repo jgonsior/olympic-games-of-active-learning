@@ -56,25 +56,25 @@ for plot_folder in glob.glob(str(plot_path.resolve()) + "/**", recursive=True):
 
     dfs = collections.OrderedDict(sorted(dfs.items()))
 
-    if len(dfs) < 10:
-        set_seaborn_style(font_size=8)
-        additional_sizing_factor = 1.2
-    else:
-        set_seaborn_style(font_size=5)
-        additional_sizing_factor = len(df) / 5
-    nrows = 6
+    set_seaborn_style(font_size=5)
+
+    ncols = 6
+    nrows = math.ceil(len(dfs) / ncols)
+
     px = 1 / plt.rcParams["figure.dpi"]
+    height = len(df) * nrows * 40 * px
+    width = len(df) * ncols * 40 * px
 
     fig, axs = plt.subplots(
-        ncols=nrows,
-        nrows=math.ceil(len(dfs) / nrows),
+        ncols=ncols,
+        nrows=nrows,
         sharex="all",
         sharey="all",
         # figsize=(math.ceil(len(dfs) / nrows) * 20, nrows * 5),  # (breite, höhe)
         # figsize=(3840 * px, 1600 * px),
         figsize=(
-            math.ceil(len(dfs) / nrows) * additional_sizing_factor * 8,
-            nrows * additional_sizing_factor,
+            width,  # math.ceil(len(dfs) / nrows) * additional_sizing_factor * 8,
+            height,  # nrows * additional_sizing_factor,
         ),
     )
 
