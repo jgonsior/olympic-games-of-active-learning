@@ -62,8 +62,8 @@ for plot_folder in glob.glob(str(plot_path.resolve()) + "/**", recursive=True):
     nrows = math.ceil(len(dfs) / ncols)
 
     px = 1 / plt.rcParams["figure.dpi"]
-    height = math.log(len(df)) * nrows * 100 * px
-    width = math.log(len(df)) * ncols * 100 * px
+    height = math.log(len(df), base=5) * nrows * 100 * px
+    width = math.log(len(df), base=5) * ncols * 100 * px
 
     fig, axs = plt.subplots(
         ncols=ncols,
