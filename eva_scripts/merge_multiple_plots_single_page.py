@@ -3,9 +3,10 @@ from genericpath import isdir
 import glob
 import math
 import multiprocessing
+from operator import add
 import subprocess
 import sys
-from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt, rcParams
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -55,10 +56,14 @@ for plot_folder in glob.glob(str(plot_path.resolve()) + "/**", recursive=True):
 
     dfs = collections.OrderedDict(sorted(dfs.items()))
 
+    if len(dfs) < 10:
+        set_seaborn_style(font_size=8)
+        additional_sizing_factor = 1.2
+    else:
+        set_seaborn_style(font_size=5)
+        additional_sizing_factor = len(df) / 5
     nrows = 6
     px = 1 / plt.rcParams["figure.dpi"]
-
-    additional_sizing_factor = len(df) / 5
 
     fig, axs = plt.subplots(
         ncols=nrows,
@@ -90,7 +95,7 @@ for plot_folder in glob.glob(str(plot_path.resolve()) + "/**", recursive=True):
             cbar_ax=None if i else cbar_ax,
             square=True,
         )
-        axis.set_title(title)
+        axis.set_title(title, fontsize=plt.rcParams["figure.titlesize"])
 
     fig.suptitle(plot_type_title)
 

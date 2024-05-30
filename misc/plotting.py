@@ -16,6 +16,7 @@ def set_seaborn_style(font_size=5.8, usetex=False):
         "xtick.labelsize": font_size,
         "ytick.labelsize": font_size,
         "xtick.bottom": True,
+        "figure.titlesize": font_size,
         # "figure.autolayout": True,
     }
 
@@ -33,7 +34,7 @@ def set_seaborn_style(font_size=5.8, usetex=False):
 # fig = plt.figure(figsize=set_matplotlib_size(width, fraction=1.0))
 
 
-#a
+# a
 def set_matplotlib_size(width=505.89, fraction=1, half_height=False):
     """Set figure dimensions to avoid scaling in LaTeX.
 
