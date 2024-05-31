@@ -38,7 +38,7 @@ for plot_folder in glob.glob(str(plot_path.resolve()) + "/**", recursive=True):
     if plot_folder.is_file():
         continue
 
-    plot_type_title = (
+    plot_type_title = str(
         str(plot_folder.resolve())
         .removeprefix(str(plot_path.resolve()))
         .removeprefix("/")
@@ -54,6 +54,15 @@ for plot_folder in glob.glob(str(plot_path.resolve()) + "/**", recursive=True):
     if len(dfs) <= 1:
         continue
 
+    final_plot_path = Path(
+        str(
+            f"{config.OUTPUT_PATH}/plots/{plot_type_title.replace('/', '--')}_merged.pdf"
+        )
+    )
+
+    if final_plot_path.exists():
+        continue
+
     dfs = collections.OrderedDict(sorted(dfs.items()))
 
     set_seaborn_style(font_size=5)
@@ -62,8 +71,24 @@ for plot_folder in glob.glob(str(plot_path.resolve()) + "/**", recursive=True):
     nrows = math.ceil(len(dfs) / ncols)
 
     px = 1 / plt.rcParams["figure.dpi"]
-    height = math.log(len(df), 2) * nrows * 150 * px
-    width = math.log(len(df), 2) * ncols * 150 * px
+
+    plot_length: float
+
+    if len(df) == 3:
+        plot_length = 3 * 60
+    elif len(df) == 5:
+        plot_length = 5 * 30
+    elif len(df) == 6:
+        plot_length = 6 * 30
+    elif len(df) == 20:
+        plot_length = len(df) * 25
+    elif len(df) == 28:
+        plot_length = len(df) * 30
+    elif len(df) == 92:
+        plot_length = len(df) * 35
+
+    height = plot_length * nrows * px
+    width = plot_length * ncols * px
 
     fig, axs = plt.subplots(
         ncols=ncols,
@@ -100,7 +125,7 @@ for plot_folder in glob.glob(str(plot_path.resolve()) + "/**", recursive=True):
     fig.suptitle(plot_type_title)
 
     plt.savefig(
-        f"{config.OUTPUT_PATH}/plots/{plot_type_title.replace('/', '--')}_merged.pdf",
+        final_plot_path,
         dpi=150,
         # dpi=300,
     )
