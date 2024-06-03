@@ -139,8 +139,10 @@ for auc_prefix in [
         )
 
         if shared_fingerprints is None:
+            print(target_value)
             shared_fingerprints = tmp_fingerprints
         else:
+            print(f"{target_value}: {len(shared_fingerprints)}")
             shared_fingerprints = shared_fingerprints.intersection(tmp_fingerprints)
 
     log_and_time(f"Done calculating shared fingerprints - {len(shared_fingerprints)}")
@@ -155,6 +157,7 @@ for auc_prefix in [
     # was mache ich mit lücken? z. B. quire :/
     # lücken wegen error -> alles weg?
     # lücken wegen timeout -> 0%? oder so viel wie random bei iteration 0 hat?
+    # aktuell ignoriere ich lücken einfach???
 
     ts = (
         ts.groupby(by=["EXP_DATASET", "EXP_STRATEGY"])["metric_value"]
