@@ -102,24 +102,40 @@ for auc_prefix in [
         columns=[
             "EXP_DATASET",
             "EXP_STRATEGY",
-            # "EXP_START_POINT",
-            # "EXP_BATCH_SIZE",
-            # "EXP_LEARNER_MODEL",
-            # "EXP_TRAIN_TEST_BUCKET_SIZE",
-            # "ix",
+            "EXP_START_POINT",
+            "EXP_BATCH_SIZE",
+            "EXP_LEARNER_MODEL",
+            "EXP_TRAIN_TEST_BUCKET_SIZE",
+            "ix",
             # "EXP_UNIQUE_ID_ix",
             "metric_value",
         ],
     )
+
+    print(ts)
+    fingerprint_cols = list(ts.columns)
+    fingerprint_cols.remove("metric_value")
+    fingerprint_cols.remove("EXP_DATASET")
+    fingerprint_cols.remove("EXP_STRATEGY")
+
+    ts["fingerprint"] = ts[fingerprint_cols].parallel_apply(
+        lambda row: "_".join([str(rrr) for rrr in row]), axis=1
+    )
+
+    ts["dataset_strategy"] = ts[["EXP_DATASET", "EXP_STRATEGY"]].parallel_apply(
+        lambda row: "_".join([str(rrr) for rrr in row]), axis=1
+    )
+
+    for fg_col in fingerprint_cols:
+        del ts[fg_col]
+
+    log_and_time("Done fingerprinting")
     print(ts)
 
-    Problem: bevor ich shared fingerprints berechne --> erstmall muss ich fingerprints für alles berechnen, dann kann ich rausschmeißen, hehe
-    exit(-1)
-
     shared_fingerprints = None
-    for target_value in ts[target_to_evaluate].unique():
+    for target_value in ts["dataset_strategy"].unique():
         tmp_fingerprints = set(
-            ts.loc[ts[target_to_evaluate] == target_value]["fingerprint"].to_list()
+            ts.loc[ts["dataset_strategy"] == target_value]["fingerprint"].to_list()
         )
 
         if shared_fingerprints is None:
@@ -130,6 +146,10 @@ for auc_prefix in [
     log_and_time(f"Done calculating shared fingerprints - {len(shared_fingerprints)}")
 
     ts = ts.loc[(ts["fingerprint"].isin(shared_fingerprints))]
+
+    print(ts)
+    del ts["dataset_strategy"]
+    del ts["fingerprint"]
 
     # @todo shared fingerprints hier betrachten!
     # was mache ich mit lücken? z. B. quire :/
