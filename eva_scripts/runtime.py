@@ -136,7 +136,7 @@ set_seaborn_style(font_size=8)
 # plt.figure(figsize=set_matplotlib_size(fraction=10))
 
 # calculate fraction based on length of keys
-plt.figure(figsize=set_matplotlib_size(fraction=len(ts.columns) / 6))
+# plt.figure(figsize=set_matplotlib_size(fraction=len(ts.columns) / 6))
 ax = sns.barplot(data=ts, y="EXP_STRATEGY", x="metric_value")
 ax.set(ylabel=None)
 ax.set_xscale("log")
