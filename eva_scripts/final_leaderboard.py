@@ -131,7 +131,7 @@ for auc_prefix in [
 
     log_and_time("Done fingerprinting")
     print(ts)
-    exit(-1)
+    # exit(-1)
 
     shared_fingerprints = None
     for target_value in ts["dataset_strategy"].unique():
