@@ -106,7 +106,7 @@ for auc_prefix in [
             "EXP_BATCH_SIZE",
             "EXP_LEARNER_MODEL",
             "EXP_TRAIN_TEST_BUCKET_SIZE",
-            "ix",
+            # "ix",
             # "EXP_UNIQUE_ID_ix",
             "metric_value",
         ],
@@ -131,6 +131,7 @@ for auc_prefix in [
 
     log_and_time("Done fingerprinting")
     print(ts)
+    exit(-1)
 
     shared_fingerprints = None
     for target_value in ts["dataset_strategy"].unique():
