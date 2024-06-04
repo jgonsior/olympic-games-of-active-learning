@@ -143,6 +143,7 @@ ts = ts.reindex(columns=sorted(ts.columns))
 ts["EXP_STRATEGY"] = ts["EXP_STRATEGY"].parallel_apply(
     lambda kkk: AL_STRATEGY(kkk).name
 )
+ts.sort_values(by="mean", inplace=True)
 
 print(ts)
 
