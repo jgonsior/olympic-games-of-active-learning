@@ -130,18 +130,44 @@ destination_path.mkdir(exist_ok=True, parents=True)
 
 print(ts)
 
+
+def pop_std(x):
+    return x.std(ddof=0)
+
+
+ts = ts.groupby(["EXP_STRATEGY"], as_index=False).agg(
+    {"metric_value": ["mean", pop_std]}
+)
+ts.columns = ["EXP_STRATEGY", "mean", "std"]
+ts = ts.reindex(columns=sorted(ts.columns))
+ts["EXP_STRATEGY"] = ts["EXP_STRATEGY"].parallel_apply(
+    lambda kkk: AL_STRATEGY(kkk).name
+)
+
+print(ts)
+
 print(destination_path / f"{runtime_metric}.jpg")
 
 set_seaborn_style(font_size=8)
 # plt.figure(figsize=set_matplotlib_size(fraction=10))
 
 # calculate fraction based on length of keys
-# plt.figure(figsize=set_matplotlib_size(fraction=len(ts.columns) / 6))
-ax = sns.barplot(data=ts, y="EXP_STRATEGY", x="metric_value")
+plt.figure(figsize=set_matplotlib_size())
+
+ax = sns.barplot(data=ts, y="EXP_STRATEGY", x="mean", hue="EXP_STRATEGY")
 ax.set(ylabel=None)
-ax.set_xscale("log")
+# ax.set_xscale("log")
+
+xs = []
 for container in ax.containers:
     ax.bar_label(container, padding=10, fmt="%.2g")
+
+    xs.append(container.datavalues[0])
+
+
+# plt.errorbar(
+#    x=np.array(xs), y=ts["mean"], yerr=ts["std"], fmt="none", c="black", capsize=2
+# )
 
 
 ax.set_title(f"Runtimes: {runtime_metric}")
