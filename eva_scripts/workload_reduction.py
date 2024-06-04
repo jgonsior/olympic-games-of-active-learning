@@ -23,9 +23,7 @@ config = Config()
 prepare_eva_pathes("workload_reduction", config)
 
 
-standard_metric = "full_auc_macro_f1-score"
-# standard_metric = "last_5_macro_f1-score"
-# standard_metric = "macro_f1-score"
+standard_metric = "full_auc_weighted_f1-score"
 
 if config.EVA_MODE == "create":
     ix_path = Path(config.EVA_SCRIPT_WORKLOAD_DIR / f"ts_ix_{config.WORKER_INDEX}.csv")
