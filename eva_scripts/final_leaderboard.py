@@ -102,7 +102,7 @@ for auc_prefix in [
         columns=[
             "EXP_DATASET",
             "EXP_STRATEGY",
-            "EXP_START_POINT",
+            # "EXP_START_POINT",
             "EXP_BATCH_SIZE",
             "EXP_LEARNER_MODEL",
             "EXP_TRAIN_TEST_BUCKET_SIZE",
