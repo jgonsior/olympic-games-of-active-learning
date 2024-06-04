@@ -156,7 +156,7 @@ plt.figure(figsize=set_matplotlib_size())
 
 ax = sns.barplot(data=ts, y="EXP_STRATEGY", x="mean", hue="EXP_STRATEGY")
 ax.set(ylabel=None)
-# ax.set_xscale("log")
+ax.set_xscale("log")
 
 xs = []
 for container in ax.containers:
@@ -166,7 +166,7 @@ for container in ax.containers:
 
 
 # plt.errorbar(
-#    x=np.array(xs), y=ts["mean"], yerr=ts["std"], fmt="none", c="black", capsize=2
+#    x=np.array(xs), y=ts["mean"], xerr=ts["std"], fmt="none", c="black", capsize=2
 # )
 
 
