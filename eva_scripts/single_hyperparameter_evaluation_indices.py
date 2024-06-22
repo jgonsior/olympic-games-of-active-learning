@@ -13,6 +13,7 @@ import pandas as pd
 from pathlib import Path
 
 from sklearn.metrics import jaccard_score
+from datasets import DATASET
 from misc.helpers import (
     create_fingerprint_joined_timeseries_csv_files,
     log_and_time,
@@ -121,7 +122,7 @@ for auc_prefix in [
         for target_to_evaluate in targets_to_evaluate:
             correlation_data_path = Path(
                 config.OUTPUT_PATH
-                / f"plots/single_hyperparameter/{target_to_evaluate}/{dataset}_{auc_prefix}_{standard_metric}_statistic.parquet"
+                / f"plots/single_hyperparameter/{target_to_evaluate}/{DATASET(dataset).name}_{auc_prefix}_{standard_metric}_statistic.parquet"
             )
             log_and_time(target_to_evaluate)
             if correlation_data_path.exists():
@@ -303,7 +304,7 @@ for auc_prefix in [
 
                     save_correlation_plot(
                         data=corrmat,
-                        title=f"single_hyperparameter/{target_to_evaluate}/{dataset}_{auc_prefix}_{standard_metric}_{rank_measure}",
+                        title=f"single_hyperparameter/{target_to_evaluate}/{DATASET(dataset).name}_{auc_prefix}_{standard_metric}_{rank_measure}",
                         keys=keys,
                         config=config,
                     )
