@@ -176,7 +176,7 @@ ax.set_title(f"Runtimes: {runtime_metric}")
 ts.to_parquet(destination_path / f"{runtime_metric}.parquet")
 
 plt.savefig(
-    destination_path / f"{runtime_metric}.jpg",
+    destination_path / f"{runtime_metric}.pdf",
     dpi=300,
     bbox_inches="tight",
     pad_inches=0,

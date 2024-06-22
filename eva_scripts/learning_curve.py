@@ -96,10 +96,11 @@ ts = pd.read_parquet(
         "metric_value",
     ],
 )
+print(ts)
 ts = ts.loc[
-    (ts["EXP_DATASET"] == 1)
+    (ts["EXP_DATASET"] == 2)
     & (ts["EXP_BATCH_SIZE"] == 1)
-    & (ts["EXP_LEARNER_MODEL"] == 2)
+    & (ts["EXP_LEARNER_MODEL"] == 1)
     & (ts["EXP_TRAIN_TEST_BUCKET_SIZE"] == 1)
 ]
 print(f"{standard_metric}.parquet")
@@ -125,7 +126,7 @@ ax.set_title(f"Learning Curve: {standard_metric}")
 ts.to_parquet(destination_path / f"{standard_metric}.parquet")
 
 plt.savefig(
-    destination_path / f"{standard_metric}.jpg",
+    destination_path / f"{standard_metric}.pdf",
     dpi=300,
     bbox_inches="tight",
     pad_inches=0,
