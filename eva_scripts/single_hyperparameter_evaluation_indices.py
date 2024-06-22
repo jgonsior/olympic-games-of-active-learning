@@ -121,7 +121,7 @@ for auc_prefix in [
         for target_to_evaluate in targets_to_evaluate:
             correlation_data_path = Path(
                 config.OUTPUT_PATH
-                / f"plots/single_hyperparameter/{target_to_evaluate}/{auc_prefix}_{standard_metric}_statistic.parquet"
+                / f"plots/single_hyperparameter/{target_to_evaluate}/{dataset}_{auc_prefix}_{standard_metric}_statistic.parquet"
             )
             log_and_time(target_to_evaluate)
             if correlation_data_path.exists():
