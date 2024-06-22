@@ -105,9 +105,6 @@ for fg_col in fingerprint_cols:
 log_and_time("Done fingerprinting")
 print(ts)
 
-TODO: interpolation with run time limit instead of deletion of "non_shared" fingerprints!
-exit(-1)
-
 shared_fingerprints = None
 for target_value in ts["EXP_STRATEGY"].unique():
     tmp_fingerprints = set(
@@ -123,7 +120,24 @@ for target_value in ts["EXP_STRATEGY"].unique():
 
 log_and_time(f"Done calculating shared fingerprints - {len(shared_fingerprints)}")
 
-ts = ts.loc[(ts["fingerprint"].isin(shared_fingerprints))]
+
+for strategy in ts["EXP_STRATEGY"].unique():
+    fingerprints_not_present = shared_fingerprints.difference(
+        ts.loc[ts["EXP_STRATEGY"] == strategy]["fingerprint"]
+    )
+
+    missing_data = []
+    for fnp in fingerprints_not_present:
+        missing_data.append(
+            [strategy, config.EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT, fnp]
+        )
+
+    ts2 = pd.DataFrame(
+        columns=["EXP_STRATEGY", "metric_value", "fingerprint"], data=missing_data
+    )
+    ts = pd.concat([ts, ts2], ignore_index=True)
+
+# ts = ts.loc[(ts["fingerprint"].isin(shared_fingerprints))]
 
 del ts["fingerprint"]
 
