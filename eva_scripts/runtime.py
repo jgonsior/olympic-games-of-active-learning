@@ -105,6 +105,9 @@ for fg_col in fingerprint_cols:
 log_and_time("Done fingerprinting")
 print(ts)
 
+TODO: interpolation with run time limit instead of deletion of "non_shared" fingerprints!
+exit(-1)
+
 shared_fingerprints = None
 for target_value in ts["EXP_STRATEGY"].unique():
     tmp_fingerprints = set(
