@@ -8,6 +8,7 @@ import pandas as pd
 from pathlib import Path
 import matplotlib.style as mplstyle
 
+import matplotlib as mpl
 from datasets import DATASET
 from misc.helpers import (
     create_fingerprint_joined_timeseries_csv_files,
@@ -330,7 +331,8 @@ for grid_type in ["sparse", "dense"]:
 
             print(str(destination_path) + f".jpg")
             set_seaborn_style(font_size=8)
-            mplstyle.use("fast")
+            mpl.rcParams["path.simplify"] = True
+            mpl.rcParams["path.simplify_threshold"] = 1.0
             # plt.figure(figsize=set_matplotlib_size(fraction=10))
 
             # calculate fraction based on length of keys
