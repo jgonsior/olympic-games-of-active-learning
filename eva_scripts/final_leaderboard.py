@@ -235,8 +235,24 @@ for grid_type in ["sparse", "dense"]:
                 def _remove_sparse(cell):
                     if type(cell) == float:
                         return cell
-                    if len(cell) < amount_of_max_shared_fingerprints:
+                    if len(cell) <= amount_of_max_shared_fingerprints:
                         return []
+                    else:
+                        return cell
+
+                def _zero_interpolation(cell):
+                    if type(cell) == float:
+                        return [0]
+                    if len(cell) < amount_of_max_shared_fingerprints:
+                        return [
+                            *cell,
+                            *[
+                                0
+                                for _ in range(
+                                    0, amount_of_max_shared_fingerprints - len(cell)
+                                )
+                            ],
+                        ]
                     else:
                         return cell
 
