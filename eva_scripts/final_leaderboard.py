@@ -44,6 +44,7 @@ orig_standard_metric = "weighted_f1-score"
 
 interpolation_strategies = [
     "count",
+    "count_dense",
     "remove",
     "zero",
     "average_of_same_strategy",
@@ -200,7 +201,8 @@ for grid_type in ["sparse", "dense"]:
                     wr.writerow(list(shared_fingerprints))
                     wr.writerow([amount_of_max_shared_fingerprints])
 
-            ts = ts.loc[(ts["fingerprint"].isin(shared_fingerprints))]
+            if grid_type == "dense" or interpolation == "count_dense":
+                ts = ts.loc[(ts["fingerprint"].isin(shared_fingerprints))]
 
             print(ts)
             del ts["dataset_strategy"]
@@ -291,6 +293,8 @@ for grid_type in ["sparse", "dense"]:
 
                 match interpolation:
                     case "count":
+                        ts = ts.parallel_applymap(_count_sparse)
+                    case "count_dense":
                         ts = ts.parallel_applymap(_count_sparse)
                     case "remove":
                         ts = ts.parallel_applymap(_remove_sparse)
