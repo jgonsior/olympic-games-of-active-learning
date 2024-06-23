@@ -35,171 +35,207 @@ orig_standard_metric = "weighted_f1-score"
 # ranking only (spearman instead of pearson)
 # normalize datasets first
 
-for auc_prefix in [
-    "full_auc_",
-    "first_5_",
-    "last_5_",
-    "ramp_up_auc_",
-    "plateau_auc_",
-    "final_value_",
-]:
-    standard_metric = auc_prefix + orig_standard_metric
+# 1) only keep complete grid, remove all strategy/dataset combinations which are not 960 elements long
+# 2) interpolate with 0
+# 3) interpolate with average result of this strategy for this dataset?
+# 4) interpolate with average rank this strategy got for other datasets?
 
-    log_and_time(f"Calculating for {standard_metric}")
+interpolation_strategies = ["zero", "average_of_same_strategy", "average_rank"]
 
-    if not Path(config.CORRELATION_TS_PATH / f"{standard_metric}.parquet").exists():
-        unsorted_f = config.CORRELATION_TS_PATH / f"{standard_metric}.unsorted.csv"
-        unparqueted_f = config.CORRELATION_TS_PATH / f"{standard_metric}.to_parquet.csv"
+for grid_type in ["sparse", "dense"]:
+    for auc_prefix in [
+        "full_auc_",
+        # "first_5_",
+        # "last_5_",
+        # "ramp_up_auc_",
+        # "plateau_auc_",
+        # "final_value_",
+    ]:
+        standard_metric = auc_prefix + orig_standard_metric
 
-        if not unsorted_f.exists() and not unparqueted_f.exists():
-            log_and_time("Create selected indices ts")
-            create_fingerprint_joined_timeseries_csv_files(
-                metric_names=[standard_metric], config=config
+        log_and_time(f"Calculating for {standard_metric}")
+
+        if not Path(config.CORRELATION_TS_PATH / f"{standard_metric}.parquet").exists():
+            unsorted_f = config.CORRELATION_TS_PATH / f"{standard_metric}.unsorted.csv"
+            unparqueted_f = (
+                config.CORRELATION_TS_PATH / f"{standard_metric}.to_parquet.csv"
             )
 
-        if not unparqueted_f.exists():
-            log_and_time("Created, now sorting")
-            command = f"sort -T {config.CORRELATION_TS_PATH} --parallel {multiprocessing.cpu_count()} {unsorted_f} -o {config.CORRELATION_TS_PATH}/{standard_metric}.to_parquet.csv"
-            print(command)
-            subprocess.run(command, shell=True, text=True)
-            unsorted_f.unlink()
-        print(unparqueted_f)
-        log_and_time("sorted, now parqueting")
-        ts = pd.read_csv(
-            unparqueted_f,
-            header=None,
-            index_col=False,
-            delimiter=",",
-            names=[
+            if not unsorted_f.exists() and not unparqueted_f.exists():
+                log_and_time("Create selected indices ts")
+                create_fingerprint_joined_timeseries_csv_files(
+                    metric_names=[standard_metric], config=config
+                )
+
+            if not unparqueted_f.exists():
+                log_and_time("Created, now sorting")
+                command = f"sort -T {config.CORRELATION_TS_PATH} --parallel {multiprocessing.cpu_count()} {unsorted_f} -o {config.CORRELATION_TS_PATH}/{standard_metric}.to_parquet.csv"
+                print(command)
+                subprocess.run(command, shell=True, text=True)
+                unsorted_f.unlink()
+            print(unparqueted_f)
+            log_and_time("sorted, now parqueting")
+            ts = pd.read_csv(
+                unparqueted_f,
+                header=None,
+                index_col=False,
+                delimiter=",",
+                names=[
+                    "EXP_DATASET",
+                    "EXP_STRATEGY",
+                    "EXP_START_POINT",
+                    "EXP_BATCH_SIZE",
+                    "EXP_LEARNER_MODEL",
+                    "EXP_TRAIN_TEST_BUCKET_SIZE",
+                    "ix",
+                    "EXP_UNIQUE_ID_ix",
+                    "metric_value",
+                ],
+            )
+            print(ts["metric_value"])
+            """ts["metric_value"] = ts["metric_value"].apply(
+                lambda xxx: (
+                    np.fromstring(
+                        xxx.removeprefix("[").removesuffix("]"),
+                        dtype=np.int32,
+                        sep=" ",
+                    )
+                )
+            )"""
+
+            f = Path(config.CORRELATION_TS_PATH / f"{standard_metric}.parquet")
+            ts.to_parquet(f)
+            unparqueted_f.unlink()
+
+        ts = pd.read_parquet(
+            config.CORRELATION_TS_PATH / f"{standard_metric}.parquet",
+            columns=[
                 "EXP_DATASET",
                 "EXP_STRATEGY",
-                "EXP_START_POINT",
+                # "EXP_START_POINT",
                 "EXP_BATCH_SIZE",
                 "EXP_LEARNER_MODEL",
                 "EXP_TRAIN_TEST_BUCKET_SIZE",
-                "ix",
-                "EXP_UNIQUE_ID_ix",
+                # "ix",
+                # "EXP_UNIQUE_ID_ix",
                 "metric_value",
             ],
         )
-        print(ts["metric_value"])
-        ts["metric_value"] = ts["metric_value"].apply(
-            lambda xxx: (
-                np.fromstring(
-                    xxx.removeprefix("[").removesuffix("]"),
-                    dtype=np.int32,
-                    sep=" ",
-                )
+        print(f"{standard_metric}.parquet")
+        print(ts)
+
+        fingerprint_cols = list(ts.columns)
+        fingerprint_cols.remove("metric_value")
+        fingerprint_cols.remove("EXP_DATASET")
+        fingerprint_cols.remove("EXP_STRATEGY")
+
+        ts["fingerprint"] = ts[fingerprint_cols].parallel_apply(
+            lambda row: "_".join([str(rrr) for rrr in row]), axis=1
+        )
+
+        ts["dataset_strategy"] = ts[["EXP_DATASET", "EXP_STRATEGY"]].parallel_apply(
+            lambda row: "_".join([str(rrr) for rrr in row]), axis=1
+        )
+
+        for fg_col in fingerprint_cols:
+            del ts[fg_col]
+
+        log_and_time("Done fingerprinting")
+        print(ts)
+        # exit(-1)
+
+        shared_fingerprints = None
+        amount_of_max_shared_fingerprints = 0
+        for target_value in ts["dataset_strategy"].unique():
+            tmp_fingerprints = set(
+                ts.loc[ts["dataset_strategy"] == target_value]["fingerprint"].to_list()
             )
+
+            if len(tmp_fingerprints) > amount_of_max_shared_fingerprints:
+                amount_of_max_shared_fingerprints = len(tmp_fingerprints)
+
+            if shared_fingerprints is None:
+                print(target_value)
+                shared_fingerprints = tmp_fingerprints
+            else:
+                print(f"{target_value}: {len(shared_fingerprints)}")
+                shared_fingerprints = shared_fingerprints.intersection(tmp_fingerprints)
+
+        if grid_type == "sparse":
+            # remove combinations which are not sparse
+
+            for target_value in ts["dataset_strategy"].unique():
+                tmp_fingerprints = set(
+                    ts.loc[ts["dataset_strategy"] == target_value][
+                        "fingerprint"
+                    ].to_list()
+                )
+
+                if len(tmp_fingerprints) < amount_of_max_shared_fingerprints:
+                    ts = ts[ts["dataset_strategy"] != target_value]
+
+        log_and_time(
+            f"Done calculating shared fingerprints - {len(shared_fingerprints)} - #{amount_of_max_shared_fingerprints}"
         )
 
-        f = Path(config.CORRELATION_TS_PATH / f"{standard_metric}.parquet")
-        ts.to_parquet(f)
-        unparqueted_f.unlink()
+        ts = ts.loc[(ts["fingerprint"].isin(shared_fingerprints))]
 
-    ts = pd.read_parquet(
-        config.CORRELATION_TS_PATH / f"{standard_metric}.parquet",
-        columns=[
-            "EXP_DATASET",
-            "EXP_STRATEGY",
-            # "EXP_START_POINT",
-            "EXP_BATCH_SIZE",
-            "EXP_LEARNER_MODEL",
-            "EXP_TRAIN_TEST_BUCKET_SIZE",
-            # "ix",
-            # "EXP_UNIQUE_ID_ix",
-            "metric_value",
-        ],
-    )
-    print(f"{standard_metric}.parquet")
-    print(ts)
+        print(ts)
+        del ts["dataset_strategy"]
+        del ts["fingerprint"]
 
-    fingerprint_cols = list(ts.columns)
-    fingerprint_cols.remove("metric_value")
-    fingerprint_cols.remove("EXP_DATASET")
-    fingerprint_cols.remove("EXP_STRATEGY")
+        # @todo shared fingerprints hier betrachten!
+        # was mache ich mit lücken? z. B. quire :/
+        # lücken wegen error -> alles weg?
+        # lücken wegen timeout -> 0%? oder so viel wie random bei iteration 0 hat?
+        # aktuell ignoriere ich lücken einfach???
+        # interpolation -> (90-len(df))*interpolation value in der mittelwert berechnung mit hinzu nehmen
 
-    ts["fingerprint"] = ts[fingerprint_cols].parallel_apply(
-        lambda row: "_".join([str(rrr) for rrr in row]), axis=1
-    )
-
-    ts["dataset_strategy"] = ts[["EXP_DATASET", "EXP_STRATEGY"]].parallel_apply(
-        lambda row: "_".join([str(rrr) for rrr in row]), axis=1
-    )
-
-    for fg_col in fingerprint_cols:
-        del ts[fg_col]
-
-    log_and_time("Done fingerprinting")
-    print(ts)
-    # exit(-1)
-
-    shared_fingerprints = None
-    for target_value in ts["dataset_strategy"].unique():
-        tmp_fingerprints = set(
-            ts.loc[ts["dataset_strategy"] == target_value]["fingerprint"].to_list()
+        ts = (
+            ts.groupby(by=["EXP_DATASET", "EXP_STRATEGY"])["metric_value"]
+            .apply(lambda lll: np.array([llllll for llllll in lll]).flatten())
+            .reset_index()
         )
+        ts = ts.pivot(
+            index="EXP_DATASET", columns="EXP_STRATEGY", values="metric_value"
+        )
+        print(ts)
+        ts = ts.parallel_applymap(np.mean)
+        # ts = ts.parallel_applymap(np.shape)
+        # ts = ts.parallel_applymap(np.median)
 
-        if shared_fingerprints is None:
-            print(target_value)
-            shared_fingerprints = tmp_fingerprints
-        else:
-            print(f"{target_value}: {len(shared_fingerprints)}")
-            shared_fingerprints = shared_fingerprints.intersection(tmp_fingerprints)
+        ts.columns = [AL_STRATEGY(int(kkk)).name for kkk in ts.columns]
 
-    log_and_time(f"Done calculating shared fingerprints - {len(shared_fingerprints)}")
+        destination_path = Path(
+            config.OUTPUT_PATH
+            / f"plots/final_leaderboard/{grid_type}_{standard_metric}"
+        )
+        destination_path.parent.mkdir(exist_ok=True, parents=True)
 
-    ts = ts.loc[(ts["fingerprint"].isin(shared_fingerprints))]
+        ts = ts.set_index([[DATASET(int(kkk)).name for kkk in ts.index]])
 
-    print(ts)
-    del ts["dataset_strategy"]
-    del ts["fingerprint"]
+        ts = ts.T
+        ts.loc[:, "Total"] = ts.mean(axis=1)
+        ts.sort_values(by=["Total"], inplace=True)
+        ts = ts.T
+        print(ts)
 
-    # @todo shared fingerprints hier betrachten!
-    # was mache ich mit lücken? z. B. quire :/
-    # lücken wegen error -> alles weg?
-    # lücken wegen timeout -> 0%? oder so viel wie random bei iteration 0 hat?
-    # aktuell ignoriere ich lücken einfach???
-    # interpolation -> (90-len(df))*interpolation value in der mittelwert berechnung mit hinzu nehmen
+        print(str(destination_path) + f".jpg")
+        set_seaborn_style(font_size=8)
+        # plt.figure(figsize=set_matplotlib_size(fraction=10))
 
-    ts = (
-        ts.groupby(by=["EXP_DATASET", "EXP_STRATEGY"])["metric_value"]
-        .apply(lambda lll: np.array([llllll for llllll in lll]).flatten())
-        .reset_index()
-    )
-    ts = ts.pivot(index="EXP_DATASET", columns="EXP_STRATEGY", values="metric_value")
-    ts = ts.parallel_applymap(np.mean)
-    # ts = ts.parallel_applymap(np.median)
+        # calculate fraction based on length of keys
+        plt.figure(figsize=set_matplotlib_size(fraction=len(ts.columns) / 6))
+        ax = sns.heatmap(ts, annot=True, fmt=".2%")
 
-    ts.columns = [AL_STRATEGY(int(kkk)).name for kkk in ts.columns]
+        ax.set_title(f"Final leaderboard: {grid_type} {standard_metric}")
 
-    destination_path = Path(config.OUTPUT_PATH / f"plots/final_leaderboard")
-    destination_path.mkdir(exist_ok=True, parents=True)
+        ts.to_parquet(str(destination_path) + f".parquet")
 
-    ts = ts.set_index([[DATASET(int(kkk)).name for kkk in ts.index]])
-
-    ts = ts.T
-    ts.loc[:, "Total"] = ts.mean(axis=1)
-    ts.sort_values(by=["Total"], inplace=True)
-    ts = ts.T
-    print(ts)
-
-    print(destination_path / f"{standard_metric}.jpg")
-    set_seaborn_style(font_size=8)
-    # plt.figure(figsize=set_matplotlib_size(fraction=10))
-
-    # calculate fraction based on length of keys
-    plt.figure(figsize=set_matplotlib_size(fraction=len(ts.columns) / 6))
-    ax = sns.heatmap(ts, annot=True, fmt=".2%")
-
-    ax.set_title(f"Final leaderboard: {standard_metric}")
-
-    ts.to_parquet(destination_path / f"{standard_metric}.parquet")
-
-    plt.savefig(
-        destination_path / f"{standard_metric}.jpg",
-        dpi=300,
-        bbox_inches="tight",
-        pad_inches=0,
-    )
-    # goal: dataframe where each column is an EXP_STRATEGY and each row is a DATASET --> rest is aggregated over all params
+        plt.savefig(
+            str(destination_path) + f".jpg",
+            dpi=300,
+            bbox_inches="tight",
+            pad_inches=0,
+        )
+        # goal: dataframe where each column is an EXP_STRATEGY and each row is a DATASET --> rest is aggregated over all params
