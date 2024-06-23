@@ -238,7 +238,7 @@ for grid_type in ["sparse", "dense"]:
                 def _remove_sparse(cell):
                     if type(cell) == float:
                         return cell
-                    if len(cell) <= amount_of_max_shared_fingerprints:
+                    if len(cell) < amount_of_max_shared_fingerprints:
                         return []
                     else:
                         return cell
@@ -260,13 +260,14 @@ for grid_type in ["sparse", "dense"]:
                         return cell
 
                 def _average_of_same_strategy_interpolation(cell):
+                    average_of_this_strategy = np.mean(cell)
                     if type(cell) == float:
-                        return [0]
+                        return [average_of_this_strategy]
                     if len(cell) < amount_of_max_shared_fingerprints:
                         return [
                             *cell,
                             *[
-                                0
+                                average_of_this_strategy
                                 for _ in range(
                                     0, amount_of_max_shared_fingerprints - len(cell)
                                 )
