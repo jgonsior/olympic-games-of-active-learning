@@ -1,3 +1,4 @@
+import csv
 import multiprocessing
 import subprocess
 import sys
@@ -158,30 +159,45 @@ for grid_type in ["sparse", "dense"]:
             print(ts)
             # exit(-1)
 
-            shared_fingerprints = None
-            amount_of_max_shared_fingerprints = 0
-            for target_value in ts["dataset_strategy"].unique():
-                tmp_fingerprints = set(
-                    ts.loc[ts["dataset_strategy"] == target_value][
-                        "fingerprint"
-                    ].to_list()
-                )
-
-                if len(tmp_fingerprints) > amount_of_max_shared_fingerprints:
-                    amount_of_max_shared_fingerprints = len(tmp_fingerprints)
-
-                if shared_fingerprints is None:
-                    print(target_value)
-                    shared_fingerprints = tmp_fingerprints
-                else:
-                    print(f"{target_value}: {len(shared_fingerprints)}")
-                    shared_fingerprints = shared_fingerprints.intersection(
-                        tmp_fingerprints
+            shared_fingerprints_csv_path = (
+                config.CORRELATION_TS_PATH
+                / f"final_leaderboard_shared_fingerprints_{standard_metric}.csv"
+            )
+            if shared_fingerprints_csv_path.exists():
+                with open(shared_fingerprints_csv_path, newline="") as f:
+                    reader = list(csv.reader(f))
+                    shared_fingerprints = set(reader[0])
+                    amount_of_max_shared_fingerprints = int(reader[1][0])
+            else:
+                shared_fingerprints = None
+                amount_of_max_shared_fingerprints = 0
+                for target_value in ts["dataset_strategy"].unique():
+                    tmp_fingerprints = set(
+                        ts.loc[ts["dataset_strategy"] == target_value][
+                            "fingerprint"
+                        ].to_list()
                     )
 
-            log_and_time(
-                f"Done calculating shared fingerprints - {len(shared_fingerprints)} - #{amount_of_max_shared_fingerprints}"
-            )
+                    if len(tmp_fingerprints) > amount_of_max_shared_fingerprints:
+                        amount_of_max_shared_fingerprints = len(tmp_fingerprints)
+
+                    if shared_fingerprints is None:
+                        print(target_value)
+                        shared_fingerprints = tmp_fingerprints
+                    else:
+                        print(f"{target_value}: {len(shared_fingerprints)}")
+                        shared_fingerprints = shared_fingerprints.intersection(
+                            tmp_fingerprints
+                        )
+
+                log_and_time(
+                    f"Done calculating shared fingerprints - {len(shared_fingerprints)} - #{amount_of_max_shared_fingerprints}"
+                )
+                print(shared_fingerprints)
+                with open(shared_fingerprints_csv_path, "w") as myfile:
+                    wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
+                    wr.writerow(list(shared_fingerprints))
+                    wr.writerow([amount_of_max_shared_fingerprints])
 
             ts = ts.loc[(ts["fingerprint"].isin(shared_fingerprints))]
 
@@ -226,9 +242,17 @@ for grid_type in ["sparse", "dense"]:
 
                 def _zero_interpolation(cell):
                     if type(cell) == float:
-                        return cell
+                        return [0]
                     if len(cell) < amount_of_max_shared_fingerprints:
-                        return []
+                        return [
+                            *cell,
+                            *[
+                                0
+                                for _ in range(
+                                    0, amount_of_max_shared_fingerprints - len(cell)
+                                )
+                            ],
+                        ]
                     else:
                         return cell
 
