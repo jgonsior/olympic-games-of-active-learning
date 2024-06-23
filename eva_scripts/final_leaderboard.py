@@ -6,6 +6,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
 from pathlib import Path
+import matplotlib.style as mplstyle
 
 from datasets import DATASET
 from misc.helpers import (
@@ -256,7 +257,23 @@ for grid_type in ["sparse", "dense"]:
                     else:
                         return cell
 
-                def _zero_interpolation(cell):
+                def _average_of_same_strategy_interpolation(cell):
+                    if type(cell) == float:
+                        return [0]
+                    if len(cell) < amount_of_max_shared_fingerprints:
+                        return [
+                            *cell,
+                            *[
+                                0
+                                for _ in range(
+                                    0, amount_of_max_shared_fingerprints - len(cell)
+                                )
+                            ],
+                        ]
+                    else:
+                        return cell
+
+                def _average_rank_interpolation(cell):
                     if type(cell) == float:
                         return [0]
                     if len(cell) < amount_of_max_shared_fingerprints:
@@ -280,9 +297,11 @@ for grid_type in ["sparse", "dense"]:
                     case "zero":
                         ts = ts.parallel_applymap(_zero_interpolation)
                     case "average_of_same_strategy":
-                        ts = ts.parallel_applymap(_zero_interpolation)
+                        ts = ts.parallel_applymap(
+                            _average_of_same_strategy_interpolation
+                        )
                     case "average_rank":
-                        ts = ts.parallel_applymap(_zero_interpolation)
+                        ts = ts.parallel_applymap(_average_rank_interpolation)
 
             ts = ts.parallel_applymap(np.mean)
             # ts = ts.parallel_applymap(np.shape)
@@ -306,6 +325,7 @@ for grid_type in ["sparse", "dense"]:
 
             print(str(destination_path) + f".jpg")
             set_seaborn_style(font_size=8)
+            mplstyle.use("fast")
             # plt.figure(figsize=set_matplotlib_size(fraction=10))
 
             # calculate fraction based on length of keys
