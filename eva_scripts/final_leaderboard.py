@@ -344,7 +344,11 @@ for rank_or_percentage in ["rank", "percentages"]:
 
                 ts = ts.T
                 ts.loc[:, "Total"] = ts.mean(axis=1)
-                ts.sort_values(by=["Total"], inplace=True)
+
+                if rank_or_percentage == "rank":
+                    ts.sort_values(by=["Total"], inplace=True, ascending=False)
+                else:
+                    ts.sort_values(by=["Total"], inplace=True, ascending=True)
                 ts = ts.T
                 print(ts)
 
