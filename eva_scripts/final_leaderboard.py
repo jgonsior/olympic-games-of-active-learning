@@ -356,7 +356,15 @@ for rank_or_percentage in ["rank", "percentages"]:
 
                 # calculate fraction based on length of keys
                 plt.figure(figsize=set_matplotlib_size(fraction=len(ts.columns) / 6))
-                ax = sns.heatmap(ts, annot=True, fmt=".2%")
+
+                if (
+                    rank_or_percentage == "rank"
+                    or interpolation == "count"
+                    or interpolation == "count_dense"
+                ):
+                    ax = sns.heatmap(ts, annot=True)
+                else:
+                    ax = sns.heatmap(ts, annot=True, fmt=".2%")
 
                 ax.set_title(
                     f"Final leaderboard: {rank_or_percentage} {grid_type} {interpolation} {standard_metric}"
