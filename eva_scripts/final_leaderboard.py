@@ -19,6 +19,7 @@ from misc.helpers import (
 from misc.plotting import set_matplotlib_size, set_seaborn_style
 from resources.data_types import AL_STRATEGY
 import seaborn as sns
+from pprint import pprint
 
 sys.dont_write_bytecode = True
 
@@ -227,24 +228,24 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
                     def _flatten(xss):
                         return [[x] for xs in xss for x in xs]
 
+                    def _unflatten(xss):
+                        return [xs[0] for xs in xss]
+
                     def _dataset_normalized_percentages(row: pd.Series) -> pd.Series:
-                        print(_flatten([rrr.tolist() for rrr in row.to_list()]))
+                        row = row.dropna()
                         transformer = RobustScaler().fit(
                             _flatten([rrr.tolist() for rrr in row.to_list()])
                         )
-                        data = [[[rxrxrx] for rxrxrx in rrr] for rrr in row][0]
-                        print(data)
-                        exit(-1)
-                        result = transformer.transform(data)
-                        print(result)
-                        return result
-                        ranks = scipy.stats.rankdata(row, method="max")
-                        result = pd.Series(len(row) - ranks + 1, index=row.index)
+                        data = [[[rxrxrx] for rxrxrx in rrr] for rrr in row]
+                        result = [transformer.transform(rrr) for rrr in data]
+
+                        result = pd.Series(
+                            [_unflatten(rrr) for rrr in result], index=row.index
+                        )
                         return result
 
                     # ts = ts.parallel_apply(_dataset_normalized_percentages, axis=1)
                     ts = ts.apply(_dataset_normalized_percentages, axis=1)
-                    exit(-1)
                 else:
                     continue
                 if grid_type == "sparse":
