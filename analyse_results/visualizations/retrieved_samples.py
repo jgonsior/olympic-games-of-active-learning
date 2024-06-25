@@ -7,7 +7,10 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from interactive_results_browser.visualizations.base_visualizer import Base_Visualizer
+from analyse_results.visualizations.base_visualizer import (
+    MERGE_AL_CYCLE_METRIC_STRATEGY,
+    Base_Visualizer,
+)
 from typing import Any, List, TYPE_CHECKING
 
 from typing import Any, Dict
@@ -16,7 +19,7 @@ if TYPE_CHECKING:
     pass
 import seaborn as sns
 import matplotlib.pyplot as plt
-from interactive_results_browser.cache import memory
+from analyse_results.cache import memory
 
 
 def _plot_function(plot_df, my_palette, my_markers):
@@ -66,7 +69,10 @@ def _cache_retrieved_samples(
     ]
 
     plot_df = Base_Visualizer.load_detailed_metric_files(
-        done_workload_df, "selected_indices", OUTPUT_PATH
+        done_workload_df,
+        "selected_indices",
+        OUTPUT_PATH,
+        merge_al_cycle_metrics=MERGE_AL_CYCLE_METRIC_STRATEGY.ORIGINAL,
     )
     del plot_df["EXP_UNIQUE_ID"]
 

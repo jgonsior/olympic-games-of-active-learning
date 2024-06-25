@@ -2,13 +2,13 @@ from __future__ import annotations
 import glob
 from pathlib import Path
 from typing import TYPE_CHECKING
-import numpy as np
 import pandas as pd
+from datasets import DATASET
 
 from metrics.computed.base_computed_metric import Base_Computed_Metric
 
 if TYPE_CHECKING:
-    pass
+    from resources.data_types import AL_STRATEGY
 
 
 class TIMELAG_METRIC(Base_Computed_Metric):
@@ -20,13 +20,13 @@ class TIMELAG_METRIC(Base_Computed_Metric):
 
         return df
 
-    def time_lag(self, row: pd.Series) -> pd.Series:
+    def time_lag(self, row: pd.Series, EXP_DATASET: DATASET) -> pd.Series:
         row = row.loc[row.index != "EXP_UNIQUE_ID"]
         row = row.diff()
         row.drop(labels=["0"], inplace=True)
         return row
 
-    def compute(self) -> None:
+    def compute_metrics(self, exp_dataset: DATASET, exp_strategy: AL_STRATEGY):
         all_existing_metric_names = set(
             [
                 Path(a).name
@@ -36,18 +36,32 @@ class TIMELAG_METRIC(Base_Computed_Metric):
         all_existing_metric_names = [
             a.split(".")[0]
             for a in all_existing_metric_names
-            if not a.startswith("auc_")
-            and not a.startswith("learning_stability_")
+            if not a.startswith("ramp_up_auc_")
+            and not a.startswith("plateau_auc_")
+            and not a.startswith("final_value_")
+            and not a.startswith("first_5_")
+            and not a.startswith("last_5_")
+            and not a.startswith("learning_stability_5_")
+            and not a.startswith("learning_stability_10_")
+            and not a.startswith("full_auc_")
             and not a.startswith("pickled_learner_model")
+            and not a.startswith("y_pred_train")
+            and not a.startswith("y_pred_test")
+            and not a.startswith("selected_indices")
             and not a.endswith("_time_lag.csv.xz")
-            and not a.endswith("y_pred_test.csv.xz")
-            and not a.endswith("y_pred_train.csv.xz")
-            and not a.endswith("selected_indices.csv.xz")
+            #  and not "accuracy" in a
+            #  and not "weighted_f1-score" in a
+            and not "macro_precision" in a
+            and not "weighted_precision" in a
+            and not "macro_recall" in a
+            and not "weighted_recall" in a
         ]
 
         for metric in all_existing_metric_names:
-            self._take_single_metric_and_compute_new_one(
+            self._compute_single_metric_jobs(
                 existing_metric_names=[metric],
                 new_metric_name=metric + "_time_lag",
                 apply_to_row=self.time_lag,
+                exp_dataset=exp_dataset,
+                exp_strategy=exp_strategy,
             )

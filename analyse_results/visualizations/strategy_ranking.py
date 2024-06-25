@@ -3,10 +3,14 @@ import math
 from pathlib import Path
 
 import pandas as pd
-from interactive_results_browser.visualizations.auc_table import Auc_Table
+from analyse_results.visualizations.auc_table import Auc_Table
 
 
-from interactive_results_browser.visualizations.base_visualizer import Base_Visualizer
+from analyse_results.cache import memory
+from analyse_results.visualizations.base_visualizer import (
+    MERGE_AL_CYCLE_METRIC_STRATEGY,
+    Base_Visualizer,
+)
 from typing import Any, Dict, List
 
 from misc.config import Config
@@ -97,21 +101,33 @@ def _correlation_analysis(done_workload_df, OUTPUT_PATH):
     metric_values = Auc_Table.get_additional_request_params(
         OUTPUT_PATH, with_basic=True
     )["VIZ_AUC_TABLE_METRIC"]
+
     for metric in metric_values:
         single_metric_plot_df = Base_Visualizer.load_detailed_metric_files(
-            done_workload_df, metric, OUTPUT_PATH
+            done_workload_df,
+            metric,
+            OUTPUT_PATH,
+            merge_al_cycle_metrics=MERGE_AL_CYCLE_METRIC_STRATEGY.MEAN_LIST,
         )
+
         if len(single_metric_plot_df) == 0:
             print(f"No data for  metric {metric} found")
             continue
+        # HIER ÜBERLEGEN OB HIER EIN MERGE MEHR HÄTTE PASSIEREN SOLLEN ODER EBEN NICHT
+        single_metric_plot_df["al_cycles_metric_list"] = single_metric_plot_df[
+            "al_cycles_metric_list"
+        ].apply(lambda x: x[-1])
 
-        if single_metric_plot_df["computed_metric"].max() <= 1.0:
+        print(single_metric_plot_df["al_cycles_metric_list"])
+        if single_metric_plot_df["al_cycles_metric_list"].max() <= 1.0:
             single_metric_plot_df[metric] = single_metric_plot_df[
-                "computed_metric"
+                "al_cycles_metric_list"
             ].multiply(100)
         else:
-            single_metric_plot_df[metric] = single_metric_plot_df["computed_metric"]
-        del single_metric_plot_df["computed_metric"]
+            single_metric_plot_df[metric] = single_metric_plot_df[
+                "al_cycles_metric_list"
+            ]
+        del single_metric_plot_df["al_cycles_metric_list"]
 
         if len(plot_df) == 0:
             plot_df = single_metric_plot_df
@@ -143,15 +159,15 @@ def _strategy_ranking_heatmap(done_workload_df, OUTPUT_PATH):
         if len(single_metric_plot_df) == 0:
             print(f"No data for  metric {metric} found.")
             continue
-        print(metric)
-        print(single_metric_plot_df)
-        if single_metric_plot_df["computed_metric"].max() <= 1.0:
+        if single_metric_plot_df["al_cycles_metric_list"].max() <= 1.0:
             single_metric_plot_df[metric] = single_metric_plot_df[
-                "computed_metric"
+                "al_cycles_metric_list"
             ].multiply(100)
         else:
-            single_metric_plot_df[metric] = single_metric_plot_df["computed_metric"]
-        del single_metric_plot_df["computed_metric"]
+            single_metric_plot_df[metric] = single_metric_plot_df[
+                "al_cycles_metric_list"
+            ]
+        del single_metric_plot_df["al_cycles_metric_list"]
 
         if len(plot_df) == 0:
             plot_df = single_metric_plot_df
@@ -175,7 +191,7 @@ def _strategy_ranking_heatmap(done_workload_df, OUTPUT_PATH):
     return plot_df
 
 
-# @memory.cache()
+@memory.cache()
 def _cache_strategy_ranking(
     done_workload_df: pd.DataFrame,
     OUTPUT_PATH: Path,

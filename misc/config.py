@@ -3,7 +3,7 @@ import random
 import sys
 from configparser import RawConfigParser
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional, Union, get_args
+from typing import Any, Dict, List, Literal, Optional, get_args
 from aenum import extend_enum
 
 import git
@@ -59,7 +59,7 @@ class Config:
     EXP_TRAIN_TEST_BUCKET_SIZE: int
     EXP_GRID_TRAIN_TEST_BUCKET_SIZE: List[int] = list(range(0, 5))
     EXP_UNIQUE_ID: int
-    EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT: int = 600  # 600  10 minutes
+    EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT: int = 300  # 600  10 minutes
 
     WORKER_INDEX: int
 
@@ -103,10 +103,18 @@ class Config:
     OVERALL_DONE_WORKLOAD_PATH: Path = "05_done_workload.csv"  # type: ignore
     OVERALL_FAILED_WORKLOAD_PATH: Path = "05_failed_workloads.csv"  # type: ignore
     OVERALL_STARTED_OOM_WORKLOAD_PATH: Path = "05_started_oom_workloads.csv"  # type: ignore
+    WRONG_CSV_FILES_PATH: Path = "05_wrong_csv_files.csv"  # type: ignore
+    EXP_ID_METRIC_CSV_FOLDER_PATH: Path = "metrics"  # type: ignore
+    DATASET_DEPENDENT_RANDOM_RAMP_PLATEAU_THRESHOLD_PATH: Path = "_dataset_dependent_random_ramp_plateau_threshold.csv"  # type: ignore
+
     EXP_RESULT_ZIP_PATH_PREFIX: Path
     EXP_RESULT_ZIP_PATH: Path = ".tar.gz"  # type: ignore
     EXP_RESULT_EXTRACTED_ZIP_PATH: Path
     METRIC_RESULTS_FOLDER: Path
+
+    DENSE_WORKLOAD_PATH: Path = "06_dense_workload.csv"  # type: ignore
+    MISSING_EXP_IDS_IN_METRIC_FILES: Path = "07_missing_exp_ids.csv"  # type: ignore
+    BROKEN_CSV_FILE_PATH: Path = "07_broken_csv_file_found.csv"  # type: ignore
 
     RERUN_FAILED_WORKLOADS: bool = False
     RECALCULATE_UPDATED_EXP_GRID: bool = False
@@ -117,8 +125,17 @@ class Config:
     METRICS: List[Base_Metric]
     COMPUTED_METRICS: List[COMPUTED_METRIC]
     SAMPLES_CATEGORIZER: List[SAMPLES_CATEGORIZER]
+    CORRELATION_TS_PATH: Path = "_TS"  # ignore
+    SECOND_MERGE_PATH: str
 
-    EVA_METRICS_TO_CORRELATE: List[Union[Base_Metric, COMPUTED_METRIC]]
+    EVA_MODE: Literal[
+        "create", "local", "slurm", "single", "reduce", "analyze_plot"
+    ] = "create"
+    EVA_SCRIPT_WORKLOAD_DIR: Path = "workloads"  # ignore
+    EVA_SCRIPT_OPEN_WORKLOAD_FILE: Path = "01_open.csv"  # ignore
+    EVA_SCRIPT_DONE_WORKLOAD_FILE: Path = "03_done.csv"  # ignore
+    EVA_WORKLOAD_REDUCTION_THRESHOLD: float = 0.95
+    EVA_NAME: str
 
     def __init__(self, no_cli_args: Optional[Dict[str, Any]] = None) -> None:
         if no_cli_args is not None:
@@ -143,7 +160,9 @@ class Config:
             np.random.seed(self.RANDOM_SEED)
             random.seed(self.RANDOM_SEED)
 
-        if self.WORKER_INDEX is not None:
+        if self.WORKER_INDEX is not None and str(sys.argv[0]).endswith(
+            "02_run_experiment.py"
+        ):
             self.load_workload()
 
             self.METRIC_RESULTS_FOLDER = (
@@ -229,12 +248,31 @@ class Config:
             self.OUTPUT_PATH / self.OVERALL_DONE_WORKLOAD_PATH
         )
 
+        self.DENSE_WORKLOAD_PATH = self.OUTPUT_PATH / self.DENSE_WORKLOAD_PATH
+        self.MISSING_EXP_IDS_IN_METRIC_FILES = (
+            self.OUTPUT_PATH / self.MISSING_EXP_IDS_IN_METRIC_FILES
+        )
+        self.BROKEN_CSV_FILE_PATH = self.OUTPUT_PATH / self.BROKEN_CSV_FILE_PATH
+
         self.OVERALL_FAILED_WORKLOAD_PATH = (
             self.OUTPUT_PATH / self.OVERALL_FAILED_WORKLOAD_PATH
         )
         self.OVERALL_STARTED_OOM_WORKLOAD_PATH = (
             self.OUTPUT_PATH / self.OVERALL_STARTED_OOM_WORKLOAD_PATH
         )
+
+        self.DATASET_DEPENDENT_RANDOM_RAMP_PLATEAU_THRESHOLD_PATH = (
+            self.OUTPUT_PATH / self.DATASET_DEPENDENT_RANDOM_RAMP_PLATEAU_THRESHOLD_PATH
+        )
+
+        self.WRONG_CSV_FILES_PATH = self.OUTPUT_PATH / self.WRONG_CSV_FILES_PATH
+        self.EXP_ID_METRIC_CSV_FOLDER_PATH = (
+            self.OUTPUT_PATH / self.EXP_ID_METRIC_CSV_FOLDER_PATH
+        )
+
+        self.CORRELATION_TS_PATH = self.OUTPUT_PATH / self.CORRELATION_TS_PATH
+
+        self.EVA_SCRIPT_WORKLOAD_DIR = self.OUTPUT_PATH / self.EVA_SCRIPT_WORKLOAD_DIR
 
         self.OUTPUT_PATH.mkdir(parents=True, exist_ok=True)
 
@@ -272,7 +310,14 @@ class Config:
         for k, v in yaml_config_params.items():
             v = str(v)
 
-            if v.startswith("['") and v.endswith("']") and "-" in v:
+            # what to do with exp_datasets containing -?
+            allowed_symbols = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "-"]
+            only_allowed = True
+
+            for vvv in v[2:-2]:
+                if vvv not in allowed_symbols:
+                    only_allowed = False
+            if v.startswith("['") and v.endswith("']") and "-" in v and only_allowed:
                 v = v[2:-2]
                 v = v.split("-")
                 yaml_config_params[k] = [iii for iii in range(int(v[0]), int(v[1]) + 1)]

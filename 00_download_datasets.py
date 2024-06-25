@@ -13,7 +13,6 @@ config = Config()
 
 openml_loader = OpenML_Loader(config)
 openml_loader.load_datasets()
-
 kaggle_loader = Kaggle_Loader(config)
 kaggle_loader.load_datasets()
 

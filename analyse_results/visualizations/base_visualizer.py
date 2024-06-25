@@ -1,27 +1,37 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+import ast
 import base64
 import io
 import itertools
 import multiprocessing
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, List, Tuple
+from typing import TYPE_CHECKING, Any, Callable, List, Tuple, Type
 
 from typing import Any, Dict
+from aenum import IntEnum, unique
 
-from flask import render_template
 from joblib import Parallel, delayed, parallel_backend
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 from datasets import DATASET
-from interactive_results_browser.cache import memory
+from analyse_results.cache import memory
 from resources.data_types import AL_STRATEGY, LEARNER_MODEL
 import seaborn as sns
 from seaborn._core.properties import Marker
 
 if TYPE_CHECKING:
     from misc.config import Config
+
+
+@unique
+class MERGE_AL_CYCLE_METRIC_STRATEGY(IntEnum):
+    ORIGINAL = 1
+    ORIGINAL_MEAN = 2
+    MEAN_LIST = 3
+    MEDIAN_LIST = 4
 
 
 @memory.cache
@@ -73,7 +83,10 @@ class Base_Visualizer(ABC):
                 self._NON_WORKLOAD_KEYS.append(k)
 
             # in case nothing has been selected in the gui just take the first parameter as default
-            if k not in self._exp_grid_request_params.keys():
+            if (
+                k not in self._exp_grid_request_params.keys()
+                and len(additional_request_params[k]) > 0
+            ):
                 self._exp_grid_request_params[k] = [additional_request_params[k][0]]
 
     def get_template_name(self) -> str:
@@ -84,6 +97,8 @@ class Base_Visualizer(ABC):
         return {}
 
     def render(self) -> str:
+        from analyse_results.helper_functions import render_template
+
         result = render_template(self.get_template_name(), **self.get_template_data())
         plt.clf()
         return result
@@ -208,11 +223,17 @@ class Base_Visualizer(ABC):
 
     @staticmethod
     def _parse_single_local_metric_file(
-        OUTPUT_PATH, EXP_STRATEGY, EXP_DATASET, metric, done_workload_df
+        OUTPUT_PATH,
+        EXP_STRATEGY,
+        EXP_DATASET,
+        metric,
+        done_workload_df,
+        merge_al_cycle_metrics: MERGE_AL_CYCLE_METRIC_STRATEGY,
     ) -> pd.DataFrame:
         detailed_metrics_path = Path(
             f"{OUTPUT_PATH}/{EXP_STRATEGY}/{EXP_DATASET}/{metric}.csv.xz"
         )
+
         print(detailed_metrics_path)
 
         if detailed_metrics_path.exists():
@@ -223,6 +244,61 @@ class Base_Visualizer(ABC):
                 done_workload_df, on="EXP_UNIQUE_ID", how="inner"
             )
             detailed_metrics_df.drop_duplicates(inplace=True)
+
+            if merge_al_cycle_metrics != MERGE_AL_CYCLE_METRIC_STRATEGY.ORIGINAL:
+                column_names_which_are_al_cycles = detailed_metrics_df.columns.to_list()
+                column_names_which_are_al_cycles = [
+                    c
+                    for c in column_names_which_are_al_cycles
+                    if not c.startswith("EXP_")
+                ]
+
+                # check if metric even contains a list that needs to be normalized!
+
+                if not all(
+                    dt == np.float64 or dt == np.int64  # or dt == object
+                    for dt in detailed_metrics_df[
+                        column_names_which_are_al_cycles
+                    ].dtypes.to_list()
+                ):
+                    detailed_metrics_df[column_names_which_are_al_cycles] = (
+                        detailed_metrics_df[column_names_which_are_al_cycles]
+                        .fillna("[]")
+                        .map(lambda x: ast.literal_eval(x))
+                    )  # type: ignore
+
+                    if merge_al_cycle_metrics in [
+                        MERGE_AL_CYCLE_METRIC_STRATEGY.MEAN_LIST,
+                        MERGE_AL_CYCLE_METRIC_STRATEGY.ORIGINAL_MEAN,
+                    ]:
+                        detailed_metrics_df[
+                            column_names_which_are_al_cycles
+                        ] = detailed_metrics_df[column_names_which_are_al_cycles].map(
+                            lambda x: np.mean(x)
+                        )  # type: ignore
+                    elif (
+                        merge_al_cycle_metrics
+                        == MERGE_AL_CYCLE_METRIC_STRATEGY.MEDIAN_LIST
+                    ):
+                        detailed_metrics_df[
+                            column_names_which_are_al_cycles
+                        ] = detailed_metrics_df[column_names_which_are_al_cycles].map(
+                            lambda x: np.median(x)
+                        )  # type: ignore
+
+                if merge_al_cycle_metrics in [
+                    MERGE_AL_CYCLE_METRIC_STRATEGY.MEAN_LIST,
+                    MERGE_AL_CYCLE_METRIC_STRATEGY.MEDIAN_LIST,
+                ]:
+                    # merge into list
+                    detailed_metrics_df["al_cycles_metric_list"] = detailed_metrics_df[
+                        column_names_which_are_al_cycles
+                    ].values.tolist()
+
+                    detailed_metrics_df = detailed_metrics_df.drop(
+                        columns=column_names_which_are_al_cycles
+                    )
+
             return detailed_metrics_df
         else:
             return None
@@ -233,9 +309,9 @@ class Base_Visualizer(ABC):
         done_workload_df: pd.DataFrame,
         metric: str,
         OUTPUT_PATH: Path,
+        merge_al_cycle_metrics: Type[MERGE_AL_CYCLE_METRIC_STRATEGY],
     ) -> pd.DataFrame:
         result_df = pd.DataFrame()
-
         strat_dataset_combinations: List[Tuple[DATASET, AL_STRATEGY]] = list(
             itertools.product(
                 done_workload_df["EXP_DATASET"].unique(),
@@ -243,14 +319,18 @@ class Base_Visualizer(ABC):
             )
         )
 
-        with parallel_backend("loky", n_jobs=multiprocessing.cpu_count()):
+        with parallel_backend("loky", n_jobs=1):  # multiprocessing.cpu_count()):
             detailed_metric_joins: List[pd.DataFrame] = Parallel()(
                 delayed(Base_Visualizer._parse_single_local_metric_file)(
-                    OUTPUT_PATH, strat, ds, metric, done_workload_df
+                    OUTPUT_PATH,
+                    strat,
+                    ds,
+                    metric,
+                    done_workload_df,
+                    merge_al_cycle_metrics,
                 )
                 for (ds, strat) in strat_dataset_combinations
             )  # type: ignore
-
         detailed_metric_joins = [df for df in detailed_metric_joins if df is not None]
         result_df = pd.concat(detailed_metric_joins, ignore_index=True)
         return result_df

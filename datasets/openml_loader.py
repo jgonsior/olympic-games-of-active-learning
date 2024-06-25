@@ -1,9 +1,6 @@
-import shutil
-import zipfile
 from pathlib import Path
 from typing import Any, Dict
 
-import kaggle
 import pandas as pd
 import yaml
 
@@ -33,8 +30,5 @@ class OpenML_Loader(Base_Dataset_Loader):
         df = datasets.fetch_openml(
             data_id=self.parameter_dict[dataset_name]["data_id"], parser="auto"
         )["frame"]
-
-        print(df)
-        exit(-1)
 
         return df

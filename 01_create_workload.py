@@ -118,8 +118,8 @@ def create_workload(config: Config) -> List[int]:
                 config,
                 exp_grid_params_names,
                 max(
-                    open_workload_df["EXP_UNIQUE_ID"].max(),
                     done_workload_df["EXP_UNIQUE_ID"].max(),
+                    open_workload_df["EXP_UNIQUE_ID"].max(),
                     failed_workload_df["EXP_UNIQUE_ID"].max(),
                 )
                 + 1,
@@ -182,20 +182,45 @@ def create_workload(config: Config) -> List[int]:
             result.rename(columns={"EXP_UNIQUE_ID_x": "EXP_UNIQUE_ID"}, inplace=True)
             return result
 
+        print(f"{len(open_workload_df)} - before removal")
         if not config.RERUN_FAILED_WORKLOADS:
             open_workload_df = _remove_right_from_left_workload(
                 open_workload_df, failed_workload_df
             )
+            print(f"{len(open_workload_df)} - removed failed")
+        else:
+            # only rerun those having MLP failure
+            failed_workload_df = failed_workload_df[
+                ~failed_workload_df["error"].isin(
+                    [
+                        fff
+                        for fff in failed_workload_df["error"].unique()
+                        if fff
+                        in [
+                            "<class 'sklearn.exceptions.ConvergenceWarning'>",
+                            "<class 'OSError'>",
+                            "<class 'BrokenPipeError'>",
+                        ]
+                    ]
+                )
+            ]
+            open_workload_df = _remove_right_from_left_workload(
+                open_workload_df, failed_workload_df
+            )
+            print(f"{len(open_workload_df)} - removed only some failed")
 
         # remove already run workloads
         open_workload_df = _remove_right_from_left_workload(
             open_workload_df, done_workload_df
         )
+        print(f"{len(open_workload_df)} - removed already run")
 
+        # remove workloads resulting in oom
         oom_workload_df = pd.read_csv(config.OVERALL_STARTED_OOM_WORKLOAD_PATH)
         open_workload_df = _remove_right_from_left_workload(
             open_workload_df, oom_workload_df
         )
+        print(f"{len(open_workload_df)} - removed oom")
     else:
         open_workload_df = _generate_exp_param_grid(config, exp_grid_params_names)
 
@@ -368,3 +393,5 @@ _write_template_file(
     Path("resources/slurm_templates/02c_gzip_results.sh.slurm"),
     config.EXPERIMENT_SLURM_GZIP_RESULTS_PATH,
 )
+
+_chmod_u_plus_x(config.EXPERIMENT_SLURM_GZIP_RESULTS_PATH)

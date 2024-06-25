@@ -1,115 +1,25 @@
-soybean:
-    {
-        data_id: 42,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
+soybean: { data_id: 42, target: "class", drop_columns: null, id: null }
 
-KDDCup99:
-    {
-        data_id: 1113,
-        target: "label",
-        drop_columns: null,
-        id: null,
-    }
+PenDigits: { data_id: 32, target: "class", drop_columns: null, id: null }
 
-PenDigits:
-    {
-        data_id: 32,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
+waveform: { data_id: 60, target: "class", drop_columns: null, id: null }
 
-shuttle:
-    {
-        data_id: 40685,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
+scale: { data_id: 11, target: "class", drop_columns: null, id: null }
 
-methane:
-    {
-        data_id: 42701,
-        target: "MM263", # MM264, MM256
-        drop_columns: null,
-        id: null,
-        float_categorical_cols: ["MM263", "F_SIDE"],
-    }
+wbc: { data_id: 15, target: "Class", drop_columns: null, id: null }
 
-waveform:
-    {
-        data_id: 60,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
+hill-valley: { data_id: 1479, target: "Class", drop_columns: null, id: null }
 
-scale:
-    {
-        data_id: 11,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
+ozone-level: { data_id: 1487, target: "Class", drop_columns: null, id: null }
 
-wbc:
-    {
-        data_id: 15,
-        target: "Class",
-        drop_columns: null,
-        id: null,
-    }
+blood: { data_id: 1464, target: "Class", drop_columns: null, id: null }
 
-hill-valley:
-    {
-        data_id: 1479,
-        target: "Class",
-        drop_columns: null,
-        id: null,
-    }
-
-ozone-level:
-    {
-        data_id: 1487,
-        target: "Class",
-        drop_columns: null,
-        id: null,
-    }
-
-blood:
-    {
-        data_id: 1464,
-        target: "Class",
-        drop_columns: null,
-        id: null,
-    }
-
-ac-inflam:
-    {
-        data_id: 1556,
-        target: "Class",
-        drop_columns: null,
-        id: null,
-    }
+ac-inflam: { data_id: 1556, target: "Class", drop_columns: null, id: null }
 
 cardiotocography:
-    {
-        data_id: 1466,
-        target: "Class",
-        drop_columns: null,
-        id: null,
-    }
+    { data_id: 1466, target: "Class", drop_columns: null, id: null }
 
-planning-relax:
-    {
-        data_id: 1490,
-        target: "Class",
-        drop_columns: null,
-        id: null,
-    }
+planning-relax: { data_id: 1490, target: "Class", drop_columns: null, id: null }
 
 fertility:
     {
@@ -120,37 +30,13 @@ fertility:
         float_categorical_cols: ["V1"],
     }
 
-cylinder:
-    {
-        data_id: 6332,
-        target: "band_type",
-        drop_columns: null,
-        id: null,
-    }
+cylinder: { data_id: 6332, target: "band_type", drop_columns: null, id: null }
 
-hepatitis:
-    {
-        data_id: 55,
-        target: "Class",
-        drop_columns: null,
-        id: null,
-    }
+hepatitis: { data_id: 55, target: "Class", drop_columns: null, id: null }
 
-arrythmia:
-    {
-        data_id: 5,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
+arrythmia: { data_id: 5, target: "class", drop_columns: null, id: null }
 
-letter:
-    {
-        data_id: 6,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
+letter: { data_id: 6, target: "class", drop_columns: null, id: null }
 
 liver:
     {
@@ -162,76 +48,24 @@ liver:
     }
 
 molecular-biology:
-    {
-        data_id: 46,
-        target: "Class",
-        drop_columns: null,
-        id: null,
-    }
+    { data_id: 46, target: "Class", drop_columns: null, id: null }
 
-page-blocks:
-    {
-        data_id: 30,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
+page-blocks: { data_id: 30, target: "class", drop_columns: null, id: null }
 
-kr-vs-kp:
-    {
-        data_id: 3,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
+kr-vs-kp: { data_id: 3, target: "class", drop_columns: null, id: null }
 
-balance-scale:
-    {
-        data_id: 11,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
+balance-scale: { data_id: 11, target: "class", drop_columns: null, id: null }
 
-mfeat-factors:
-    {
-        data_id: 12,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
+mfeat-factors: { data_id: 12, target: "class", drop_columns: null, id: null }
 
-mfeat-fourier:
-    {
-        data_id: 14,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
+mfeat-fourier: { data_id: 14, target: "class", drop_columns: null, id: null }
 
-mfeat-karhunen:
-    {
-        data_id: 16,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
+mfeat-karhunen: { data_id: 16, target: "class", drop_columns: null, id: null }
 
 mfeat-morphological:
-    {
-        data_id: 18,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
+    { data_id: 18, target: "class", drop_columns: null, id: null }
 
-mfeat-zernike:
-    {
-        data_id: 22,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
+mfeat-zernike: { data_id: 22, target: "class", drop_columns: null, id: null }
 
 cmc:
     {
@@ -241,387 +75,85 @@ cmc:
         id: null,
     }
 
-optdigits:
-    {
-        data_id: 28,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
+optdigits: { data_id: 28, target: "class", drop_columns: null, id: null }
 
-credit-approval:
-    {
-        data_id: 29,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
+credit-approval: { data_id: 29, target: "class", drop_columns: null, id: null }
 
-credit-g:
-    {
-        data_id: 31,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
+credit-g: { data_id: 31, target: "class", drop_columns: null, id: null }
 
-sick:
-    {
-        data_id: 38,
-        target: "Class",
-        drop_columns: ["TBG"],
-        id: null,
-    }
+sick: { data_id: 38, target: "Class", drop_columns: ["TBG"], id: null }
 
-electricity:
-    {
-        data_id: 151,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
+satimage: { data_id: 182, target: "class", drop_columns: null, id: null }
 
-satimage:
-    {
-        data_id: 182,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
+eucalyptus: { data_id: 188, target: "Utility", drop_columns: null, id: null }
 
-eucalyptus:
-    {
-        data_id: 188,
-        target: "Utility",
-        drop_columns: null,
-        id: null,
-    }
+isolet: { data_id: 300, target: "class", drop_columns: null, id: null }
 
-isolet:
-    {
-        data_id: 300,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
-
-vowel:
-    {
-        data_id: 307,
-        target: "Class",
-        drop_columns: null,
-        id: null,
-    }
+vowel: { data_id: 307, target: "Class", drop_columns: null, id: null }
 
 analcatdata_authorship:
-    {
-        data_id: 458,
-        target: "Author",
-        drop_columns: null,
-        id: null,
-    }
+    { data_id: 458, target: "Author", drop_columns: null, id: null }
 
 analcatdata_dmft:
-    {
-        data_id: 469,
-        target: "Prevention",
-        drop_columns: null,
-        id: null,
-    }
+    { data_id: 469, target: "Prevention", drop_columns: null, id: null }
 
-mnist_784:
-    {
-        data_id: 554,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
+pc4: { data_id: 1049, target: "c", drop_columns: null, id: null }
 
-pc4:
-    {
-        data_id: 1049,
-        target: "c",
-        drop_columns: null,
-        id: null,
-    }
+pc3: { data_id: 1050, target: "c", drop_columns: null, id: null }
 
-pc3:
-    {
-        data_id: 1050,
-        target: "c",
-        drop_columns: null,
-        id: null,
-    }
+jm1: { data_id: 1053, target: "defects", drop_columns: null, id: null }
 
-jm1:
-    {
-        data_id: 1053,
-        target: "defects",
-        drop_columns: null,
-        id: null,
-    }
+kc2: { data_id: 1063, target: "problems", drop_columns: null, id: null }
 
-kc2:
-    {
-        data_id: 1063,
-        target: "problems",
-        drop_columns: null,
-        id: null,
-    }
+kc1: { data_id: 1067, target: "defects", drop_columns: null, id: null }
 
-kc1:
-    {
-        data_id: 1067,
-        target: "defects",
-        drop_columns: null,
-        id: null,
-    }
-
-pc1:
-    {
-        data_id: 1068,
-        target: "defects",
-        drop_columns: null,
-        id: null,
-    }
-
-bank-marketing:
-    {
-        data_id: 1461,
-        target: "Class",
-        drop_columns: null,
-        id: null,
-    }
+pc1: { data_id: 1068, target: "defects", drop_columns: null, id: null }
 
 banknote-authentication:
-    {
-        data_id: 1462,
-        target: "Class",
-        drop_columns: null,
-        id: null,
-    }
+    { data_id: 1462, target: "Class", drop_columns: null, id: null }
 
-cnae-9:
-    {
-        data_id: 1468,
-        target: "Class",
-        drop_columns: null,
-        id: null,
-    }
+cnae-9: { data_id: 1468, target: "Class", drop_columns: null, id: null }
 
 first-order-theorem-proving:
-    {
-        data_id: 1475,
-        target: "Class",
-        drop_columns: null,
-        id: null,
-    }
+    { data_id: 1475, target: "Class", drop_columns: null, id: null }
 
-har:
-    {
-        data_id: 1478,
-        target: "Class",
-        drop_columns: null,
-        id: null,
-    }
+har: { data_id: 1478, target: "Class", drop_columns: null, id: null }
 
-ilpd:
-    {
-        data_id: 1480,
-        target: "Class",
-        drop_columns: null,
-        id: null,
-    }
+ilpd: { data_id: 1480, target: "Class", drop_columns: null, id: null }
 
-madelon:
-    {
-        data_id: 1485,
-        target: "Class",
-        drop_columns: null,
-        id: null,
-    }
+madelon: { data_id: 1485, target: "Class", drop_columns: null, id: null }
 
-nomao:
-    {
-        data_id: 1486,
-        target: "Class",
-        drop_columns: null,
-        id: null,
-    }
-
-qsar-biodeg:
-    {
-        data_id: 1494,
-        target: "Class",
-        drop_columns: null,
-        id: null,
-    }
+qsar-biodeg: { data_id: 1494, target: "Class", drop_columns: null, id: null }
 
 wall-robot-navigation:
-    {
-        data_id: 1497,
-        target: "Class",
-        drop_columns: null,
-        id: null,
-    }
+    { data_id: 1497, target: "Class", drop_columns: null, id: null }
 
-semeion:
-    {
-        data_id: 1501,
-        target: "Class",
-        drop_columns: null,
-        id: null,
-    }
+semeion: { data_id: 1501, target: "Class", drop_columns: null, id: null }
 
-adult:
-    {
-        data_id: 1590,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
-
-Bioresponse:
-    {
-        data_id: 4134,
-        target: "target",
-        drop_columns: null,
-        id: null,
-    }
+Bioresponse: { data_id: 4134, target: "target", drop_columns: null, id: null }
 
 GesturePhaseSegmentationProcessed:
-    {
-        data_id: 4538,
-        target: "Phase",
-        drop_columns: null,
-        id: null,
-    }
+    { data_id: 4538, target: "Phase", drop_columns: null, id: null }
 
-dresses-sales:
-    {
-        data_id: 23381,
-        target: "Class",
-        drop_columns: null,
-        id: null,
-    }
+dresses-sales: { data_id: 23381, target: "Class", drop_columns: null, id: null }
 
-numerai28-6:
-    {
-        data_id: 23517,
-        target: "attribute_21",
-        drop_columns: null,
-        id: null,
-    }
+churn: { data_id: 40701, target: "class", drop_columns: null, id: null }
 
-connect-4:
-    {
-        data_id: 40668,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
+MiceProtein: { data_id: 40966, target: "class", drop_columns: null, id: null }
 
-churn:
-    {
-        data_id: 40701,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
-
-Devnagari-Script:
-    {
-        data_id: 40923,
-        target: "character",
-        drop_columns: null,
-        id: null,
-    }
-
-# 3000 features take too long
-#CIFAR_10:
-#    {
-#        data_id: 40927,
-#        target: "class",
-#        drop_columns: null,
-#        id: null,
-#    }
-
-MiceProtein:
-    {
-        data_id: 40966,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
-
-car:
-    {
-        data_id: 40975,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
+car: { data_id: 40975, target: "class", drop_columns: null, id: null }
 
 Internet-Advertisements:
-    {
-        data_id: 40978,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
+    { data_id: 40978, target: "class", drop_columns: null, id: null }
 
-mfeat-pixel:
-    {
-        data_id: 40979,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
+mfeat-pixel: { data_id: 40979, target: "class", drop_columns: null, id: null }
 
 steel-plates-fault:
-    {
-        data_id: 40982,
-        target: "target",
-        drop_columns: null,
-        id: null,
-    }
+    { data_id: 40982, target: "target", drop_columns: null, id: null }
 
-wilt:
-    {
-        data_id: 40983,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
+wilt: { data_id: 40983, target: "class", drop_columns: null, id: null }
 
-segment:
-    {
-        data_id: 40984,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
+segment: { data_id: 40984, target: "class", drop_columns: null, id: null }
 
 climate-model-simulation-crashes:
-    {
-        data_id: 40994,
-        target: "outcome",
-        drop_columns: null,
-        id: null,
-    }
-
-Fashion-MNIST:
-    {
-        data_id: 40996,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
-
-jungle_chess_2pcs_raw_endgame_complete:
-    {
-        data_id: 41027,
-        target: "class",
-        drop_columns: null,
-        id: null,
-    }
+    { data_id: 40994, target: "outcome", drop_columns: null, id: null }

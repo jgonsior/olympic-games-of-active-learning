@@ -1,17 +1,18 @@
 from __future__ import annotations
 from abc import ABC
-import multiprocessing
+import abc
 from pathlib import Path
 from typing import List, TYPE_CHECKING
-from joblib import Parallel, delayed, parallel_backend
 import ast
 import numpy as np
 import pandas as pd
 from collections.abc import Iterable
 from datasets import DATASET
 
+
 if TYPE_CHECKING:
     from misc.config import Config
+    from resources.data_types import AL_STRATEGY
 
 
 def _process_a_single_strategy(
@@ -24,7 +25,7 @@ def _process_a_single_strategy(
     apply_to_row,
     new_metric_name,
     OVERWRITE_EXISTING_METRIC_FILES,
-    additional_apply_to_row_kwargs,
+    additional_apply_to_row_kwargs2,
 ):
     new_metric_path = (
         OUTPUT_PATH
@@ -39,26 +40,37 @@ def _process_a_single_strategy(
     # iterate over all experiments/datasets defined for this experiment
     metric_result_files: List[Path] = []
     for existing_metric_name in existing_metric_names:
+        if existing_metric_name in ["y_pred_test", "y_pred_train"]:
+            file_ending = ".csv.xz.parquet"
+        else:
+            file_ending = ".csv.xz"
         METRIC_RESULTS_FILE = Path(
             OUTPUT_PATH
             / EXP_STRATEGY.name
             / EXP_DATASET.name
-            / str(existing_metric_name + ".csv.xz")
+            / str(existing_metric_name + file_ending)
         )
+
         if not METRIC_RESULTS_FILE.exists():
+            print(f"{METRIC_RESULTS_FILE} exists already")
             continue
-        print(METRIC_RESULTS_FILE)
+
         metric_result_files.append(METRIC_RESULTS_FILE)
 
     joined_df = pd.DataFrame()
     for METRIC_RESULTS_FILE in metric_result_files:
-        original_df = pd.read_csv(METRIC_RESULTS_FILE, header=0, delimiter=",")
+        print(METRIC_RESULTS_FILE)
+
+        if existing_metric_name in ["y_pred_test", "y_pred_train"]:
+            original_df = pd.read_parquet(METRIC_RESULTS_FILE)
+        else:
+            original_df = pd.read_csv(METRIC_RESULTS_FILE, header=0, delimiter=",")
 
         if len(joined_df) == 0:
             joined_df = original_df
         else:
             joined_df = joined_df.merge(original_df, how="outer", on="EXP_UNIQUE_ID")
-            joined_df.drop_duplicates(inplace=True)
+            joined_df.drop_duplicates(inplace=True, subset="EXP_UNIQUE_ID")
 
     if len(joined_df) == 0:
         #  print(f"{metric_result_files} are all together empty")
@@ -68,17 +80,20 @@ def _process_a_single_strategy(
 
     joined_df = _pre_appy_to_row_hook(joined_df)
 
+    additional_apply_to_row_kwargs2["EXP_DATASET"] = EXP_DATASET
+
     new_df = convert_original_df(
         joined_df,
         apply_to_row=apply_to_row,
-        additional_apply_to_row_kwargs=additional_apply_to_row_kwargs,
+        additional_apply_to_row_kwargs=additional_apply_to_row_kwargs2,
     )
     if isinstance(new_df, pd.Series):
         new_df = new_df.to_frame()
 
     new_df["EXP_UNIQUE_ID"] = exp_unique_id_column
 
-    # save new df somehow
+    print(new_metric_path)
+
     new_df.to_csv(
         new_metric_path,
         compression="infer",
@@ -107,24 +122,23 @@ class Base_Computed_Metric(ABC):
         column_names_which_are_al_cycles.remove("EXP_UNIQUE_ID")
 
         df = df.fillna("[]")
-
-        df[column_names_which_are_al_cycles] = df[
-            column_names_which_are_al_cycles
-        ].applymap(
-            lambda x: ast.literal_eval(str(x)),
+        df[column_names_which_are_al_cycles] = df[column_names_which_are_al_cycles].map(
+            lambda x: ast.literal_eval(str(x).replace("nan", "None")),
         )
 
         if calculate_mean_too:
             df[column_names_which_are_al_cycles] = df[
                 column_names_which_are_al_cycles
-            ].applymap(
-                lambda x: sum(x) / len(x)
-                if isinstance(x, Iterable) and len(x) > 0
-                else x
+            ].map(
+                lambda x: (
+                    sum([xxx for xxx in x if xxx is not None]) / len(x)
+                    if isinstance(x, Iterable) and len(x) > 0
+                    else x
+                )
             )
             df[column_names_which_are_al_cycles] = df[
                 column_names_which_are_al_cycles
-            ].applymap(lambda x: np.nan if x == [] else x)
+            ].map(lambda x: np.nan if x == [] else x)
 
         return df
 
@@ -161,7 +175,7 @@ class Base_Computed_Metric(ABC):
         else:
             df[column_names_which_are_al_cycles] = df[
                 column_names_which_are_al_cycles
-            ].applymap(lambda x: ast.literal_eval(x))
+            ].map(lambda x: ast.literal_eval(x))
         return df
 
     def _pre_appy_to_row_hook(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -170,42 +184,28 @@ class Base_Computed_Metric(ABC):
     def _per_dataset_hook(self, EXP_DATASET: DATASET, **kwargs) -> None:
         ...
 
-    def _take_single_metric_and_compute_new_one(
+    def _compute_single_metric_jobs(
         self,
         existing_metric_names: List[str],
         new_metric_name: str,
         apply_to_row,
+        exp_dataset: DATASET,
+        exp_strategy: AL_STRATEGY,
         additional_apply_to_row_kwargs={},
-    ) -> None:
-        for EXP_DATASET in self.config.EXP_GRID_DATASET:
-            ret = self._per_dataset_hook(EXP_DATASET, **additional_apply_to_row_kwargs)
+    ):
+        _process_a_single_strategy(
+            exp_strategy,
+            exp_dataset,
+            existing_metric_names,
+            self.config.OUTPUT_PATH,
+            self._pre_appy_to_row_hook,
+            self.convert_original_df,
+            apply_to_row,
+            new_metric_name,
+            self.config.OVERWRITE_EXISTING_METRIC_FILES,
+            additional_apply_to_row_kwargs,
+        )
 
-            if ret == False:
-                continue
-
-            with parallel_backend(
-                "multiprocessing", n_jobs=multiprocessing.cpu_count()
-            ):
-                Parallel(verbose=10)(
-                    delayed(_process_a_single_strategy)(
-                        EXP_STRATEGY,
-                        EXP_DATASET,
-                        existing_metric_names,
-                        self.config.OUTPUT_PATH,
-                        self._pre_appy_to_row_hook,
-                        self.convert_original_df,
-                        apply_to_row,
-                        new_metric_name,
-                        self.config.OVERWRITE_EXISTING_METRIC_FILES,
-                        additional_apply_to_row_kwargs,
-                    )
-                    for EXP_STRATEGY in self.config.EXP_GRID_STRATEGY
-                )
-
-    def compute(self) -> None:
-        for metric in self.metrics:
-            self._take_single_metric_and_compute_new_one(
-                existing_metric_names=[metric],
-                new_metric_name=self.computed_metric_appendix() + "_" + metric,
-                apply_to_row=self.apply_to_row,
-            )
+    @abc.abstractmethod
+    def compute_metrics(self):
+        raise NotImplemented

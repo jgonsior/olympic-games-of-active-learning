@@ -4,13 +4,13 @@ import enum
 import itertools
 import pandas as pd
 from datasets import DATASET
-from interactive_results_browser.visualizations.base_visualizer import Base_Visualizer
+from analyse_results.visualizations.base_visualizer import Base_Visualizer
 from typing import Any, Iterable, TYPE_CHECKING
 
 from typing import Any, Dict
 
 from resources.data_types import AL_STRATEGY
-from interactive_results_browser.cache import memory
+from analyse_results.cache import memory
 
 if TYPE_CHECKING:
     pass

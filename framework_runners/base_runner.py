@@ -89,8 +89,10 @@ class AL_Experiment(ABC):
 
         if not self.config.OVERALL_FAILED_WORKLOAD_PATH.exists():
             print(self.config.OVERALL_FAILED_WORKLOAD_PATH)
+            _keys = list(self.config._original_workload.keys())
+            _keys.append("error")
             with open(self.config.OVERALL_FAILED_WORKLOAD_PATH, "a") as f:
-                w = csv.DictWriter(f, fieldnames=self.config._original_workload.keys())
+                w = csv.DictWriter(f, fieldnames=_keys)
                 w.writeheader()
 
         with open(self.config.OVERALL_STARTED_OOM_WORKLOAD_PATH, "a") as f:
@@ -176,7 +178,7 @@ class AL_Experiment(ABC):
 
                     early_stopped_due_to_runtime_limit = True
                     break
-        except NonExistentDummyException as err:
+        except Exception as err:
             error_was_being_raised = True
             import sys
 
@@ -267,7 +269,13 @@ class AL_Experiment(ABC):
             metric.pre_retraining_of_learner_hook(self)
 
         # update our learner model
-        self.model.fit(X=self.local_X_train[self.local_train_labeled_idx, :], y=self.local_Y_train[self.local_train_labeled_idx])  # type: ignore
+        try:
+            self.model.fit(X=self.local_X_train[self.local_train_labeled_idx, :], y=self.local_Y_train[self.local_train_labeled_idx])  # type: ignore
+        except ConvergenceWarning as err:
+            max_iter = self.model.get_params()["max_iter"]
+            print(f"Setting max_iter to {max_iter*100}")
+            self.model.set_params(max_iter=max_iter * 100)
+            self.model.fit(X=self.local_X_train[self.local_train_labeled_idx, :], y=self.local_Y_train[self.local_train_labeled_idx])  # type: ignore
 
         for metric in self.metrics:
             metric.post_retraining_of_learner_hook(self)

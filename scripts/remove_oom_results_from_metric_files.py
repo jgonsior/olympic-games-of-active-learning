@@ -1,7 +1,6 @@
 import sys
 import glob
 import pandas as pd
-from tqdm import tqdm
 
 sys.dont_write_bytecode = True
 

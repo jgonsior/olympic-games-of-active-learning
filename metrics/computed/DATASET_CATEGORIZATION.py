@@ -11,10 +11,11 @@ from typing import Dict, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from resources.data_types import SAMPLES_CATEGORIZER
+    from resources.data_types import AL_STRATEGY
 
 
 class DATASET_CATEGORIZATION(Base_Computed_Metric):
-    dataset_categorizations: Dict[SAMPLES_CATEGORIZER, np.ndarray] = {}
+    dataset_categorizations: Dict[DATASET, Dict[SAMPLES_CATEGORIZER, np.ndarray]] = {}
 
     def _per_dataset_hook(
         self, EXP_DATASET: DATASET, samples_categorizer: SAMPLES_CATEGORIZER
@@ -30,7 +31,9 @@ class DATASET_CATEGORIZATION(Base_Computed_Metric):
 
         data = np.load(samples_categorization_path)["samples_categorization"]
 
-        self.dataset_categorizations[samples_categorizer] = data
+        if EXP_DATASET not in self.dataset_categorizations.keys():
+            self.dataset_categorizations[EXP_DATASET] = {}
+        self.dataset_categorizations[EXP_DATASET][samples_categorizer] = data
 
         return True
 
@@ -40,21 +43,31 @@ class DATASET_CATEGORIZATION(Base_Computed_Metric):
         return df
 
     def count_batch_sample_categories(
-        self, row: pd.Series, samples_categorizer: SAMPLES_CATEGORIZER
+        self,
+        row: pd.Series,
+        samples_categorizer: SAMPLES_CATEGORIZER,
+        EXP_DATASET: DATASET,
     ) -> pd.Series:
         for ix, r in row.items():
-            row[ix] = self.dataset_categorizations[samples_categorizer][r].tolist()
+            row[ix] = self.dataset_categorizations[EXP_DATASET][samples_categorizer][
+                r
+            ].tolist()
+        # print(row)
+        # exit(-1)
         return row
 
-    def compute(self) -> None:
+    def compute_metrics(self, exp_dataset: DATASET, exp_strategy: AL_STRATEGY):
         from resources.data_types import SAMPLES_CATEGORIZER
 
         for samples_categorizer in SAMPLES_CATEGORIZER:
-            self._take_single_metric_and_compute_new_one(
+            self._per_dataset_hook(exp_dataset, samples_categorizer)
+            self._compute_single_metric_jobs(
                 existing_metric_names=["selected_indices"],
                 new_metric_name=f"{samples_categorizer.name}",
                 apply_to_row=self.count_batch_sample_categories,
                 additional_apply_to_row_kwargs={
                     "samples_categorizer": samples_categorizer
                 },
+                exp_dataset=exp_dataset,
+                exp_strategy=exp_strategy,
             )
