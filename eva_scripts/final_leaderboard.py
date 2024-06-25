@@ -215,7 +215,9 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
 
                 ts = (
                     ts.groupby(by=["EXP_DATASET", "EXP_STRATEGY"])["metric_value"]
-                    .apply(lambda lll: np.array([llllll for llllll in lll]).flatten())
+                    .parallel_apply(
+                        lambda lll: np.array([llllll for llllll in lll]).flatten()
+                    )
                     .reset_index()
                 )
                 ts = ts.pivot(
@@ -245,7 +247,7 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
                         return result
 
                     # ts = ts.parallel_apply(_dataset_normalized_percentages, axis=1)
-                    ts = ts.apply(_dataset_normalized_percentages, axis=1)
+                    ts = ts.parallel_apply(_dataset_normalized_percentages, axis=1)
                 else:
                     continue
                 if grid_type == "sparse":
