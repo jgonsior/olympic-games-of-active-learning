@@ -246,8 +246,7 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
 
                     # ts = ts.parallel_apply(_dataset_normalized_percentages, axis=1)
                     ts = ts.parallel_apply(_dataset_normalized_percentages, axis=1)
-                else:
-                    continue
+
                 if grid_type == "sparse":
                     # remove combinations which are not sparse
                     def _count_sparse(cell):
