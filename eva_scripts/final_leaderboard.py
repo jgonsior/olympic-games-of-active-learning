@@ -215,9 +215,7 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
 
                 ts = (
                     ts.groupby(by=["EXP_DATASET", "EXP_STRATEGY"])["metric_value"]
-                    .parallel_apply(
-                        lambda lll: np.array([llllll for llllll in lll]).flatten()
-                    )
+                    .apply(lambda lll: np.array([llllll for llllll in lll]).flatten())
                     .reset_index()
                 )
                 ts = ts.pivot(
