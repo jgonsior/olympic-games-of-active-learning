@@ -2,12 +2,12 @@ import csv
 import multiprocessing
 import subprocess
 import sys
-from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt, transforms
 import numpy as np
 import pandas as pd
 from pathlib import Path
 import matplotlib.style as mplstyle
-
+from sklearn.preprocessing import RobustScaler
 import matplotlib as mpl
 import scipy
 from datasets import DATASET
@@ -39,25 +39,24 @@ orig_standard_metric = "weighted_f1-score"
 # ranking only (spearman instead of pearson)
 # normalize datasets first
 
-# 1) only keep complete grid, remove all strategy/dataset combinations which are not 960 elements long
-# 2) interpolate with 0
-# 3) interpolate with average result of this strategy for this dataset?
-# 4) interpolate with average rank this strategy got for other datasets?
 
-interpolation_strategies = [
-    "count",
-    "count_dense",
-    "remove",
-    "zero",
-    "average_of_same_strategy",
-    "average_rank",
-]
-
-for rank_or_percentage in ["rank", "percentages"]:
+for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentages"]:
     for grid_type in ["sparse", "dense"]:
-        for interpolation in interpolation_strategies:
+        for interpolation in [
+            "count",
+            "count_dense",
+            "remove",
+            "zero",
+            "average_of_same_strategy",
+        ]:
             if grid_type == "dense" and interpolation != "zero":
                 continue
+
+            # if (
+            #    rank_or_percentage == "dataset_normalized_percentages"
+            #    and interpolation != "zero"
+            # ):
+            #    continue
 
             for auc_prefix in [
                 "full_auc_",
@@ -213,13 +212,6 @@ for rank_or_percentage in ["rank", "percentages"]:
                 del ts["dataset_strategy"]
                 del ts["fingerprint"]
 
-                # @todo shared fingerprints hier betrachten!
-                # was mache ich mit lücken? z. B. quire :/
-                # lücken wegen error -> alles weg?
-                # lücken wegen timeout -> 0%? oder so viel wie random bei iteration 0 hat?
-                # aktuell ignoriere ich lücken einfach???
-                # interpolation -> (90-len(df))*interpolation value in der mittelwert berechnung mit hinzu nehmen
-
                 ts = (
                     ts.groupby(by=["EXP_DATASET", "EXP_STRATEGY"])["metric_value"]
                     .apply(lambda lll: np.array([llllll for llllll in lll]).flatten())
@@ -230,6 +222,31 @@ for rank_or_percentage in ["rank", "percentages"]:
                 )
                 print(ts)
 
+                if rank_or_percentage == "dataset_normalized_percentages":
+
+                    def _flatten(xss):
+                        return [[x] for xs in xss for x in xs]
+
+                    def _dataset_normalized_percentages(row: pd.Series) -> pd.Series:
+                        print(_flatten([rrr.tolist() for rrr in row.to_list()]))
+                        transformer = RobustScaler().fit(
+                            _flatten([rrr.tolist() for rrr in row.to_list()])
+                        )
+                        data = [[[rxrxrx] for rxrxrx in rrr] for rrr in row][0]
+                        print(data)
+                        exit(-1)
+                        result = transformer.transform(data)
+                        print(result)
+                        return result
+                        ranks = scipy.stats.rankdata(row, method="max")
+                        result = pd.Series(len(row) - ranks + 1, index=row.index)
+                        return result
+
+                    # ts = ts.parallel_apply(_dataset_normalized_percentages, axis=1)
+                    ts = ts.apply(_dataset_normalized_percentages, axis=1)
+                    exit(-1)
+                else:
+                    continue
                 if grid_type == "sparse":
                     # remove combinations which are not sparse
                     def _count_sparse(cell):
@@ -281,22 +298,6 @@ for rank_or_percentage in ["rank", "percentages"]:
                         else:
                             return cell
 
-                    def _average_rank_interpolation(cell):
-                        if type(cell) == float:
-                            return [0]
-                        if len(cell) < amount_of_max_shared_fingerprints:
-                            return [
-                                *cell,
-                                *[
-                                    0
-                                    for _ in range(
-                                        0, amount_of_max_shared_fingerprints - len(cell)
-                                    )
-                                ],
-                            ]
-                        else:
-                            return cell
-
                     match interpolation:
                         case "count":
                             ts = ts.parallel_applymap(_count_sparse)
@@ -310,14 +311,11 @@ for rank_or_percentage in ["rank", "percentages"]:
                             ts = ts.parallel_applymap(
                                 _average_of_same_strategy_interpolation
                             )
-                        case "average_rank":
-                            ts = ts.parallel_applymap(_average_rank_interpolation)
 
                 ts = ts.parallel_applymap(np.mean)
                 # print(ts)
 
                 if rank_or_percentage == "rank":
-                    columns = ts.columns
 
                     def _calculate_ranks(row: pd.Series) -> pd.Series:
                         # print(row)
@@ -326,11 +324,6 @@ for rank_or_percentage in ["rank", "percentages"]:
                         return result
 
                     ts = ts.parallel_apply(_calculate_ranks, axis=1)
-                    # print(columns)
-                    # print(ts.columns)
-                    # ts.columns = columns
-                # ts = ts.parallel_applymap(np.median)
-                # print(ts)
 
                 ts.columns = [AL_STRATEGY(int(kkk)).name for kkk in ts.columns]
 
