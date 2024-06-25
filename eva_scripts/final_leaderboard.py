@@ -360,7 +360,7 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
                     or interpolation == "count"
                     or interpolation == "count_dense"
                 ):
-                    ax = sns.heatmap(ts, annot=True)
+                    ax = sns.heatmap(ts, annot=True, fmt="d")
                 else:
                     ax = sns.heatmap(ts, annot=True, fmt=".2%")
 
