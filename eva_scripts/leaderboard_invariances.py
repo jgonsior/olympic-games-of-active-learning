@@ -324,4 +324,14 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
                     f"{rank_or_percentage}_{grid_type}_{interpolation}_{standard_metric}"
                 ] = ts.loc["Total"]
 
-print(ranking_dict)
+ranking_path = Path(
+    config.OUTPUT_PATH / f"plots/leaderboard_invariances/leaderboard_types.csv"
+)
+ranking_path.parent.mkdir(parents=True, exist_ok=True)
+
+
+ranking_df = pd.DataFrame(ranking_dict).T
+
+ranking_df.to_csv(
+    config.OUTPUT_PATH / f"plots/leaderboard_invariances/leaderboard_types.csv"
+)
