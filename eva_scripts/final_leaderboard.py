@@ -317,7 +317,6 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
                             ts = ts.parallel_applymap(
                                 _average_of_same_strategy_interpolation
                             )
-
                 ts = ts.parallel_applymap(np.mean)
                 # print(ts)
 
@@ -325,8 +324,14 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
 
                     def _calculate_ranks(row: pd.Series) -> pd.Series:
                         # print(row)
-                        ranks = scipy.stats.rankdata(row, method="max")
-                        result = pd.Series(len(row) - ranks + 1, index=row.index)
+                        ranks = scipy.stats.rankdata(
+                            row, method="max", nan_policy="omit"
+                        )
+
+                        amount_of_non_nan_values = np.count_nonzero(~np.isnan(ranks))
+                        result = pd.Series(
+                            amount_of_non_nan_values - ranks + 1, index=row.index
+                        )
                         return result
 
                     ts = ts.parallel_apply(_calculate_ranks, axis=1)
