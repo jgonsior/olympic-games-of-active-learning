@@ -50,6 +50,12 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
             "zero",
             "average_of_same_strategy",
         ]:
+            if rank_or_percentage == "rank" and interpolation == "count_dense":
+                continue
+
+            if rank_or_percentage == "rank" and interpolation == "count":
+                continue
+
             if grid_type == "dense" and interpolation != "zero":
                 continue
 
