@@ -329,9 +329,8 @@ ranking_path = Path(
 )
 ranking_path.parent.mkdir(parents=True, exist_ok=True)
 
+print(ranking_path)
 
 ranking_df = pd.DataFrame(ranking_dict).T
 
-ranking_df.to_csv(
-    config.OUTPUT_PATH / f"plots/leaderboard_invariances/leaderboard_types.csv"
-)
+ranking_df.to_csv(ranking_path)
