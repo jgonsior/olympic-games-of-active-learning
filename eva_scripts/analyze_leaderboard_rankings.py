@@ -67,5 +67,33 @@ ranking_path = Path(
 ranking_df = pd.read_csv(ranking_path, index_col=0).T
 print(ranking_df)
 
-print(ranking_df.corr(method="spearman"))
-print(ranking_df.corr(method="kendall"))
+
+for corr_method in ["spearman", "kendall"]:
+    corr_data = ranking_df.corr(method=corr_method)
+
+    destination_path = Path(
+        config.OUTPUT_PATH
+        / f"plots/leaderboard_invariances/leaderboard_types_{corr_method}"
+    )
+
+    print(str(destination_path) + f".jpg")
+    set_seaborn_style(font_size=8)
+    mpl.rcParams["path.simplify"] = True
+    mpl.rcParams["path.simplify_threshold"] = 1.0
+    # plt.figure(figsize=set_matplotlib_size(fraction=10))
+
+    # calculate fraction based on length of keys
+    plt.figure(figsize=set_matplotlib_size(fraction=len(corr_data.columns) / 6))
+
+    ax = sns.heatmap(corr_data)
+
+    ax.set_title(f": {ranking_path}")
+
+    corr_data.to_parquet(str(destination_path) + f".parquet")
+
+    plt.savefig(
+        str(destination_path) + f".jpg",
+        dpi=300,
+        bbox_inches="tight",
+        pad_inches=0,
+    )
