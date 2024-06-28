@@ -51,12 +51,6 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
             if grid_type == "dense" and interpolation != "zero":
                 continue
 
-            if (
-                rank_or_percentage == "dataset_normalized_percentages"
-                and interpolation != "zero"
-            ):
-                continue
-
             for auc_prefix in [
                 "full_auc_",
                 # "first_5_",
