@@ -49,7 +49,7 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
             "zero",
             "average_of_same_strategy",
         ]:
-            if grid_type == "dense" and interpolation != "zero":
+            if grid_type == "dense" and interpolation != "none":
                 continue
 
             for auc_prefix in [
