@@ -68,32 +68,30 @@ ranking_df = pd.read_csv(ranking_path, index_col=0).T
 print(ranking_df)
 
 
-for corr_method in ["spearman", "kendall"]:
-    corr_data = ranking_df.corr(method=corr_method)
+corr_data = ranking_df.corr(method="kendall")
 
-    destination_path = Path(
-        config.OUTPUT_PATH
-        / f"plots/leaderboard_invariances/leaderboard_types_{corr_method}"
-    )
+destination_path = Path(
+    config.OUTPUT_PATH / f"plots/leaderboard_invariances/leaderboard_types"
+)
 
-    print(str(destination_path) + f".jpg")
-    set_seaborn_style(font_size=8)
-    mpl.rcParams["path.simplify"] = True
-    mpl.rcParams["path.simplify_threshold"] = 1.0
-    # plt.figure(figsize=set_matplotlib_size(fraction=10))
+print(str(destination_path) + f".jpg")
+set_seaborn_style(font_size=8)
+mpl.rcParams["path.simplify"] = True
+mpl.rcParams["path.simplify_threshold"] = 1.0
+# plt.figure(figsize=set_matplotlib_size(fraction=10))
 
-    # calculate fraction based on length of keys
-    plt.figure(figsize=set_matplotlib_size(fraction=len(corr_data.columns) / 6))
+# calculate fraction based on length of keys
+plt.figure(figsize=set_matplotlib_size(fraction=len(corr_data.columns) / 6))
 
-    ax = sns.heatmap(corr_data, annot=True, fmt=".2%")
+ax = sns.heatmap(corr_data, annot=True, fmt=".2%")
 
-    ax.set_title(f": {ranking_path}")
+ax.set_title(f": {ranking_path}")
 
-    corr_data.to_parquet(str(destination_path) + f".parquet")
-
-    plt.savefig(
-        str(destination_path) + f".jpg",
-        dpi=300,
-        bbox_inches="tight",
-        pad_inches=0,
-    )
+corr_data.to_parquet(str(destination_path) + f".parquet")
+print(corr_data)
+plt.savefig(
+    str(destination_path) + f".jpg",
+    dpi=300,
+    bbox_inches="tight",
+    pad_inches=0,
+)

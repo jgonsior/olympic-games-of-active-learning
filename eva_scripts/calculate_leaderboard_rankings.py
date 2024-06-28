@@ -292,10 +292,8 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
                             row, method="max", nan_policy="omit"
                         )
 
-                        amount_of_non_nan_values = np.count_nonzero(~np.isnan(ranks))
-                        result = pd.Series(
-                            amount_of_non_nan_values - ranks + 1, index=row.index
-                        )
+                        # amount_of_non_nan_values = np.count_nonzero(~np.isnan(ranks))
+                        result = pd.Series(ranks, index=row.index)
                         return result
 
                     ts = ts.parallel_apply(_calculate_ranks, axis=1)
@@ -314,7 +312,7 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
                 ts.loc[:, "Total"] = ts.mean(axis=1)
 
                 if rank_or_percentage == "rank":
-                    ts.sort_values(by=["Total"], inplace=True, ascending=False)
+                    ts.sort_values(by=["Total"], inplace=True, ascending=True)
                 else:
                     ts.sort_values(by=["Total"], inplace=True, ascending=True)
                 ts = ts.T
