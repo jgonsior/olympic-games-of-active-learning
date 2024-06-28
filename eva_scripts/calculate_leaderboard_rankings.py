@@ -44,6 +44,7 @@ orig_standard_metric = "weighted_f1-score"
 for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentages"]:
     for grid_type in ["sparse", "dense"]:
         for interpolation in [
+            "none",
             "remove",
             "zero",
             "average_of_same_strategy",
