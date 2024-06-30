@@ -114,6 +114,18 @@ class STANDARD_AUC(Base_Computed_Metric):
         for metric in all_existing_metric_names:
             self._compute_single_metric_jobs(
                 existing_metric_names=[metric],
+                new_metric_name="full_auc_" + metric,
+                apply_to_row=self.range_auc,
+                additional_apply_to_row_kwargs={
+                    "range_start": 0,
+                    "range_end": None,
+                },
+                exp_dataset=exp_dataset,
+                exp_strategy=exp_strategy,
+            )
+            continue
+            self._compute_single_metric_jobs(
+                existing_metric_names=[metric],
                 new_metric_name="ramp_up_auc_" + metric,
                 apply_to_row=self.range_auc,
                 additional_apply_to_row_kwargs={
