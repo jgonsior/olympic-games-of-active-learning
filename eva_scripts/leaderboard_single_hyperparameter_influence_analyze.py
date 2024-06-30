@@ -63,21 +63,24 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
     elif hyperparameter_to_evaluate == "EXP_BATCH_SIZE":
         keys = {kkk: int(kkk) for kkk in ranking_df.columns}
         ranking_df.rename(columns=keys, inplace=True)
+    elif hyperparameter_to_evaluate == "EXP_DATASET":
+        keys = {kkk: DATASET(int(kkk)).name for kkk in ranking_df.columns}
+        ranking_df.rename(columns=keys, inplace=True)
 
     ranking_df = ranking_df.sort_index(axis=0)
     ranking_df = ranking_df.sort_index(axis=1)
 
     for hypothesis in [
         "kendall",
-        "kendall_unc_better_repr",
-        "mm_better_lc_then_ent",
-        "random_similar",
-        "optimal best",
-        "quire similar"
-        "same strategy but in different frameworks behave similar"
+        # "kendall_unc_better_repr",
+        # "mm_better_lc_then_ent",
+        # "random_similar",
+        # "optimal best",
+        # "quire similar"
+        # "same strategy but in different frameworks behave similar"
     ]:
 
-        check how "well" the hypothesis can be found in the rankings!
+        # check how "well" the hypothesis can be found in the rankings!
         corr_data = ranking_df.corr(method=hypothesis)
 
         destination_path = Path(
