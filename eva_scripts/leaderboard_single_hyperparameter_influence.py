@@ -47,72 +47,103 @@ hyperparameters_to_evaluate = [
     "auc_metric",
 ]
 
-if not Path(config.CORRELATION_TS_PATH / f"{standard_metric}.parquet").exists():
-    unsorted_f = config.CORRELATION_TS_PATH / f"{standard_metric}.unsorted.csv"
-    unparqueted_f = config.CORRELATION_TS_PATH / f"{standard_metric}.to_parquet.csv"
 
-    if not unsorted_f.exists() and not unparqueted_f.exists():
-        log_and_time("Create selected indices ts")
-        create_fingerprint_joined_timeseries_csv_files(
-            metric_names=[standard_metric], config=config
+def read_or_create_ts(metric_name) -> pd.DataFrame:
+
+    if not Path(config.CORRELATION_TS_PATH / f"{standard_metric}.parquet").exists():
+        unsorted_f = config.CORRELATION_TS_PATH / f"{standard_metric}.unsorted.csv"
+        unparqueted_f = config.CORRELATION_TS_PATH / f"{standard_metric}.to_parquet.csv"
+
+        if not unsorted_f.exists() and not unparqueted_f.exists():
+            log_and_time("Create selected indices ts")
+            create_fingerprint_joined_timeseries_csv_files(
+                metric_names=[standard_metric], config=config
+            )
+
+        if not unparqueted_f.exists():
+            log_and_time("Created, now sorting")
+            command = f"sort -T {config.CORRELATION_TS_PATH} --parallel {multiprocessing.cpu_count()} {unsorted_f} -o {config.CORRELATION_TS_PATH}/{standard_metric}.to_parquet.csv"
+            print(command)
+            subprocess.run(command, shell=True, text=True)
+            unsorted_f.unlink()
+
+        log_and_time("sorted, now parqueting")
+        ts = pd.read_csv(
+            unparqueted_f,
+            header=None,
+            index_col=False,
+            delimiter=",",
+            names=[
+                "EXP_DATASET",
+                "EXP_STRATEGY",
+                "EXP_START_POINT",
+                "EXP_BATCH_SIZE",
+                "EXP_LEARNER_MODEL",
+                "EXP_TRAIN_TEST_BUCKET_SIZE",
+                "ix",
+                "EXP_UNIQUE_ID_ix",
+                "metric_value",
+            ],
+        )
+        ts["metric_value"] = ts["metric_value"].apply(
+            lambda xxx: (
+                np.fromstring(
+                    str(xxx).removeprefix("[").removesuffix("]"),
+                    dtype=np.int32,
+                    sep=",",
+                )
+            )
         )
 
-    if not unparqueted_f.exists():
-        log_and_time("Created, now sorting")
-        command = f"sort -T {config.CORRELATION_TS_PATH} --parallel {multiprocessing.cpu_count()} {unsorted_f} -o {config.CORRELATION_TS_PATH}/{standard_metric}.to_parquet.csv"
-        print(command)
-        subprocess.run(command, shell=True, text=True)
-        unsorted_f.unlink()
+        f = Path(config.CORRELATION_TS_PATH / f"{standard_metric}.parquet")
+        ts.to_parquet(f)
+        unparqueted_f.unlink()
 
-    log_and_time("sorted, now parqueting")
-    ts = pd.read_csv(
-        unparqueted_f,
-        header=None,
-        index_col=False,
-        delimiter=",",
-        names=[
+    ts = pd.read_parquet(
+        config.CORRELATION_TS_PATH / f"{standard_metric}.parquet",
+        columns=[
             "EXP_DATASET",
             "EXP_STRATEGY",
             "EXP_START_POINT",
             "EXP_BATCH_SIZE",
             "EXP_LEARNER_MODEL",
             "EXP_TRAIN_TEST_BUCKET_SIZE",
-            "ix",
-            "EXP_UNIQUE_ID_ix",
+            # "ix",
+            # "EXP_UNIQUE_ID_ix",
             "metric_value",
         ],
     )
-    ts["metric_value"] = ts["metric_value"].apply(
-        lambda xxx: (
-            np.fromstring(
-                str(xxx).removeprefix("[").removesuffix("]"),
-                dtype=np.int32,
-                sep=",",
-            )
-        )
-    )
+    return ts
 
-    f = Path(config.CORRELATION_TS_PATH / f"{standard_metric}.parquet")
-    ts.to_parquet(f)
-    unparqueted_f.unlink()
 
-ts = pd.read_parquet(
-    config.CORRELATION_TS_PATH / f"{standard_metric}.parquet",
-    columns=[
-        "EXP_DATASET",
-        "EXP_STRATEGY",
-        "EXP_START_POINT",
-        "EXP_BATCH_SIZE",
-        "EXP_LEARNER_MODEL",
-        "EXP_TRAIN_TEST_BUCKET_SIZE",
-        # "ix",
-        # "EXP_UNIQUE_ID_ix",
-        "metric_value",
-    ],
-)
-
-ts_orig = ts.copy()
 for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
+    ts = read_or_create_ts(standard_metric)
+
+    if hyperparameter_to_evaluate == "standard_metric":
+        hyperparameter_values = [
+            "accuracy",
+            "weighted_recall",
+            "macro_f1-score",
+            "macro_precision",
+            "macro_recall",
+            "weighted_f1-score",
+            "weighted_precision",
+        ]
+    elif hyperparameter_to_evaluate == "auc_metric":
+        hyperparameter_values = [
+            "final_value_",
+            "first_5_",
+            "full_auc_",
+            "last_5_",
+            "learning_stability_5_",
+            "learning_stability_10_",
+            "ramp_up_auc_",
+            "plateau_auc_",
+        ]
+    else:
+        hyperparameter_values = ts[hyperparameter_to_evaluate].unique()
+
+    ts_orig = ts.copy()
     ts = ts_orig.copy()
     ranking_dict: Dict[str, np.ndarray] = {}
 
@@ -126,9 +157,11 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         print(f"{ranking_path} already exists")
         continue
 
-    for hyperparameter_target_value in ts[hyperparameter_to_evaluate].unique():
+    for hyperparameter_target_value in hyperparameter_values:
         ts = ts_orig.copy()
-        ts = ts.loc[ts[hyperparameter_to_evaluate] == hyperparameter_target_value]
+
+        if hyperparameter_to_evaluate not in ["auc_metric", "standard_metric"]:
+            ts = ts.loc[ts[hyperparameter_to_evaluate] == hyperparameter_target_value]
 
         fingerprint_cols = list(ts.columns)
         fingerprint_cols.remove("metric_value")
