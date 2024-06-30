@@ -29,13 +29,10 @@ pandarallel.initialize(
     nb_workers=multiprocessing.cpu_count(), progress_bar=True, use_memory_fs=False
 )
 
-standard_metric = "full_auc_weighted_f1-score"
+default_standard_metric = "full_auc_weighted_f1-score"
 grid_type = "sparse"
 rank_or_percentage = "dataset_normalized_percentages"
 interpolation = "average_of_same_strategy"
-
-
-log_and_time(f"Starting {standard_metric}")
 
 hyperparameters_to_evaluate = [
     "EXP_LEARNER_MODEL",
@@ -49,19 +46,19 @@ hyperparameters_to_evaluate = [
 
 
 def read_or_create_ts(metric_name) -> pd.DataFrame:
-    if not Path(config.CORRELATION_TS_PATH / f"{standard_metric}.parquet").exists():
-        unsorted_f = config.CORRELATION_TS_PATH / f"{standard_metric}.unsorted.csv"
-        unparqueted_f = config.CORRELATION_TS_PATH / f"{standard_metric}.to_parquet.csv"
+    if not Path(config.CORRELATION_TS_PATH / f"{metric_name}.parquet").exists():
+        unsorted_f = config.CORRELATION_TS_PATH / f"{metric_name}.unsorted.csv"
+        unparqueted_f = config.CORRELATION_TS_PATH / f"{metric_name}.to_parquet.csv"
 
         if not unsorted_f.exists() and not unparqueted_f.exists():
             log_and_time("Create selected indices ts")
             create_fingerprint_joined_timeseries_csv_files(
-                metric_names=[standard_metric], config=config
+                metric_names=[metric_name], config=config
             )
 
         if not unparqueted_f.exists():
             log_and_time("Created, now sorting")
-            command = f"sort -T {config.CORRELATION_TS_PATH} --parallel {multiprocessing.cpu_count()} {unsorted_f} -o {config.CORRELATION_TS_PATH}/{standard_metric}.to_parquet.csv"
+            command = f"sort -T {config.CORRELATION_TS_PATH} --parallel {multiprocessing.cpu_count()} {unsorted_f} -o {config.CORRELATION_TS_PATH}/{metric_name}.to_parquet.csv"
             print(command)
             subprocess.run(command, shell=True, text=True)
             unsorted_f.unlink()
@@ -94,12 +91,12 @@ def read_or_create_ts(metric_name) -> pd.DataFrame:
             )
         )
 
-        f = Path(config.CORRELATION_TS_PATH / f"{standard_metric}.parquet")
+        f = Path(config.CORRELATION_TS_PATH / f"{metric_name}.parquet")
         ts.to_parquet(f)
         unparqueted_f.unlink()
 
     ts = pd.read_parquet(
-        config.CORRELATION_TS_PATH / f"{standard_metric}.parquet",
+        config.CORRELATION_TS_PATH / f"{metric_name}.parquet",
         columns=[
             "EXP_DATASET",
             "EXP_STRATEGY",
@@ -157,16 +154,18 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
     ranking_dict: Dict[str, np.ndarray] = {}
 
     if hyperparameter_to_evaluate not in ["standard_metric", "auc_metric"]:
-        ts = read_or_create_ts(standard_metric)
+        ts = read_or_create_ts(default_standard_metric)
 
         ts_orig = ts.copy()
         hyperparameter_values = ts[hyperparameter_to_evaluate].unique()
 
     for hyperparameter_target_value in hyperparameter_values:
         if hyperparameter_to_evaluate in ["standard_metric", "auc_metric"]:
+            standard_metric = hyperparameter_to_evaluate
             ts = read_or_create_ts(hyperparameter_target_value)
         else:
             ts = ts_orig.copy()
+            standard_metric = default_standard_metric
 
         if hyperparameter_to_evaluate not in ["auc_metric", "standard_metric"]:
             ts = ts.loc[ts[hyperparameter_to_evaluate] == hyperparameter_target_value]
