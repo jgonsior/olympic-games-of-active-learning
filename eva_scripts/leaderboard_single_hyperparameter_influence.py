@@ -189,7 +189,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
 
         shared_fingerprints_csv_path = (
             config.CORRELATION_TS_PATH
-            / f"leaderboard_single_hyperparameter_influence_{hyperparameter_target_value}.csv"
+            / f"leaderboard_single_hyperparameter_shared_fingerprints_{hyperparameter_to_evaluate}_{hyperparameter_target_value}.csv"
         )
         if shared_fingerprints_csv_path.exists():
             with open(shared_fingerprints_csv_path, newline="") as f:
