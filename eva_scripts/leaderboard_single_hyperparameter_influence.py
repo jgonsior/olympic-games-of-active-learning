@@ -187,48 +187,6 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         log_and_time("Done fingerprinting")
         # exit(-1)
 
-        shared_fingerprints_csv_path = (
-            config.CORRELATION_TS_PATH
-            / f"leaderboard_single_hyperparameter_shared_fingerprints_{hyperparameter_to_evaluate}_{hyperparameter_target_value}.csv"
-        )
-        if shared_fingerprints_csv_path.exists():
-            with open(shared_fingerprints_csv_path, newline="") as f:
-                reader = list(csv.reader(f))
-                shared_fingerprints = set(reader[0])
-                amount_of_max_shared_fingerprints = int(reader[1][0])
-        else:
-            shared_fingerprints = None
-            amount_of_max_shared_fingerprints = 0
-            for target_value in ts["dataset_strategy"].unique():
-                tmp_fingerprints = set(
-                    ts.loc[ts["dataset_strategy"] == target_value][
-                        "fingerprint"
-                    ].to_list()
-                )
-
-                if len(tmp_fingerprints) > amount_of_max_shared_fingerprints:
-                    amount_of_max_shared_fingerprints = len(tmp_fingerprints)
-
-                if shared_fingerprints is None:
-                    print(target_value)
-                    shared_fingerprints = tmp_fingerprints
-                else:
-                    print(f"{target_value}: {len(shared_fingerprints)}")
-                    shared_fingerprints = shared_fingerprints.intersection(
-                        tmp_fingerprints
-                    )
-
-            log_and_time(
-                f"Done calculating shared fingerprints - {len(shared_fingerprints)} - #{amount_of_max_shared_fingerprints}"
-            )
-            with open(shared_fingerprints_csv_path, "w") as myfile:
-                wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
-                wr.writerow(list(shared_fingerprints))
-                wr.writerow([amount_of_max_shared_fingerprints])
-
-        if grid_type == "dense":
-            ts = ts.loc[(ts["fingerprint"].isin(shared_fingerprints))]
-
         del ts["dataset_strategy"]
         del ts["fingerprint"]
 
@@ -262,6 +220,12 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
 
             # ts = ts.parallel_apply(_dataset_normalized_percentages, axis=1)
             ts = ts.parallel_apply(_dataset_normalized_percentages, axis=1)
+
+        amount_of_max_shared_fingerprints = ts.parallel_applymap(np.shape).max(
+            axis=None
+        )
+        print("important comment for parallel voodo reasons")
+        amount_of_max_shared_fingerprints = amount_of_max_shared_fingerprints[0]
 
         if grid_type == "sparse":
             # remove combinations which are not sparse

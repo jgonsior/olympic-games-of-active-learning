@@ -50,6 +50,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         / f"plots/leaderboard_single_hyperparameter_influence/{hyperparameter_to_evaluate}.csv"
     )
     ranking_df = pd.read_csv(ranking_path, index_col=0).T
+    print(ranking_df)
 
     keys = {
         kkk: kkk.removeprefix(f"{hyperparameter_to_evaluate}: ")
