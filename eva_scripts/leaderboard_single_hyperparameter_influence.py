@@ -49,7 +49,6 @@ hyperparameters_to_evaluate = [
 
 
 def read_or_create_ts(metric_name) -> pd.DataFrame:
-
     if not Path(config.CORRELATION_TS_PATH / f"{standard_metric}.parquet").exists():
         unsorted_f = config.CORRELATION_TS_PATH / f"{standard_metric}.unsorted.csv"
         unparqueted_f = config.CORRELATION_TS_PATH / f"{standard_metric}.to_parquet.csv"
@@ -117,6 +116,16 @@ def read_or_create_ts(metric_name) -> pd.DataFrame:
 
 
 for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
+    ranking_path = Path(
+        config.OUTPUT_PATH
+        / f"plots/leaderboard_single_hyperparameter_influence/{hyperparameter_to_evaluate}.csv"
+    )
+    ranking_path.parent.mkdir(parents=True, exist_ok=True)
+
+    if ranking_path.exists():
+        print(f"{ranking_path} already exists")
+        continue
+
     ts = read_or_create_ts(standard_metric)
 
     if hyperparameter_to_evaluate == "standard_metric":
@@ -146,16 +155,6 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
     ts_orig = ts.copy()
     ts = ts_orig.copy()
     ranking_dict: Dict[str, np.ndarray] = {}
-
-    ranking_path = Path(
-        config.OUTPUT_PATH
-        / f"plots/leaderboard_single_hyperparameter_influence/{hyperparameter_to_evaluate}.csv"
-    )
-    ranking_path.parent.mkdir(parents=True, exist_ok=True)
-
-    if ranking_path.exists():
-        print(f"{ranking_path} already exists")
-        continue
 
     for hyperparameter_target_value in hyperparameter_values:
         ts = ts_orig.copy()
