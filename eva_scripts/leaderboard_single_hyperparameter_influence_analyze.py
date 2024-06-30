@@ -18,7 +18,7 @@ from misc.helpers import (
     save_correlation_plot,
 )
 from misc.plotting import set_matplotlib_size, set_seaborn_style
-from resources.data_types import AL_STRATEGY
+from resources.data_types import AL_STRATEGY, LEARNER_MODEL
 import seaborn as sns
 from pprint import pprint
 
@@ -48,6 +48,19 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         / f"plots/leaderboard_single_hyperparameter_influence/{hyperparameter_to_evaluate}.csv"
     )
     ranking_df = pd.read_csv(ranking_path, index_col=0).T
+
+    keys = {
+        kkk: kkk.removeprefix(f"{hyperparameter_to_evaluate}: ")
+        for kkk in ranking_df.columns
+    }
+    ranking_df.rename(columns=keys, inplace=True)
+
+    if hyperparameter_to_evaluate == "EXP_LEARNER_MODEL":
+        keys = {kkk: LEARNER_MODEL(int(kkk)).name for kkk in ranking_df.columns}
+        ranking_df.rename(columns=keys, inplace=True)
+
+    ranking_df = ranking_df.sort_index(axis=0)
+    ranking_df = ranking_df.sort_index(axis=1)
     print(ranking_df)
 
     for corr_method in ["spearman", "kendall"]:
@@ -69,7 +82,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
 
         ax = sns.heatmap(corr_data, annot=True, fmt=".2%")
 
-        ax.set_title(f": {ranking_path}")
+        ax.set_title(f": {hyperparameter_to_evaluate}")
 
         corr_data.to_parquet(str(destination_path) + f".parquet")
 
