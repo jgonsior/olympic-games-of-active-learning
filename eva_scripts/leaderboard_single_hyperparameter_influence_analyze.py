@@ -72,6 +72,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
     ranking_df = ranking_df.sort_index(axis=1)
 
     for hypothesis in [
+        "pearson",
         "kendall",
         # "kendall_unc_better_than_repr",
         # "same strategies - same rank"
@@ -84,7 +85,6 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
 
         # check how "well" the hypothesis can be found in the rankings!
         corr_data = ranking_df.corr(method=hypothesis)
-
         destination_path = Path(
             config.OUTPUT_PATH
             / f"plots/leaderboard_single_hyperparameter_influence/{hyperparameter_to_evaluate}_{hypothesis}"
