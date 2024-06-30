@@ -58,12 +58,15 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
     if hyperparameter_to_evaluate == "EXP_LEARNER_MODEL":
         keys = {kkk: LEARNER_MODEL(int(kkk)).name for kkk in ranking_df.columns}
         ranking_df.rename(columns=keys, inplace=True)
+    elif hyperparameter_to_evaluate == "EXP_BATCH_SIZE":
+        keys = {kkk: int(kkk) for kkk in ranking_df.columns}
+        ranking_df.rename(columns=keys, inplace=True)
+
+    ranking_df = ranking_df.sort_index(axis=0)
+    ranking_df = ranking_df.sort_index(axis=1)
 
     for corr_method in ["spearman", "kendall"]:
         corr_data = ranking_df.corr(method=corr_method)
-
-        corr_data = corr_data.sort_index(axis=0)
-        corr_data = corr_data.sort_index(axis=1)
 
         destination_path = Path(
             config.OUTPUT_PATH
