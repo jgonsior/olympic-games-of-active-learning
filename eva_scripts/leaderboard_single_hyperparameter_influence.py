@@ -112,7 +112,7 @@ ts = pd.read_parquet(
 
 ts_orig = ts.copy()
 for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
-
+    ts = ts_orig.copy()
     ranking_dict: Dict[str, np.ndarray] = {}
 
     ranking_path = Path(
