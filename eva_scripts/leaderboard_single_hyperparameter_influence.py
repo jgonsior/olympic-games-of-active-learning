@@ -38,12 +38,13 @@ interpolation = "average_of_same_strategy"
 log_and_time(f"Starting {standard_metric}")
 
 hyperparameters_to_evaluate = [
-    # "EXP_STRATEGY",
     "EXP_LEARNER_MODEL",
     "EXP_BATCH_SIZE",
-    # "EXP_DATASET",
-    # "EXP_TRAIN_TEST_BUCKET_SIZE",
-    # "EXP_START_POINT",
+    "EXP_DATASET",
+    "EXP_TRAIN_TEST_BUCKET_SIZE",
+    "EXP_START_POINT",
+    "standard_metric",
+    "auc_metric",
 ]
 
 if not Path(config.CORRELATION_TS_PATH / f"{standard_metric}.parquet").exists():
