@@ -161,11 +161,12 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
 
     for hyperparameter_target_value in hyperparameter_values:
         if hyperparameter_to_evaluate in ["standard_metric", "auc_metric"]:
-            standard_metric = hyperparameter_to_evaluate
+            print("READING " + hyperparameter_target_value)
+            continue
+            exit(-1)
             ts = read_or_create_ts(hyperparameter_target_value)
         else:
             ts = ts_orig.copy()
-            standard_metric = default_standard_metric
 
         if hyperparameter_to_evaluate not in ["auc_metric", "standard_metric"]:
             ts = ts.loc[ts[hyperparameter_to_evaluate] == hyperparameter_target_value]
@@ -191,7 +192,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
 
         shared_fingerprints_csv_path = (
             config.CORRELATION_TS_PATH
-            / f"final_leaderboard_shared_fingerprints_{standard_metric}.csv"
+            / f"leaderboard_single_hyperparameter_influence_{hyperparameter_target_value}.csv"
         )
         if shared_fingerprints_csv_path.exists():
             with open(shared_fingerprints_csv_path, newline="") as f:
