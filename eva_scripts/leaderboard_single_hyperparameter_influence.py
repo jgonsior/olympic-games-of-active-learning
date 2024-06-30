@@ -138,7 +138,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         ]
     elif hyperparameter_to_evaluate == "auc_metric":
         hyperparameter_values = [
-            f"{kkk}_weighted_f1-score"
+            f"{kkk}weighted_f1-score"
             for kkk in [
                 "final_value_",
                 "first_5_",
@@ -161,9 +161,6 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
 
     for hyperparameter_target_value in hyperparameter_values:
         if hyperparameter_to_evaluate in ["standard_metric", "auc_metric"]:
-            print("READING " + hyperparameter_target_value)
-            continue
-            exit(-1)
             ts = read_or_create_ts(hyperparameter_target_value)
         else:
             ts = ts_orig.copy()
