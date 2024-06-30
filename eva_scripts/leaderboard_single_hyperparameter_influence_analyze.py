@@ -72,7 +72,8 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
 
     for hypothesis in [
         "kendall",
-        # "kendall_unc_better_repr",
+        # "kendall_unc_better_than_repr",
+        # "same strategies - same rank"
         # "mm_better_lc_then_ent",
         # "random_similar",
         # "optimal best",

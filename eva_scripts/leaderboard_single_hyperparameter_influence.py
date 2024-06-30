@@ -126,38 +126,47 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         print(f"{ranking_path} already exists")
         continue
 
-    ts = read_or_create_ts(standard_metric)
-
     if hyperparameter_to_evaluate == "standard_metric":
         hyperparameter_values = [
-            "accuracy",
-            "weighted_recall",
-            "macro_f1-score",
-            "macro_precision",
-            "macro_recall",
-            "weighted_f1-score",
-            "weighted_precision",
+            f"full_auc_{kkk}"
+            for kkk in [
+                "accuracy",
+                "weighted_recall",
+                "macro_f1-score",
+                "macro_precision",
+                "macro_recall",
+                "weighted_f1-score",
+                "weighted_precision",
+            ]
         ]
     elif hyperparameter_to_evaluate == "auc_metric":
         hyperparameter_values = [
-            "final_value_",
-            "first_5_",
-            "full_auc_",
-            "last_5_",
-            "learning_stability_5_",
-            "learning_stability_10_",
-            "ramp_up_auc_",
-            "plateau_auc_",
+            f"{kkk}_weighted_f1-score"
+            for kkk in [
+                "final_value_",
+                "first_5_",
+                "full_auc_",
+                "last_5_",
+                "learning_stability_5_",
+                "learning_stability_10_",
+                "ramp_up_auc_",
+                "plateau_auc_",
+            ]
         ]
-    else:
-        hyperparameter_values = ts[hyperparameter_to_evaluate].unique()
 
-    ts_orig = ts.copy()
-    ts = ts_orig.copy()
     ranking_dict: Dict[str, np.ndarray] = {}
 
+    if hyperparameter_to_evaluate not in ["standard_metric", "auc_metric"]:
+        ts = read_or_create_ts(standard_metric)
+
+        ts_orig = ts.copy()
+        hyperparameter_values = ts[hyperparameter_to_evaluate].unique()
+
     for hyperparameter_target_value in hyperparameter_values:
-        ts = ts_orig.copy()
+        if hyperparameter_to_evaluate in ["standard_metric", "auc_metric"]:
+            ts = read_or_create_ts(hyperparameter_target_value)
+        else:
+            ts = ts_orig.copy()
 
         if hyperparameter_to_evaluate not in ["auc_metric", "standard_metric"]:
             ts = ts.loc[ts[hyperparameter_to_evaluate] == hyperparameter_target_value]
