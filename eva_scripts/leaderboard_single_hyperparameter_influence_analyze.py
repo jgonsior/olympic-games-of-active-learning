@@ -65,7 +65,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
     ranking_df = ranking_df.sort_index(axis=0)
     ranking_df = ranking_df.sort_index(axis=1)
 
-    for corr_method in ["spearman", "kendall"]:
+    for corr_method in ["kendall"]:
         corr_data = ranking_df.corr(method=corr_method)
 
         destination_path = Path(
