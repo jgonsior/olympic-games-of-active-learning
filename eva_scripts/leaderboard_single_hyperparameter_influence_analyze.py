@@ -34,13 +34,13 @@ pandarallel.initialize(
 )
 
 hyperparameters_to_evaluate = [
+    "standard_metric",
     # "EXP_STRATEGY",
     "EXP_LEARNER_MODEL",
     "EXP_BATCH_SIZE",
     "EXP_DATASET",
     "EXP_TRAIN_TEST_BUCKET_SIZE",
     "EXP_START_POINT",
-    "standard_metric",
     "auc_metric",
 ]
 

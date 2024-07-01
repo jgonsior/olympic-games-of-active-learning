@@ -42,20 +42,6 @@ for modus in ["standard"]:
         elif modus == "auc2":
             standard_metrics = ["weighted_f1-score"]
 
-        """variant_prefixe = [
-            "biggest_drop_per_",
-            "nr_decreasing_al_cycles_per_",
-        ]
-        print(standard_metrics)
-        original_standard_metrics = standard_metrics.copy()
-        for vp in variant_prefixe:
-            standard_metrics = [
-                *standard_metrics,
-                *[vp + sss for sss in original_standard_metrics],
-            ]
-        """
-        # print(standard_metrics)
-
         if modus == "auc" or modus == "auc2":
             auc_prefixe = [
                 "final_value_",

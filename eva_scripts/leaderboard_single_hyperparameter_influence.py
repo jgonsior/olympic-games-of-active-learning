@@ -35,12 +35,12 @@ rank_or_percentage = "dataset_normalized_percentages"
 interpolation = "average_of_same_strategy"
 
 hyperparameters_to_evaluate = [
+    "standard_metric",
     "EXP_LEARNER_MODEL",
     "EXP_BATCH_SIZE",
     "EXP_DATASET",
     "EXP_TRAIN_TEST_BUCKET_SIZE",
     "EXP_START_POINT",
-    "standard_metric",
     "auc_metric",
     "random_seed_scenarios",
     "dataset_scenarios",
@@ -83,16 +83,6 @@ def read_or_create_ts(metric_name) -> pd.DataFrame:
                 "metric_value",
             ],
         )
-        ts["metric_value"] = ts["metric_value"].apply(
-            lambda xxx: (
-                np.fromstring(
-                    str(xxx).removeprefix("[").removesuffix("]"),
-                    dtype=np.int32,
-                    sep=",",
-                )
-            )
-        )
-
         f = Path(config.CORRELATION_TS_PATH / f"{metric_name}.parquet")
         ts.to_parquet(f)
         unparqueted_f.unlink()
@@ -152,6 +142,45 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
                 "plateau_auc_",
             ]
         ]
+    elif hyperparameter_to_evaluate == "random_seed_scenarios":
+        hyperparameter_values = [
+            (1, 1),
+            (2, 1),
+            (3, 1),
+            (4, 2),
+            (5, 2),
+            (6, 2),
+            (7, 5),
+            (8, 5),
+            (9, 5),
+            (10, 10),
+            (11, 10),
+            (12, 10),
+            (13, 15),
+            (14, 15),
+            (15, 15),
+            (16, 20),
+        ]
+    elif hyperparameter_to_evaluate == "dataset_scenarios":
+        hyperparameter_values = [
+            (1, 1),
+            (2, 5),
+            (3, 10),
+            (4, 15),
+            (5, 20),
+            (6, 25),
+            (7, 25),
+            (8, 20),
+            (9, 10),
+            (10, 30),
+            (11, 30),
+            (12, 50),
+            (13, 50),
+            (14, 75),
+            (15, 75),
+            (16, 100),
+            (17, 10),
+        ]
 
     ranking_dict: Dict[str, np.ndarray] = {}
 
@@ -169,28 +198,6 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
 
         if hyperparameter_to_evaluate not in ["auc_metric", "standard_metric"]:
             ts = ts.loc[ts[hyperparameter_to_evaluate] == hyperparameter_target_value]
-
-        fingerprint_cols = list(ts.columns)
-        fingerprint_cols.remove("metric_value")
-        fingerprint_cols.remove("EXP_DATASET")
-        fingerprint_cols.remove("EXP_STRATEGY")
-
-        ts["fingerprint"] = ts[fingerprint_cols].parallel_apply(
-            lambda row: "_".join([str(rrr) for rrr in row]), axis=1
-        )
-
-        ts["dataset_strategy"] = ts[["EXP_DATASET", "EXP_STRATEGY"]].parallel_apply(
-            lambda row: "_".join([str(rrr) for rrr in row]), axis=1
-        )
-
-        for fg_col in fingerprint_cols:
-            del ts[fg_col]
-
-        log_and_time("Done fingerprinting")
-        # exit(-1)
-
-        del ts["dataset_strategy"]
-        del ts["fingerprint"]
 
         ts = (
             ts.groupby(by=["EXP_DATASET", "EXP_STRATEGY"])["metric_value"]
