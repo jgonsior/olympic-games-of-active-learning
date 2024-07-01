@@ -99,7 +99,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         # calculate fraction based on length of keys
         plt.figure(figsize=set_matplotlib_size(fraction=len(corr_data.columns) / 6))
 
-        ax = sns.heatmap(corr_data, annot=True, fmt=".2%")
+        ax = sns.heatmap(corr_data, annot=True, fmt=".2%", vmin=0, vmax=1)
 
         ax.set_title(f"{hyperparameter_to_evaluate}")
 
