@@ -74,8 +74,9 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
     ranking_df = ranking_df.sort_index(axis=1)
 
     for hypothesis in [
-        "pearson",
+        # "pearson",
         "kendall",
+        "spearman",
         # "kendall_unc_better_than_repr",
         # "same strategies - same rank"
         # "mm_better_lc_then_ent",
