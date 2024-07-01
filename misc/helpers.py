@@ -321,12 +321,19 @@ def save_correlation_plot(
 
     # calculate fraction based on length of keys
     plt.figure(figsize=set_matplotlib_size(fraction=len(keys) / 12))
-    ax = sns.heatmap(data_df, annot=True, fmt=".2f")
+    ax = sns.heatmap(data_df, annot=True, fmt=".2f", vmin=0, vmax=1)
 
     ax.set_title(title)
 
     plt.savefig(
         result_folder / f"{title}.jpg",
+        dpi=300,
+        bbox_inches="tight",
+        pad_inches=0,
+    )
+
+    plt.savefig(
+        result_folder / f"{title}.pdf",
         dpi=300,
         bbox_inches="tight",
         pad_inches=0,

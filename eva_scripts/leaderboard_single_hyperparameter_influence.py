@@ -42,6 +42,8 @@ hyperparameters_to_evaluate = [
     "EXP_START_POINT",
     "standard_metric",
     "auc_metric",
+    "random_seed_scenarios",
+    "dataset_scenarios",
 ]
 
 
