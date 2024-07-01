@@ -42,6 +42,8 @@ hyperparameters_to_evaluate = [
     "EXP_TRAIN_TEST_BUCKET_SIZE",
     "EXP_START_POINT",
     "auc_metric",
+    "random_seed_scenarios",
+    "dataset_scenarios",
 ]
 
 for hyperparameter_to_evaluate in hyperparameters_to_evaluate:

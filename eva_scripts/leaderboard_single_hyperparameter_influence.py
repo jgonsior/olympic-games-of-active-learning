@@ -1,5 +1,6 @@
 import csv
 import multiprocessing
+import random
 import subprocess
 import sys
 from typing import Dict
@@ -184,11 +185,18 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
 
     ranking_dict: Dict[str, np.ndarray] = {}
 
-    if hyperparameter_to_evaluate not in ["standard_metric", "auc_metric"]:
+    if hyperparameter_to_evaluate not in [
+        "standard_metric",
+        "auc_metric",
+        "random_seed_scenarios",
+        "dataset_scenarios",
+    ]:
         ts = read_or_create_ts(default_standard_metric)
-
         ts_orig = ts.copy()
         hyperparameter_values = ts[hyperparameter_to_evaluate].unique()
+    elif hyperparameter_to_evaluate in ["random_seed_scenarios", "dataset_scenarios"]:
+        ts = read_or_create_ts(default_standard_metric)
+        ts_orig = ts.copy()
 
     for hyperparameter_target_value in hyperparameter_values:
         if hyperparameter_to_evaluate in ["standard_metric", "auc_metric"]:
@@ -196,8 +204,31 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         else:
             ts = ts_orig.copy()
 
-        if hyperparameter_to_evaluate not in ["auc_metric", "standard_metric"]:
+        if hyperparameter_to_evaluate not in [
+            "auc_metric",
+            "standard_metric",
+            "random_seed_scenarios",
+            "dataset_scenarios",
+        ]:
             ts = ts.loc[ts[hyperparameter_to_evaluate] == hyperparameter_target_value]
+        elif hyperparameter_to_evaluate == "random_seed_scenarios":
+            if hyperparameter_target_value[1] > len(config.EXP_GRID_START_POINT):
+                continue
+            allowed_start_points = random.sample(
+                config.EXP_GRID_START_POINT, hyperparameter_target_value[1]
+            )
+
+            ts = ts.loc[ts["EXP_START_POINT"].isin(allowed_start_points)]
+        elif hyperparameter_to_evaluate == "dataset_scenarios":
+            if hyperparameter_target_value[1] > len(config.EXP_GRID_DATASET):
+                continue
+            allowed_start_points = [
+                kkk
+                for kkk in random.sample(
+                    config.EXP_GRID_DATASET, hyperparameter_target_value[1]
+                )
+            ]
+            ts = ts.loc[ts["EXP_DATASET"].isin(allowed_start_points)]
 
         ts = (
             ts.groupby(by=["EXP_DATASET", "EXP_STRATEGY"])["metric_value"]
