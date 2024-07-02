@@ -34,6 +34,7 @@ pandarallel.initialize(
 )
 
 hyperparameters_to_evaluate = [
+    "random_seed_scenarios",
     "standard_metric",
     # "EXP_STRATEGY",
     "EXP_LEARNER_MODEL",
@@ -42,7 +43,6 @@ hyperparameters_to_evaluate = [
     "EXP_TRAIN_TEST_BUCKET_SIZE",
     "EXP_START_POINT",
     "auc_metric",
-    "random_seed_scenarios",
     "dataset_scenarios",
 ]
 
@@ -70,8 +70,16 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         keys = {kkk: DATASET(int(kkk)).name for kkk in ranking_df.columns}
         ranking_df.rename(columns=keys, inplace=True)
 
-    ranking_df = ranking_df.sort_index(axis=0)
-    ranking_df = ranking_df.sort_index(axis=1)
+    if hyperparameter_to_evaluate in ["random_seed_scenarios", "dataset_scenarios"]:
+        custom_dict = {
+            v: k for k, v in enumerate(sorted(ranking_df.index, key=lambda kkk: kkk[1]))
+        }
+        ranking_df = ranking_df.sort_index(axis=0)
+        ranking_df = ranking_df.sort_index(key=lambda x: x.map(custom_dict), axis=1)
+
+    else:
+        ranking_df = ranking_df.sort_index(axis=0)
+        ranking_df = ranking_df.sort_index(axis=1)
 
     for hypothesis in [
         # "pearson",

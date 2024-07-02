@@ -12,6 +12,7 @@ import scipy
 from sklearn.preprocessing import RobustScaler
 
 from datasets import DATASET
+from eva_scripts import calculate_leaderboard_rankings
 from misc.helpers import (
     create_fingerprint_joined_timeseries_csv_files,
     log_and_time,
@@ -27,7 +28,7 @@ config = Config()
 from pandarallel import pandarallel
 
 pandarallel.initialize(
-    nb_workers=multiprocessing.cpu_count(), progress_bar=True, use_memory_fs=False
+    nb_workers=multiprocessing.cpu_count(), progress_bar=False, use_memory_fs=False
 )
 
 default_standard_metric = "full_auc_weighted_f1-score"
@@ -46,6 +47,14 @@ hyperparameters_to_evaluate = [
     "random_seed_scenarios",
     "dataset_scenarios",
 ]
+
+
+"""
+TODO: sort rankings
+TODO: include gold standard ranking
+TODO: neuen plot, der ausschließlich die ganzen rankings im vergleich zum gold standard je in einer zeile enthält
+TODO: check if calculate_leaderboard_rankings noch aktuell
+"""
 
 
 def read_or_create_ts(metric_name) -> pd.DataFrame:
