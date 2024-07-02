@@ -12,7 +12,6 @@ import scipy
 from sklearn.preprocessing import RobustScaler
 
 from datasets import DATASET
-from eva_scripts import calculate_leaderboard_rankings
 from misc.helpers import (
     create_fingerprint_joined_timeseries_csv_files,
     log_and_time,
@@ -157,11 +156,11 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
             enumerate(
                 [
                     20,
-                    *list(range(1, 19)),
-                    *list(range(1, 19)),
-                    *list(range(1, 19)),
-                    *list(range(1, 19)),
-                    *list(range(1, 19)),
+                    *list(range(1, 20)),
+                    *list(range(1, 20)),
+                    *list(range(1, 20)),
+                    *list(range(1, 20)),
+                    *list(range(1, 20)),
                 ]
             )
         )
