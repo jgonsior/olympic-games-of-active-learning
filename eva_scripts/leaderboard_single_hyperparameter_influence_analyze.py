@@ -21,6 +21,7 @@ from misc.plotting import set_matplotlib_size, set_seaborn_style
 from resources.data_types import AL_STRATEGY, LEARNER_MODEL
 import seaborn as sns
 from pprint import pprint
+import ast
 
 sys.dont_write_bytecode = True
 
@@ -34,8 +35,8 @@ pandarallel.initialize(
 )
 
 hyperparameters_to_evaluate = [
-    "dataset_scenarios",
     "random_seed_scenarios",
+    "dataset_scenarios",
     "standard_metric",
     # "EXP_STRATEGY",
     "EXP_LEARNER_MODEL",
@@ -72,18 +73,19 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
 
     if hyperparameter_to_evaluate in ["random_seed_scenarios", "dataset_scenarios"]:
         custom_dict = {
-            v: k for k, v in enumerate(sorted(ranking_df.index, key=lambda kkk: kkk[1]))
+            v: k
+            for k, v in enumerate(
+                sorted(
+                    ranking_df.columns, key=lambda kkk: int(ast.literal_eval(kkk)[1])
+                )
+            )
         }
-        print(custom_dict)
-        print(ranking_df)
         ranking_df = ranking_df.sort_index(axis=0)
         ranking_df = ranking_df.sort_index(key=lambda x: x.map(custom_dict), axis=1)
-        print(ranking_df)
-
     else:
         ranking_df = ranking_df.sort_index(axis=0)
         ranking_df = ranking_df.sort_index(axis=1)
-    exit(-1)
+
     for hypothesis in [
         # "pearson",
         "kendall",
@@ -96,7 +98,6 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         # "quire similar"
         # "same strategy but in different frameworks behave similar"
     ]:
-
         # check how "well" the hypothesis can be found in the rankings!
         corr_data = ranking_df.corr(method=hypothesis)
         destination_path = Path(
