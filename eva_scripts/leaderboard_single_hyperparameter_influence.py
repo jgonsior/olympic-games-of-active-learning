@@ -153,44 +153,30 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
             ]
         ]
     elif hyperparameter_to_evaluate == "random_seed_scenarios":
-        hyperparameter_values = [
-            (1, 1),
-            (2, 1),
-            (3, 1),
-            (4, 2),
-            (5, 2),
-            (6, 2),
-            (7, 5),
-            (8, 5),
-            (9, 5),
-            (10, 10),
-            (11, 10),
-            (12, 10),
-            (13, 15),
-            (14, 15),
-            (15, 15),
-            (16, 20),
-        ]
+        hyperparameter_values = list(
+            enumerate(
+                [
+                    20,
+                    *list(range(1, 19)),
+                    *list(range(1, 19)),
+                    *list(range(1, 19)),
+                    *list(range(1, 19)),
+                    *list(range(1, 19)),
+                ]
+            )
+        )
     elif hyperparameter_to_evaluate == "dataset_scenarios":
-        hyperparameter_values = [
-            (1, 1),
-            (2, 5),
-            (3, 10),
-            (4, 15),
-            (5, 20),
-            (6, 25),
-            (7, 25),
-            (8, 20),
-            (9, 10),
-            (10, 30),
-            (11, 30),
-            (12, 50),
-            (13, 50),
-            (14, 75),
-            (15, 75),
-            (16, 100),
-            (17, 10),
-        ]
+        hyperparameter_values = list(
+            enumerate(
+                [
+                    *list(range(1, 100)),
+                    *list(range(1, 100)),
+                    *list(range(1, 100)),
+                    *list(range(1, 100)),
+                    *list(range(1, 100)),
+                ]
+            )
+        )
 
     ranking_dict: Dict[str, np.ndarray] = {}
 
