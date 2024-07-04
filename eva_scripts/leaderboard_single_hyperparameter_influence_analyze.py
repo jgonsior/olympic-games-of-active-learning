@@ -125,7 +125,7 @@ mpl.rcParams["path.simplify_threshold"] = 1.0
 # calculate fraction based on length of keys
 plt.figure(
     figsize=set_matplotlib_size(
-        fraction=len(rankings_df.columns) / 6, half_height=True
+        fraction=len(rankings_df.columns) / 20, half_height=True
     ),
 )
 
