@@ -35,8 +35,8 @@ pandarallel.initialize(
 )
 
 hyperparameters_to_evaluate = [
-    # "random_seed_scenarios",
-    # "dataset_scenarios",
+    # "start_point_scenario",
+    # "dataset_scenario",
     "standard_metric",
     # "EXP_STRATEGY",
     "EXP_LEARNER_MODEL",
@@ -73,7 +73,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         keys = {kkk: DATASET(int(kkk)).name for kkk in ranking_df.columns}
         ranking_df.rename(columns=keys, inplace=True)
 
-    if hyperparameter_to_evaluate in ["random_seed_scenarios", "dataset_scenarios"]:
+    if hyperparameter_to_evaluate in ["start_point_scenario", "dataset_scenario"]:
         custom_dict = {
             v: k
             for k, v in enumerate(
@@ -173,8 +173,8 @@ plt.savefig(
 
 
 hyperparameters_to_evaluate = [
-    "random_seed_scenarios",
-    "dataset_scenarios",
+    "start_point_scenario",
+    "dataset_scenario",
     "standard_metric",
     # "EXP_STRATEGY",
     "EXP_LEARNER_MODEL",
@@ -209,7 +209,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         keys = {kkk: DATASET(int(kkk)).name for kkk in ranking_df.columns}
         ranking_df.rename(columns=keys, inplace=True)
 
-    if hyperparameter_to_evaluate in ["random_seed_scenarios", "dataset_scenarios"]:
+    if hyperparameter_to_evaluate in ["start_point_scenario", "dataset_scenario"]:
         custom_dict = {
             v: k
             for k, v in enumerate(
@@ -218,8 +218,6 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
                 )
             )
         }
-        print(ranking_df)
-        exit(-1)
         ranking_df = ranking_df.sort_index(axis=0)
         ranking_df = ranking_df.sort_index(key=lambda x: x.map(custom_dict), axis=1)
     else:
@@ -252,6 +250,12 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
     ]:
         # check how "well" the hypothesis can be found in the rankings!
         corr_data = ranking_df.corr(method=hypothesis)
+
+        if hyperparameter_to_evaluate in ["start_point_scenario", "dataset_scenario"]:
+            print(corr_data)
+            continue
+            # exit(-1)
+
         destination_path = Path(
             config.OUTPUT_PATH
             / f"plots/leaderboard_single_hyperparameter_influence/{hyperparameter_to_evaluate}_{hypothesis}"
