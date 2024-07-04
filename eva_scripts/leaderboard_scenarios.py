@@ -115,11 +115,11 @@ if config.EVA_MODE == "create":
 
     if config.SCENARIOS == "dataset_scenario":
         hyperparameter_values = list(
-            enumerate(flatten([list(range(1, 100)) for _ in range(0, 1000)]))
+            enumerate(flatten([list(range(1, 100)) for _ in range(0, 200)]))
         )
     elif config.SCENARIOS == "start_point_scenario":
         hyperparameter_values = list(
-            enumerate([20, *flatten([list(range(1, 20)) for _ in range(0, 200)])])
+            enumerate([20, *flatten([list(range(1, 20)) for _ in range(0, 1000)])])
         )
 
     create_workload(
