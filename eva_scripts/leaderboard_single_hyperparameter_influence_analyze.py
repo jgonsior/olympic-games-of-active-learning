@@ -122,6 +122,7 @@ rankings_df.sort_values("gold standard", inplace=True)
 
 def _calculate_spearman(row: pd.Series) -> pd.Series:
     kendalltau = scipy.stats.kendalltau(row, rankings_df.loc["gold standard", :])
+    kendalltau = scipy.stats.spearmanr(row, rankings_df.loc["gold standard", :])
 
     res = np.nan
     print(kendalltau)
