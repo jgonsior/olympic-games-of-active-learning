@@ -125,7 +125,7 @@ def _calculate_spearman(row: pd.Series) -> pd.Series:
 
     res = np.nan
     print(kendalltau)
-    if kendalltau.pvalue > 0.95:
+    if kendalltau.pvalue < 0.05:
         res = kendalltau.statistic
     return res
 
