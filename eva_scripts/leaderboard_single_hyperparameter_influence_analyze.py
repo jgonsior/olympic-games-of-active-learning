@@ -35,8 +35,8 @@ pandarallel.initialize(
 )
 
 hyperparameters_to_evaluate = [
-    "random_seed_scenarios",
-    "dataset_scenarios",
+    # "random_seed_scenarios",
+    # "dataset_scenarios",
     "standard_metric",
     # "EXP_STRATEGY",
     "EXP_LEARNER_MODEL",
@@ -74,7 +74,6 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         ranking_df.rename(columns=keys, inplace=True)
 
     if hyperparameter_to_evaluate in ["random_seed_scenarios", "dataset_scenarios"]:
-        print(ranking_df)
         custom_dict = {
             v: k
             for k, v in enumerate(
@@ -172,13 +171,27 @@ plt.savefig(
     pad_inches=0,
 )
 
+
+hyperparameters_to_evaluate = [
+    "random_seed_scenarios",
+    "dataset_scenarios",
+    "standard_metric",
+    # "EXP_STRATEGY",
+    "EXP_LEARNER_MODEL",
+    "EXP_BATCH_SIZE",
+    "EXP_DATASET",
+    "EXP_TRAIN_TEST_BUCKET_SIZE",
+    "EXP_START_POINT",
+    "auc_metric",
+]
+
+
 for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
     ranking_path = Path(
         config.OUTPUT_PATH
         / f"plots/leaderboard_single_hyperparameter_influence/{hyperparameter_to_evaluate}.csv"
     )
     ranking_df = pd.read_csv(ranking_path, index_col=0).T
-    print(ranking_df)
 
     keys = {
         kkk: kkk.removeprefix(f"{hyperparameter_to_evaluate}: ")
@@ -205,6 +218,8 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
                 )
             )
         }
+        print(ranking_df)
+        exit(-1)
         ranking_df = ranking_df.sort_index(axis=0)
         ranking_df = ranking_df.sort_index(key=lambda x: x.map(custom_dict), axis=1)
     else:
@@ -223,7 +238,6 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         columns={kkk: str(kkk) for kkk in ranking_df.columns}, inplace=True
     )
 
-    print(ranking_df)
     for hypothesis in [
         # "pearson",
         "kendall",

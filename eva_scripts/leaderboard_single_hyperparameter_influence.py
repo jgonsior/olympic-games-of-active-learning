@@ -159,6 +159,21 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
                     *list(range(1, 20)),
                     *list(range(1, 20)),
                     *list(range(1, 20)),
+                    *list(range(1, 20)),
+                    *list(range(1, 20)),
+                    *list(range(1, 20)),
+                    *list(range(1, 20)),
+                    *list(range(1, 20)),
+                    *list(range(1, 20)),
+                    *list(range(1, 20)),
+                    *list(range(1, 20)),
+                    *list(range(1, 20)),
+                    *list(range(1, 20)),
+                    *list(range(1, 20)),
+                    *list(range(1, 20)),
+                    *list(range(1, 20)),
+                    *list(range(1, 20)),
+                    *list(range(1, 20)),
                 ]
             )
         )
@@ -166,6 +181,16 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         hyperparameter_values = list(
             enumerate(
                 [
+                    *list(range(1, 100)),
+                    *list(range(1, 100)),
+                    *list(range(1, 100)),
+                    *list(range(1, 100)),
+                    *list(range(1, 100)),
+                    *list(range(1, 100)),
+                    *list(range(1, 100)),
+                    *list(range(1, 100)),
+                    *list(range(1, 100)),
+                    *list(range(1, 100)),
                     *list(range(1, 100)),
                     *list(range(1, 100)),
                     *list(range(1, 100)),
