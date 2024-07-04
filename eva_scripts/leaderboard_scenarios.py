@@ -115,7 +115,7 @@ if config.EVA_MODE == "create":
         )
     elif config.SCENARIOS == "start_point_scenario":
         hyperparameter_values = list(
-            enumerate([20, [list(range(1, 20)) for _ in range(0, 100)]])
+            enumerate([20, *[list(range(1, 20)) for _ in range(0, 100)]])
         )
 
     create_workload(
