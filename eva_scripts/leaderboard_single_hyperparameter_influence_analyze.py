@@ -35,15 +35,15 @@ pandarallel.initialize(
 )
 
 hyperparameters_to_evaluate = [
-    # "random_seed_scenarios",
+    "random_seed_scenarios",
     # "dataset_scenarios",
     "standard_metric",
     # "EXP_STRATEGY",
     "EXP_LEARNER_MODEL",
     "EXP_BATCH_SIZE",
-    "EXP_DATASET",
+    # "EXP_DATASET",
     "EXP_TRAIN_TEST_BUCKET_SIZE",
-    "EXP_START_POINT",
+    # "EXP_START_POINT",
     "auc_metric",
 ]
 
