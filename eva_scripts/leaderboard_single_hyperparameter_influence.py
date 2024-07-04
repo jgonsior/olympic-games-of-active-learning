@@ -49,10 +49,6 @@ hyperparameters_to_evaluate = [
 
 
 """
-TODO: plot zu groß?
-TODO: include gold standard ranking
-TODO: neuen plot, der ausschließlich die ganzen rankings im vergleich zum gold standard je in einer zeile enthält
-TODO neuen plot, der alle rankings darstellt, und jede strategie bekommt eigene farbe damit man visuell sieht wo welches ranking ist?
 TODO: check if calculate_leaderboard_rankings noch aktuell
 """
 

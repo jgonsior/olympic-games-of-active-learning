@@ -135,8 +135,7 @@ rankings_df = rankings_df.T
 rankings_df["spearman"] = rankings_df.apply(_calculate_spearman, axis=1)
 rankings_df = rankings_df.T
 rankings_df.sort_values(by="spearman", axis=1, inplace=True)
-print(rankings_df)
-# exit(-1)
+
 destination_path = Path(
     config.OUTPUT_PATH
     / f"plots/leaderboard_single_hyperparameter_influence/all_together"
@@ -155,7 +154,12 @@ plt.figure(
     ),
 )
 
-ax = sns.heatmap(rankings_df, annot=True, fmt="g")
+ax = sns.heatmap(
+    rankings_df,
+    annot=True,
+    fmt="g",
+    cmap=sns.color_palette("husl", len(rankings_df) - 1),
+)
 
 ax.set_title(f"{hyperparameter_to_evaluate}")
 
