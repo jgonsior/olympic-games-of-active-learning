@@ -111,53 +111,11 @@ ts_orig = ts.copy()
 if config.EVA_MODE == "create":
     if config.SCENARIOS == "dataset_scenario":
         hyperparameter_values = list(
-            enumerate(
-                [
-                    *list(range(1, 100)),
-                    *list(range(1, 100)),
-                    *list(range(1, 100)),
-                    *list(range(1, 100)),
-                    *list(range(1, 100)),
-                    *list(range(1, 100)),
-                    *list(range(1, 100)),
-                    *list(range(1, 100)),
-                    *list(range(1, 100)),
-                    *list(range(1, 100)),
-                    *list(range(1, 100)),
-                    *list(range(1, 100)),
-                    *list(range(1, 100)),
-                    *list(range(1, 100)),
-                    *list(range(1, 100)),
-                ]
-            )
+            enumerate([list(range(1, 100)) for _ in range(0, 100)])
         )
     elif config.SCENARIOS == "start_point_scenario":
         hyperparameter_values = list(
-            enumerate(
-                [
-                    20,
-                    *list(range(1, 20)),
-                    *list(range(1, 20)),
-                    *list(range(1, 20)),
-                    *list(range(1, 20)),
-                    *list(range(1, 20)),
-                    *list(range(1, 20)),
-                    *list(range(1, 20)),
-                    *list(range(1, 20)),
-                    *list(range(1, 20)),
-                    *list(range(1, 20)),
-                    *list(range(1, 20)),
-                    *list(range(1, 20)),
-                    *list(range(1, 20)),
-                    *list(range(1, 20)),
-                    *list(range(1, 20)),
-                    *list(range(1, 20)),
-                    *list(range(1, 20)),
-                    *list(range(1, 20)),
-                    *list(range(1, 20)),
-                    *list(range(1, 20)),
-                ]
-            )
+            enumerate([20, [list(range(1, 20)) for _ in range(0, 100)]])
         )
 
     create_workload(
@@ -176,6 +134,7 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
     interpolation = "average_of_same_strategy"
 
     def _run_single_metric(ix, hyperparameter_target_value, config: Config):
+        random.seed(ix)
         hyperparameter_target_value = (ix, hyperparameter_target_value)
         ts = ts_orig.copy()
         if config.SCENARIOS == "start_point_scenario":
