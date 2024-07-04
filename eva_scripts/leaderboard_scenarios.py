@@ -109,13 +109,17 @@ ts = read_or_create_ts(default_standard_metric)
 ts_orig = ts.copy()
 
 if config.EVA_MODE == "create":
+
+    def flatten(xss):
+        return [x for xs in xss for x in xs]
+
     if config.SCENARIOS == "dataset_scenario":
         hyperparameter_values = list(
-            enumerate([list(range(1, 100)) for _ in range(0, 100)])
+            enumerate(flatten([list(range(1, 100)) for _ in range(0, 100)]))
         )
     elif config.SCENARIOS == "start_point_scenario":
         hyperparameter_values = list(
-            enumerate([20, *[list(range(1, 20)) for _ in range(0, 100)]])
+            enumerate([20, *flatten([list(range(1, 20)) for _ in range(0, 100)])])
         )
 
     create_workload(
