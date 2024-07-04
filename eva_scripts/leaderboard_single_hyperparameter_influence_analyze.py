@@ -123,7 +123,11 @@ mpl.rcParams["path.simplify_threshold"] = 1.0
 # plt.figure(figsize=set_matplotlib_size(fraction=10))
 
 # calculate fraction based on length of keys
-plt.figure(figsize=set_matplotlib_size(fraction=len(rankings_df.columns) / 6))
+plt.figure(
+    figsize=set_matplotlib_size(
+        fraction=len(rankings_df.columns) / 6, half_height=True
+    ),
+)
 
 ax = sns.heatmap(rankings_df, annot=True, fmt="g")
 
