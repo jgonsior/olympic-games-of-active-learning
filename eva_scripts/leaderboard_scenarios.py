@@ -43,7 +43,7 @@ from misc.config import Config
 
 config = Config()
 
-prepare_eva_pathes("dataset_scenario", config)
+prepare_eva_pathes(config.SCENARIOS, config)
 
 default_standard_metric = "full_auc_weighted_f1-score"
 
