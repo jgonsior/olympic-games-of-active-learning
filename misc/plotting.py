@@ -66,7 +66,7 @@ def set_matplotlib_size(width=505.89, fraction=1, half_height=False):
     fig_height_in = fig_width_in * golden_ratio
 
     if half_height:
-        fig_height_in *= 0.1
+        fig_height_in *= 0.15
     fig_dim = (fig_width_in, fig_height_in)
 
     return fig_dim
