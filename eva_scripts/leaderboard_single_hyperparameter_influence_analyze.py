@@ -36,7 +36,7 @@ pandarallel.initialize(
 
 hyperparameters_to_evaluate = [
     "random_seed_scenarios",
-    # "dataset_scenarios",
+    "dataset_scenarios",
     "standard_metric",
     # "EXP_STRATEGY",
     "EXP_LEARNER_MODEL",
@@ -122,10 +122,9 @@ rankings_df.sort_values("gold standard", inplace=True)
 
 def _calculate_spearman(row: pd.Series) -> pd.Series:
     kendalltau = scipy.stats.kendalltau(row, rankings_df.loc["gold standard", :])
-    kendalltau = scipy.stats.spearmanr(row, rankings_df.loc["gold standard", :])
+    # kendalltau = scipy.stats.spearmanr(row, rankings_df.loc["gold standard", :])
 
     res = np.nan
-    print(kendalltau)
     if kendalltau.pvalue < 0.05:
         res = kendalltau.statistic
     return res
@@ -172,48 +171,6 @@ plt.savefig(
     bbox_inches="tight",
     pad_inches=0,
 )
-exit(-1)
-for hypothesis in [
-    # "pearson",
-    "kendall",
-    # "spearman",
-    # "kendall_unc_better_than_repr",
-    # "same strategies - same rank"
-    # "mm_better_lc_then_ent",
-    # "random_similar",
-    # "optimal best",
-    # "quire similar"
-    # "same strategy but in different frameworks behave similar"
-]:
-    # check how "well" the hypothesis can be found in the rankings!
-    corr_data = rankings_df.corr(method=hypothesis)
-    destination_path = Path(
-        config.OUTPUT_PATH
-        / f"plots/leaderboard_single_hyperparameter_influence/{hyperparameter_to_evaluate}_{hypothesis}"
-    )
-
-    print(str(destination_path) + f".jpg")
-    set_seaborn_style(font_size=8)
-    mpl.rcParams["path.simplify"] = True
-    mpl.rcParams["path.simplify_threshold"] = 1.0
-    # plt.figure(figsize=set_matplotlib_size(fraction=10))
-
-    # calculate fraction based on length of keys
-    plt.figure(figsize=set_matplotlib_size(fraction=len(corr_data.columns) / 6))
-
-    ax = sns.heatmap(corr_data, annot=True, fmt=".2%", vmin=0, vmax=1)
-
-    ax.set_title(f"{hyperparameter_to_evaluate}")
-
-    corr_data.to_parquet(str(destination_path) + f".parquet")
-
-    plt.savefig(
-        str(destination_path) + f".jpg",
-        dpi=300,
-        bbox_inches="tight",
-        pad_inches=0,
-    )
-exit(-1)
 
 for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
     ranking_path = Path(
@@ -254,10 +211,23 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         ranking_df = ranking_df.sort_index(axis=0)
         ranking_df = ranking_df.sort_index(axis=1)
 
+    # add gold standard
+    gold_standard = pd.read_csv(
+        config.OUTPUT_PATH
+        / f"plots/leaderboard_single_hyperparameter_influence/standard_metric.csv",
+        index_col=0,
+    ).loc["standard_metric: full_auc_weighted_f1-score"]
+    ranking_df["gold standard"] = gold_standard
+
+    ranking_df.rename(
+        columns={kkk: str(kkk) for kkk in ranking_df.columns}, inplace=True
+    )
+
+    print(ranking_df)
     for hypothesis in [
         # "pearson",
         "kendall",
-        "spearman",
+        # "spearman",
         # "kendall_unc_better_than_repr",
         # "same strategies - same rank"
         # "mm_better_lc_then_ent",
