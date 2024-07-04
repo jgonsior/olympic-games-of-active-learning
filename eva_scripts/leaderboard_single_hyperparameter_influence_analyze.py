@@ -109,8 +109,34 @@ def _calculate_ranks(row: pd.Series) -> pd.Series:
 
 rankings_df = rankings_df.parallel_apply(_calculate_ranks, axis=0)
 
-# heatmap
+# calculate kendall and speraman as last row
+# sort x-axis after last row, sort y-axis after gold standard
+
+rankings_df.rename(
+    columns={"standard_metric: full_auc_weighted_f1-score": "gold standard"},
+    inplace=True,
+)
+
+rankings_df.sort_values("gold standard", inplace=True)
+
+
+def _calculate_spearman(row: pd.Series) -> pd.Series:
+    kendalltau = scipy.stats.kendalltau(row, rankings_df.loc["gold standard", :])
+
+    res = np.nan
+    print(kendalltau)
+    if kendalltau.pvalue > 0.95:
+        res = kendalltau.statistic
+    return res
+
+
+rankings_df = rankings_df.T
+
+rankings_df["spearman"] = rankings_df.apply(_calculate_spearman, axis=1)
+rankings_df = rankings_df.T
+rankings_df.sort_values(by="spearman", axis=1, inplace=True)
 print(rankings_df)
+# exit(-1)
 destination_path = Path(
     config.OUTPUT_PATH
     / f"plots/leaderboard_single_hyperparameter_influence/all_together"
