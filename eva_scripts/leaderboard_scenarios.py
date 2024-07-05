@@ -263,7 +263,6 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
         ts.columns = [AL_STRATEGY(int(kkk)).name for kkk in ts.columns]
 
         ts = ts.set_index([[DATASET(int(kkk)).name for kkk in ts.index]])
-
         ts = ts.T
         ts.loc[:, "Total"] = ts.mean(axis=1)
 
@@ -277,7 +276,7 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
             config.OUTPUT_PATH
             / f"plots/leaderboard_single_hyperparameter_influence/{config.SCENARIOS}.csv",
             {
-                "": f"{config.SCENARIOS}: {hyperparameter_target_value}",
+                "": f"{config.SCENARIOS}: {sorted([DATASET(aaa).name for aaa in allowed_start_points])}",
                 **(ts.loc["Total"].to_dict()),
             },
         )
