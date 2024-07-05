@@ -1,3 +1,4 @@
+from collections import defaultdict
 import csv
 import multiprocessing
 import subprocess
@@ -249,12 +250,39 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         # "same strategy but in different frameworks behave similar"
     ]:
         # check how "well" the hypothesis can be found in the rankings!
-        corr_data = ranking_df.corr(method=hypothesis)
 
         if hyperparameter_to_evaluate in ["start_point_scenario", "dataset_scenario"]:
-            print(corr_data)
-            continue
-            # exit(-1)
+
+            def _calculate_spearman(row: pd.Series) -> pd.Series:
+                kendalltau = scipy.stats.kendalltau(
+                    row, ranking_df.loc["gold standard", :]
+                )
+                # kendalltau = scipy.stats.spearmanr(row, rankings_df.loc["gold standard", :])
+
+                res = 3  # np.nan
+                if kendalltau.pvalue < 0.05:
+                    res = kendalltau.statistic
+                return res
+
+            print(ranking_df)
+            ranking_df = ranking_df.T
+
+            ranking_df["spearman"] = ranking_df.apply(_calculate_spearman, axis=1)
+            ranking_df = ranking_df.T
+            ranking_df.sort_values(by="spearman", axis=1, inplace=True)
+
+            grouped_values = defaultdict(list)
+            for ix, spr in ranking_df.loc["spearman"].items():
+                if ix == "gold standard":
+                    continue
+                grouped_values[ast.literal_eval(ix)[1]].append(spr)
+
+            for k, v in grouped_values.items():
+                grouped_values[k] = [np.mean(v), np.std(v)]
+            print(pd.DataFrame(grouped_values, index=["mean", "std"]))
+            exit(-1)
+        else:
+            corr_data = ranking_df.corr(method=hypothesis)
 
         destination_path = Path(
             config.OUTPUT_PATH
