@@ -115,13 +115,13 @@ if config.EVA_MODE == "create":
 
     if config.SCENARIOS == "dataset_scenario":
         hyperparameter_values = list(
-            enumerate(flatten([list(range(1, 92)) for _ in range(0, 4)]))
-            # enumerate(flatten([list(range(1, 92)) for _ in range(0, 200)]))
+            # enumerate(flatten([list(range(1, 2)) for _ in range(0, 400)]))
+            enumerate(flatten([list(range(1, 92)) for _ in range(0, 300)]))
         )
     elif config.SCENARIOS == "start_point_scenario":
         hyperparameter_values = list(
-            enumerate([20, *flatten([list(range(1, 20)) for _ in range(0, 4)])])
-            # enumerate([20, *flatten([list(range(1, 20)) for _ in range(0, 1000)])])
+            # enumerate([20, *flatten([list(range(1, 20)) for _ in range(0, 4)])])
+            enumerate([20, *flatten([list(range(1, 20)) for _ in range(0, 1500)])])
         )
 
     create_workload(
@@ -148,9 +148,6 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
             allowed_start_points = random.sample(
                 config.EXP_GRID_START_POINT, hyperparameter_target_value[1]
             )
-
-            print(hyperparameter_target_value)
-            print(allowed_start_points)
 
             ts = ts.loc[ts["EXP_START_POINT"].isin(allowed_start_points)]
         elif config.SCENARIOS == "dataset_scenario":
@@ -280,7 +277,7 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
             / f"plots/leaderboard_single_hyperparameter_influence/{config.SCENARIOS}.csv",
             {
                 "": f"{config.SCENARIOS}: {hyperparameter_target_value}",
-                **(ts.loc["Total"].to_dict()),
+                **(dict(sorted(ts.loc["Total"].to_dict().items()))),
             },
         )
 
