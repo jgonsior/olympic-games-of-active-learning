@@ -120,7 +120,7 @@ if config.EVA_MODE == "create":
         )
     elif config.SCENARIOS == "start_point_scenario":
         hyperparameter_values = list(
-            enumerate([20, *flatten([list(range(1, 1)) for _ in range(0, 300)])])
+            enumerate([20, *flatten([list(range(1, 2)) for _ in range(0, 300)])])
             # enumerate([20, *flatten([list(range(1, 20)) for _ in range(0, 1000)])])
         )
 
