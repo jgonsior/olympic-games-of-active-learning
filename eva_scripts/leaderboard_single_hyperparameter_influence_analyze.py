@@ -264,12 +264,12 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
                     res = kendalltau.statistic
                 return res
 
-            print(ranking_df)
             ranking_df = ranking_df.T
 
             ranking_df["spearman"] = ranking_df.apply(_calculate_spearman, axis=1)
             ranking_df = ranking_df.T
             ranking_df.sort_values(by="spearman", axis=1, inplace=True)
+            print(ranking_df)
 
             grouped_values = defaultdict(list)
             for ix, spr in ranking_df.loc["spearman"].items():
