@@ -115,7 +115,7 @@ if config.EVA_MODE == "create":
 
     if config.SCENARIOS == "dataset_scenario":
         hyperparameter_values = list(
-            enumerate(flatten([list(range(1, 104)) for _ in range(0, 200)]))
+            enumerate(flatten([list(range(1, 92)) for _ in range(0, 200)]))
         )
     elif config.SCENARIOS == "start_point_scenario":
         hyperparameter_values = list(
