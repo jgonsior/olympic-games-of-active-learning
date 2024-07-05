@@ -115,11 +115,13 @@ if config.EVA_MODE == "create":
 
     if config.SCENARIOS == "dataset_scenario":
         hyperparameter_values = list(
-            enumerate(flatten([list(range(1, 92)) for _ in range(0, 200)]))
+            enumerate(flatten([list(range(1, 92)) for _ in range(0, 3)]))
+            # enumerate(flatten([list(range(1, 92)) for _ in range(0, 200)]))
         )
     elif config.SCENARIOS == "start_point_scenario":
         hyperparameter_values = list(
-            enumerate([20, *flatten([list(range(1, 20)) for _ in range(0, 1000)])])
+            enumerate([20, *flatten([list(range(1, 20)) for _ in range(0, 3)])])
+            # enumerate([20, *flatten([list(range(1, 20)) for _ in range(0, 1000)])])
         )
 
     create_workload(
@@ -146,6 +148,9 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
             allowed_start_points = random.sample(
                 config.EXP_GRID_START_POINT, hyperparameter_target_value[1]
             )
+
+            print(hyperparameter_target_value)
+            print(allowed_start_points)
 
             ts = ts.loc[ts["EXP_START_POINT"].isin(allowed_start_points)]
         elif config.SCENARIOS == "dataset_scenario":
