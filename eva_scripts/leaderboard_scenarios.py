@@ -149,10 +149,8 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
                 config.EXP_GRID_START_POINT, hyperparameter_target_value[1]
             )
 
-            print(hyperparameter_target_value)
-            print(allowed_start_points)
-
             ts = ts.loc[ts["EXP_START_POINT"].isin(allowed_start_points)]
+            print(f"{hyperparameter_target_value} - {allowed_start_points} - {len(ts)}")
         elif config.SCENARIOS == "dataset_scenario":
             if hyperparameter_target_value[1] > len(config.EXP_GRID_DATASET):
                 return
