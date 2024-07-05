@@ -259,7 +259,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
                 )
                 # kendalltau = scipy.stats.spearmanr(row, rankings_df.loc["gold standard", :])
 
-                res = 3  # np.nan
+                res = np.nan
                 if kendalltau.pvalue < 0.05:
                     res = kendalltau.statistic
                 return res
