@@ -174,8 +174,8 @@ plt.savefig(
 
 
 hyperparameters_to_evaluate = [
-    "start_point_scenario",
     "dataset_scenario",
+    "start_point_scenario",
     "standard_metric",
     # "EXP_STRATEGY",
     "EXP_LEARNER_MODEL",

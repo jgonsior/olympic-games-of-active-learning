@@ -276,7 +276,7 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
             config.OUTPUT_PATH
             / f"plots/leaderboard_single_hyperparameter_influence/{config.SCENARIOS}.csv",
             {
-                "": f"{config.SCENARIOS}: {sorted([DATASET(aaa).name for aaa in allowed_start_points])}",
+                "": f"{config.SCENARIOS}: {len(allowed_start_points)} {sorted([DATASET(aaa).name for aaa in allowed_start_points])}",
                 **(ts.loc["Total"].to_dict()),
             },
         )
