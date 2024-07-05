@@ -279,8 +279,9 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
 
             for k, v in grouped_values.items():
                 grouped_values[k] = [np.mean(v), np.std(v)]
-            print(pd.DataFrame(grouped_values, index=["mean", "std"]))
-            exit(-1)
+            corr_data = pd.DataFrame(grouped_values, index=["mean", "std"])
+            corr_data.sort_index(axis=0, inplace=True)
+            corr_data.sort_index(axis=1, inplace=True)
         else:
             corr_data = ranking_df.corr(method=hypothesis)
 
