@@ -115,7 +115,7 @@ if config.EVA_MODE == "create":
 
     if config.SCENARIOS == "dataset_scenario":
         hyperparameter_values = list(
-            enumerate(flatten([list(range(1, 100)) for _ in range(0, 200)]))
+            enumerate(flatten([list(range(1, 104)) for _ in range(0, 200)]))
         )
     elif config.SCENARIOS == "start_point_scenario":
         hyperparameter_values = list(
@@ -131,7 +131,6 @@ if config.EVA_MODE == "create":
         script_type="metrics",
     )
 elif config.EVA_MODE in ["local", "slurm", "single"]:
-
     default_standard_metric = "full_auc_weighted_f1-score"
     grid_type = "sparse"  # dense is not supported by this script!
     rank_or_percentage = "dataset_normalized_percentages"
@@ -155,9 +154,10 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
             allowed_start_points = [
                 kkk
                 for kkk in random.sample(
-                    config.EXP_GRID_DATASET, hyperparameter_target_value[1]
+                    ts["EXP_DATASET"].unique().tolist(), hyperparameter_target_value[1]
                 )
             ]
+
             ts = ts.loc[ts["EXP_DATASET"].isin(allowed_start_points)]
 
         ts = (
@@ -190,7 +190,6 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
 
             # ts = ts.parallel_apply(_dataset_normalized_percentages, axis=1)
             ts = ts.apply(_dataset_normalized_percentages, axis=1)
-
         amount_of_max_shared_fingerprints = ts.map(np.shape).max(axis=None)
         print("important comment for parallel voodo reasons")
         amount_of_max_shared_fingerprints = amount_of_max_shared_fingerprints[0]
