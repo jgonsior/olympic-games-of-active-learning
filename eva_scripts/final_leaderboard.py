@@ -14,7 +14,7 @@ from misc.helpers import (
     create_fingerprint_joined_timeseries_csv_files,
     log_and_time,
 )
-from misc.plotting import set_matplotlib_size, set_seaborn_style
+from misc.plotting import _rename_strategy, set_matplotlib_size, set_seaborn_style
 from resources.data_types import AL_STRATEGY
 import seaborn as sns
 
@@ -333,7 +333,9 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
 
                     ts = ts.parallel_apply(_calculate_ranks, axis=1)
 
-                ts.columns = [AL_STRATEGY(int(kkk)).name for kkk in ts.columns]
+                ts.columns = [
+                    _rename_strategy(AL_STRATEGY(int(kkk)).name) for kkk in ts.columns
+                ]
 
                 destination_path = Path(
                     config.OUTPUT_PATH
