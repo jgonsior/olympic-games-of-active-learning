@@ -46,9 +46,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
     )
     ranking_df = pd.read_csv(ranking_path, index_col=0)
     ranking_df.rename(columns=_rename_strategy, inplace=True)
-    print(ranking_df)
     ranking_df = ranking_df.T
-    exit(-1)
 
     keys = {
         kkk: kkk.removeprefix(f"{hyperparameter_to_evaluate}: ")
@@ -185,7 +183,9 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         config.OUTPUT_PATH
         / f"plots/leaderboard_single_hyperparameter_influence/{hyperparameter_to_evaluate}.csv"
     )
-    ranking_df = pd.read_csv(ranking_path, index_col=0).T
+    ranking_df = pd.read_csv(ranking_path, index_col=0)
+    ranking_df.rename(columns=_rename_strategy, inplace=True)
+    ranking_df = ranking_df.T
 
     keys = {
         kkk: kkk.removeprefix(f"{hyperparameter_to_evaluate}: ")
@@ -223,8 +223,12 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         config.OUTPUT_PATH
         / f"plots/leaderboard_single_hyperparameter_influence/standard_metric.csv",
         index_col=0,
-    ).loc["standard_metric: full_auc_weighted_f1-score"]
-    ranking_df["gold standard"] = gold_standard
+    )
+    gold_standard.rename(columns=_rename_strategy, inplace=True)
+
+    ranking_df["gold standard"] = gold_standard.loc[
+        "standard_metric: full_auc_weighted_f1-score"
+    ]
 
     ranking_df.rename(
         columns={kkk: str(kkk) for kkk in ranking_df.columns}, inplace=True
