@@ -8,7 +8,7 @@ from pathlib import Path
 import matplotlib as mpl
 import scipy
 from datasets import DATASET
-from misc.plotting import set_matplotlib_size, set_seaborn_style
+from misc.plotting import _rename_strategy, set_matplotlib_size, set_seaborn_style
 from resources.data_types import LEARNER_MODEL
 import seaborn as sns
 import ast
@@ -44,7 +44,11 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         config.OUTPUT_PATH
         / f"plots/leaderboard_single_hyperparameter_influence/{hyperparameter_to_evaluate}.csv"
     )
-    ranking_df = pd.read_csv(ranking_path, index_col=0).T
+    ranking_df = pd.read_csv(ranking_path, index_col=0)
+    ranking_df.rename(columns=_rename_strategy, inplace=True)
+    print(ranking_df)
+    ranking_df = ranking_df.T
+    exit(-1)
 
     keys = {
         kkk: kkk.removeprefix(f"{hyperparameter_to_evaluate}: ")

@@ -74,7 +74,9 @@ def set_matplotlib_size(width=505.89, fraction=1, half_height=False):
     return fig_dim
 
 
-def _rename_strategy(al_strat: AL_STRATEGY) -> str:
+def _rename_strategy(al_strat: str) -> str:
+    al_strat = AL_STRATEGY[al_strat]
+
     renaming_dict = {
         AL_STRATEGY.ALIPY_RANDOM: "Random (ALIPY)",
         AL_STRATEGY.ALIPY_UNCERTAINTY_LC: "Unc. LC (ALIPY)",
@@ -94,6 +96,7 @@ def _rename_strategy(al_strat: AL_STRATEGY) -> str:
         AL_STRATEGY.SMALLTEXT_PREDICTIONENTROPY: "Unc. Ent (SMALLTEXT)",
         AL_STRATEGY.SMALLTEXT_BREAKINGTIES: "Unc. BT (SMALLTEXT)",
         AL_STRATEGY.SMALLTEXT_EMBEDDINGKMEANS: "Embedding KMeans (SMALLTEXT)",
+        AL_STRATEGY.SMALLTEXT_DISCRIMINATIVEAL: "Discriminative AL (SMALLTEXT)",
         AL_STRATEGY.SMALLTEXT_GREEDYCORESET: "Greedy Coreset (SMALLTEXT)",
         AL_STRATEGY.SMALLTEXT_LIGHTWEIGHTCORESET: "Lightweight Greedy Coreset (SMALLTEXT)",
         AL_STRATEGY.SMALLTEXT_CONTRASTIVEAL: "Contrastive AL (SMALLTEXT)",

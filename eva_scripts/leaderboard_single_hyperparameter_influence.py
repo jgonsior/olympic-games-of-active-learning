@@ -1,3 +1,4 @@
+import csv
 import multiprocessing
 import random
 import subprocess
@@ -14,8 +15,8 @@ from datasets import DATASET
 from misc.helpers import (
     create_fingerprint_joined_timeseries_csv_files,
     log_and_time,
+    save_correlation_plot,
 )
-from misc.plotting import _rename_strategy
 from resources.data_types import AL_STRATEGY
 
 sys.dont_write_bytecode = True
@@ -338,7 +339,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
 
             ts = ts.parallel_apply(_calculate_ranks, axis=1)
 
-        ts.columns = [_rename_strategy(AL_STRATEGY(int(kkk))) for kkk in ts.columns]
+        ts.columns = [AL_STRATEGY(int(kkk)).name for kkk in ts.columns]
 
         ts = ts.set_index([[DATASET(int(kkk)).name for kkk in ts.index]])
 
