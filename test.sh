@@ -11,9 +11,11 @@
 
 #python -m eva_scripts.basic_metrics_correlation --EXP_TITLE full_exp_jan
 
-rsync -avz -P /home/thiele/exp_results/full_exp_jan/ /home/thiele/exp_results/bkp_04_full_exp_jan
-rsync -avz -P /home/thiele/exp_results/bkp_04_full_exp_jan/ s5968580@login2.barnard.hpc.tu-dresden.de:/data/horse/ws/s5968580-al_olympics_jan.bak/exp_results/bkp04
+#rsync -avz -P /home/thiele/exp_results/full_exp_jan/ /home/thiele/exp_results/bkp_04_full_exp_jan
+#rsync -avz -P /home/thiele/exp_results/bkp_04_full_exp_jan/ s5968580@login2.barnard.hpc.tu-dresden.de:/data/horse/ws/s5968580-al_olympics_jan.bak/exp_results/bkp04
 
-python -m eva_scripts.calculate_dataset_dependend_random_ramp_slope --EXP_TITLE full_exp_jan
+#python -m eva_scripts.calculate_dataset_dependend_random_ramp_slope --EXP_TITLE full_exp_jan
 
-python 03_calculate_dataset_categorizations.py --EXP_TITLE full_exp_jan --SAMPLES_CATEGORIZER _ALL
+#python 03_calculate_dataset_categorizations.py --EXP_TITLE full_exp_jan --SAMPLES_CATEGORIZER _ALL
+python -m eva_scripts.leaderboard_scenarios --EXP_TITLE full_exp_jan --EVA_MODE local --SCENARIOS start_point_scenario
+python -m eva_scripts.leaderboard_scenarios --EXP_TITLE full_exp_jan --EVA_MODE local --SCENARIOS dataset_scenario
