@@ -1,41 +1,29 @@
-import csv
 import multiprocessing
 import random
 import subprocess
-import itertools
 import sys
 
 sys.dont_write_bytecode = True
-from typing import List, Tuple
 
 
 from datasets import DATASET
-from resources.data_types import AL_STRATEGY, COMPUTED_METRIC
+from resources.data_types import AL_STRATEGY
 import sys
-from typing import Dict
-from matplotlib import pyplot as plt, transforms
 import numpy as np
 import pandas as pd
 from pathlib import Path
-import matplotlib.style as mplstyle
 from sklearn.preprocessing import RobustScaler
-import matplotlib as mpl
 import scipy
 from datasets import DATASET
 from misc.helpers import (
     append_and_create,
     create_fingerprint_joined_timeseries_csv_files,
     log_and_time,
-    save_correlation_plot,
     create_workload,
     prepare_eva_pathes,
     run_from_workload,
 )
-from misc.plotting import set_matplotlib_size, set_seaborn_style
-from resources.data_types import AL_STRATEGY, LEARNER_MODEL
-import seaborn as sns
-from pprint import pprint
-import ast
+from resources.data_types import AL_STRATEGY
 
 sys.dont_write_bytecode = True
 

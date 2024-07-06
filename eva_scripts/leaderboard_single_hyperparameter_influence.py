@@ -1,4 +1,3 @@
-import csv
 import multiprocessing
 import random
 import subprocess
@@ -15,7 +14,6 @@ from datasets import DATASET
 from misc.helpers import (
     create_fingerprint_joined_timeseries_csv_files,
     log_and_time,
-    save_correlation_plot,
 )
 from resources.data_types import AL_STRATEGY
 
@@ -44,12 +42,6 @@ hyperparameters_to_evaluate = [
     "EXP_START_POINT",
     "auc_metric",
 ]
-
-
-"""
-TODO: für die simulationen mit verschiedenen dataset/random seeds --> mittelwerte pro simulierten Wert bilden und plotten
-TODO: check if calculate_leaderboard_rankings noch aktuell
-"""
 
 
 def read_or_create_ts(metric_name) -> pd.DataFrame:
@@ -359,9 +351,9 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         ts = ts.T
         print(ts)
 
-        ranking_dict[f"{hyperparameter_to_evaluate}: {hyperparameter_target_value}"] = (
-            ts.loc["Total"]
-        )
+        ranking_dict[
+            f"{hyperparameter_to_evaluate}: {hyperparameter_target_value}"
+        ] = ts.loc["Total"]
 
     ranking_df = pd.DataFrame(ranking_dict).T
     ranking_df.to_csv(ranking_path)

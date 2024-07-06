@@ -1,18 +1,13 @@
-from itertools import combinations, combinations_with_replacement
+from itertools import combinations
 import multiprocessing
 import subprocess
 import sys
-import timeit
-from turtle import st
 from typing import Literal
-from git import Object
 from scipy.stats import kendalltau
-from joblib import Parallel, delayed
 import numpy as np
 import pandas as pd
 from pathlib import Path
 
-from sklearn.metrics import jaccard_score
 from datasets import DATASET
 from misc.helpers import (
     create_fingerprint_joined_timeseries_csv_files,
@@ -192,7 +187,6 @@ for auc_prefix in [
                     ramp_up_or_plateau: Literal["ramp_up", "plateau"], row: pd.Series
                 ) -> pd.Series:
                     if ramp_up_or_plateau == "ramp_up":
-
                         range_start = row["cutoff_value"]
                         if np.isnan(range_start):
                             range_start = len(row) / 2

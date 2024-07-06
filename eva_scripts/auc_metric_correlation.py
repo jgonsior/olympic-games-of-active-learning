@@ -29,7 +29,6 @@ for standard_metric in [
     "weighted_f1-score",
     "weighted_precision",
 ]:
-
     auc_prefixe = [
         "final_value_",
         "first_5_",
