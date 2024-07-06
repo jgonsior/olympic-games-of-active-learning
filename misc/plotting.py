@@ -109,8 +109,10 @@ def _rename_strategy(al_strat: str) -> str:
         AL_STRATEGY.SKACTIVEML_COST_EMBEDDING: "Cost Embedding (SKACTIVEML)",
         AL_STRATEGY.SKACTIVEML_DAL: "DAL (SKACTIVEML)",
         AL_STRATEGY.SKACTIVEML_MCPAL: "MCPAL (SKACTIVEML)",
-        AL_STRATEGY.SKACTIVEML_QBC_VOTE_ENTROPY: "QBC (SKACTIVEML)",
+        AL_STRATEGY.SKACTIVEML_QBC_VOTE_ENTROPY: "QBC (SMALLTEXT)",
         AL_STRATEGY.SKACTIVEML_QUIRE: "QUIRE (SKACTIVEML)",
     }
+    print(sorted(renaming_dict.values()))
+    exit(-1)
 
     return renaming_dict[al_strat]
