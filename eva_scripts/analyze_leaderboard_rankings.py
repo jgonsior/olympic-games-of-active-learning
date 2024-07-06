@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 import pandas as pd
 from pathlib import Path
 import matplotlib as mpl
-from misc.plotting import set_matplotlib_size, set_seaborn_style
+from misc.plotting import _rename_strategy, set_matplotlib_size, set_seaborn_style
 import seaborn as sns
 
 sys.dont_write_bytecode = True
@@ -48,9 +48,9 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
 ranking_path = Path(
     config.OUTPUT_PATH / f"plots/leaderboard_invariances/leaderboard_types.csv"
 )
-
-ranking_df = pd.read_csv(ranking_path, index_col=0).T
-print(ranking_df)
+ranking_df = pd.read_csv(ranking_path, index_col=0)
+ranking_df.rename(columns=_rename_strategy, inplace=True)
+ranking_df = ranking_df.T
 
 
 for corr_method in ["spearman", "kendall"]:
