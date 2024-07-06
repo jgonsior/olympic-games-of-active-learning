@@ -2,6 +2,8 @@ import seaborn as sns
 
 from matplotlib import pyplot as plt
 
+from resources.data_types import AL_STRATEGY
+
 
 def set_seaborn_style(font_size=5.8, usetex=False):
     tex_fonts = {
@@ -70,3 +72,42 @@ def set_matplotlib_size(width=505.89, fraction=1, half_height=False):
     fig_dim = (fig_width_in, fig_height_in)
 
     return fig_dim
+
+
+def _rename_strategy(al_strat: AL_STRATEGY) -> str:
+    renaming_dict = {
+        AL_STRATEGY.ALIPY_RANDOM: "Random (ALIPY)",
+        AL_STRATEGY.ALIPY_UNCERTAINTY_LC: "Unc. LC (ALIPY)",
+        AL_STRATEGY.ALIPY_GRAPH_DENSITY: "Graph Density (ALIPY)",
+        AL_STRATEGY.ALIPY_CORESET_GREEDY: "Greedy Coreset (ALIPY)",
+        AL_STRATEGY.OPTIMAL_GREEDY_10: "Optimal Greedy 10",
+        AL_STRATEGY.OPTIMAL_GREEDY_20: "Optimal Greedy 20",
+        AL_STRATEGY.LIBACT_UNCERTAINTY_LC: "Unc. LC (LIBACT)",
+        AL_STRATEGY.LIBACT_DWUS: "DWUS (LIBACT)",
+        AL_STRATEGY.LIBACT_QUIRE: "QUIRE (LIBACT)",
+        AL_STRATEGY.ALIPY_DENSITY_WEIGHTED: "Density Weighted (ALIPY)",
+        AL_STRATEGY.ALIPY_UNCERTAINTY_MM: "Unc. MM (ALIPY)",
+        AL_STRATEGY.ALIPY_UNCERTAINTY_ENTROPY: "Unc. Ent (ALIPY)",
+        AL_STRATEGY.LIBACT_UNCERTAINTY_SM: "Unc. SM (LIBACT)",
+        AL_STRATEGY.LIBACT_UNCERTAINTY_ENT: "Unc. Ent (LIBACT)",
+        AL_STRATEGY.SMALLTEXT_LEASTCONFIDENCE: "Unc. LC (SMALLTEXT)",
+        AL_STRATEGY.SMALLTEXT_PREDICTIONENTROPY: "Unc. Ent (SMALLTEXT)",
+        AL_STRATEGY.SMALLTEXT_BREAKINGTIES: "Unc. BT (SMALLTEXT)",
+        AL_STRATEGY.SMALLTEXT_EMBEDDINGKMEANS: "Embedding KMeans (SMALLTEXT)",
+        AL_STRATEGY.SMALLTEXT_GREEDYCORESET: "Greedy Coreset (SMALLTEXT)",
+        AL_STRATEGY.SMALLTEXT_LIGHTWEIGHTCORESET: "Lightweight Greedy Coreset (SMALLTEXT)",
+        AL_STRATEGY.SMALLTEXT_CONTRASTIVEAL: "Contrastive AL (SMALLTEXT)",
+        AL_STRATEGY.SMALLTEXT_RANDOM: "Random (SMALLTEXT)",
+        AL_STRATEGY.SKACTIVEML_QBC: "QBC (SKACTIVEML)",
+        AL_STRATEGY.SKACTIVEML_US_MARGIN: "Unc. MM (SKACTIVEML)",
+        AL_STRATEGY.SKACTIVEML_US_LC: "Unc. LC (SKACTIVEML)",
+        AL_STRATEGY.SKACTIVEML_US_ENTROPY: "Unc. Ent (SKACTIVEML)",
+        AL_STRATEGY.SKACTIVEML_EXPECTED_AVERAGE_PRECISION: "EAP (SKACTIVEML)",
+        AL_STRATEGY.SKACTIVEML_COST_EMBEDDING: "Cost Embedding (SKACTIVEML)",
+        AL_STRATEGY.SKACTIVEML_DAL: "DAL (SKACTIVEML)",
+        AL_STRATEGY.SKACTIVEML_MCPAL: "MCPAL (SKACTIVEML)",
+        AL_STRATEGY.SKACTIVEML_QBC_VOTE_ENTROPY: "QBC (SKACTIVEML)",
+        AL_STRATEGY.SKACTIVEML_QUIRE: "QUIRE (SKACTIVEML)",
+    }
+
+    return renaming_dict[al_strat]

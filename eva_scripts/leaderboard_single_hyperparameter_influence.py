@@ -15,6 +15,7 @@ from misc.helpers import (
     create_fingerprint_joined_timeseries_csv_files,
     log_and_time,
 )
+from misc.plotting import _rename_strategy
 from resources.data_types import AL_STRATEGY
 
 sys.dont_write_bytecode = True
@@ -337,7 +338,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
 
             ts = ts.parallel_apply(_calculate_ranks, axis=1)
 
-        ts.columns = [AL_STRATEGY(int(kkk)).name for kkk in ts.columns]
+        ts.columns = [_rename_strategy(AL_STRATEGY(int(kkk))) for kkk in ts.columns]
 
         ts = ts.set_index([[DATASET(int(kkk)).name for kkk in ts.index]])
 
@@ -351,9 +352,9 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         ts = ts.T
         print(ts)
 
-        ranking_dict[
-            f"{hyperparameter_to_evaluate}: {hyperparameter_target_value}"
-        ] = ts.loc["Total"]
+        ranking_dict[f"{hyperparameter_to_evaluate}: {hyperparameter_target_value}"] = (
+            ts.loc["Total"]
+        )
 
     ranking_df = pd.DataFrame(ranking_dict).T
     ranking_df.to_csv(ranking_path)
