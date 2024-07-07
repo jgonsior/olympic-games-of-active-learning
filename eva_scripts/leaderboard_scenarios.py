@@ -136,8 +136,8 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
         hyperparameter_target_value = (ix, hyperparameter_target_value)
         ts = ts_orig.copy()
         if config.SCENARIOS == "start_point_scenario":
-            # if hyperparameter_target_value[1] > len(config.EXP_GRID_START_POINT):
-            #    return
+            if hyperparameter_target_value[1] > len(config.EXP_GRID_START_POINT):
+                return
 
             allowed_start_points = random.sample(
                 config.EXP_GRID_START_POINT, hyperparameter_target_value[1]
@@ -145,13 +145,36 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
 
             ts = ts.loc[ts["EXP_START_POINT"].isin(allowed_start_points)]
         elif config.SCENARIOS == "adv_start_scenario":
-            if hyperparameter_target_value[1] > len(config.EXP_GRID_START_POINT):
-                return
+            dataset_bucket_combinations = (
+                ts.groupby(
+                    ["EXP_DATASET", "EXP_TRAIN_TEST_BUCKET_SIZE"], group_keys=False
+                )
+                .size()
+                .reset_index()[["EXP_DATASET", "EXP_TRAIN_TEST_BUCKET_SIZE"]]
+            )
 
-            # sample differently per dataset and train_test_split!
-            ts = ts.groupby(
-                ["EXP_DATASET", "EXP_TRAIN_TEST_BUCKET_SIZE"], group_keys=False
-            ).apply(lambda df: df.sample(hyperparameter_target_value[1]))
+            tss = []
+            for _, dbc in dataset_bucket_combinations.iterrows():
+                ts_tmp = ts.loc[
+                    (ts["EXP_DATASET"] == dbc["EXP_DATASET"])
+                    & (
+                        ts["EXP_TRAIN_TEST_BUCKET_SIZE"]
+                        == dbc["EXP_TRAIN_TEST_BUCKET_SIZE"]
+                    )
+                ]
+                if hyperparameter_target_value[1] < len(config.EXP_GRID_START_POINT):
+                    allowed_start_points = random.sample(
+                        ts_tmp["EXP_START_POINT"].unique().tolist(),
+                        hyperparameter_target_value[1],
+                    )
+
+                    ts_tmp = ts_tmp.loc[
+                        ts_tmp["EXP_START_POINT"].isin(allowed_start_points)
+                    ]
+                tss.append(ts_tmp)
+
+            ts = pd.concat(tss)
+
         elif config.SCENARIOS == "dataset_scenario":
             if hyperparameter_target_value[1] > len(config.EXP_GRID_DATASET):
                 return
