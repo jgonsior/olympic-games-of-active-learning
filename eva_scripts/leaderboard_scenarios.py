@@ -149,8 +149,8 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
                 return
             elif hyperparameter_target_value[0] == 0:
                 ts = ts.loc[
-                    (ts["EXP_LEARNER_MODEL"] == LEARNER_MODEL.DT)
-                    & (ts["EXP_BATCH_SIZE"] == 1)
+                    (ts["EXP_LEARNER_MODEL"] == LEARNER_MODEL.RF)
+                    & (ts["EXP_BATCH_SIZE"] == 20)
                 ]
             else:
                 allowed_start_points = random.sample(
@@ -159,8 +159,8 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
 
                 # limit to less other parameters
                 ts = ts.loc[
-                    (ts["EXP_LEARNER_MODEL"] == LEARNER_MODEL.DT)
-                    & (ts["EXP_BATCH_SIZE"] == 1)
+                    (ts["EXP_LEARNER_MODEL"] == LEARNER_MODEL.RF)
+                    & (ts["EXP_BATCH_SIZE"] == 20)
                 ]
                 ts = ts.loc[ts["EXP_START_POINT"].isin(allowed_start_points)]
 
