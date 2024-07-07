@@ -145,13 +145,13 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
 
             ts = ts.loc[ts["EXP_START_POINT"].isin(allowed_start_points)]
         elif config.SCENARIOS == "adv_start_scenario":
-            if hyperparameter_target_value[1] > len(config.EXP_GRID_START_POINT):
-                return
-            elif hyperparameter_target_value[0] == 0:
+            if hyperparameter_target_value[0] == 0:
                 ts = ts.loc[
                     (ts["EXP_LEARNER_MODEL"] == LEARNER_MODEL.RF)
                     & (ts["EXP_BATCH_SIZE"] == 20)
                 ]
+            elif hyperparameter_target_value[1] > len(config.EXP_GRID_START_POINT):
+                return
             else:
                 allowed_start_points = random.sample(
                     config.EXP_GRID_START_POINT, hyperparameter_target_value[1]
