@@ -228,17 +228,20 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         ranking_df = ranking_df.sort_index(axis=0)
         ranking_df = ranking_df.sort_index(axis=1)
 
-    # add gold standard
-    gold_standard = pd.read_csv(
-        config.OUTPUT_PATH
-        / f"plots/leaderboard_single_hyperparameter_influence/standard_metric.csv",
-        index_col=0,
-    )
-    gold_standard.rename(columns=_rename_strategy, inplace=True)
+    if hyperparameter_to_evaluate == "adv_start_scenario":
+        ranking_df.rename(columns={f"(0, 21)": "gold standard"}, inplace=True)
+    else:
+        # add gold standard
+        gold_standard = pd.read_csv(
+            config.OUTPUT_PATH
+            / f"plots/leaderboard_single_hyperparameter_influence/standard_metric.csv",
+            index_col=0,
+        )
+        gold_standard.rename(columns=_rename_strategy, inplace=True)
 
-    ranking_df["gold standard"] = gold_standard.loc[
-        "standard_metric: full_auc_weighted_f1-score"
-    ]
+        ranking_df["gold standard"] = gold_standard.loc[
+            "standard_metric: full_auc_weighted_f1-score"
+        ]
 
     ranking_df.rename(
         columns={kkk: str(kkk) for kkk in ranking_df.columns}, inplace=True
