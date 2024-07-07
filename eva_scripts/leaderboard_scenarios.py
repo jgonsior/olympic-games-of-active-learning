@@ -155,7 +155,7 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
             # limit to less other parameters
             ts = ts.loc[
                 (ts["EXP_LEARNER_MODEL"] == LEARNER_MODEL.RF)
-                & (ts["EXP_GRID_BATCH_SIZE"] == "20")
+                & (ts["EXP_BATCH_SIZE"] == "20")
             ]
             ts = ts.loc[ts["EXP_START_POINT"].isin(allowed_start_points)]
 
