@@ -149,6 +149,7 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
                 ts = ts.loc[
                     (ts["EXP_LEARNER_MODEL"] == LEARNER_MODEL.RF)
                     & (ts["EXP_BATCH_SIZE"] == 20)
+                    & (ts["EXP_DATASET"].isin(list(range(0, 10))))
                 ]
             elif hyperparameter_target_value[1] > len(config.EXP_GRID_START_POINT):
                 return
@@ -161,6 +162,7 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
                 ts = ts.loc[
                     (ts["EXP_LEARNER_MODEL"] == LEARNER_MODEL.RF)
                     & (ts["EXP_BATCH_SIZE"] == 20)
+                    & (ts["EXP_DATASET"].isin(list(range(0, 10))))
                 ]
                 ts = ts.loc[ts["EXP_START_POINT"].isin(allowed_start_points)]
 
