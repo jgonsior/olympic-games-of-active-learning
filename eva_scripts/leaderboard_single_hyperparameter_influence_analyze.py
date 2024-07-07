@@ -25,6 +25,7 @@ pandarallel.initialize(
 )
 
 hyperparameters_to_evaluate = [
+    # "adv_start_scenario",
     # "start_point_scenario",
     # "dataset_scenario",
     "standard_metric",
@@ -65,7 +66,11 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         keys = {kkk: DATASET(int(kkk)).name for kkk in ranking_df.columns}
         ranking_df.rename(columns=keys, inplace=True)
 
-    if hyperparameter_to_evaluate in ["start_point_scenario", "dataset_scenario"]:
+    if hyperparameter_to_evaluate in [
+        "adv_start_scenario",
+        "start_point_scenario",
+        "dataset_scenario",
+    ]:
         custom_dict = {
             v: k
             for k, v in enumerate(
@@ -165,6 +170,7 @@ plt.savefig(
 
 
 hyperparameters_to_evaluate = [
+    "adv_start_scenario",
     "dataset_scenario",
     "start_point_scenario",
     "standard_metric",
@@ -203,7 +209,11 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         keys = {kkk: DATASET(int(kkk)).name for kkk in ranking_df.columns}
         ranking_df.rename(columns=keys, inplace=True)
 
-    if hyperparameter_to_evaluate in ["start_point_scenario", "dataset_scenario"]:
+    if hyperparameter_to_evaluate in [
+        "adv_start_scenario",
+        "start_point_scenario",
+        "dataset_scenario",
+    ]:
         custom_dict = {
             v: k
             for k, v in enumerate(
@@ -248,7 +258,11 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
     ]:
         # check how "well" the hypothesis can be found in the rankings!
 
-        if hyperparameter_to_evaluate in ["start_point_scenario", "dataset_scenario"]:
+        if hyperparameter_to_evaluate in [
+            "adv_start_scenario",
+            "start_point_scenario",
+            "dataset_scenario",
+        ]:
 
             def _calculate_spearman(row: pd.Series) -> pd.Series:
                 kendalltau = scipy.stats.kendalltau(
