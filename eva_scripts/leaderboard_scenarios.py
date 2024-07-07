@@ -104,12 +104,17 @@ if config.EVA_MODE == "create":
     if config.SCENARIOS == "dataset_scenario":
         hyperparameter_values = list(
             # enumerate(flatten([list(range(1, 2)) for _ in range(0, 400)]))
-            enumerate(flatten([list(range(1, 92)) for _ in range(0, 3000)]))
+            enumerate(flatten([list(range(1, 92)) for _ in range(0, 300)]))
         )
     elif config.SCENARIOS == "start_point_scenario":
         hyperparameter_values = list(
             # enumerate([20, *flatten([list(range(1, 20)) for _ in range(0, 4)])])
-            enumerate([21, *flatten([list(range(1, 21)) for _ in range(0, 15000)])])
+            enumerate([21, *flatten([list(range(1, 21)) for _ in range(0, 1500)])])
+        )
+    elif config.SCENARIOS == "adv_start_scenario":
+        hyperparameter_values = list(
+            # enumerate([20, *flatten([list(range(1, 20)) for _ in range(0, 4)])])
+            enumerate([21, *flatten([list(range(1, 21)) for _ in range(0, 1500)])])
         )
 
     create_workload(
@@ -133,11 +138,20 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
         if config.SCENARIOS == "start_point_scenario":
             if hyperparameter_target_value[1] > len(config.EXP_GRID_START_POINT):
                 return
+
             allowed_start_points = random.sample(
                 config.EXP_GRID_START_POINT, hyperparameter_target_value[1]
             )
 
             ts = ts.loc[ts["EXP_START_POINT"].isin(allowed_start_points)]
+        elif config.SCENARIOS == "adv_start_scenario":
+            if hyperparameter_target_value[1] > len(config.EXP_GRID_START_POINT):
+                return
+
+            # sample differently per dataset and train_test_split!
+            ts = ts.groupby(
+                ["EXP_DATASET", "EXP_TRAIN_TEST_BUCKET_SIZE"], group_keys=False
+            ).apply(lambda df: df.sample(hyperparameter_target_value[1]))
         elif config.SCENARIOS == "dataset_scenario":
             if hyperparameter_target_value[1] > len(config.EXP_GRID_DATASET):
                 return
