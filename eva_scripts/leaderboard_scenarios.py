@@ -136,8 +136,8 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
         hyperparameter_target_value = (ix, hyperparameter_target_value)
         ts = ts_orig.copy()
         if config.SCENARIOS == "start_point_scenario":
-            if hyperparameter_target_value[1] > len(config.EXP_GRID_START_POINT):
-                return
+            # if hyperparameter_target_value[1] > len(config.EXP_GRID_START_POINT):
+            #    return
 
             allowed_start_points = random.sample(
                 config.EXP_GRID_START_POINT, hyperparameter_target_value[1]
