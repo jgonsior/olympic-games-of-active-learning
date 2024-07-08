@@ -155,6 +155,8 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
     interpolation = "average_of_same_strategy"
 
     def _run_single_metric(ix, hyperparameter_target_value, config: Config):
+        if hyperparameter_target_value == 0:
+            return
         random.seed(ix)
         hyperparameter_target_value = (ix, hyperparameter_target_value)
         ts = ts_orig.copy()
