@@ -96,6 +96,23 @@ def read_or_create_ts(metric_name) -> pd.DataFrame:
 ts = read_or_create_ts(default_standard_metric)
 ts_orig = ts.copy()
 
+if config.SCENARIOS == "min_hyper":
+    grouped = (
+        ts.groupby(
+            [
+                "EXP_DATASET",
+                "EXP_START_POINT",
+                "EXP_BATCH_SIZE",
+                "EXP_LEARNER_MODEL",
+                "EXP_TRAIN_TEST_BUCKET_SIZE",
+            ]
+        )["EXP_STRATEGY"]
+        .size()
+        .reset_index()
+    )
+    grouped = grouped.loc[grouped["EXP_STRATEGY"] == 28]
+
+
 if config.EVA_MODE == "create":
 
     def flatten(xss):
@@ -112,9 +129,15 @@ if config.EVA_MODE == "create":
             enumerate([21, *flatten([list(range(1, 21)) for _ in range(0, 1500)])])
         )
     elif config.SCENARIOS == "adv_start_scenario":
+        # calculate all possible 1800 shared fingerprints
+        # sample out of them
         hyperparameter_values = list(
             # enumerate([20, *flatten([list(range(1, 20)) for _ in range(0, 4)])])
             enumerate([21, *flatten([list(range(1, 21)) for _ in range(0, 1500)])])
+        )
+    elif config.SCENARIOS == "min_hyper":
+        hyperparameter_values = enumerate(
+            list(random.sample(list(range(0, int(len(grouped) / 10))), 10000))
         )
 
     create_workload(
@@ -177,6 +200,21 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
             ]
 
             ts = ts.loc[ts["EXP_DATASET"].isin(allowed_start_points)]
+        elif config.SCENARIOS == "min_hyper":
+            allowed_groupings = grouped.sample(n=hyperparameter_target_value[1])
+            del allowed_groupings["EXP_STRATEGY"]
+
+            ts = pd.merge(
+                allowed_groupings,
+                ts,
+                on=[
+                    "EXP_DATASET",
+                    "EXP_START_POINT",
+                    "EXP_BATCH_SIZE",
+                    "EXP_LEARNER_MODEL",
+                ],
+                how="left",
+            )
 
         ts = (
             ts.groupby(by=["EXP_DATASET", "EXP_STRATEGY"])["metric_value"]

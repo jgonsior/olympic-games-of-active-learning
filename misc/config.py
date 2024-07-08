@@ -137,7 +137,9 @@ class Config:
     EVA_WORKLOAD_REDUCTION_THRESHOLD: float = 0.95
     EVA_NAME: str
 
-    SCENARIOS: Literal["dataset_scenario", "start_point_scenario", "adv_start_scenario"] = "dataset_scenario"
+    SCENARIOS: Literal[
+        "dataset_scenario", "start_point_scenario", "adv_start_scenario", "min_hyper"
+    ] = "dataset_scenario"
 
     def __init__(self, no_cli_args: Optional[Dict[str, Any]] = None) -> None:
         if no_cli_args is not None:
