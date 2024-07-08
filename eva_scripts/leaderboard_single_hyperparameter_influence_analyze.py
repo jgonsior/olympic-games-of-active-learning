@@ -103,7 +103,6 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
     if hyperparameter_to_evaluate == "min_hyper":
         rename_dict = {kkk: ast.literal_eval(kkk)[1] for kkk in ranking_df.columns}
         ranking_df.rename(columns=rename_dict, inplace=True)
-        print(ranking_df)
 
         nr_buckets = 100
         min_value = ranking_df.columns[0]
