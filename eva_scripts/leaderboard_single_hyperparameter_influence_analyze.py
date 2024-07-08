@@ -67,6 +67,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         ranking_df.rename(columns=keys, inplace=True)
 
     if hyperparameter_to_evaluate in [
+        "min_hyper",
         "adv_start_scenario",
         "start_point_scenario",
         "dataset_scenario",
@@ -170,6 +171,7 @@ plt.savefig(
 
 
 hyperparameters_to_evaluate = [
+    "min_hyper",
     "adv_start_scenario",
     "dataset_scenario",
     "start_point_scenario",
@@ -210,6 +212,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         ranking_df.rename(columns=keys, inplace=True)
 
     if hyperparameter_to_evaluate in [
+        "min_hyper",
         "adv_start_scenario",
         "start_point_scenario",
         "dataset_scenario",
@@ -262,6 +265,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         # check how "well" the hypothesis can be found in the rankings!
 
         if hyperparameter_to_evaluate in [
+            "min_hyper",
             "adv_start_scenario",
             "start_point_scenario",
             "dataset_scenario",
