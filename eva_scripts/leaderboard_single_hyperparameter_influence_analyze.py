@@ -39,137 +39,6 @@ hyperparameters_to_evaluate = [
 ]
 
 
-rankings_df: pd.DataFrame = pd.DataFrame()
-for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
-    ranking_path = Path(
-        config.OUTPUT_PATH
-        / f"plots/leaderboard_single_hyperparameter_influence/{hyperparameter_to_evaluate}.csv"
-    )
-    ranking_df = pd.read_csv(ranking_path, index_col=0)
-    ranking_df.rename(columns=_rename_strategy, inplace=True)
-    ranking_df = ranking_df.T
-
-    keys = {
-        kkk: kkk.removeprefix(f"{hyperparameter_to_evaluate}: ")
-        for kkk in ranking_df.columns
-    }
-
-    ranking_df.rename(columns=keys, inplace=True)
-
-    if hyperparameter_to_evaluate == "EXP_LEARNER_MODEL":
-        keys = {kkk: LEARNER_MODEL(int(kkk)).name for kkk in ranking_df.columns}
-        ranking_df.rename(columns=keys, inplace=True)
-    elif hyperparameter_to_evaluate == "EXP_BATCH_SIZE":
-        keys = {kkk: int(kkk) for kkk in ranking_df.columns}
-        ranking_df.rename(columns=keys, inplace=True)
-    elif hyperparameter_to_evaluate == "EXP_DATASET":
-        keys = {kkk: DATASET(int(kkk)).name for kkk in ranking_df.columns}
-        ranking_df.rename(columns=keys, inplace=True)
-
-    if hyperparameter_to_evaluate in [
-        "min_hyper",
-        "adv_start_scenario",
-        "start_point_scenario",
-        "dataset_scenario",
-    ]:
-        custom_dict = {
-            v: k
-            for k, v in enumerate(
-                sorted(
-                    ranking_df.columns, key=lambda kkk: int(ast.literal_eval(kkk)[1])
-                )
-            )
-        }
-        ranking_df = ranking_df.sort_index(axis=0)
-        ranking_df = ranking_df.sort_index(key=lambda x: x.map(custom_dict), axis=1)
-    else:
-        ranking_df = ranking_df.sort_index(axis=0)
-        ranking_df = ranking_df.sort_index(axis=1)
-
-    keys = {kkk: f"{hyperparameter_to_evaluate}: {kkk}" for kkk in ranking_df.columns}
-
-    ranking_df.rename(columns=keys, inplace=True)
-
-    if len(rankings_df) == 0:
-        rankings_df = ranking_df.T
-    else:
-        rankings_df = pd.concat([rankings_df, ranking_df.T])
-rankings_df = rankings_df.T
-
-
-# convert into ranks
-def _calculate_ranks(row: pd.Series) -> pd.Series:
-    ranks = scipy.stats.rankdata(row, method="max", nan_policy="omit")
-    result = pd.Series(ranks, index=row.index)
-    return result
-
-
-rankings_df = rankings_df.parallel_apply(_calculate_ranks, axis=0)
-
-# calculate kendall and speraman as last row
-# sort x-axis after last row, sort y-axis after gold standard
-
-rankings_df.rename(
-    columns={"standard_metric: full_auc_weighted_f1-score": "gold standard"},
-    inplace=True,
-)
-
-rankings_df.sort_values("gold standard", inplace=True)
-
-
-def _calculate_spearman(row: pd.Series) -> pd.Series:
-    kendalltau = scipy.stats.kendalltau(row, rankings_df.loc["gold standard", :])
-    # kendalltau = scipy.stats.spearmanr(row, rankings_df.loc["gold standard", :])
-
-    res = np.nan
-    if kendalltau.pvalue < 0.05:
-        res = kendalltau.statistic
-    return res
-
-
-rankings_df = rankings_df.T
-
-rankings_df["spearman"] = rankings_df.apply(_calculate_spearman, axis=1)
-rankings_df = rankings_df.T
-rankings_df.sort_values(by="spearman", axis=1, inplace=True)
-
-destination_path = Path(
-    config.OUTPUT_PATH
-    / f"plots/leaderboard_single_hyperparameter_influence/all_together"
-)
-
-print(str(destination_path) + f".jpg")
-set_seaborn_style(font_size=8)
-mpl.rcParams["path.simplify"] = True
-mpl.rcParams["path.simplify_threshold"] = 1.0
-# plt.figure(figsize=set_matplotlib_size(fraction=10))
-
-# calculate fraction based on length of keys
-plt.figure(
-    figsize=set_matplotlib_size(
-        fraction=len(rankings_df.columns) / 20, half_height=True
-    ),
-)
-
-ax = sns.heatmap(
-    rankings_df,
-    annot=True,
-    fmt="g",
-    cmap=sns.color_palette("husl", len(rankings_df) - 1),
-)
-
-ax.set_title(f"{hyperparameter_to_evaluate}")
-
-# rankings_df.to_parquet(str(destination_path) + f".parquet")
-
-plt.savefig(
-    str(destination_path) + f".jpg",
-    dpi=300,
-    bbox_inches="tight",
-    pad_inches=0,
-)
-
-
 hyperparameters_to_evaluate = [
     "min_hyper",
     "adv_start_scenario",
@@ -230,6 +99,24 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
     else:
         ranking_df = ranking_df.sort_index(axis=0)
         ranking_df = ranking_df.sort_index(axis=1)
+
+    if hyperparameter_to_evaluate == "min_hyper":
+        rename_dict = {kkk: ast.literal_eval(kkk)[1] for kkk in ranking_df.columns}
+        ranking_df.rename(columns=rename_dict, inplace=True)
+        print(ranking_df)
+
+        nr_buckets = 100
+        min_value = ranking_df.columns[0]
+        max_value = ranking_df.columns[-1]
+
+        buckets = {
+            vvv: f"({vvv}, {k})"
+            for k, v in enumerate(
+                np.array_split(range(min_value, max_value + 1), nr_buckets)
+            )
+            for vvv in v
+        }
+        ranking_df.rename(columns=buckets, inplace=True)
 
     if hyperparameter_to_evaluate == "adv_start_scenario":
         ranking_df.rename(columns={f"(0, 21)": "gold standard"}, inplace=True)
