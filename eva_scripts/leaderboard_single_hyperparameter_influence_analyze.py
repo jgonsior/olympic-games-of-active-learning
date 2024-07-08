@@ -231,6 +231,23 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         ranking_df = ranking_df.sort_index(axis=0)
         ranking_df = ranking_df.sort_index(axis=1)
 
+    if hyperparameter_to_evaluate == "min_hyper":
+        rename_dict = {kkk: ast.literal_eval(kkk)[1] for kkk in ranking_df.columns}
+        ranking_df.rename(columns=rename_dict, inplace=True)
+
+        nr_buckets = 100
+        min_value = ranking_df.columns[0]
+        max_value = ranking_df.columns[-1]
+
+        buckets = {
+            vvv: f"({vvv}, {k})"
+            for k, v in enumerate(
+                np.array_split(range(min_value, max_value + 1), nr_buckets)
+            )
+            for vvv in v
+        }
+        ranking_df.rename(columns=buckets, inplace=True)
+
     if hyperparameter_to_evaluate == "adv_start_scenario":
         ranking_df.rename(columns={f"(0, 21)": "gold standard"}, inplace=True)
     else:
