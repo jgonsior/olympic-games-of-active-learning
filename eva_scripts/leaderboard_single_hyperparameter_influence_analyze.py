@@ -24,149 +24,151 @@ pandarallel.initialize(
     nb_workers=multiprocessing.cpu_count(), progress_bar=True, use_memory_fs=False
 )
 
-hyperparameters_to_evaluate = [
-    # "adv_start_scenario",
-    # "start_point_scenario",
-    # "dataset_scenario",
-    "standard_metric",
-    # "EXP_STRATEGY",
-    "EXP_LEARNER_MODEL",
-    "EXP_BATCH_SIZE",
-    # "EXP_DATASET",
-    "EXP_TRAIN_TEST_BUCKET_SIZE",
-    # "EXP_START_POINT",
-    "auc_metric",
-]
+combined_plot = False
 
-rankings_df: pd.DataFrame = pd.DataFrame()
-for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
-    ranking_path = Path(
-        config.OUTPUT_PATH
-        / f"plots/leaderboard_single_hyperparameter_influence/{hyperparameter_to_evaluate}.csv"
-    )
-    ranking_df = pd.read_csv(ranking_path, index_col=0)
-    ranking_df.rename(columns=_rename_strategy, inplace=True)
-    ranking_df = ranking_df.T
+if combined_plot:
+    hyperparameters_to_evaluate = [
+        # "adv_start_scenario",
+        # "start_point_scenario",
+        # "dataset_scenario",
+        "standard_metric",
+        # "EXP_STRATEGY",
+        "EXP_LEARNER_MODEL",
+        "EXP_BATCH_SIZE",
+        # "EXP_DATASET",
+        "EXP_TRAIN_TEST_BUCKET_SIZE",
+        # "EXP_START_POINT",
+        "auc_metric",
+    ]
 
-    keys = {
-        kkk: kkk.removeprefix(f"{hyperparameter_to_evaluate}: ")
-        for kkk in ranking_df.columns
-    }
+    rankings_df: pd.DataFrame = pd.DataFrame()
+    for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
+        ranking_path = Path(
+            config.OUTPUT_PATH
+            / f"plots/leaderboard_single_hyperparameter_influence/{hyperparameter_to_evaluate}.csv"
+        )
+        ranking_df = pd.read_csv(ranking_path, index_col=0)
+        ranking_df.rename(columns=_rename_strategy, inplace=True)
+        ranking_df = ranking_df.T
 
-    ranking_df.rename(columns=keys, inplace=True)
-
-    if hyperparameter_to_evaluate == "EXP_LEARNER_MODEL":
-        keys = {kkk: LEARNER_MODEL(int(kkk)).name for kkk in ranking_df.columns}
-        ranking_df.rename(columns=keys, inplace=True)
-    elif hyperparameter_to_evaluate == "EXP_BATCH_SIZE":
-        keys = {kkk: int(kkk) for kkk in ranking_df.columns}
-        ranking_df.rename(columns=keys, inplace=True)
-    elif hyperparameter_to_evaluate == "EXP_DATASET":
-        keys = {kkk: DATASET(int(kkk)).name for kkk in ranking_df.columns}
-        ranking_df.rename(columns=keys, inplace=True)
-
-    if hyperparameter_to_evaluate in [
-        "min_hyper",
-        "adv_start_scenario",
-        "start_point_scenario",
-        "dataset_scenario",
-    ]:
-        custom_dict = {
-            v: k
-            for k, v in enumerate(
-                sorted(
-                    ranking_df.columns, key=lambda kkk: int(ast.literal_eval(kkk)[1])
-                )
-            )
+        keys = {
+            kkk: kkk.removeprefix(f"{hyperparameter_to_evaluate}: ")
+            for kkk in ranking_df.columns
         }
-        ranking_df = ranking_df.sort_index(axis=0)
-        ranking_df = ranking_df.sort_index(key=lambda x: x.map(custom_dict), axis=1)
-    else:
-        ranking_df = ranking_df.sort_index(axis=0)
-        ranking_df = ranking_df.sort_index(axis=1)
 
-    keys = {kkk: f"{hyperparameter_to_evaluate}: {kkk}" for kkk in ranking_df.columns}
+        ranking_df.rename(columns=keys, inplace=True)
 
-    ranking_df.rename(columns=keys, inplace=True)
+        if hyperparameter_to_evaluate == "EXP_LEARNER_MODEL":
+            keys = {kkk: LEARNER_MODEL(int(kkk)).name for kkk in ranking_df.columns}
+            ranking_df.rename(columns=keys, inplace=True)
+        elif hyperparameter_to_evaluate == "EXP_BATCH_SIZE":
+            keys = {kkk: int(kkk) for kkk in ranking_df.columns}
+            ranking_df.rename(columns=keys, inplace=True)
+        elif hyperparameter_to_evaluate == "EXP_DATASET":
+            keys = {kkk: DATASET(int(kkk)).name for kkk in ranking_df.columns}
+            ranking_df.rename(columns=keys, inplace=True)
 
-    if len(rankings_df) == 0:
-        rankings_df = ranking_df.T
-    else:
-        rankings_df = pd.concat([rankings_df, ranking_df.T])
-rankings_df = rankings_df.T
+        if hyperparameter_to_evaluate in [
+            "min_hyper",
+            "adv_start_scenario",
+            "start_point_scenario",
+            "dataset_scenario",
+        ]:
+            custom_dict = {
+                v: k
+                for k, v in enumerate(
+                    sorted(
+                        ranking_df.columns,
+                        key=lambda kkk: int(ast.literal_eval(kkk)[1]),
+                    )
+                )
+            }
+            ranking_df = ranking_df.sort_index(axis=0)
+            ranking_df = ranking_df.sort_index(key=lambda x: x.map(custom_dict), axis=1)
+        else:
+            ranking_df = ranking_df.sort_index(axis=0)
+            ranking_df = ranking_df.sort_index(axis=1)
 
+        keys = {
+            kkk: f"{hyperparameter_to_evaluate}: {kkk}" for kkk in ranking_df.columns
+        }
 
-# convert into ranks
-def _calculate_ranks(row: pd.Series) -> pd.Series:
-    ranks = scipy.stats.rankdata(row, method="max", nan_policy="omit")
-    result = pd.Series(ranks, index=row.index)
-    return result
+        ranking_df.rename(columns=keys, inplace=True)
 
+        if len(rankings_df) == 0:
+            rankings_df = ranking_df.T
+        else:
+            rankings_df = pd.concat([rankings_df, ranking_df.T])
+    rankings_df = rankings_df.T
 
-rankings_df = rankings_df.parallel_apply(_calculate_ranks, axis=0)
+    # convert into ranks
+    def _calculate_ranks(row: pd.Series) -> pd.Series:
+        ranks = scipy.stats.rankdata(row, method="max", nan_policy="omit")
+        result = pd.Series(ranks, index=row.index)
+        return result
 
-# calculate kendall and speraman as last row
-# sort x-axis after last row, sort y-axis after gold standard
+    rankings_df = rankings_df.parallel_apply(_calculate_ranks, axis=0)
 
-rankings_df.rename(
-    columns={"standard_metric: full_auc_weighted_f1-score": "gold standard"},
-    inplace=True,
-)
+    # calculate kendall and speraman as last row
+    # sort x-axis after last row, sort y-axis after gold standard
 
-rankings_df.sort_values("gold standard", inplace=True)
+    rankings_df.rename(
+        columns={"standard_metric: full_auc_weighted_f1-score": "gold standard"},
+        inplace=True,
+    )
 
+    rankings_df.sort_values("gold standard", inplace=True)
 
-def _calculate_spearman(row: pd.Series) -> pd.Series:
-    kendalltau = scipy.stats.kendalltau(row, rankings_df.loc["gold standard", :])
-    # kendalltau = scipy.stats.spearmanr(row, rankings_df.loc["gold standard", :])
+    def _calculate_spearman(row: pd.Series) -> pd.Series:
+        kendalltau = scipy.stats.kendalltau(row, rankings_df.loc["gold standard", :])
+        # kendalltau = scipy.stats.spearmanr(row, rankings_df.loc["gold standard", :])
 
-    res = np.nan
-    if kendalltau.pvalue < 0.05:
-        res = kendalltau.statistic
-    return res
+        res = np.nan
+        if kendalltau.pvalue < 0.05:
+            res = kendalltau.statistic
+        return res
 
+    rankings_df = rankings_df.T
 
-rankings_df = rankings_df.T
+    rankings_df["spearman"] = rankings_df.apply(_calculate_spearman, axis=1)
+    rankings_df = rankings_df.T
+    rankings_df.sort_values(by="spearman", axis=1, inplace=True)
 
-rankings_df["spearman"] = rankings_df.apply(_calculate_spearman, axis=1)
-rankings_df = rankings_df.T
-rankings_df.sort_values(by="spearman", axis=1, inplace=True)
+    destination_path = Path(
+        config.OUTPUT_PATH
+        / f"plots/leaderboard_single_hyperparameter_influence/all_together"
+    )
 
-destination_path = Path(
-    config.OUTPUT_PATH
-    / f"plots/leaderboard_single_hyperparameter_influence/all_together"
-)
+    print(str(destination_path) + f".jpg")
+    set_seaborn_style(font_size=8)
+    mpl.rcParams["path.simplify"] = True
+    mpl.rcParams["path.simplify_threshold"] = 1.0
+    # plt.figure(figsize=set_matplotlib_size(fraction=10))
 
-print(str(destination_path) + f".jpg")
-set_seaborn_style(font_size=8)
-mpl.rcParams["path.simplify"] = True
-mpl.rcParams["path.simplify_threshold"] = 1.0
-# plt.figure(figsize=set_matplotlib_size(fraction=10))
+    # calculate fraction based on length of keys
+    plt.figure(
+        figsize=set_matplotlib_size(
+            fraction=len(rankings_df.columns) / 20, half_height=True
+        ),
+    )
 
-# calculate fraction based on length of keys
-plt.figure(
-    figsize=set_matplotlib_size(
-        fraction=len(rankings_df.columns) / 20, half_height=True
-    ),
-)
+    ax = sns.heatmap(
+        rankings_df,
+        annot=True,
+        fmt="g",
+        cmap=sns.color_palette("husl", len(rankings_df) - 1),
+    )
 
-ax = sns.heatmap(
-    rankings_df,
-    annot=True,
-    fmt="g",
-    cmap=sns.color_palette("husl", len(rankings_df) - 1),
-)
+    ax.set_title(f"{hyperparameter_to_evaluate}")
 
-ax.set_title(f"{hyperparameter_to_evaluate}")
+    # rankings_df.to_parquet(str(destination_path) + f".parquet")
 
-# rankings_df.to_parquet(str(destination_path) + f".parquet")
-
-plt.savefig(
-    str(destination_path) + f".jpg",
-    dpi=300,
-    bbox_inches="tight",
-    pad_inches=0,
-)
+    plt.savefig(
+        str(destination_path) + f".jpg",
+        dpi=300,
+        bbox_inches="tight",
+        pad_inches=0,
+    )
 
 hyperparameters_to_evaluate = [
     "min_hyper",
@@ -236,7 +238,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         # ranking_df.rename(columns=rename_dict, inplace=True)
         # del ranking_df[-1]
 
-        nr_buckets = 100
+        nr_buckets = 20
         min_value = ranking_df.columns[0]
         max_value = ranking_df.columns[-2]
 
@@ -311,19 +313,32 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
             ranking_df["spearman"] = ranking_df.apply(_calculate_spearman, axis=1)
             ranking_df = ranking_df.T
             ranking_df.sort_values(by="spearman", axis=1, inplace=True)
-            print(ranking_df)
+            ranking_df = ranking_df.T[["spearman"]]
+            ranking_df = ranking_df.reset_index()
 
+            gold_standard = ranking_df.loc[ranking_df["index"] == "gold standard"]
+            ranking_df = ranking_df[ranking_df["index"] != "gold standard"]
+
+            ranking_df["index"] = ranking_df["index"].parallel_apply(
+                lambda kkk: str(ast.literal_eval(kkk)[1])
+            )
+            ranking_df = pd.concat([ranking_df, gold_standard])
+            ranking_df.sort_values(by="index", inplace=True, key=lambda kkk: f"{kkk:d}")
+            corr_data = ranking_df
+            """
             grouped_values = defaultdict(list)
             for ix, spr in ranking_df.loc["spearman"].items():
                 if ix == "gold standard":
                     continue
                 grouped_values[ast.literal_eval(ix)[1]].append(spr)
 
+
             for k, v in grouped_values.items():
                 grouped_values[k] = [np.mean(v), np.std(v)]
             corr_data = pd.DataFrame(grouped_values, index=["mean", "std"])
             corr_data.sort_index(axis=0, inplace=True)
             corr_data.sort_index(axis=1, inplace=True)
+            """
         else:
             corr_data = ranking_df.corr(method=hypothesis)
 
@@ -339,11 +354,27 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         # plt.figure(figsize=set_matplotlib_size(fraction=10))
 
         # calculate fraction based on length of keys
-        plt.figure(figsize=set_matplotlib_size(fraction=len(corr_data.columns) / 6))
+        plt.figure(
+            figsize=set_matplotlib_size(fraction=10)
+        )  # fraction=len(corr_data.columns) / 6))
 
-        ax = sns.heatmap(corr_data, annot=True, fmt=".2%", vmin=0, vmax=1)
+        if hyperparameter_to_evaluate in [
+            "min_hyper",
+            "adv_start_scenario",
+            "start_point_scenario",
+            "dataset_scenario",
+        ]:
+            # calculate fraction based on length of keys
+            plt.figure(figsize=set_matplotlib_size(fraction=10))
+            ax = sns.violinplot(data=corr_data, x="index", y="spearman", hue="index")
+        else:
+            # calculate fraction based on length of keys
+            plt.figure(figsize=set_matplotlib_size(fraction=len(corr_data.columns) / 6))
+
+            ax = sns.heatmap(corr_data, annot=True, fmt=".2%", vmin=0, vmax=1)
 
         ax.set_title(f"{hyperparameter_to_evaluate}")
+        plt.legend([], [], frameon=False)
 
         corr_data.to_parquet(str(destination_path) + f".parquet")
 
