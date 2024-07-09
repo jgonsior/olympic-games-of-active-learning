@@ -161,6 +161,7 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
     interpolation = "average_of_same_strategy"
 
     def _run_single_metric(ix, hyperparameter_target_value, config: Config):
+        print(f"{ix}: {hyperparameter_target_value}")
         if hyperparameter_target_value == 0:
             return
         random.seed(ix)
@@ -212,6 +213,7 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
             allowed_groupings = grouped.sample(n=hyperparameter_target_value[1])
             del allowed_groupings["EXP_STRATEGY"]
 
+            print(len(ts))
             ts = pd.merge(
                 allowed_groupings,
                 ts,
@@ -220,9 +222,12 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
                     "EXP_START_POINT",
                     "EXP_BATCH_SIZE",
                     "EXP_LEARNER_MODEL",
+                    "EXP_TRAIN_TEST_BUCKET_SIZE",
                 ],
                 how="left",
             )
+            print(ts)
+            print(len(ts))
 
         ts = (
             ts.groupby(by=["EXP_DATASET", "EXP_STRATEGY"])["metric_value"]
