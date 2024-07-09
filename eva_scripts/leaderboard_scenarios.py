@@ -110,7 +110,7 @@ if config.SCENARIOS == "min_hyper":
         .size()
         .reset_index()
     )
-    grouped = grouped.loc[grouped["EXP_STRATEGY"] == 28]
+    # grouped = grouped.loc[grouped["EXP_STRATEGY"] == 28]
 
 
 if config.EVA_MODE == "create":
