@@ -141,7 +141,7 @@ if config.EVA_MODE == "create":
             enumerate(
                 [
                     len(grouped),
-                    *flatten([list(range(1, 100)) for _ in range(0, 1000)]),
+                    *flatten([list(random.sample(range(1, len(grouped)), 100000))]),
                 ]
             )
         )
