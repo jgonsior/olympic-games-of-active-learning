@@ -213,7 +213,6 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
             allowed_groupings = grouped.sample(n=hyperparameter_target_value[1])
             del allowed_groupings["EXP_STRATEGY"]
 
-            print(len(ts))
             ts = pd.merge(
                 allowed_groupings,
                 ts,
@@ -226,8 +225,6 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
                 ],
                 how="left",
             )
-            print(ts)
-            print(len(ts))
 
         ts = (
             ts.groupby(by=["EXP_DATASET", "EXP_STRATEGY"])["metric_value"]
