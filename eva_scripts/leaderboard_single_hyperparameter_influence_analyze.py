@@ -386,4 +386,4 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
             bbox_inches="tight",
             pad_inches=0,
         )
-        plt.clf()
+        ax.plot.clf()
