@@ -12,6 +12,7 @@ from misc.plotting import _rename_strategy, set_matplotlib_size, set_seaborn_sty
 from resources.data_types import LEARNER_MODEL
 import seaborn as sns
 import ast
+import matplotlib.ticker as ticker
 
 sys.dont_write_bytecode = True
 
@@ -233,7 +234,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
 
     if hyperparameter_to_evaluate == "min_hyper":
         rename_dict = {kkk: ast.literal_eval(kkk)[1] for kkk in ranking_df.columns}
-        ranking_df.rename(columns=rename_dict, inplace=True)
+        # ranking_df.rename(columns=rename_dict, inplace=True)
         # rename_dict = {kkk: kkk if kkk < 1000 else -1 for kkk in ranking_df.columns}
         # ranking_df.rename(columns=rename_dict, inplace=True)
         # del ranking_df[-1]
@@ -242,18 +243,18 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         min_value = ranking_df.columns[0]
         max_value = ranking_df.columns[-2]
 
-        buckets = {
-            vvv: f"({vvv}, {k})"
-            for k, v in enumerate(
-                np.array_split(range(min_value, max_value + 1), nr_buckets)
-            )
-            for vvv in v
-        }
-        ranking_df.rename(columns=buckets, inplace=True)
-        ranking_df.rename(
-            columns={ranking_df.columns[-1]: f"(420000, {ranking_df.columns[-1]})"},
-            inplace=True,
-        )
+        # buckets = {
+        #    vvv: f"({vvv}, {k})"
+        #    for k, v in enumerate(
+        #        np.array_split(range(min_value, max_value + 1), nr_buckets)
+        #    )
+        #    for vvv in v
+        # }
+        # ranking_df.rename(columns=buckets, inplace=True)
+        # ranking_df.rename(
+        #    columns={ranking_df.columns[-1]: f"(420000, {ranking_df.columns[-1]})"},
+        #    inplace=True,
+        # )
         print(ranking_df)
 
     if hyperparameter_to_evaluate == "adv_start_scenario":
@@ -367,8 +368,14 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
             "dataset_scenario",
         ]:
             # calculate fraction based on length of keys
-            plt.figure(figsize=set_matplotlib_size(fraction=10))
-            ax = sns.violinplot(data=corr_data, x="index", y="spearman", hue="index")
+            plt.figure(figsize=set_matplotlib_size(fraction=1))
+            ax = sns.lineplot(
+                data=corr_data,
+                x="index",
+                y="spearman",
+            )
+            ax.xaxis.set_major_locator(ticker.LinearLocator(20))
+            # ax = sns.violinplot(data=corr_data, x="index", y="spearman", hue="index")
         else:
             # calculate fraction based on length of keys
             plt.figure(figsize=set_matplotlib_size(fraction=len(corr_data.columns) / 6))
@@ -386,4 +393,4 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
             bbox_inches="tight",
             pad_inches=0,
         )
-        ax.fig.clf()
+        plt.clf()
