@@ -320,10 +320,12 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
             ranking_df = ranking_df[ranking_df["index"] != "gold standard"]
 
             ranking_df["index"] = ranking_df["index"].parallel_apply(
-                lambda kkk: str(ast.literal_eval(kkk)[1])
+                lambda kkk: ast.literal_eval(kkk)[1]
             )
+            ranking_df.sort_values(by="index", inplace=True)
+            ranking_df["index"] = ranking_df["index"].parallel_apply(str)
+
             ranking_df = pd.concat([ranking_df, gold_standard])
-            ranking_df.sort_values(by="index", inplace=True, key=lambda kkk: f"{kkk:d}")
             corr_data = ranking_df
             """
             grouped_values = defaultdict(list)
@@ -384,3 +386,4 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
             bbox_inches="tight",
             pad_inches=0,
         )
+        plt.clf()
