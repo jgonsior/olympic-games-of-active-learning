@@ -136,9 +136,15 @@ if config.EVA_MODE == "create":
             enumerate([21, *flatten([list(range(1, 21)) for _ in range(0, 1500)])])
         )
     elif config.SCENARIOS == "min_hyper":
-        hyperparameter_values = [
-            *list(enumerate(list(random.sample(list(range(0, len(grouped))), 100000))))
-        ]
+        hyperparameter_values = list(
+            # enumerate([20, *flatten([list(range(1, 20)) for _ in range(0, 4)])])
+            enumerate(
+                [
+                    len(grouped),
+                    *flatten([list(range(1, 1000)) for _ in range(0, 1000)]),
+                ]
+            )
+        )
 
     create_workload(
         hyperparameter_values,
