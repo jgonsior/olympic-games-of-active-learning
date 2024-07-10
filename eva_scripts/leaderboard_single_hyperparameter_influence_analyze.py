@@ -234,27 +234,27 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
 
     if hyperparameter_to_evaluate == "min_hyper":
         rename_dict = {kkk: ast.literal_eval(kkk)[1] for kkk in ranking_df.columns}
-        # ranking_df.rename(columns=rename_dict, inplace=True)
-        # rename_dict = {kkk: kkk if kkk < 1000 else -1 for kkk in ranking_df.columns}
-        # ranking_df.rename(columns=rename_dict, inplace=True)
-        # del ranking_df[-1]
-
-        nr_buckets = 20
+        ranking_df.rename(columns=rename_dict, inplace=True)
+        #  rename_dict = {kkk: kkk if kkk < 1000 else -1 for kkk in ranking_df.columns}
+        #  ranking_df.rename(columns=rename_dict, inplace=True)
+        #  del ranking_df[-1]
+        print(ranking_df)
+        nr_buckets = 10000
         min_value = ranking_df.columns[0]
-        max_value = ranking_df.columns[-2]
+        max_value = ranking_df.columns[-1]
 
-        # buckets = {
-        #    vvv: f"({vvv}, {k})"
-        #    for k, v in enumerate(
-        #        np.array_split(range(min_value, max_value + 1), nr_buckets)
-        #    )
-        #    for vvv in v
-        # }
-        # ranking_df.rename(columns=buckets, inplace=True)
-        # ranking_df.rename(
-        #    columns={ranking_df.columns[-1]: f"(420000, {ranking_df.columns[-1]})"},
-        #    inplace=True,
-        # )
+        buckets = {
+            vvv: f"({vvv}, {k})"
+            for k, v in enumerate(
+                np.array_split(range(min_value, max_value + 1), nr_buckets)
+            )
+            for vvv in v
+        }
+        ranking_df.rename(columns=buckets, inplace=True)
+        #  ranking_df.rename(
+        #  columns={ranking_df.columns[-1]: f"(420000, {ranking_df.columns[-1]})"},
+        #  inplace=True,
+        #  )
         print(ranking_df)
 
     if hyperparameter_to_evaluate == "adv_start_scenario":
@@ -324,9 +324,8 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
                 lambda kkk: ast.literal_eval(kkk)[1]
             )
             ranking_df.sort_values(by="index", inplace=True)
-            ranking_df["index"] = ranking_df["index"].parallel_apply(str)
 
-            ranking_df = pd.concat([ranking_df, gold_standard])
+            #  ranking_df = pd.concat([ranking_df, gold_standard])
             corr_data = ranking_df
             """
             grouped_values = defaultdict(list)
@@ -373,8 +372,15 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
                 data=corr_data,
                 x="index",
                 y="spearman",
+                errorbar=lambda x: (x.min(), x.max()),
+                #  errorbar="sd",:w
+                #  sizes=(0.1, 0.1),
+                #  alpha=0.2,
+                #  edgecolor="none",
+                #  hue=0.3,
             )
-            ax.xaxis.set_major_locator(ticker.LinearLocator(15))
+            #  ax.xaxis.set_major_locator(ticker.LinearLocator(20))
+            ax.xaxis.set_major_locator(ticker.AutoLocator())
             # ax = sns.violinplot(data=corr_data, x="index", y="spearman", hue="index")
         else:
             # calculate fraction based on length of keys
@@ -385,6 +391,13 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         ax.set_title(f"{hyperparameter_to_evaluate}")
         plt.legend([], [], frameon=False)
 
+        if hyperparameter_to_evaluate in [
+            "min_hyper",
+            "adv_start_scenario",
+            "start_point_scenario",
+            "dataset_scenario",
+        ]:
+            corr_data["index"] = corr_data["index"].parallel_apply(str)
         corr_data.to_parquet(str(destination_path) + f".parquet")
 
         plt.savefig(
