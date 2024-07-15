@@ -19,6 +19,8 @@
 #python 03_calculate_dataset_categorizations.py --EXP_TITLE full_exp_jan --SAMPLES_CATEGORIZER _ALL
 #python -m eva_scripts.leaderboard_scenarios --EXP_TITLE full_exp_jan --EVA_MODE local --SCENARIOS adv_start_point_scenario
 
+python -m eva_scripts.leaderboard_scenarios --EXP_TITLE full_exp_jan --EVA_MODE local --SCENARIOS adv_min
+python -m eva_scripts.leaderboard_scenarios --EXP_TITLE full_exp_jan --EVA_MODE create --SCENARIOS min_hyper
 python -m eva_scripts.leaderboard_scenarios --EXP_TITLE full_exp_jan --EVA_MODE local --SCENARIOS min_hyper
 python -m eva_scripts.leaderboard_scenarios --EXP_TITLE full_exp_jan --EVA_MODE local --SCENARIOS dataset_scenario
 python -m eva_scripts.leaderboard_scenarios --EXP_TITLE full_exp_jan --EVA_MODE local --SCENARIOS start_point_scenario
