@@ -356,8 +356,7 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
                 ["BATCH_SIZE", range(1, len(config.EXP_GRID_BATCH_SIZE))],
                 ["LEARNER_MODEL", range(1, len(config.EXP_GRID_LEARNER_MODEL))],
             ]
-
-            max_budget = random.choice(
+            population = list(
                 range(
                     1,
                     len(config.EXP_GRID_DATASET)
@@ -367,6 +366,16 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
                     * len(config.EXP_GRID_LEARNER_MODEL),
                 )
             )
+            weights = np.logspace(start=1, stop=0, num=len(population))
+            max_budget = random.choices(
+                population=population,
+                k=1,
+                weights=weights,
+            )
+            print(max_budget)
+            exit(-1)
+
+            print(len(ts))
             param_grid_size = 1
 
             tmp_possible_hyperparameters = possible_hyperparameters.copy()
