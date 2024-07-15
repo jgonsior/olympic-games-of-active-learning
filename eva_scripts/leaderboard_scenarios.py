@@ -161,6 +161,30 @@ if config.EVA_MODE == "create":
                 ]
             )
         )
+    elif config.SCENARIOS == "real_single_scenarios":
+        parameters = {
+            "EXP_DATASET": config.EXP_GRID_DATASET,
+            "EXP_START_POINT": config.EXP_GRID_START_POINT,
+            "EXP_TRAIN_TEST_BUCKET_SIZE": config.EXP_GRID_TRAIN_TEST_BUCKET_SIZE,
+            "EXP_BATCH_SIZE": config.EXP_GRID_BATCH_SIZE,
+            "EXP_LEARNER_MODEL": config.EXP_GRID_LEARNER_MODEL,
+        }
+        hyperparameter_values = [
+            [ttt[0], ttt[1], tpi]
+            for ttt in list(
+                enumerate(
+                    [
+                        *flatten(
+                            [
+                                [ppp for ppp in parameters.keys()]
+                                for _ in range(0, 10000)
+                            ]
+                        ),
+                    ]
+                )
+            )
+            for tpi in parameters[ttt[1]]
+        ]
 
     create_workload(
         hyperparameter_values,
@@ -176,12 +200,29 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
     rank_or_percentage = "dataset_normalized_percentages"
     interpolation = "average_of_same_strategy"
 
-    def _run_single_metric(ix, hyperparameter_target_value, config: Config):
+    def _run_single_metric(
+        ix, hyperparameter_target_value, config: Config, additional_value=None
+    ):
         print(f"{ix}: {hyperparameter_target_value}")
+
+        if additional_value is not None:
+            tmp = config.copy()
+            config = additional_value
+            additional_value = tmp
+
         if hyperparameter_target_value == 0:
             return
-        random.seed(ix)
-        hyperparameter_target_value = (ix, hyperparameter_target_value)
+
+        random.seed(int(ix))
+
+        if additional_value is None:
+            hyperparameter_target_value = (ix, hyperparameter_target_value)
+        else:
+            hyperparameter_target_value = (
+                ix,
+                hyperparameter_target_value,
+                additional_value,
+            )
         ts = ts_orig.copy()
         if config.SCENARIOS == "start_point_scenario":
             if hyperparameter_target_value[1] > len(config.EXP_GRID_START_POINT):
@@ -301,6 +342,78 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
             hyperparameter_target_value = (
                 hyperparameter_target_value[0],
                 hyperparameter_target_value[1],
+                param_grid_size,
+            )
+        elif config.SCENARIOS == "real_single_scenarios":
+            possible_hyperparameters = [
+                ["DATASET", range(1, len(config.EXP_GRID_DATASET))],
+                ["START_POINT", range(1, len(config.EXP_GRID_START_POINT))],
+                [
+                    "TRAIN_TEST_BUCKET_SIZE",
+                    range(1, len(config.EXP_GRID_TRAIN_TEST_BUCKET_SIZE)),
+                ],
+                ["BATCH_SIZE", range(1, len(config.EXP_GRID_BATCH_SIZE))],
+                ["LEARNER_MODEL", range(1, len(config.EXP_GRID_LEARNER_MODEL))],
+            ]
+
+            max_budget = random.choice(
+                range(
+                    1,
+                    len(config.EXP_GRID_DATASET)
+                    * len(config.EXP_GRID_START_POINT)
+                    * len(config.EXP_GRID_TRAIN_TEST_BUCKET_SIZE)
+                    * len(config.EXP_GRID_BATCH_SIZE)
+                    * len(config.EXP_GRID_LEARNER_MODEL),
+                )
+            )
+            param_grid_size = 1
+
+            tmp_possible_hyperparameters = possible_hyperparameters.copy()
+            tmp_possible_hyperparameters = [
+                kkk
+                for kkk in tmp_possible_hyperparameters
+                if kkk[0] != hyperparameter_target_value[1].removeprefix("EXP_")
+            ]
+            random.shuffle(tmp_possible_hyperparameters)
+
+            used_parameters = []
+
+            tmp_index = 0
+            while param_grid_size <= max_budget and (
+                tmp_index < len(tmp_possible_hyperparameters)
+            ):
+                # which hyperparameter
+                used_parameters.append(tmp_possible_hyperparameters[tmp_index].copy())
+                # the amount of hyperparameter values
+                used_parameters[tmp_index][1] = random.choice(
+                    used_parameters[tmp_index][1]
+                )
+
+                # the actual used hyperparameter values
+                used_parameters[tmp_index][1] = random.sample(
+                    config.__getattribute__(
+                        "EXP_GRID_" + used_parameters[tmp_index][0]
+                    ),
+                    used_parameters[tmp_index][1],
+                )
+                used_parameters[tmp_index][0] = "EXP_" + used_parameters[tmp_index][0]
+
+                param_grid_size = param_grid_size * len(used_parameters[tmp_index][1])
+                tmp_index += 1
+
+            mask = ts[hyperparameter_target_value[1]] == hyperparameter_target_value[2]
+            for up in used_parameters:
+                mask &= ts[up[0]].isin(up[1])
+
+            ts = ts.loc[mask]
+
+            if len(ts) == 0:
+                return
+
+            hyperparameter_target_value = (
+                hyperparameter_target_value[0],
+                hyperparameter_target_value[1],
+                hyperparameter_target_value[2],
                 param_grid_size,
             )
 

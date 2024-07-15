@@ -143,6 +143,7 @@ class Config:
         "adv_start_scenario",
         "min_hyper",
         "adv_min",
+        "real_single_scenarios",
     ] = "dataset_scenario"
 
     def __init__(self, no_cli_args: Optional[Dict[str, Any]] = None) -> None:
