@@ -242,7 +242,7 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
             )
         elif config.SCENARIOS == "adv_min":
             possible_hyperparameters = [
-                ["DATASET", range(1, 20)],
+                ["DATASET", range(1, 30)],
                 ["START_POINT", range(1, 20)],
                 ["TRAIN_TEST_BUCKET_SIZE", range(1, 6)],
                 ["BATCH_SIZE", range(1, 3)],
