@@ -70,6 +70,7 @@ if combined_plot:
             ranking_df.rename(columns=keys, inplace=True)
 
         if hyperparameter_to_evaluate in [
+            "adv_min",
             "min_hyper",
             "adv_start_scenario",
             "start_point_scenario",
@@ -172,6 +173,7 @@ if combined_plot:
     )
 
 hyperparameters_to_evaluate = [
+    "adv_min",
     "min_hyper",
     "adv_start_scenario",
     "dataset_scenario",
@@ -213,6 +215,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         ranking_df.rename(columns=keys, inplace=True)
 
     if hyperparameter_to_evaluate in [
+        "adv_min",
         "min_hyper",
         "adv_start_scenario",
         "start_point_scenario",
@@ -291,6 +294,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         # check how "well" the hypothesis can be found in the rankings!
 
         if hyperparameter_to_evaluate in [
+            "adv_min",
             "min_hyper",
             "adv_start_scenario",
             "start_point_scenario",
@@ -361,6 +365,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         )  # fraction=len(corr_data.columns) / 6))
 
         if hyperparameter_to_evaluate in [
+            "adv_min",
             "min_hyper",
             "adv_start_scenario",
             "start_point_scenario",
@@ -392,6 +397,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         plt.legend([], [], frameon=False)
 
         if hyperparameter_to_evaluate in [
+            "adv_min",
             "min_hyper",
             "adv_start_scenario",
             "start_point_scenario",
