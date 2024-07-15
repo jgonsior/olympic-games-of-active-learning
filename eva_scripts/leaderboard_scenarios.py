@@ -374,7 +374,6 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
                 k=1,
                 weights=weights,
             )[0]
-            print(max_budget)
 
             param_grid_size = 1
 
