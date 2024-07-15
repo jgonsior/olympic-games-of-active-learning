@@ -366,16 +366,15 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
                     * len(config.EXP_GRID_LEARNER_MODEL),
                 )
             )
+
+            # drastically favor smaller sized scenarios
             weights = np.logspace(start=1, stop=0, num=len(population))
             max_budget = random.choices(
                 population=population,
                 k=1,
                 weights=weights,
             )
-            print(max_budget)
-            exit(-1)
 
-            print(len(ts))
             param_grid_size = 1
 
             tmp_possible_hyperparameters = possible_hyperparameters.copy()
