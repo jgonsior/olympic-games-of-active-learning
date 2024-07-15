@@ -260,6 +260,13 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         #  )
         print(ranking_df)
 
+    if hyperparameter_to_evaluate == "adv_min":
+        buckets = {
+            kkk: (ast.literal_eval(kkk)[0], ast.literal_eval(kkk)[2])
+            for kkk in ranking_df.columns
+        }
+        ranking_df.rename(columns=buckets, inplace=True)
+
     if hyperparameter_to_evaluate == "adv_start_scenario":
         ranking_df.rename(columns={f"(0, 21)": "gold standard"}, inplace=True)
     else:
