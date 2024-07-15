@@ -257,7 +257,7 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
 
             used_parameters = []
             tmp_index = 0
-            while param_grid_size < max_budget and (
+            while param_grid_size <= max_budget and (
                 tmp_index < len(tmp_possible_hyperparameters)
             ):
                 # which hyperparameter
