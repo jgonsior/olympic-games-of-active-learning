@@ -249,48 +249,60 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
                 ["LEARNER_MODEL", range(1, 3)],
             ]
 
-            max_budget = hyperparameter_target_value[1]
-            param_grid_size = 1
+            no_params_found = True
 
-            tmp_possible_hyperparameters = possible_hyperparameters.copy()
-            random.shuffle(tmp_possible_hyperparameters)
+            while no_params_found:
+                max_budget = hyperparameter_target_value[1]
+                param_grid_size = 1
 
-            used_parameters = []
-            tmp_index = 0
-            while param_grid_size <= max_budget and (
-                tmp_index < len(tmp_possible_hyperparameters)
-            ):
-                # which hyperparameter
-                used_parameters.append(tmp_possible_hyperparameters[tmp_index])
+                tmp_possible_hyperparameters = possible_hyperparameters.copy()
+                random.shuffle(tmp_possible_hyperparameters)
 
-                # the amount of hyperparameter values
-                used_parameters[tmp_index][1] = random.choice(
-                    used_parameters[tmp_index][1]
-                )
+                used_parameters = []
+                tmp_index = 0
+                while param_grid_size <= max_budget and (
+                    tmp_index < len(tmp_possible_hyperparameters)
+                ):
+                    # which hyperparameter
+                    used_parameters.append(
+                        tmp_possible_hyperparameters[tmp_index].copy()
+                    )
 
-                # the actual used hyperparameter values
-                used_parameters[tmp_index][1] = random.sample(
-                    config.__getattribute__(
-                        "EXP_GRID_" + used_parameters[tmp_index][0]
-                    ),
-                    used_parameters[tmp_index][1],
-                )
-                used_parameters[tmp_index][0] = "EXP_" + used_parameters[tmp_index][0]
+                    # the amount of hyperparameter values
+                    used_parameters[tmp_index][1] = random.choice(
+                        used_parameters[tmp_index][1]
+                    )
 
-                param_grid_size = param_grid_size * len(used_parameters[tmp_index][1])
-                tmp_index += 1
+                    # the actual used hyperparameter values
+                    used_parameters[tmp_index][1] = random.sample(
+                        config.__getattribute__(
+                            "EXP_GRID_" + used_parameters[tmp_index][0]
+                        ),
+                        used_parameters[tmp_index][1],
+                    )
+                    used_parameters[tmp_index][0] = (
+                        "EXP_" + used_parameters[tmp_index][0]
+                    )
+
+                    param_grid_size = param_grid_size * len(
+                        used_parameters[tmp_index][1]
+                    )
+                    tmp_index += 1
+
+                mask = True
+                for up in used_parameters:
+                    mask &= ts[up[0]].isin(up[1])
+
+                ts = ts.loc[mask]
+
+                if len(ts) > 0:
+                    no_params_found = False
 
             hyperparameter_target_value = (
                 hyperparameter_target_value[0],
                 hyperparameter_target_value[1],
                 param_grid_size,
             )
-
-            mask = True
-            for up in used_parameters:
-                mask &= ts[up[0]].isin(up[1])
-
-            ts = ts.loc[mask]
 
         ts = (
             ts.groupby(by=["EXP_DATASET", "EXP_STRATEGY"])["metric_value"]
