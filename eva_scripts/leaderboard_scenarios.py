@@ -1,5 +1,6 @@
 import multiprocessing
 import random
+from re import T
 import subprocess
 import sys
 
@@ -96,7 +97,7 @@ def read_or_create_ts(metric_name) -> pd.DataFrame:
 ts = read_or_create_ts(default_standard_metric)
 ts_orig = ts.copy()
 
-if config.SCENARIOS == "min_hyper":
+if config.SCENARIOS in ["min_hyper", "adv_min"]:
     grouped = (
         ts.groupby(
             [
@@ -110,6 +111,8 @@ if config.SCENARIOS == "min_hyper":
         .size()
         .reset_index()
     )
+
+    del grouped["EXP_STRATEGY"]
     # grouped = grouped.loc[grouped["EXP_STRATEGY"] == 28]
 
 
@@ -142,6 +145,18 @@ if config.EVA_MODE == "create":
                 [
                     len(grouped),
                     *flatten([list(range(10000, len(grouped))) for _ in range(0, 40)]),
+                    #  *flatten([list(random.sample(range(1, len(grouped)), 100000))]),
+                ]
+            )
+        )
+
+    elif config.SCENARIOS == "adv_min":
+        hyperparameter_values = list(
+            # enumerate([20, *flatten([list(range(1, 20)) for _ in range(0, 4)])])
+            enumerate(
+                [
+                    len(grouped),
+                    *flatten([list(range(0, 10000)) for _ in range(0, 10)]),
                     #  *flatten([list(random.sample(range(1, len(grouped)), 100000))]),
                 ]
             )
@@ -212,7 +227,6 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
             ts = ts.loc[ts["EXP_DATASET"].isin(allowed_start_points)]
         elif config.SCENARIOS == "min_hyper":
             allowed_groupings = grouped.sample(n=hyperparameter_target_value[1])
-            del allowed_groupings["EXP_STRATEGY"]
 
             ts = pd.merge(
                 allowed_groupings,
@@ -226,6 +240,57 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
                 ],
                 how="left",
             )
+        elif config.SCENARIOS == "adv_min":
+            possible_hyperparameters = [
+                ["DATASET", range(1, 11)],
+                ["START_POINT", range(1, 20)],
+                ["TRAIN_TEST_BUCKET_SIZE", range(1, 6)],
+                ["BATCH_SIZE", range(1, 3)],
+                ["LEARNER_MODEL", range(1, 3)],
+            ]
+
+            max_budget = hyperparameter_target_value[1]
+            param_grid_size = 1
+
+            tmp_possible_hyperparameters = possible_hyperparameters.copy()
+            random.shuffle(tmp_possible_hyperparameters)
+
+            used_parameters = []
+            tmp_index = 0
+            while param_grid_size < max_budget and (
+                tmp_index < len(tmp_possible_hyperparameters)
+            ):
+                # which hyperparameter
+                used_parameters.append(tmp_possible_hyperparameters[tmp_index])
+
+                # the amount of hyperparameter values
+                used_parameters[tmp_index][1] = random.choice(
+                    used_parameters[tmp_index][1]
+                )
+
+                # the actual used hyperparameter values
+                used_parameters[tmp_index][1] = random.sample(
+                    config.__getattribute__(
+                        "EXP_GRID_" + used_parameters[tmp_index][0]
+                    ),
+                    used_parameters[tmp_index][1],
+                )
+                used_parameters[tmp_index][0] = "EXP_" + used_parameters[tmp_index][0]
+
+                param_grid_size = param_grid_size * len(used_parameters[tmp_index][1])
+                tmp_index += 1
+
+            hyperparameter_target_value = (
+                hyperparameter_target_value[0],
+                hyperparameter_target_value[1],
+                param_grid_size,
+            )
+
+            mask = True
+            for up in used_parameters:
+                mask &= ts[up[0]].isin(up[1])
+
+            ts = ts.loc[mask]
 
         ts = (
             ts.groupby(by=["EXP_DATASET", "EXP_STRATEGY"])["metric_value"]

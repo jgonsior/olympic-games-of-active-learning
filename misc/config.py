@@ -138,7 +138,11 @@ class Config:
     EVA_NAME: str
 
     SCENARIOS: Literal[
-        "dataset_scenario", "start_point_scenario", "adv_start_scenario", "min_hyper"
+        "dataset_scenario",
+        "start_point_scenario",
+        "adv_start_scenario",
+        "min_hyper",
+        "adv_min",
     ] = "dataset_scenario"
 
     def __init__(self, no_cli_args: Optional[Dict[str, Any]] = None) -> None:
