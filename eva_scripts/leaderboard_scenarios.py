@@ -1,3 +1,4 @@
+import copy
 import multiprocessing
 import random
 from re import T
@@ -206,7 +207,7 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
         print(f"{ix}: {hyperparameter_target_value}")
 
         if additional_value is not None:
-            tmp = config.copy()
+            tmp = copy.copy(config)
             config = additional_value
             additional_value = tmp
 
