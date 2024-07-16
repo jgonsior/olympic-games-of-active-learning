@@ -156,9 +156,13 @@ if config.EVA_MODE == "create":
             # enumerate([20, *flatten([list(range(1, 20)) for _ in range(0, 4)])])
             enumerate(
                 [
-                    len(grouped),
-                    *flatten([list(range(0, 10000)) for _ in range(0, 10)]),
-                    #  *flatten([list(random.sample(range(1, len(grouped)), 100000))]),
+                    *[
+                        len(grouped),
+                        *flatten([list(range(0, 10000)) for _ in range(0, 10)]),
+                    ],
+                    *[
+                        *flatten([list(range(10000, 32399)) for _ in range(0, 10)]),
+                    ],
                 ]
             )
         )
@@ -291,9 +295,9 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
                 ["LEARNER_MODEL", range(1, 3)],
             ]
 
-            no_params_found = True
+            no_params_found = 100
 
-            while no_params_found:
+            while no_params_found > 0:
                 max_budget = hyperparameter_target_value[1]
                 param_grid_size = 1
 
@@ -337,8 +341,13 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
 
                 ts = ts.loc[mask]
 
-                if len(ts) > 0:
-                    no_params_found = False
+                if len(ts) == 0:
+                    no_params_found -= 1
+                else:
+                    no_params_found = -1
+
+            if no_params_found == 0:
+                return
 
             hyperparameter_target_value = (
                 hyperparameter_target_value[0],
