@@ -145,8 +145,8 @@ if config.EVA_MODE == "create":
             enumerate(
                 [
                     len(grouped),
+                    *flatten([list(random.sample(range(1, len(grouped)), 100000))]),
                     *flatten([list(range(10000, len(grouped))) for _ in range(0, 40)]),
-                    #  *flatten([list(random.sample(range(1, len(grouped)), 100000))]),
                 ]
             )
         )
@@ -158,10 +158,10 @@ if config.EVA_MODE == "create":
                 [
                     *[
                         len(grouped),
-                        *flatten([list(range(0, 10000)) for _ in range(0, 10)]),
+                        *flatten([list(range(0, 10000)) for _ in range(0, 50)]),
                     ],
                     *[
-                        *flatten([list(range(10000, 32399)) for _ in range(0, 10)]),
+                        *flatten([list(range(10000, 32399)) for _ in range(0, 50)]),
                     ],
                 ]
             )
@@ -194,7 +194,7 @@ if config.EVA_MODE == "create":
     create_workload(
         hyperparameter_values,
         config=config,
-        SLURM_ITERATIONS_PER_BATCH=1,
+        SLURM_ITERATIONS_PER_BATCH=1000,
         SCRIPTS_PATH="metrics",
         SLURM_NR_THREADS=1,
         script_type="metrics",
