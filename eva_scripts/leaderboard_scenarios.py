@@ -158,10 +158,10 @@ if config.EVA_MODE == "create":
                 [
                     *[
                         len(grouped),
-                        *flatten([list(range(0, 10000)) for _ in range(0, 10)]),
+                        *flatten([list(range(0, 10000)) for _ in range(0, 20)]),
                     ],
                     *[
-                        *flatten([list(range(10000, 32399)) for _ in range(0, 10)]),
+                        *flatten([list(range(10000, 32399)) for _ in range(0, 20)]),
                     ],
                 ]
             )
