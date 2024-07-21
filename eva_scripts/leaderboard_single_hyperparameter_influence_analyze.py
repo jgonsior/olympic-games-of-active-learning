@@ -174,12 +174,12 @@ if combined_plot:
     )
 
 hyperparameters_to_evaluate = [
-    "adv_min",
     ("real_single_scenarios", "EXP_DATASET"),
     ("real_single_scenarios", "EXP_START_POINT"),
     ("real_single_scenarios", "EXP_TRAIN_TEST_BUCKET_SIZE"),
     ("real_single_scenarios", "EXP_BATCH_SIZE"),
     ("real_single_scenarios", "EXP_LEARNER_MODEL"),
+    "adv_min",
     "min_hyper",
     "adv_start_scenario",
     "dataset_scenario",
@@ -204,9 +204,11 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         config.OUTPUT_PATH
         / f"plots/leaderboard_single_hyperparameter_influence/{hyperparameter_to_evaluate}.csv"
     )
+    print(f"reading in {ranking_path}")
     ranking_df = pd.read_csv(ranking_path, index_col=0)
-    ranking_df.rename(columns=_rename_strategy, inplace=True)
+    print("finished reading")
 
+    ranking_df.rename(columns=_rename_strategy, inplace=True)
     if hyperparameter_to_evaluate == "real_single_scenarios":
         ranking_df.reset_index(inplace=True)
         ranking_df = ranking_df.loc[
@@ -249,7 +251,9 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
             )
         }
         ranking_df = ranking_df.sort_index(axis=0)
+
         ranking_df = ranking_df.sort_index(key=lambda x: x.map(custom_dict), axis=1)
+
     else:
         ranking_df = ranking_df.sort_index(axis=0)
         ranking_df = ranking_df.sort_index(axis=1)
@@ -260,7 +264,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         rename_dict = {kkk: kkk if kkk < 10000 else -1 for kkk in ranking_df.columns}
         ranking_df.rename(columns=rename_dict, inplace=True)
         del ranking_df[-1]
-        print(ranking_df)
+
         nr_buckets = 10000
         min_value = ranking_df.columns[0]
         max_value = ranking_df.columns[-1]
@@ -277,7 +281,6 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         #  columns={ranking_df.columns[-1]: f"(420000, {ranking_df.columns[-1]})"},
         #  inplace=True,
         #  )
-        print(ranking_df)
 
     if hyperparameter_to_evaluate == "adv_min":
         buckets = {
@@ -325,6 +328,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
             "adv_start_scenario",
             "start_point_scenario",
             "dataset_scenario",
+            "real_single_scenarios",
         ]:
 
             def _calculate_spearman(row: pd.Series) -> pd.Series:
@@ -344,6 +348,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
             ranking_df["spearman"] = ranking_df.parallel_apply(
                 _calculate_spearman, axis=1
             )
+
             ranking_df = ranking_df.T
             ranking_df.sort_values(by="spearman", axis=1, inplace=True)
             ranking_df = ranking_df.T[["spearman"]]
@@ -352,11 +357,12 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
             gold_standard = ranking_df.loc[ranking_df["index"] == "gold standard"]
             ranking_df = ranking_df[ranking_df["index"] != "gold standard"]
 
+            print(ranking_df)
+            exit(-1)
             ranking_df["index"] = ranking_df["index"].parallel_apply(
                 lambda kkk: ast.literal_eval(kkk)[1]
             )
             ranking_df.sort_values(by="index", inplace=True)
-
             #  ranking_df = pd.concat([ranking_df, gold_standard])
             corr_data = ranking_df
             """
@@ -374,13 +380,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
             corr_data.sort_index(axis=1, inplace=True)
             """
         else:
-            print(ranking_df)
-            # corr_data = ranking_df.corr(method=hypothesis)
-            # print(corr_data)
-
-            corr2_data = parallel_correlation(ranking_df, hypothesis)
-            print(corr2_data)
-            exit(-1)
+            corr_data = ranking_df.corr(method=hypothesis)
 
         print(ranking_df)
         destination_path = Path(
