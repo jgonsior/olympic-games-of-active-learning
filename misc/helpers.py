@@ -1,6 +1,7 @@
 import csv
 from datetime import timedelta
 import glob
+from itertools import combinations
 import multiprocessing
 import sys
 from typing import Any, Callable, Dict, List, Optional
@@ -11,6 +12,9 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 from timeit import default_timer as timer
+
+import scipy
+import scipy.stats
 from datasets import DATASET
 from misc.config import Config
 from misc.plotting import set_matplotlib_size, set_seaborn_style
@@ -469,3 +473,28 @@ def prepare_eva_pathes(eva_name: str, config: Config):
 
     if not config.EVA_SCRIPT_WORKLOAD_DIR.exists():
         config.EVA_SCRIPT_WORKLOAD_DIR.mkdir(parents=True)
+
+
+def _flatten(xss):
+    return [x for xs in xss for x in xs]
+
+
+def parallel_correlation(df: pd.DataFrame, method: str) -> np.ndarray:
+    def _do_stuff(col1, col2, df):
+        kendalltau = scipy.stats.kendalltau(df[col1], df[col2])
+
+        res = np.nan
+        # if kendalltau.pvalue < 0.05:
+        res = kendalltau.statistic
+        return [(col1, col2, res), (col2, col1, res)]
+
+    wl = list(combinations(df.columns, 2))
+    print(len(wl))
+    results = Parallel(n_jobs=multiprocessing.cpu_count(), verbose=10)(
+        delayed(_do_stuff)(col1, col2, df) for col1, col2 in wl
+    )
+    results = pd.DataFrame(_flatten(results), columns=["x", "y", "stat"]).pivot(
+        index="x", columns="y", values="stat"
+    )
+
+    return results

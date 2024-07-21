@@ -8,6 +8,7 @@ from pathlib import Path
 import matplotlib as mpl
 import scipy
 from datasets import DATASET
+from misc.helpers import parallel_correlation
 from misc.plotting import _rename_strategy, set_matplotlib_size, set_seaborn_style
 from resources.data_types import LEARNER_MODEL
 import seaborn as sns
@@ -174,28 +175,46 @@ if combined_plot:
 
 hyperparameters_to_evaluate = [
     "adv_min",
+    ("real_single_scenarios", "EXP_DATASET"),
+    ("real_single_scenarios", "EXP_START_POINT"),
+    ("real_single_scenarios", "EXP_TRAIN_TEST_BUCKET_SIZE"),
+    ("real_single_scenarios", "EXP_BATCH_SIZE"),
+    ("real_single_scenarios", "EXP_LEARNER_MODEL"),
     "min_hyper",
     "adv_start_scenario",
     "dataset_scenario",
     "start_point_scenario",
     "standard_metric",
     # "EXP_STRATEGY",
+    "EXP_START_POINT",
     "EXP_LEARNER_MODEL",
     "EXP_BATCH_SIZE",
     "EXP_DATASET",
     "EXP_TRAIN_TEST_BUCKET_SIZE",
-    "EXP_START_POINT",
     "auc_metric",
 ]
 
 
 for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
+    if hyperparameter_to_evaluate[0] == "real_single_scenarios":
+        real_single_parameter = hyperparameter_to_evaluate[1]
+        hyperparameter_to_evaluate = hyperparameter_to_evaluate[0]
+
     ranking_path = Path(
         config.OUTPUT_PATH
         / f"plots/leaderboard_single_hyperparameter_influence/{hyperparameter_to_evaluate}.csv"
     )
     ranking_df = pd.read_csv(ranking_path, index_col=0)
     ranking_df.rename(columns=_rename_strategy, inplace=True)
+
+    if hyperparameter_to_evaluate == "real_single_scenarios":
+        ranking_df.reset_index(inplace=True)
+        ranking_df = ranking_df.loc[
+            ranking_df["index"].str.contains(real_single_parameter)
+        ]
+
+        ranking_df.set_index("index", inplace=True)
+
     ranking_df = ranking_df.T
 
     keys = {
@@ -322,7 +341,9 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
 
             ranking_df = ranking_df.T
 
-            ranking_df["spearman"] = ranking_df.apply(_calculate_spearman, axis=1)
+            ranking_df["spearman"] = ranking_df.parallel_apply(
+                _calculate_spearman, axis=1
+            )
             ranking_df = ranking_df.T
             ranking_df.sort_values(by="spearman", axis=1, inplace=True)
             ranking_df = ranking_df.T[["spearman"]]
@@ -353,8 +374,15 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
             corr_data.sort_index(axis=1, inplace=True)
             """
         else:
-            corr_data = ranking_df.corr(method=hypothesis)
+            print(ranking_df)
+            # corr_data = ranking_df.corr(method=hypothesis)
+            # print(corr_data)
 
+            corr2_data = parallel_correlation(ranking_df, hypothesis)
+            print(corr2_data)
+            exit(-1)
+
+        print(ranking_df)
         destination_path = Path(
             config.OUTPUT_PATH
             / f"plots/leaderboard_single_hyperparameter_influence/{hyperparameter_to_evaluate}_{hypothesis}"
