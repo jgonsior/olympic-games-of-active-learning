@@ -345,40 +345,46 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
 
             ranking_df = ranking_df.T
 
-            ranking_df["spearman"] = ranking_df.parallel_apply(
-                _calculate_spearman, axis=1
-            )
+            if hyperparameter_to_evaluate == "real_single_scenarios":
+                ranking_df.reset_index(inplace=True)
+                print(ranking_df)
 
-            ranking_df = ranking_df.T
-            ranking_df.sort_values(by="spearman", axis=1, inplace=True)
-            ranking_df = ranking_df.T[["spearman"]]
-            ranking_df = ranking_df.reset_index()
+                # variante 1: average über gruppierte korrelationen über minimale Anzahl der parameter, lineplot
+                # variante 2: correlation plot -> ich berechne all correlationskombinationen!
+                exit(-1)
+            else:
+                ranking_df["spearman"] = ranking_df.parallel_apply(
+                    _calculate_spearman, axis=1
+                )
 
-            gold_standard = ranking_df.loc[ranking_df["index"] == "gold standard"]
-            ranking_df = ranking_df[ranking_df["index"] != "gold standard"]
+                ranking_df = ranking_df.T
+                ranking_df.sort_values(by="spearman", axis=1, inplace=True)
+                ranking_df = ranking_df.T[["spearman"]]
+                ranking_df = ranking_df.reset_index()
 
-            print(ranking_df)
-            exit(-1)
-            ranking_df["index"] = ranking_df["index"].parallel_apply(
-                lambda kkk: ast.literal_eval(kkk)[1]
-            )
-            ranking_df.sort_values(by="index", inplace=True)
-            #  ranking_df = pd.concat([ranking_df, gold_standard])
-            corr_data = ranking_df
-            """
-            grouped_values = defaultdict(list)
-            for ix, spr in ranking_df.loc["spearman"].items():
-                if ix == "gold standard":
-                    continue
-                grouped_values[ast.literal_eval(ix)[1]].append(spr)
+                gold_standard = ranking_df.loc[ranking_df["index"] == "gold standard"]
+                ranking_df = ranking_df[ranking_df["index"] != "gold standard"]
+
+                ranking_df["index"] = ranking_df["index"].parallel_apply(
+                    lambda kkk: ast.literal_eval(kkk)[1]
+                )
+                ranking_df.sort_values(by="index", inplace=True)
+                #  ranking_df = pd.concat([ranking_df, gold_standard])
+                corr_data = ranking_df
+                """
+                grouped_values = defaultdict(list)
+                for ix, spr in ranking_df.loc["spearman"].items():
+                    if ix == "gold standard":
+                        continue
+                    grouped_values[ast.literal_eval(ix)[1]].append(spr)
 
 
-            for k, v in grouped_values.items():
-                grouped_values[k] = [np.mean(v), np.std(v)]
-            corr_data = pd.DataFrame(grouped_values, index=["mean", "std"])
-            corr_data.sort_index(axis=0, inplace=True)
-            corr_data.sort_index(axis=1, inplace=True)
-            """
+                for k, v in grouped_values.items():
+                    grouped_values[k] = [np.mean(v), np.std(v)]
+                corr_data = pd.DataFrame(grouped_values, index=["mean", "std"])
+                corr_data.sort_index(axis=0, inplace=True)
+                corr_data.sort_index(axis=1, inplace=True)
+                """
         else:
             corr_data = ranking_df.corr(method=hypothesis)
 
