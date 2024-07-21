@@ -102,7 +102,6 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
             / f"plots/leaderboard_single_hyperparameter_influence/real_single_scenarios_decomposed.csv",
         )
     )
-    del df["EXP_AMOUNT_OF_OTHER_PARAMS"]
 
     # add gold standard
     gold_standard = pd.read_csv(
@@ -122,6 +121,8 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
 
         df = df.loc[df["EXP_ID"] == hyperparameter_target_value]
         del df["EXP_ID"]
+        nr_other_params = df["EXP_AMOUNT_OF_OTHER_PARAMS"].unique()[0]
+        del df["EXP_AMOUNT_OF_OTHER_PARAMS"]
 
         if len(df["EXP_PARAM"].unique()) > 1:
             print("Oh oh" * 10000)
@@ -132,8 +133,11 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
         df.set_index("EXP_PARAM_VALUE", inplace=True)
 
         corr_data = df.T.corr(method="kendall")
-        result = corr_data.to_dict()
+        result = {}
         result["ix"] = f"real_single_scenarios: {hyperparameter_target_value}"
+        result["EXP_AMOUNT_OF_OTHER_PARAMS"] = nr_other_params
+        result["data"] = corr_data.to_numpy().tolist()
+        result["keys"] = corr_data.columns.to_list()
 
         append_and_create(
             config.OUTPUT_PATH
