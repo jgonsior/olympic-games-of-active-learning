@@ -65,12 +65,14 @@ for target_to_evaluate in targets_to_evaluate:
             res = df.copy()
         else:
             res += df
-
+    res /= len(dfs)
     print(res)
 
+    keys = sorted([str(ccc) for ccc in ast.literal_eval(results.iloc[0]["keys"])])
+
     save_correlation_plot(
-        data=corrmat,
-        title=f"single_hyperparameter/{target_to_evaluate}/{standard_metric}",
+        data=res,
+        title=f"real/{target_to_evaluate}",
         keys=keys,
         config=config,
     )
