@@ -244,24 +244,30 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         ranking_df = ranking_df.sort_index(axis=1)
 
     if hyperparameter_to_evaluate == "min_hyper":
-        rename_dict = {kkk: ast.literal_eval(kkk)[1] for kkk in ranking_df.columns}
-        ranking_df.rename(columns=rename_dict, inplace=True)
+        # rename_dict = {kkk: ast.literal_eval(kkk)[1] for kkk in ranking_df.columns}
+        # ranking_df.rename(columns=rename_dict, inplace=True)
         # rename_dict = {kkk: kkk if kkk < 10000 else -1 for kkk in ranking_df.columns}
         # ranking_df.rename(columns=rename_dict, inplace=True)
         # del ranking_df[-1]
 
-        nr_buckets = 10000
-        min_value = ranking_df.columns[0]
-        max_value = ranking_df.columns[-1]
+        # nr_buckets = 10000
+        # min_value = ranking_df.columns[0]
+        # max_value = ranking_df.columns[-1]
 
-        buckets = {
-            vvv: f"({vvv}, {k})"
-            for k, v in enumerate(
-                np.array_split(range(min_value, max_value + 1), nr_buckets)
-            )
-            for vvv in v
-        }
-        ranking_df.rename(columns=buckets, inplace=True)
+        # buckets = {
+        #    vvv: f"({vvv}, {k})"
+        #    for k, v in enumerate(
+        #        np.array_split(range(min_value, max_value + 1), nr_buckets)
+        #    )
+        #    for vvv in v
+        # }
+        # ranking_df.rename(columns=buckets, inplace=True)
+        # print(ranking_df)
+
+        # buckets = {vvv: f"({vvv}, {vvv})" for vvv in ranking_df.columns}
+        # ranking_df.rename(columns=buckets, inplace=True)
+        print(ranking_df)
+        # exit(-1)
         #  ranking_df.rename(
         #  columns={ranking_df.columns[-1]: f"(420000, {ranking_df.columns[-1]})"},
         #  inplace=True,
@@ -340,7 +346,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
 
             gold_standard = ranking_df.loc[ranking_df["index"] == "gold standard"]
             ranking_df = ranking_df[ranking_df["index"] != "gold standard"]
-
+            print(ranking_df)
             ranking_df["index"] = ranking_df["index"].parallel_apply(
                 lambda kkk: ast.literal_eval(kkk)[1]
             )
