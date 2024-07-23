@@ -68,14 +68,17 @@ for target_to_evaluate in targets_to_evaluate:
         else:
             res += df
     res /= len(dfs)
+    res *= 100
     print(res)
 
     keys = natsorted([str(ccc) for ccc in ast.literal_eval(results.iloc[0]["keys"])])
 
     if target_to_evaluate == "EXP_LEARNER_MODEL":
-        keys = [LEARNER_MODEL(int(kkk)).name for kkk in keys]
+        keys = [
+            LEARNER_MODEL(int(kkk)).name if kkk != "gold" else "gold" for kkk in keys
+        ]
     elif target_to_evaluate == "EXP_DATASET":
-        keys = [DATASET(int(kkk)).name for kkk in keys]
+        keys = [DATASET(int(kkk)).name if kkk != "gold" else "gold" for kkk in keys]
 
     save_correlation_plot(
         data=res,
