@@ -1,7 +1,7 @@
 import copy
 import multiprocessing
 import random
-from re import T
+import ast
 import subprocess
 import sys
 
@@ -170,7 +170,6 @@ if config.EVA_MODE == "create":
                             [(kkk, rrr) for rrr in range(1, 10000)]
                             for _ in range(0, 10)
                             for kkk in [
-                                "EXP_TRAIN_TEST_SPLIT",
                                 "EXP_DATASET",
                                 "EXP_START_POINT",
                                 "EXP_TRAIN_TEST_BUCKET_SIZE",
@@ -319,7 +318,22 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
                 how="left",
             )
         elif config.SCENARIOS == "min_hyper_reduction":
-            allowed_groupings = grouped.sample(n=hyperparameter_target_value[1])
+            reduction_parameter = ast.literal_eval(hyperparameter_target_value[1])
+            hyperparameter_target_value = (
+                hyperparameter_target_value[0],
+                reduction_parameter[1],
+                reduction_parameter[0],
+            )
+
+            random_parameter_to_keep = random.choice(
+                grouped[hyperparameter_target_value[2]].unique()
+            )
+
+            grouped2 = grouped.loc[
+                grouped[hyperparameter_target_value[2]] == random_parameter_to_keep
+            ]
+
+            allowed_groupings = grouped2.sample(n=hyperparameter_target_value[1])
 
             ts = pd.merge(
                 allowed_groupings,

@@ -226,6 +226,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
     if hyperparameter_to_evaluate in [
         "adv_min",
         "min_hyper",
+        "min_hyper2",
         "adv_start_scenario",
         "start_point_scenario",
         "dataset_scenario",
@@ -246,7 +247,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         ranking_df = ranking_df.sort_index(axis=0)
         ranking_df = ranking_df.sort_index(axis=1)
 
-    if hyperparameter_to_evaluate == "min_hyper":
+    if hyperparameter_to_evaluate == "min_hyper2":
         # rename_dict = {kkk: ast.literal_eval(kkk)[1] for kkk in ranking_df.columns}
         # ranking_df.rename(columns=rename_dict, inplace=True)
         # rename_dict = {kkk: kkk if kkk < 10000 else -1 for kkk in ranking_df.columns}
@@ -269,7 +270,11 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
 
         # buckets = {vvv: f"({vvv}, {vvv})" for vvv in ranking_df.columns}
         # ranking_df.rename(columns=buckets, inplace=True)
-        print(ranking_df)
+
+        ranking_df.drop(
+            ranking_df.columns[len(ranking_df.columns) - 1], axis=1, inplace=True
+        )
+
         # exit(-1)
         #  ranking_df.rename(
         #  columns={ranking_df.columns[-1]: f"(420000, {ranking_df.columns[-1]})"},
