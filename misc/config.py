@@ -143,6 +143,7 @@ class Config:
         "adv_start_scenario",
         "min_hyper",
         "min_hyper2",
+        "min_hyper_reduction",
         "adv_min",
         "real_single_scenarios",
     ] = "dataset_scenario"

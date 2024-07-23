@@ -73,6 +73,7 @@ if combined_plot:
         if hyperparameter_to_evaluate in [
             "adv_min",
             "min_hyper",
+            "min_hyper2",
             "adv_start_scenario",
             "start_point_scenario",
             "dataset_scenario",
@@ -174,6 +175,8 @@ if combined_plot:
     )
 
 hyperparameters_to_evaluate = [
+    "min_hyper2",
+    "min_hyper233",
     "min_hyper",
     "adv_min",
     "adv_start_scenario",
@@ -316,6 +319,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         if hyperparameter_to_evaluate in [
             "adv_min",
             "min_hyper",
+            "min_hyper2",
             "adv_start_scenario",
             "start_point_scenario",
             "dataset_scenario",
@@ -390,6 +394,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         if hyperparameter_to_evaluate in [
             "adv_min",
             "min_hyper",
+            "min_hyper2",
             "adv_start_scenario",
             "start_point_scenario",
             "dataset_scenario",
@@ -422,6 +427,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         if hyperparameter_to_evaluate in [
             "adv_min",
             "min_hyper",
+            "min_hyper2",
             "adv_start_scenario",
             "start_point_scenario",
             "dataset_scenario",

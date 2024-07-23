@@ -98,7 +98,7 @@ def read_or_create_ts(metric_name) -> pd.DataFrame:
 ts = read_or_create_ts(default_standard_metric)
 ts_orig = ts.copy()
 
-if config.SCENARIOS in ["min_hyper", "adv_min", "min_hyper2"]:
+if config.SCENARIOS in ["min_hyper", "adv_min", "min_hyper2", "min_hyper_reduction"]:
     grouped = (
         ts.groupby(
             [
@@ -157,6 +157,28 @@ if config.EVA_MODE == "create":
                 [
                     len(grouped),
                     *flatten([list(range(1, len(grouped))) for _ in range(0, 10)]),
+                ]
+            )
+        )
+    elif config.SCENARIOS == "min_hyper_reduction":
+        hyperparameter_values = list(
+            enumerate(
+                [
+                    len(grouped),
+                    *flatten(
+                        [
+                            [(kkk, rrr) for rrr in range(1, 10000)]
+                            for _ in range(0, 10)
+                            for kkk in [
+                                "EXP_TRAIN_TEST_SPLIT",
+                                "EXP_DATASET",
+                                "EXP_START_POINT",
+                                "EXP_TRAIN_TEST_BUCKET_SIZE",
+                                "EXP_BATCH_SIZE",
+                                "EXP_LEARNER_MODEL",
+                            ]
+                        ]
+                    ),
                 ]
             )
         )
@@ -279,6 +301,24 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
 
             ts = ts.loc[ts["EXP_DATASET"].isin(allowed_start_points)]
         elif config.SCENARIOS in ["min_hyper", "min_hyper2"]:
+            allowed_groupings = grouped.sample(
+                n=hyperparameter_target_value[1],
+                random_state=hyperparameter_target_value[0],
+            )
+
+            ts = pd.merge(
+                allowed_groupings,
+                ts,
+                on=[
+                    "EXP_DATASET",
+                    "EXP_START_POINT",
+                    "EXP_BATCH_SIZE",
+                    "EXP_LEARNER_MODEL",
+                    "EXP_TRAIN_TEST_BUCKET_SIZE",
+                ],
+                how="left",
+            )
+        elif config.SCENARIOS == "min_hyper_reduction":
             allowed_groupings = grouped.sample(n=hyperparameter_target_value[1])
 
             ts = pd.merge(
@@ -293,6 +333,7 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
                 ],
                 how="left",
             )
+
         elif config.SCENARIOS == "adv_min":
             possible_hyperparameters = [
                 ["DATASET", range(1, 30)],
