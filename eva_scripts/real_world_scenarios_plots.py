@@ -7,11 +7,13 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 
+from datasets import DATASET
 from misc.helpers import (
     create_fingerprint_joined_timeseries_csv_files,
     log_and_time,
     save_correlation_plot,
 )
+from resources.data_types import LEARNER_MODEL
 
 sys.dont_write_bytecode = True
 
@@ -40,7 +42,6 @@ for target_to_evaluate in targets_to_evaluate:
     )
 
     jobs = list(results.iterrows())
-
     print(len(jobs))
 
     def do_stuff_wrapper(result):
@@ -48,8 +49,9 @@ for target_to_evaluate in targets_to_evaluate:
             col_ix = [str(ccc) for ccc in ast.literal_eval(result["keys"])]
             data = ast.literal_eval(result["data"])
         except ValueError:
-            data = ast.literal_eval(result["data"].replace("nan", "1000"))
-            data = [[ccc if ccc != 1000 else np.nan for ccc in ddd] for ddd in data]
+            print("nan")
+            data = ast.literal_eval(result["data"].replace("nan", "0"))
+            # data = [[ccc if ccc != 1000 else np.nan for ccc in ddd] for ddd in data]
         single_results_df = pd.DataFrame(columns=col_ix, data=data, index=col_ix)
 
         single_results_df = single_results_df.sort_index(axis=0)
@@ -69,6 +71,11 @@ for target_to_evaluate in targets_to_evaluate:
     print(res)
 
     keys = sorted([str(ccc) for ccc in ast.literal_eval(results.iloc[0]["keys"])])
+
+    if target_to_evaluate == "EXP_LEARNER_MODEL":
+        keys = [LEARNER_MODEL(int(kkk)).name for kkk in keys]
+    elif target_to_evaluate == "EXP_DATASET":
+        keys = [DATASET(int(kkk)).name for kkk in keys]
 
     save_correlation_plot(
         data=res,
