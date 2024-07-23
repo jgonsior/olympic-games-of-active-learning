@@ -6,7 +6,7 @@ from joblib import Parallel, delayed
 import numpy as np
 import pandas as pd
 from pathlib import Path
-
+from natsort import natsorted
 from datasets import DATASET
 from misc.helpers import (
     create_fingerprint_joined_timeseries_csv_files,
@@ -70,7 +70,7 @@ for target_to_evaluate in targets_to_evaluate:
     res /= len(dfs)
     print(res)
 
-    keys = sorted([str(ccc) for ccc in ast.literal_eval(results.iloc[0]["keys"])])
+    keys = natsorted([str(ccc) for ccc in ast.literal_eval(results.iloc[0]["keys"])])
 
     if target_to_evaluate == "EXP_LEARNER_MODEL":
         keys = [LEARNER_MODEL(int(kkk)).name for kkk in keys]
