@@ -39,7 +39,7 @@ for target_to_evaluate in targets_to_evaluate:
         )
     )
 
-    jobs = list(results.iterrows())[:3]
+    jobs = list(results.iterrows())
 
     print(len(jobs))
 
