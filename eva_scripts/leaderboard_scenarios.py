@@ -168,7 +168,7 @@ if config.EVA_MODE == "create":
                     *flatten(
                         [
                             [(kkk, rrr) for rrr in range(1, 10000)]
-                            for _ in range(0, 10)
+                            for _ in range(0, 100)
                             for kkk in [
                                 "EXP_DATASET",
                                 "EXP_START_POINT",
