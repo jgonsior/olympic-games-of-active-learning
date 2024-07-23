@@ -174,8 +174,8 @@ if combined_plot:
     )
 
 hyperparameters_to_evaluate = [
-    "adv_min",
     "min_hyper",
+    "adv_min",
     "adv_start_scenario",
     "dataset_scenario",
     "start_point_scenario",

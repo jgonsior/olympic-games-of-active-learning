@@ -98,7 +98,7 @@ def read_or_create_ts(metric_name) -> pd.DataFrame:
 ts = read_or_create_ts(default_standard_metric)
 ts_orig = ts.copy()
 
-if config.SCENARIOS in ["min_hyper", "adv_min"]:
+if config.SCENARIOS in ["min_hyper", "adv_min", "min_hyper2"]:
     grouped = (
         ts.groupby(
             [
@@ -150,7 +150,16 @@ if config.EVA_MODE == "create":
                 ]
             )
         )
-
+    elif config.SCENARIOS == "min_hyper2":
+        hyperparameter_values = list(
+            # enumerate([20, *flatten([list(range(1, 20)) for _ in range(0, 4)])])
+            enumerate(
+                [
+                    len(grouped),
+                    *flatten([list(range(1, len(grouped))) for _ in range(0, 1000)]),
+                ]
+            )
+        )
     elif config.SCENARIOS == "adv_min":
         hyperparameter_values = list(
             # enumerate([20, *flatten([list(range(1, 20)) for _ in range(0, 4)])])
@@ -269,7 +278,7 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
             ]
 
             ts = ts.loc[ts["EXP_DATASET"].isin(allowed_start_points)]
-        elif config.SCENARIOS == "min_hyper":
+        elif config.SCENARIOS in ["min_hyper", "min_hyper2"]:
             allowed_groupings = grouped.sample(n=hyperparameter_target_value[1])
 
             ts = pd.merge(
