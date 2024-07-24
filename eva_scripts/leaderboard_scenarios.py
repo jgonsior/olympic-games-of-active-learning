@@ -170,7 +170,7 @@ if config.EVA_MODE == "create":
                             [(kkk, rrr) for rrr in range(1, 10000)]
                             for _ in range(0, 100)
                             for kkk in [
-                                "EXP_DATASET",
+                                # "EXP_DATASET",
                                 "EXP_START_POINT",
                                 "EXP_TRAIN_TEST_BUCKET_SIZE",
                                 "EXP_BATCH_SIZE",
@@ -325,9 +325,9 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
                 reduction_parameter[0],
             )
 
-            random_parameter_to_keep = random.choice(
+            random_parameter_to_keep = sorted(
                 grouped[hyperparameter_target_value[2]].unique()
-            )
+            )[0]
 
             grouped2 = grouped.loc[
                 grouped[hyperparameter_target_value[2]] == random_parameter_to_keep
