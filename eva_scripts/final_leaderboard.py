@@ -32,12 +32,6 @@ pandarallel.initialize(
 orig_standard_metric = "weighted_f1-score"
 
 
-# what are the different ways for leaderboard?
-# DONE aggregation over aggregation
-# ranking only (spearman instead of pearson)
-# normalize datasets first
-
-
 for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentages"]:
     for grid_type in ["sparse", "dense"]:
         for interpolation in [
