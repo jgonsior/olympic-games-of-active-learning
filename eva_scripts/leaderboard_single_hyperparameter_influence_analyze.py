@@ -175,7 +175,11 @@ if combined_plot:
     )
 
 hyperparameters_to_evaluate = [
+    ("min_hyper_reduction", "EXP_START_POINT"),
+    ("min_hyper_reduction", "EXP_TRAIN_TEST_BUCKET_SIZE"),
     "min_hyper2",
+    ("min_hyper_reduction", "EXP_BATCH_SIZE"),
+    ("min_hyper_reduction", "EXP_LEARNER_MODEL"),
     "min_hyper233",
     "min_hyper",
     "adv_min",
@@ -192,16 +196,60 @@ hyperparameters_to_evaluate = [
     "auc_metric",
 ]
 
-
+hyperparameter_to_evaluate_addendum = False
 for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
 
-    ranking_path = Path(
-        config.OUTPUT_PATH
-        / f"plots/leaderboard_single_hyperparameter_influence/{hyperparameter_to_evaluate}.csv"
-    )
-    print(f"reading in {ranking_path}")
-    ranking_df = pd.read_csv(ranking_path, index_col=0)
-    print("finished reading")
+    if len(hyperparameter_to_evaluate) == 2:
+        hyperparameter_to_evaluate_addendum = hyperparameter_to_evaluate[1]
+        hyperparameter_to_evaluate = hyperparameter_to_evaluate[0]
+
+        decomposed_path = Path(
+            config.OUTPUT_PATH
+            / f"plots/leaderboard_single_hyperparameter_influence/{hyperparameter_to_evaluate}_decomposed.csv"
+        )
+
+        if not decomposed_path.exists():
+            df = pd.read_csv(
+                Path(
+                    config.OUTPUT_PATH
+                    / f"plots/leaderboard_single_hyperparameter_influence/{hyperparameter_to_evaluate}.csv"
+                ),
+                index_col=0,
+            )
+            df.reset_index(inplace=True)
+
+            def _decompose_titles(row: pd.Series) -> pd.Series:
+                name = ast.literal_eval(
+                    str(row["index"]).removeprefix("min_hyper_reduction: ")
+                )
+                row["allowed_reduction"] = name[0]
+                row["real_reduction"] = name[1]
+                row["parameter"] = name[2]
+                del row["index"]
+                return row
+
+            df = df.parallel_apply(_decompose_titles, axis=1)
+
+            df.to_csv(decomposed_path, index=None)
+
+        ranking_df = pd.read_csv(decomposed_path, index_col=0)
+        ranking_df = ranking_df.loc[
+            ranking_df["parameter"] == hyperparameter_to_evaluate_addendum
+        ]
+
+    else:
+        ranking_path = Path(
+            config.OUTPUT_PATH
+            / f"plots/leaderboard_single_hyperparameter_influence/{hyperparameter_to_evaluate}.csv"
+        )
+
+        print(f"reading in {ranking_path}")
+        ranking_df = pd.read_csv(ranking_path, index_col=0)
+        print("finished reading")
+
+    print(ranking_df)
+
+    exit(-1)
 
     ranking_df.rename(columns=_rename_strategy, inplace=True)
 
