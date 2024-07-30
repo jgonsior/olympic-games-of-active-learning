@@ -116,7 +116,7 @@ if not destination_path.exists():
 else:
     ts = pd.read_parquet(destination_path)
 
-set_seaborn_style(font_size=6)
+set_seaborn_style(font_size=6, usetex=True)
 # plt.figure(figsize=set_matplotlib_size(fraction=10))
 
 # calculate fraction based on length of keys
@@ -124,9 +124,7 @@ plt.figure(figsize=set_matplotlib_size(width=180))
 
 ax = sns.lineplot(ts, x="ix", y="metric_value", hue="EXP_STRATEGY")
 
-ax.set(
-    title="Real Learning Curves", xlabel="AL Cycle", ylabel="Class Weighted F1-Score"
-)
+ax.set(title="", xlabel="AL Cycle", ylabel="Class Weighted F1-Score")
 plt.legend([], [], frameon=False)
 # ax.xaxis.set_major_locator(ticker.FixedLocator([rrr for rrr in range(0, 10)]))
 

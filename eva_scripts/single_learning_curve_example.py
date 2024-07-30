@@ -30,7 +30,7 @@ data = pd.DataFrame(
     data=[
         [2.4, 4, 5, 4.8, 5, 5.8, 6, 6, 6.4, 6],
         [2, 2, 3, 4, 6, 6, 6.4, 7, 8, 7],
-        [5.21111113 for _ in range(0, 10)],
+        [6.425 * 8 / 10 for _ in range(0, 10)],
     ],
     index=["Strategy A", "Strategy B", "Strategy C"],
 ).T
@@ -52,16 +52,14 @@ print(np.trapz(data["Strategy B"], dx=1) / np.trapz([1 for _ in range(0, 10)], d
 print(np.trapz(data["Strategy C"], dx=1) / np.trapz([1 for _ in range(0, 10)], dx=1))
 
 
-set_seaborn_style(font_size=6)
+set_seaborn_style(font_size=6, usetex=True)
 # plt.figure(figsize=set_matplotlib_size(fraction=10))
 
 # calculate fraction based on length of keys
 plt.figure(figsize=set_matplotlib_size(width=180))
 ax = sns.lineplot(data)
 
-ax.set(
-    title="Exemplary Learning Curves", xlabel="AL Cycle", ylabel="ML Performance Metric"
-)
+ax.set(title="", xlabel="AL Cycle", ylabel="ML Performance Metric")
 
 ax.xaxis.set_major_locator(ticker.FixedLocator([rrr for rrr in range(0, 10)]))
 # ax.set_title(f"Learning Curve: {standard_metric}")
