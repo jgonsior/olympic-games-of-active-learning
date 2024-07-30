@@ -175,9 +175,9 @@ if combined_plot:
     )
 
 hyperparameters_to_evaluate = [
+    "min_hyper2",
     ("min_hyper_reduction", "EXP_START_POINT"),
     ("min_hyper_reduction", "EXP_TRAIN_TEST_BUCKET_SIZE"),
-    "min_hyper2",
     ("min_hyper_reduction", "EXP_BATCH_SIZE"),
     ("min_hyper_reduction", "EXP_LEARNER_MODEL"),
     "min_hyper233",
