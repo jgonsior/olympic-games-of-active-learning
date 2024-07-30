@@ -222,20 +222,21 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
                 name = ast.literal_eval(
                     str(row["index"]).removeprefix("min_hyper_reduction: ")
                 )
-                row["allowed_reduction"] = name[0]
-                row["real_reduction"] = name[1]
+
+                row["index"] = f"min_hyper_reduction: ({name[0]}, {name[1]})"
                 row["parameter"] = name[2]
-                del row["index"]
                 return row
 
             df = df.parallel_apply(_decompose_titles, axis=1)
-
-            df.to_csv(decomposed_path, index=None)
+            df.set_index("index", inplace=True)
+            df.to_csv(decomposed_path)
 
         ranking_df = pd.read_csv(decomposed_path, index_col=0)
         ranking_df = ranking_df.loc[
             ranking_df["parameter"] == hyperparameter_to_evaluate_addendum
         ]
+
+        del ranking_df["parameter"]
 
     else:
         ranking_path = Path(
@@ -246,10 +247,6 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         print(f"reading in {ranking_path}")
         ranking_df = pd.read_csv(ranking_path, index_col=0)
         print("finished reading")
-
-    print(ranking_df)
-
-    exit(-1)
 
     ranking_df.rename(columns=_rename_strategy, inplace=True)
 
@@ -275,6 +272,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         "adv_min",
         "min_hyper",
         "min_hyper2",
+        "min_hyper_reduction",
         "adv_start_scenario",
         "start_point_scenario",
         "dataset_scenario",
@@ -376,6 +374,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
             "adv_start_scenario",
             "start_point_scenario",
             "dataset_scenario",
+            "min_hyper_reduction",
         ]:
 
             def _calculate_spearman(row: pd.Series) -> pd.Series:
@@ -428,10 +427,17 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
             corr_data = ranking_df.corr(method=hypothesis)
 
         print(ranking_df)
-        destination_path = Path(
-            config.OUTPUT_PATH
-            / f"plots/leaderboard_single_hyperparameter_influence/{hyperparameter_to_evaluate}_{hypothesis}"
-        )
+
+        if hyperparameter_to_evaluate == "min_hyper_reduction":
+            destination_path = Path(
+                config.OUTPUT_PATH
+                / f"plots/leaderboard_single_hyperparameter_influence/{hyperparameter_to_evaluate}_{hyperparameter_to_evaluate_addendum}_{hypothesis}"
+            )
+        else:
+            destination_path = Path(
+                config.OUTPUT_PATH
+                / f"plots/leaderboard_single_hyperparameter_influence/{hyperparameter_to_evaluate}_{hypothesis}"
+            )
 
         print(str(destination_path) + f".jpg")
         set_seaborn_style(font_size=8)
@@ -451,6 +457,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
             "adv_start_scenario",
             "start_point_scenario",
             "dataset_scenario",
+            "min_hyper_reduction",
         ]:
             # calculate fraction based on length of keys
             plt.figure(figsize=set_matplotlib_size(fraction=1))
@@ -484,6 +491,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
             "adv_start_scenario",
             "start_point_scenario",
             "dataset_scenario",
+            "min_hyper_reduction",
         ]:
             corr_data["index"] = corr_data["index"].parallel_apply(str)
         corr_data.to_parquet(str(destination_path) + f".parquet")
