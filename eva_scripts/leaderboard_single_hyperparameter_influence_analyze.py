@@ -465,7 +465,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
                 data=corr_data,
                 x="index",
                 y="spearman",
-                # errorbar=lambda x: (x.min(), x.max()),
+                errorbar=lambda x: (x.min(), x.max()),
                 #  errorbar="sd",:w
                 #  sizes=(0.1, 0.1),
                 #  alpha=0.2,
