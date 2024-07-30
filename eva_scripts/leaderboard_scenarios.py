@@ -333,7 +333,10 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
                 grouped[hyperparameter_target_value[2]] == random_parameter_to_keep
             ]
 
-            allowed_groupings = grouped2.sample(n=hyperparameter_target_value[1])
+            allowed_groupings = grouped2.sample(
+                n=hyperparameter_target_value[1],
+                random_state=hyperparameter_target_value[0],
+            )
 
             ts = pd.merge(
                 allowed_groupings,
