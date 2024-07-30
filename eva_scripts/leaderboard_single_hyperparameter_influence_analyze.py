@@ -474,6 +474,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
             )
             #  ax.xaxis.set_major_locator(ticker.LinearLocator(20))
             ax.xaxis.set_major_locator(ticker.AutoLocator())
+            ax.set(ylim=(0, 1))
             # ax = sns.violinplot(data=corr_data, x="index", y="spearman", hue="index")
         else:
             # calculate fraction based on length of keys
