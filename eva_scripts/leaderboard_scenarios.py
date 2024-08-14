@@ -1,9 +1,11 @@
 import copy
+from itertools import tee
 import multiprocessing
 import random
 import ast
 import subprocess
 import sys
+from time import tzname, tzset
 
 sys.dont_write_bytecode = True
 
@@ -318,6 +320,13 @@ elif config.EVA_MODE in ["local", "slurm", "single"]:
                 how="left",
             )
         elif config.SCENARIOS == "min_hyper_reduction":
+            --> reduction auf nur 10 datensätzse
+            --> reduction auf nur 20 datensätzse
+            nur 30 datensätee
+            nur 3 oder nur 10 start punkte
+            POSTPONE slurm skript erweitern -> es gibt pro job eine eigene ausgabedatei!
+            --> das sind experimente die ich erstmal verschiebe, ZUERST ZU ENDE SCHREIBEN, schauen ob das noch als argumentationslücke fehlt
+
             reduction_parameter = ast.literal_eval(hyperparameter_target_value[1])
             hyperparameter_target_value = (
                 hyperparameter_target_value[0],
