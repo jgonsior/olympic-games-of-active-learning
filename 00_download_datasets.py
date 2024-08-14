@@ -11,16 +11,17 @@ from sklearn.metrics import pairwise_distances
 
 config = Config()
 
-openml_loader = OpenML_Loader(config)
-openml_loader.load_datasets()
-kaggle_loader = Kaggle_Loader(config)
-kaggle_loader.load_datasets()
+# openml_loader = OpenML_Loader(config)
+# openml_loader.load_datasets()
+# kaggle_loader = Kaggle_Loader(config)
+# kaggle_loader.load_datasets()
 
-local_loader = Local_Loader(config)
-local_loader.load_datasets()
+# local_loader = Local_Loader(config)
+# local_loader.load_datasets()
 
 # compute distances
 for dataset_csv in list(glob.glob(str(config.DATASETS_PATH) + "/*.csv")):
+    continue
     if config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX in dataset_csv:
         continue
     dataset_csv_path = dataset_csv.replace(".csv", config.DATASETS_DISTANCES_APPENDIX)
@@ -49,7 +50,10 @@ for dataset_csv in list(glob.glob(str(config.DATASETS_PATH) + "/*.csv")):
             dataset_csv.replace(str(config.DATASETS_PATH), "")
             .replace("/", "")
             .replace(".csv", ""),
-            f"({len(df.columns)}, {len(df)}, {len(df.LABEL_TARGET.unique())})",
+            len(df),
+            len(df.columns),
+            len(df.LABEL_TARGET.unique()),
+            # f"({len(df.columns)}, {len(df)}, {len(df.LABEL_TARGET.unique())})",
         ]
     )
 data_df = pd.DataFrame(data)
