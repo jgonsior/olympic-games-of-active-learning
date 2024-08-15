@@ -1,5 +1,9 @@
 import multiprocessing
 from pathlib import Path
+from typing import Any, Dict
+
+import numpy as np
+import yaml
 from datasets.kaggle_loader import Kaggle_Loader
 from datasets.local_loader import Local_Loader
 from datasets.openml_loader import OpenML_Loader
@@ -41,18 +45,79 @@ for dataset_csv in list(glob.glob(str(config.DATASETS_PATH) + "/*.csv")):
 
 
 data = []
+
+kaggle_parameter_dict: Dict[str, Any] = yaml.safe_load(
+    config.KAGGLE_DATASETS_YAML_CONFIG_PATH.read_text()
+)
+
+openml_parameter_dict: Dict[str, Any] = yaml.safe_load(
+    config.OPENML_DATASETS_YAML_CONFIG_PATH.read_text()
+)
+
+count_kaggle = 0
+count_openml = 0
+smallest_dataset = np.inf
+biggest_dataset = 0
+smallest_features = np.inf
+biggest_features = 0
+smallest_classes = np.inf
+largest_classes = 0
+count_binary = 0
+
+
 for dataset_csv in list(glob.glob(str(config.DATASETS_PATH) + "/*.csv")):
     if config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX in dataset_csv:
         continue
+    dataset_name = (
+        dataset_csv.replace(str(config.DATASETS_PATH), "")
+        .replace("/", "")
+        .replace(".csv", "")
+    )
+
+    print(dataset_name)
+    source = ""
+    source_url = ""
+    if dataset_name in kaggle_parameter_dict.keys():
+        source += " kaggle repository:"
+        source_url = kaggle_parameter_dict[dataset_name]["kaggle_name"]
+        print("kaggle")
+        count_kaggle += 1
+    elif dataset_name in openml_parameter_dict.keys():
+        source += " OpenML id:"
+        source_url = openml_parameter_dict[dataset_name]["data_id"]
+        print("openml")
+        count_openml += 1
+    else:
+        source += " unknown"
+        print("unknown")
+
     df = pd.read_csv(dataset_csv)
+    if len(df) < smallest_dataset:
+        smallest_dataset = len(df)
+    if len(df) > biggest_dataset:
+        biggest_dataset = len(df)
+
+    if len(df.columns) == 3:
+        count_binary += 1
+
+    if len(df.columns) < smallest_features:
+        smallest_features = len(df.columns) - 1
+    if len(df.columns) > biggest_features:
+        biggest_features = len(df.columns) - 1
+
+    if len(df.LABEL_TARGET.unique()) < smallest_classes:
+        smallest_classes = len(df.LABEL_TARGET.unique())
+    if len(df.LABEL_TARGET.unique()) > largest_classes:
+        largest_classes = len(df.LABEL_TARGET.unique())
+
     data.append(
         [
-            dataset_csv.replace(str(config.DATASETS_PATH), "")
-            .replace("/", "")
-            .replace(".csv", ""),
-            len(df),
-            len(df.columns),
+            dataset_name,
+            f"{len(df):,}",
+            f"{len(df.columns):,}",
             len(df.LABEL_TARGET.unique()),
+            source,
+            source_url,
             # f"({len(df.columns)}, {len(df)}, {len(df.LABEL_TARGET.unique())})",
         ]
     )
@@ -60,3 +125,14 @@ data_df = pd.DataFrame(data)
 data_df.set_index(0, inplace=True)
 data_df.sort_index(axis=0, inplace=True)
 print(tabulate(data_df, tablefmt="fancy_grid"))
+
+with open("datasets.tex", "w") as f:
+    f.write(tabulate(data_df, tablefmt="latex_booktabs"))
+
+print(smallest_dataset)
+print(biggest_dataset)
+print(smallest_features)
+print(biggest_features)
+print(count_binary)
+print(smallest_classes)
+print(largest_classes)
