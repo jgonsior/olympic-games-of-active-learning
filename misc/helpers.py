@@ -17,7 +17,7 @@ import scipy
 import scipy.stats
 from datasets import DATASET
 from misc.config import Config
-from misc.plotting import set_matplotlib_size, set_seaborn_style
+from misc.plotting import _rename_strategy, set_matplotlib_size, set_seaborn_style
 import seaborn as sns
 
 from resources.data_types import AL_STRATEGY, LEARNER_MODEL
@@ -303,7 +303,7 @@ def save_correlation_plot(
 
     if "EXP_STRATEGY" in title:
         try:
-            keys = [AL_STRATEGY(int(kkk)).name for kkk in keys]
+            keys = [_rename_strategy(AL_STRATEGY(int(kkk)).name) for kkk in keys]
         except:
             keys = keys
     elif "EXP_DATASET" in title:
