@@ -143,4 +143,5 @@ for modus in ["standard"]:
         keys=standard_metrics,
         config=config,
         total=True,
+        rotation=30,
     )

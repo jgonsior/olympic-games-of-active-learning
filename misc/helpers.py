@@ -313,6 +313,7 @@ def save_correlation_plot(
     keys = [renaming_dict[kkk] if kkk in renaming_dict else kkk for kkk in keys]
 
     if "EXP_STRATEGY" in title:
+        rotation = 45
         try:
             keys = [_rename_strategy(AL_STRATEGY(int(kkk)).name) for kkk in keys]
         except:
