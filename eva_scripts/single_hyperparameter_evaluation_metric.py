@@ -191,7 +191,7 @@ for standard_metric in standard_metrics:
 
             save_correlation_plot(
                 data=corrmat,
-                title=f"single_hyperparameter/{target_to_evaluate}/{standard_metric}",
+                title=f"single_hyperparameter/{target_to_evaluate}/single_hyper_{target_to_evaluate}_{standard_metric}",
                 keys=keys,
                 config=config,
             )
