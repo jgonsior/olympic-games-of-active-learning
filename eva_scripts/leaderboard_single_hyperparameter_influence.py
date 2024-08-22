@@ -135,8 +135,8 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
                 "first_5_",
                 "full_auc_",
                 "last_5_",
-                "learning_stability_5_",
-                "learning_stability_10_",
+                #"learning_stability_5_",
+                #"learning_stability_10_",
                 "ramp_up_auc_",
                 "plateau_auc_",
             ]

@@ -31,8 +31,8 @@ standard_metrics = [
         "first_5_",
         "final_value_",
         "last_5_",
-        "learning_stability_5_",
-        "learning_stability_10_",
+        # "learning_stability_5_",
+        # "learning_stability_10_",
         "ramp_up_auc_",
         "plateau_auc_",
     ]
