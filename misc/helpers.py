@@ -287,7 +287,12 @@ def create_fingerprint_joined_timeseries_csv_files(
 
 
 def save_correlation_plot(
-    data: np.ndarray, title: str, keys: List[str], config: Config, total=False
+    data: np.ndarray,
+    title: str,
+    keys: List[str],
+    config: Config,
+    total=False,
+    rotation=False,
 ):
     renaming_dict = {
         "accuracy": "Accuracy",
@@ -297,6 +302,12 @@ def save_correlation_plot(
         "macro_f1-score": "F1-Score",
         "macro_recall": "Macro Recall",
         "macro_precision": "Macro Precision",
+        "ramp_up_auc_macro_f1-score": "Ramp-Up",
+        "first_5_macro_f1-score": "First 5",
+        "final_value_macro_f1-score": "Last Value",
+        "last_5_macro_f1-score": "Last 5",
+        "plateau_auc_macro_f1-score": "Plateau",
+        "full_auc_macro_f1-score": "Full Mean",
     }
 
     keys = [renaming_dict[kkk] if kkk in renaming_dict else kkk for kkk in keys]
@@ -339,7 +350,12 @@ def save_correlation_plot(
     plt.figure(figsize=set_matplotlib_size(fraction=len(keys) / 12))
     ax = sns.heatmap(data_df, annot=True, fmt=".2f", vmin=0, vmax=1)
 
-    ax.set_title(title)
+    ax.set_title("")
+
+    if rotation is not False:
+        # plt.xticks(rotation=rotation)
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=rotation, ha="right")
+        # ax.tick_params(axis="x", labelrotation=rotation)
 
     plt.savefig(
         result_folder / f"{title}.jpg",

@@ -22,20 +22,20 @@ config = Config()
 
 for standard_metric in [
     "accuracy",
-    "weighted_recall",
+    # "weighted_recall",
     "macro_f1-score",
-    "macro_precision",
-    "macro_recall",
-    "weighted_f1-score",
-    "weighted_precision",
+    # "macro_precision",
+    # "macro_recall",
+    # "weighted_f1-score",
+    # "weighted_precision",
 ]:
     auc_prefixe = [
         "final_value_",
         "first_5_",
         "full_auc_",
         "last_5_",
-        "learning_stability_5_",
-        "learning_stability_10_",
+        # "learning_stability_5_",
+        # "learning_stability_10_",
         "ramp_up_auc_",
         "plateau_auc_",
     ]
@@ -123,8 +123,9 @@ for standard_metric in [
     log_and_time("corrmatted")
     save_correlation_plot(
         data=corrmat,
-        title=f"AUC/{standard_metric}",
+        title=f"AUC/auc_{standard_metric}",
         keys=standard_metrics,
         config=config,
         total=True,
+        rotation=30,
     )
