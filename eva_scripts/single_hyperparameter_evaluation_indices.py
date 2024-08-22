@@ -38,9 +38,13 @@ for auc_prefix in [
 ]:
     log_and_time(f"Calculating for {standard_metric}")
     targets_to_evaluate = [
-        # "EXP_STRATEGY",  # gibt es strategie ähnlichkeiten?
-        # "EXP_LEARNER_MODEL",  # gibt es ähnlichkeiten zwischen den learner modellen?
+        "EXP_STRATEGY",  # gibt es strategie ähnlichkeiten?
+        "EXP_LEARNER_MODEL",  # gibt es ähnlichkeiten zwischen den learner modellen?
         "EXP_START_POINT",  # wurden vom selben startpunkt ausgehend diesselben datenpunkte ausgewählt?
+        "EXP_BATCH_SIZE",
+        # "EXP_DATASET",
+        # "EXP_TRAIN_TEST_BUCKET_SIZE",
+        # "EXP_START_POINT",
     ]
 
     if not Path(config.CORRELATION_TS_PATH / f"{standard_metric}.parquet").exists():
