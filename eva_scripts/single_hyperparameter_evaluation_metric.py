@@ -28,13 +28,13 @@ standard_metrics = [
     f"{fff}{standard_metric}"
     for fff in [
         "full_auc_",
-        "first_5_",
-        "final_value_",
-        "last_5_",
+        # "first_5_",
+        # "final_value_",
+        # "last_5_",
         # "learning_stability_5_",
         # "learning_stability_10_",
-        "ramp_up_auc_",
-        "plateau_auc_",
+        # "ramp_up_auc_",
+        # gs"plateau_auc_",
     ]
 ]
 

@@ -29,12 +29,12 @@ pandarallel.initialize(
 standard_metric = "selected_indices"
 
 for auc_prefix in [
-    "final_value_",
-    "ramp_up_auc_",
-    "plateau_auc_",
+    #"final_value_",
+    #"ramp_up_auc_",
+    #"plateau_auc_",
     "full_auc_",
-    "first_5_",
-    "last_5_",
+    #"first_5_",
+    #"last_5_",
 ]:
     log_and_time(f"Calculating for {standard_metric}")
     targets_to_evaluate = [
