@@ -289,6 +289,18 @@ def create_fingerprint_joined_timeseries_csv_files(
 def save_correlation_plot(
     data: np.ndarray, title: str, keys: List[str], config: Config, total=False
 ):
+    renaming_dict = {
+        "accuracy": "Accuracy",
+        "weighted_f1-score": "Class Weighted F1-Score",
+        "weighted_precision": "Class Weighted Precision",
+        "weighted_recall": "Class Weighted Recall",
+        "macro_f1-score": "F1-Score",
+        "macro_recall": "Macro Recall",
+        "macro_precision": "Macro Precision",
+    }
+
+    keys = [renaming_dict[kkk] if kkk in renaming_dict else kkk for kkk in keys]
+
     if "EXP_STRATEGY" in title:
         try:
             keys = [AL_STRATEGY(int(kkk)).name for kkk in keys]

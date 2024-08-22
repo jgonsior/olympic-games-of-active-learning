@@ -64,6 +64,8 @@ smallest_classes = np.inf
 largest_classes = 0
 count_binary = 0
 
+kaggle_names = ""
+openml_names = ""
 
 for dataset_csv in list(glob.glob(str(config.DATASETS_PATH) + "/*.csv")):
     if config.DATASETS_TRAIN_TEST_SPLIT_APPENDIX in dataset_csv:
@@ -81,10 +83,12 @@ for dataset_csv in list(glob.glob(str(config.DATASETS_PATH) + "/*.csv")):
         source += " kaggle repository:"
         source_url = kaggle_parameter_dict[dataset_name]["kaggle_name"]
         print("kaggle")
+        kaggle_names += f"{source_url}, "
         count_kaggle += 1
     elif dataset_name in openml_parameter_dict.keys():
         source += " OpenML id:"
         source_url = openml_parameter_dict[dataset_name]["data_id"]
+        openml_names += f"{dataset_name} ({source_url}), "
         print("openml")
         count_openml += 1
     else:
@@ -136,3 +140,7 @@ print(biggest_features)
 print(count_binary)
 print(smallest_classes)
 print(largest_classes)
+
+
+print(kaggle_names)
+print(openml_names)
