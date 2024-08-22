@@ -44,7 +44,7 @@ def _calculate_min_cutoffs():
         # Use LaTeX to write all text
         "text.usetex": True,
         # "text.usetex": False,
-        "font.family": "times",
+        "font.family": "Times New Roman",
         # Use 10pt font in plots, to match 10pt font in document
         "axes.labelsize": font_size,
         "font.size": font_size,
