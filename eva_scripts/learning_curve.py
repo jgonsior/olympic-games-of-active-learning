@@ -10,7 +10,7 @@ from misc.helpers import (
     create_fingerprint_joined_timeseries_csv_files,
     log_and_time,
 )
-from misc.plotting import set_matplotlib_size, set_seaborn_style
+from misc.plotting import _rename_strategy, set_matplotlib_size, set_seaborn_style
 from resources.data_types import AL_STRATEGY
 import seaborn as sns
 
@@ -115,6 +115,10 @@ if not destination_path.exists():
     )
 else:
     ts = pd.read_parquet(destination_path)
+
+ts["EXP_STRATEGY"] = ts["EXP_STRATEGY"].parallel_apply(
+    lambda xxx: _rename_strategy(xxx)
+)
 
 set_seaborn_style(font_size=6, usetex=True)
 # plt.figure(figsize=set_matplotlib_size(fraction=10))
