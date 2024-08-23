@@ -1,3 +1,4 @@
+import itertools
 import multiprocessing
 import subprocess
 import sys
@@ -38,7 +39,7 @@ standard_metrics = [
     ]
 ]
 
-standard_metrics.append(standard_metric)
+# standard_metrics.append(standard_metric)
 # standard_metrics = [standard_metric]
 
 for standard_metric in standard_metrics:
@@ -184,7 +185,21 @@ for standard_metric in standard_metrics:
 
             limited_ts_np = np.array([*limited_ts.values()])
 
-            corrmat = np.corrcoef(limited_ts_np)
+            def _calculate_my_sum_diff(a: np.ndarray, b: np.ndarray) -> float:
+                my_sum = np.sum(np.abs(a - b)) / len(a)
+                return 1 - my_sum
+
+            my_corrmat = np.ones(shape=(len(limited_ts), len(limited_ts)))
+            for a, b in itertools.product(limited_ts.keys(), repeat=2):
+                ix_range = {kkk: aaa for aaa, kkk in enumerate(limited_ts.keys())}
+                my_corrmat[ix_range[a], ix_range[b]] = _calculate_my_sum_diff(
+                    limited_ts[a], limited_ts[b]
+                )
+            corrmat = my_corrmat
+            # corrmat = np.corrcoef(limited_ts_np)
+            # print(corrmat)
+            # print(np.array(my_corrmat))
+            # exit(-1)
             log_and_time("Done correlation computations")
 
             keys = [*limited_ts.keys()]
