@@ -340,7 +340,7 @@ def save_correlation_plot(
 
     if total:
         data_df.loc[:, "Total"] = data_df.mean(axis=1)
-        data_df.sort_values(by=["Total"], inplace=True)
+        # data_df.sort_values(by=["Total"], inplace=True)
 
     print(data_df)
     print(result_folder / f"{title}.jpg")
