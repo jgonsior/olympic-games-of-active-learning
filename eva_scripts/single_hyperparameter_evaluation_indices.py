@@ -283,10 +283,10 @@ for auc_prefix in [
                 corrmat.append((c2, c1, jaccards3))
 
             corrmat = (
-                pd.DataFrame(data=corrmat).pivot(index=0, columns=1, values=2).fillna(0)
+                pd.DataFrame(data=corrmat).pivot(index=0, columns=1, values=2).fillna(1)
             ).to_numpy()
 
-            corrmat = 1 - corrmat
+            # corrmat = 1 - corrmat
 
             keys = [ttt for ttt in ts.columns]
 
