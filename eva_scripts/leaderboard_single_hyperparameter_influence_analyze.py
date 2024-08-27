@@ -479,7 +479,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
 
             ax = sns.heatmap(corr_data, annot=True, fmt=".2%", vmin=0, vmax=1)
 
-        ax.set_title(f"{hyperparameter_to_evaluate}")
+        # ax.set_title(f"{hyperparameter_to_evaluate}")
         plt.legend([], [], frameon=False)
 
         if hyperparameter_to_evaluate in [
@@ -496,6 +496,12 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
 
         plt.savefig(
             str(destination_path) + f".jpg",
+            dpi=300,
+            bbox_inches="tight",
+            pad_inches=0,
+        )
+        plt.savefig(
+            str(destination_path) + f".pdf",
             dpi=300,
             bbox_inches="tight",
             pad_inches=0,
