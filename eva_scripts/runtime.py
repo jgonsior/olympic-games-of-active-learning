@@ -10,7 +10,7 @@ from misc.helpers import (
     create_fingerprint_joined_timeseries_csv_files,
     log_and_time,
 )
-from misc.plotting import set_matplotlib_size, set_seaborn_style
+from misc.plotting import _rename_strategy, set_matplotlib_size, set_seaborn_style
 from resources.data_types import AL_STRATEGY
 import seaborn as sns
 
@@ -156,7 +156,7 @@ ts = ts.groupby(["EXP_STRATEGY"], as_index=False).agg(
 ts.columns = ["EXP_STRATEGY", "mean", "std"]
 ts = ts.reindex(columns=sorted(ts.columns))
 ts["EXP_STRATEGY"] = ts["EXP_STRATEGY"].parallel_apply(
-    lambda kkk: AL_STRATEGY(kkk).name
+    lambda kkk: _rename_strategy(AL_STRATEGY(kkk).name)
 )
 ts.sort_values(by="mean", inplace=True)
 
@@ -173,6 +173,7 @@ plt.figure(figsize=_calculate_fig_size(3.2))
 ax = sns.barplot(data=ts, y="EXP_STRATEGY", x="mean", hue="EXP_STRATEGY")
 ax.set(ylabel=None)
 ax.set_xscale("log")
+ax.set(xlabel="Mean Duration of AL cycle in seconds")
 
 xs = []
 for container in ax.containers:
