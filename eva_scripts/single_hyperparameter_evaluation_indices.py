@@ -264,7 +264,7 @@ for auc_prefix in [
             (ccc[0], ccc[1]) for ccc in combinations(ts.columns.to_list(), 2)
         ]
 
-        for rank_measure in ["statistic", "pvalue", "jaccard"]:
+        for rank_measure in ["jaccard"]:  # ["statistic", "pvalue", "jaccard"]:
             if rank_measure == "statistic":
                 jaccards2 = jaccards.parallel_applymap(lambda x: x[0])
             elif rank_measure == "pvalue":
