@@ -178,7 +178,7 @@ hyperparameters_to_evaluate = [
     ("min_hyper_reduction", "EXP_TRAIN_TEST_BUCKET_SIZE"),
     ("min_hyper_reduction", "EXP_BATCH_SIZE"),
     ("min_hyper_reduction", "EXP_LEARNER_MODEL"),
-    # "min_hyper233",
+    "min_hyper233",
     "min_hyper",
     "adv_min",
     "adv_start_scenario",
@@ -457,7 +457,14 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
             "min_hyper_reduction",
         ]:
             # calculate fraction based on length of keys
-            plt.figure(figsize=set_matplotlib_size(fraction=1))
+            golden_ratio = (5**0.5 - 1) / 2
+
+            # Figure width in inches
+
+            fig_width_in = 2
+            # Figure height in inches
+            fig_height_in = fig_width_in * golden_ratio
+            plt.figure(figsize=(fig_width_in, fig_height_in))
             ax = sns.lineplot(
                 data=corr_data,
                 x="index",
