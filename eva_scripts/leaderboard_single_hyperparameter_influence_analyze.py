@@ -178,7 +178,7 @@ hyperparameters_to_evaluate = [
     ("min_hyper_reduction", "EXP_TRAIN_TEST_BUCKET_SIZE"),
     ("min_hyper_reduction", "EXP_BATCH_SIZE"),
     ("min_hyper_reduction", "EXP_LEARNER_MODEL"),
-    "min_hyper233",
+    # "min_hyper233",
     "min_hyper",
     "adv_min",
     "adv_start_scenario",
