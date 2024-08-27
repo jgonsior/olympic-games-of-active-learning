@@ -18,33 +18,6 @@ pandarallel.initialize(
     nb_workers=multiprocessing.cpu_count(), progress_bar=True, use_memory_fs=False
 )
 
-"""
-for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentages"]:
-    for grid_type in ["sparse", "dense"]:
-        for interpolation in [
-            "remove",
-            "zero",
-            "average_of_same_strategy",
-        ]:
-            if grid_type == "dense" and interpolation != "zero":
-                continue
-
-            if (
-                rank_or_percentage == "dataset_normalized_percentages"
-                and interpolation != "zero"
-            ):
-                continue
-
-            for auc_prefix in [
-                "full_auc_",
-                # "first_5_",
-                # "last_5_",
-                # "ramp_up_auc_",
-                # "plateau_auc_",
-                # "final_value_",
-            ]:
-"""
-
 ranking_path = Path(
     config.OUTPUT_PATH / f"plots/leaderboard_invariances/leaderboard_types.csv"
 )
@@ -53,7 +26,8 @@ ranking_df.rename(columns=_rename_strategy, inplace=True)
 ranking_df = ranking_df.T
 
 
-for corr_method in ["spearman", "kendall"]:
+# for corr_method in ["spearman", "kendall"]:
+for corr_method in ["kendall"]:
     corr_data = ranking_df.corr(method=corr_method)
 
     destination_path = Path(
