@@ -6,6 +6,7 @@ import pandas as pd
 from pathlib import Path
 
 from misc.helpers import (
+    _calculate_fig_size,
     create_fingerprint_joined_timeseries_csv_files,
     log_and_time,
 )
@@ -167,7 +168,7 @@ set_seaborn_style(font_size=8)
 # plt.figure(figsize=set_matplotlib_size(fraction=10))
 
 # calculate fraction based on length of keys
-plt.figure(figsize=set_matplotlib_size())
+plt.figure(figsize=_calculate_fig_size(3.2))
 
 ax = sns.barplot(data=ts, y="EXP_STRATEGY", x="mean", hue="EXP_STRATEGY")
 ax.set(ylabel=None)
@@ -185,7 +186,7 @@ for container in ax.containers:
 # )
 
 
-ax.set_title(f"Runtimes: {runtime_metric}")
+# ax.set_title(f"Runtimes: {runtime_metric}")
 
 ts.to_parquet(destination_path / f"{runtime_metric}.parquet")
 

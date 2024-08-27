@@ -7,6 +7,7 @@ from pathlib import Path
 import matplotlib as mpl
 import scipy
 from datasets import DATASET
+from misc.helpers import _calculate_fig_size
 from misc.plotting import _rename_strategy, set_matplotlib_size, set_seaborn_style
 from resources.data_types import LEARNER_MODEL
 import seaborn as sns
@@ -456,15 +457,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
             "dataset_scenario",
             "min_hyper_reduction",
         ]:
-            # calculate fraction based on length of keys
-            golden_ratio = (5**0.5 - 1) / 2
-
-            # Figure width in inches
-
-            fig_width_in = 2
-            # Figure height in inches
-            fig_height_in = fig_width_in * golden_ratio
-            plt.figure(figsize=(fig_width_in, fig_height_in))
+            plt.figure(figsize=_calculate_fig_size(2))
             ax = sns.lineplot(
                 data=corr_data,
                 x="index",

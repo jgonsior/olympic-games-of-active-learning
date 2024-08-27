@@ -286,6 +286,12 @@ def create_fingerprint_joined_timeseries_csv_files(
     )
 
 
+def _calculate_fig_size(fig_width_in):
+    golden_ratio = (5**0.5 - 1) / 2
+    fig_height_in = fig_width_in * golden_ratio
+    return (fig_width_in, fig_height_in)
+
+
 def save_correlation_plot(
     data: np.ndarray,
     title: str,
@@ -348,7 +354,30 @@ def save_correlation_plot(
     # plt.figure(figsize=set_matplotlib_size(fraction=10))
 
     # calculate fraction based on length of keys
-    plt.figure(figsize=set_matplotlib_size(fraction=len(keys) / 12))
+
+    if "standard_metrics" in title:
+        figsize = _calculate_fig_size(2.5)
+    elif "auc_macro_f1-score" in title:
+        figsize = _calculate_fig_size(2.5)
+    elif "single_hyper_EXP_BATCH_SIZE_full_auc_weighted_f1" in title:
+        figsize = _calculate_fig_size(2.5)
+    elif "single_indice_EXP_BATCH_SIZE_full_auc__selected_indices_jaccard" in title:
+        figsize = _calculate_fig_size(2.5)
+    elif "single_hyper_EXP_DATASET_full_auc_weighted_f1" in title:
+        figsize = _calculate_fig_size(1 * 7.1413)
+    elif "single_hyper_EXP_LEARNER_MODEL_full_auc_weighted_f1" in title:
+        figsize = _calculate_fig_size(1.5)
+    elif "single_indice_EXP_LEARNER_MODEL_full_auc__selected_indices_jaccard" in title:
+        figsize = _calculate_fig_size(1.5)
+    elif "single_hyper_EXP_STRATEGY_full_auc_weighted_f1" in title:
+        figsize = _calculate_fig_size(0.92 * 7.1413)
+    elif "single_indice_EXP_STRATEGY_full_auc__selected_indices_jaccard" in title:
+        figsize = _calculate_fig_size(0.92 * 7.1413)
+    elif "" in title:
+        figsize = _calculate_fig_size(2.5)
+    else:
+        figsize = set_matplotlib_size(fraction=len(keys) / 12)
+    plt.figure(figsize=figsize)
     ax = sns.heatmap(data_df, annot=True, fmt=".2f", vmin=0, vmax=1)
 
     ax.set_title("")
