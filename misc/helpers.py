@@ -355,7 +355,7 @@ def save_correlation_plot(
 
     # calculate fraction based on length of keys
 
-    if "standard_metrics" in title:
+    if "Standard Metrics" in title:
         figsize = _calculate_fig_size(2.5)
     elif "auc_macro_f1-score" in title:
         figsize = _calculate_fig_size(2.5)
@@ -373,8 +373,6 @@ def save_correlation_plot(
         figsize = _calculate_fig_size(0.92 * 7.1413)
     elif "single_indice_EXP_STRATEGY_full_auc__selected_indices_jaccard" in title:
         figsize = _calculate_fig_size(0.92 * 7.1413)
-    elif "" in title:
-        figsize = _calculate_fig_size(2.5)
     else:
         figsize = set_matplotlib_size(fraction=len(keys) / 12)
     plt.figure(figsize=figsize)
