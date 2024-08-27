@@ -1,4 +1,3 @@
-import csv
 import multiprocessing
 import random
 import subprocess
@@ -15,7 +14,6 @@ from datasets import DATASET
 from misc.helpers import (
     create_fingerprint_joined_timeseries_csv_files,
     log_and_time,
-    save_correlation_plot,
 )
 from resources.data_types import AL_STRATEGY
 
@@ -135,8 +133,8 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
                 "first_5_",
                 "full_auc_",
                 "last_5_",
-                #"learning_stability_5_",
-                #"learning_stability_10_",
+                # "learning_stability_5_",
+                # "learning_stability_10_",
                 "ramp_up_auc_",
                 "plateau_auc_",
             ]
@@ -353,9 +351,9 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
         ts = ts.T
         print(ts)
 
-        ranking_dict[f"{hyperparameter_to_evaluate}: {hyperparameter_target_value}"] = (
-            ts.loc["Total"]
-        )
+        ranking_dict[
+            f"{hyperparameter_to_evaluate}: {hyperparameter_target_value}"
+        ] = ts.loc["Total"]
 
     ranking_df = pd.DataFrame(ranking_dict).T
     ranking_df.to_csv(ranking_path)

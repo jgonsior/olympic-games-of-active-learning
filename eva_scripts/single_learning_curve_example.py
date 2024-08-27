@@ -1,21 +1,11 @@
-import multiprocessing
-import subprocess
 import sys
 from matplotlib import pyplot as plt, ticker
 import numpy as np
 import pandas as pd
 from pathlib import Path
 
-import scipy
-import sklearn
-import sklearn.metrics
 
-from misc.helpers import (
-    create_fingerprint_joined_timeseries_csv_files,
-    log_and_time,
-)
 from misc.plotting import set_matplotlib_size, set_seaborn_style
-from resources.data_types import AL_STRATEGY
 import seaborn as sns
 
 sys.dont_write_bytecode = True
@@ -23,7 +13,6 @@ sys.dont_write_bytecode = True
 from misc.config import Config
 
 config = Config()
-from pandarallel import pandarallel
 
 
 data = pd.DataFrame(

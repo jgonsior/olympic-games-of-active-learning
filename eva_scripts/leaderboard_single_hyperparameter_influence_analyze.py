@@ -1,4 +1,3 @@
-from collections import defaultdict
 import multiprocessing
 import sys
 from matplotlib import pyplot as plt
@@ -8,7 +7,6 @@ from pathlib import Path
 import matplotlib as mpl
 import scipy
 from datasets import DATASET
-from misc.helpers import parallel_correlation
 from misc.plotting import _rename_strategy, set_matplotlib_size, set_seaborn_style
 from resources.data_types import LEARNER_MODEL
 import seaborn as sns
@@ -198,7 +196,6 @@ hyperparameters_to_evaluate = [
 
 hyperparameter_to_evaluate_addendum = False
 for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
-
     if len(hyperparameter_to_evaluate) == 2:
         hyperparameter_to_evaluate_addendum = hyperparameter_to_evaluate[1]
         hyperparameter_to_evaluate = hyperparameter_to_evaluate[0]
