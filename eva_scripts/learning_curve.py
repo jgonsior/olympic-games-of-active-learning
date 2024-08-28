@@ -7,6 +7,7 @@ import pandas as pd
 from pathlib import Path
 
 from misc.helpers import (
+    _calculate_fig_size,
     create_fingerprint_joined_timeseries_csv_files,
     log_and_time,
 )
@@ -123,7 +124,7 @@ set_seaborn_style(font_size=7, usetex=True)
 # plt.figure(figsize=set_matplotlib_size(fraction=10))
 
 # calculate fraction based on length of keys
-plt.figure(figsize=_calculate_fig_size(3.57)
+plt.figure(figsize=_calculate_fig_size(3.57))
 
 ax = sns.lineplot(ts, x="ix", y="metric_value", hue="EXP_STRATEGY")
 
