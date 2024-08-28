@@ -54,3 +54,14 @@ parquet_files = [
     "leaderboard_single_hyperparameter_influence/standard_metric_kendall.parquet",
     # "runtime/query_selection_time.parquet",
 ]
+
+for pf in parquet_files:
+    print(pf)
+    corrmat_df = pd.read_parquet(config.OUTPUT_PATH / f"plots/{pf}")
+
+    save_correlation_plot(
+        data=corrmat_df.to_numpy(),
+        title=pf.split(".parquet")[0],
+        keys=corrmat_df.columns,
+        config=config,
+    )
