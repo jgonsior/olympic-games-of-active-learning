@@ -24,9 +24,12 @@
 #python -m eva_scripts.leaderboard_scenarios --EXP_TITLE full_exp_jan --EVA_MODE local --SCENARIOS min_hyper
 #python -m eva_scripts.leaderboard_scenarios --EXP_TITLE full_exp_jan --EVA_MODE local --SCENARIOS dataset_scenario
 #python -m eva_scripts.leaderboard_scenarios --EXP_TITLE full_exp_jan --EVA_MODE local --SCENARIOS start_point_scenario
+python -m eva_scripts.learning_curve --EXP_TITLE learning_curve
+python -m eva_scripts.single_learning_curve_example --EXP_TITLE full_exp_jan
 python -m eva_scripts.runtime --EXP_TITLE full_exp_jan
 python -m eva_scripts.basic_metrics_correlation --EXP_TITLE full_exp_jan
 python -m eva_scripts.auc_metrics_correlation --EXP_TITLE full_exp_jan
-python -m eva_scripts.single_hyperparameter_evaluation_indices --EXP_TITLE full_exp_jan    
+python -m eva_scripts.single_hyperparameter_evaluation_indices --EXP_TITLE full_exp_jan
+python -m eva_scripts.single_hyperparameter_evaluation_metric --EXP_TITLE full_exp_jan
 python -m eva_scripts.auc_metric_correlation --EXP_TITLE full_exp_jan
 python -m eva_scripts.leaderboard_single_hyperparameter_influence_analyze --EXP_TITLE full_exp_jan

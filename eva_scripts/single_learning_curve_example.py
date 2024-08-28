@@ -5,6 +5,7 @@ import pandas as pd
 from pathlib import Path
 
 
+from misc.helpers import _calculate_fig_size
 from misc.plotting import set_matplotlib_size, set_seaborn_style
 import seaborn as sns
 
@@ -41,11 +42,11 @@ print(np.trapz(data["Strategy B"], dx=1) / np.trapz([1 for _ in range(0, 10)], d
 print(np.trapz(data["Strategy C"], dx=1) / np.trapz([1 for _ in range(0, 10)], dx=1))
 
 
-set_seaborn_style(font_size=6, usetex=True)
+set_seaborn_style(font_size=7, usetex=True)
 # plt.figure(figsize=set_matplotlib_size(fraction=10))
 
 # calculate fraction based on length of keys
-plt.figure(figsize=set_matplotlib_size(width=180))
+plt.figure(figsize=_calculate_fig_size(3.57))
 ax = sns.lineplot(data)
 
 ax.set(title="", xlabel="AL Cycle", ylabel="ML Performance Metric")

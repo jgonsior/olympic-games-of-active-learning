@@ -28,7 +28,6 @@ pandarallel.initialize(
 standard_metric = "weighted_f1-score"
 
 destination_path = Path(config.OUTPUT_PATH / f"plots/single_learning_curve")
-destination_path = destination_path / f"{standard_metric}.parquet"
 
 if not destination_path.exists():
     log_and_time(f"Calculating for {standard_metric}")
@@ -120,11 +119,11 @@ ts["EXP_STRATEGY"] = ts["EXP_STRATEGY"].parallel_apply(
     lambda xxx: _rename_strategy(xxx)
 )
 
-set_seaborn_style(font_size=6, usetex=True)
+set_seaborn_style(font_size=7, usetex=True)
 # plt.figure(figsize=set_matplotlib_size(fraction=10))
 
 # calculate fraction based on length of keys
-plt.figure(figsize=set_matplotlib_size(width=180))
+plt.figure(figsize=_calculate_fig_size(3.57)
 
 ax = sns.lineplot(ts, x="ix", y="metric_value", hue="EXP_STRATEGY")
 
@@ -132,10 +131,10 @@ ax.set(title="", xlabel="AL Cycle", ylabel="Class Weighted F1-Score")
 plt.legend([], [], frameon=False)
 # ax.xaxis.set_major_locator(ticker.FixedLocator([rrr for rrr in range(0, 10)]))
 
-# ts.to_parquet(destination_path / f"{standard_metric}.parquet")
+ts.to_parquet(destination_path / f"{standard_metric}.parquet")
 
 plt.savefig(
-    destination_path.parent / f"{standard_metric}.pdf",
+    destination_path.parent / f"single_learning_cruve.pdf",
     dpi=300,
     bbox_inches="tight",
     pad_inches=0,
