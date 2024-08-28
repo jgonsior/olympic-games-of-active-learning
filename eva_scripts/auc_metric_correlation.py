@@ -29,98 +29,105 @@ for standard_metric in [
     # "weighted_f1-score",
     # "weighted_precision",
 ]:
-    auc_prefixe = [
-        "final_value_",
-        "first_5_",
-        "full_auc_",
-        "last_5_",
-        # "learning_stability_5_",
-        # "learning_stability_10_",
-        "ramp_up_auc_",
-        "plateau_auc_",
-    ]
 
-    original_standard_metrics = [standard_metric]
-    standard_metrics = []
-    for vp in auc_prefixe:
-        standard_metrics = [
-            *standard_metrics,
-            *[vp + sss for sss in original_standard_metrics],
+    output_path = Path(config.OUTPUT_PATH / f"plots/AUC/auc_{standard_metric}.parquet")
+    if output_path.exists():
+        corrmat_df = pd.read_parquet(output_path)
+        corrmat = corrmat_df.to_numpy()
+        standard_metrics = corrmat_df.keys()
+    else:
+        auc_prefixe = [
+            "final_value_",
+            "first_5_",
+            "full_auc_",
+            "last_5_",
+            # "learning_stability_5_",
+            # "learning_stability_10_",
+            "ramp_up_auc_",
+            "plateau_auc_",
         ]
 
-    standard_metrics.append(standard_metric)
+        original_standard_metrics = [standard_metric]
+        standard_metrics = []
+        for vp in auc_prefixe:
+            standard_metrics = [
+                *standard_metrics,
+                *[vp + sss for sss in original_standard_metrics],
+            ]
 
-    log_and_time(standard_metric)
-    create_fingerprint_joined_timeseries_csv_files(standard_metrics, config)
-    log_and_time("Sorting files")
+        standard_metrics.append(standard_metric)
 
-    for f in glob.glob(
-        str(config.CORRELATION_TS_PATH) + f"/*.unsorted.csv", recursive=True
-    ):
-        command = f"sort -T {config.CORRELATION_TS_PATH} --parallel {multiprocessing.cpu_count()} {f} -o {f.split('.')[0]}.to_parquet.csv"
-        # print(command)
-        subprocess.run(command, shell=True, text=True)
-        Path(f).unlink()
+        log_and_time(standard_metric)
+        create_fingerprint_joined_timeseries_csv_files(standard_metrics, config)
+        log_and_time("Sorting files")
 
-    log_and_time("Parquetting files")
+        for f in glob.glob(
+            str(config.CORRELATION_TS_PATH) + f"/*.unsorted.csv", recursive=True
+        ):
+            command = f"sort -T {config.CORRELATION_TS_PATH} --parallel {multiprocessing.cpu_count()} {f} -o {f.split('.')[0]}.to_parquet.csv"
+            # print(command)
+            subprocess.run(command, shell=True, text=True)
+            Path(f).unlink()
 
-    for f in glob.glob(
-        str(config.CORRELATION_TS_PATH) + f"/*.to_parquet.csv", recursive=True
-    ):
-        ts = pd.read_csv(
-            f,
-            header=None,
-            index_col=False,
-            delimiter=",",
-            names=[
-                "EXP_DATASET",
-                "EXP_STRATEGY",
-                "EXP_START_POINT",
-                "EXP_BATCH_SIZE",
-                "EXP_LEARNER_MODEL",
-                "EXP_TRAIN_TEST_BUCKET_SIZE",
-                "ix",
-                "EXP_UNIQUE_ID_ix",
-                "metric_value",
-            ],
-        )
-        ts.to_parquet(f"{f.split('.')[0]}.parquet")
-        Path(f).unlink()
+        log_and_time("Parquetting files")
 
-    log_and_time("computing intersection")
-    shared_unique_ids = None
-
-    standard_metrics.remove(standard_metric)
-
-    for sm in standard_metrics:
-        ts = pd.read_parquet(
-            config.CORRELATION_TS_PATH / f"{sm}.parquet",
-            columns=["EXP_UNIQUE_ID_ix"],
-        )
-        if shared_unique_ids is None:
-            shared_unique_ids = set(ts["EXP_UNIQUE_ID_ix"].to_list())
-        else:
-            shared_unique_ids = shared_unique_ids.intersection(
-                set(ts["EXP_UNIQUE_ID_ix"].to_list())
+        for f in glob.glob(
+            str(config.CORRELATION_TS_PATH) + f"/*.to_parquet.csv", recursive=True
+        ):
+            ts = pd.read_csv(
+                f,
+                header=None,
+                index_col=False,
+                delimiter=",",
+                names=[
+                    "EXP_DATASET",
+                    "EXP_STRATEGY",
+                    "EXP_START_POINT",
+                    "EXP_BATCH_SIZE",
+                    "EXP_LEARNER_MODEL",
+                    "EXP_TRAIN_TEST_BUCKET_SIZE",
+                    "ix",
+                    "EXP_UNIQUE_ID_ix",
+                    "metric_value",
+                ],
             )
+            ts.to_parquet(f"{f.split('.')[0]}.parquet")
+            Path(f).unlink()
 
-    log_and_time("Reading in ts csv files")
-    timeseriesses = []
-    for sm in standard_metrics:
-        log_and_time(f"Reading in {sm}")
-        ts = pd.read_parquet(
-            config.CORRELATION_TS_PATH / f"{sm}.parquet",
-            columns=["EXP_UNIQUE_ID_ix", "metric_value"],
-        )
-        print(ts)
-        ts = ts.loc[ts["EXP_UNIQUE_ID_ix"].isin(shared_unique_ids)]
-        timeseriesses.append(ts["metric_value"].values)
-    timeseriesses = np.array(timeseriesses)
+        log_and_time("computing intersection")
+        shared_unique_ids = None
 
-    log_and_time("numpied")
-    corrmat = np.corrcoef(timeseriesses)
+        standard_metrics.remove(standard_metric)
 
-    log_and_time("corrmatted")
+        for sm in standard_metrics:
+            ts = pd.read_parquet(
+                config.CORRELATION_TS_PATH / f"{sm}.parquet",
+                columns=["EXP_UNIQUE_ID_ix"],
+            )
+            if shared_unique_ids is None:
+                shared_unique_ids = set(ts["EXP_UNIQUE_ID_ix"].to_list())
+            else:
+                shared_unique_ids = shared_unique_ids.intersection(
+                    set(ts["EXP_UNIQUE_ID_ix"].to_list())
+                )
+
+        log_and_time("Reading in ts csv files")
+        timeseriesses = []
+        for sm in standard_metrics:
+            log_and_time(f"Reading in {sm}")
+            ts = pd.read_parquet(
+                config.CORRELATION_TS_PATH / f"{sm}.parquet",
+                columns=["EXP_UNIQUE_ID_ix", "metric_value"],
+            )
+            print(ts)
+            ts = ts.loc[ts["EXP_UNIQUE_ID_ix"].isin(shared_unique_ids)]
+            timeseriesses.append(ts["metric_value"].values)
+        timeseriesses = np.array(timeseriesses)
+
+        log_and_time("numpied")
+        corrmat = np.corrcoef(timeseriesses)
+
+        log_and_time("corrmatted")
     save_correlation_plot(
         data=corrmat,
         title=f"AUC/auc_{standard_metric}",

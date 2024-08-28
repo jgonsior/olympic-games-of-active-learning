@@ -24,7 +24,7 @@ def set_seaborn_style(font_size=5.8, usetex=False):
 
     plt.rcParams.update(tex_fonts)  # type: ignore
 
-    sns.set_style("white")
+    sns.set_style("ticks")
     sns.set_context("paper")
     sns.set_palette("colorblind")
     plt.rcParams.update(tex_fonts)  # type: ignore

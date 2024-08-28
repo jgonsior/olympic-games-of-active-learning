@@ -286,9 +286,9 @@ def create_fingerprint_joined_timeseries_csv_files(
     )
 
 
-def _calculate_fig_size(fig_width_in):
+def _calculate_fig_size(fig_width_in, heigh_bonus=1):
     golden_ratio = (5**0.5 - 1) / 2
-    fig_height_in = fig_width_in * golden_ratio
+    fig_height_in = fig_width_in * golden_ratio * heigh_bonus
     return (fig_width_in, fig_height_in)
 
 
@@ -350,7 +350,7 @@ def save_correlation_plot(
 
     print(data_df)
     print(result_folder / f"{title}.jpg")
-    set_seaborn_style(font_size=8)
+    set_seaborn_style(font_size=7)
     # plt.figure(figsize=set_matplotlib_size(fraction=10))
 
     # calculate fraction based on length of keys
@@ -360,9 +360,9 @@ def save_correlation_plot(
     elif "auc_macro_f1-score" in title:
         figsize = _calculate_fig_size(2.5)
     elif "single_hyper_EXP_BATCH_SIZE_full_auc_weighted_f1" in title:
-        figsize = _calculate_fig_size(2.5)
+        figsize = _calculate_fig_size(2)
     elif "single_indice_EXP_BATCH_SIZE_full_auc__selected_indices_jaccard" in title:
-        figsize = _calculate_fig_size(2.5)
+        figsize = _calculate_fig_size(2)
     elif "single_hyper_EXP_DATASET_full_auc_weighted_f1" in title:
         figsize = _calculate_fig_size(1 * 7.1413)
     elif "single_hyper_EXP_LEARNER_MODEL_full_auc_weighted_f1" in title:
