@@ -27,6 +27,14 @@ pandarallel.initialize(
 
 
 parquet_files = [
+    "basic_metrics/Standard Metrics.parquet",
+    "AUC/auc_macro_f1-score.parquet",
+    "leaderboard_single_hyperparameter_influence/auc_metric_kendall.parquet",
+    "leaderboard_single_hyperparameter_influence/standard_metric_kendall.parquet",
+    "runtime/query_selection_time.parquet",
+    "single_learning_curve/weighted_f1-score.parquet",
+    "single_learning_curve/single_exemplary_learning_curve.parquet",
+    "error",
     "single_hyperparameter/EXP_BATCH_SIZE/single_hyper_EXP_BATCH_SIZE_full_auc_weighted_f1-score.parquet",
     "single_hyperparameter/EXP_DATASET/single_hyper_EXP_DATASET_full_auc_weighted_f1-score.parquet",
     "single_hyperparameter/EXP_LEARNER_MODEL/single_hyper_EXP_LEARNER_MODEL_full_auc_weighted_f1-score.parquet",
@@ -36,10 +44,6 @@ parquet_files = [
     "single_hyperparameter/EXP_BATCH_SIZE/single_indice_EXP_BATCH_SIZE_full_auc__selected_indices_jaccard.parquet",
     "single_hyperparameter/EXP_LEARNER_MODEL/single_indice_EXP_LEARNER_MODEL_full_auc__selected_indices_jaccard.parquet",
     "single_hyperparameter/EXP_STRATEGY/single_indice_EXP_STRATEGY_full_auc__selected_indices_jaccard.parquet",
-    # "basic_metrics/Standard Metrics.parquet",
-    # "AUC/auc_macro_f1-score.parquet",
-    # "single_learning_curve/weighted_f1-score.parquet",
-    # "single_learning_curve/single_exemplary_learning_curve.parquet",
     "leaderboard_single_hyperparameter_influence/min_hyper2_kendall.parquet",
     "leaderboard_single_hyperparameter_influence/min_hyper_reduction_EXP_BATCH_SIZE_kendall.parquet",
     "leaderboard_single_hyperparameter_influence/min_hyper_reduction_EXP_LEARNER_MODEL_kendall.parquet",
@@ -50,18 +54,59 @@ parquet_files = [
     "leaderboard_single_hyperparameter_influence/EXP_LEARNER_MODEL_kendall.parquet",
     "leaderboard_single_hyperparameter_influence/EXP_START_POINT_kendall.parquet",
     "leaderboard_single_hyperparameter_influence/EXP_TRAIN_TEST_BUCKET_SIZE_kendall.parquet",
-    "leaderboard_single_hyperparameter_influence/auc_metric_kendall.parquet",
-    "leaderboard_single_hyperparameter_influence/standard_metric_kendall.parquet",
-    # "runtime/query_selection_time.parquet",
 ]
 
 for pf in parquet_files:
     print(pf)
     corrmat_df = pd.read_parquet(config.OUTPUT_PATH / f"plots/{pf}")
 
-    save_correlation_plot(
-        data=corrmat_df.to_numpy(),
-        title=pf.split(".parquet")[0],
-        keys=corrmat_df.columns,
-        config=config,
-    )
+    match pf:
+        case "basic_metrics/Standard Metrics.parquet":
+            save_correlation_plot(
+                data=corrmat_df.to_numpy(),
+                title=pf.split(".parquet")[0],
+                keys=corrmat_df.columns,
+                config=config,
+                total=True,
+                rotation=30,
+            )
+        case "AUC/auc_macro_f1-score.parquet":
+            save_correlation_plot(
+                data=corrmat_df.to_numpy(),
+                title=pf.split(".parquet")[0],
+                keys=corrmat_df.columns,
+                config=config,
+                total=True,
+                rotation=30,
+            )
+        case "leaderboard_single_hyperparameter_influence/auc_metric_kendall.parquet":
+            save_correlation_plot(
+                data=corrmat_df.to_numpy(),
+                title=pf.split(".parquet")[0],
+                keys=corrmat_df.columns,
+                config=config,
+                total=True,
+                rotation=30,
+            )
+        case "leaderboard_single_hyperparameter_influence/standard_metric_kendall.parquet":
+            save_correlation_plot(
+                data=corrmat_df.to_numpy(),
+                title=pf.split(".parquet")[0],
+                keys=corrmat_df.columns,
+                config=config,
+                total=True,
+                rotation=30,
+            )
+        case "runtime/query_selection_time.parquet":
+            print("hui")
+        case "single_learning_curve/weighted_f1-score.parquet":
+            print("hui")
+        case "single_learning_curve/single_exemplary_learning_curve.parquet":
+            print("hui")
+        case _:
+            save_correlation_plot(
+                data=corrmat_df.to_numpy(),
+                title=pf.split(".parquet")[0],
+                keys=corrmat_df.columns,
+                config=config,
+            )

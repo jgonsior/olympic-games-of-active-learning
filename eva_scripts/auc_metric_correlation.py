@@ -23,10 +23,10 @@ config = Config()
 for standard_metric in [
     "accuracy",
     # "weighted_recall",
-    "macro_f1-score",
+    # "macro_f1-score",
     # "macro_precision",
     # "macro_recall",
-    # "weighted_f1-score",
+    "weighted_f1-score",
     # "weighted_precision",
 ]:
 

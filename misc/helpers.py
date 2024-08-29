@@ -300,6 +300,10 @@ def save_correlation_plot(
     total=False,
     rotation=False,
 ):
+
+    keys = [kkk.removeprefix("full_auc_") for kkk in keys]
+    keys = [kkk.removesuffix("_weighted_f1-score") for kkk in keys]
+
     renaming_dict = {
         "accuracy": "Accuracy",
         "weighted_f1-score": "Class Weighted F1-Score",
@@ -356,9 +360,13 @@ def save_correlation_plot(
     # calculate fraction based on length of keys
 
     if "Standard Metrics" in title:
-        figsize = _calculate_fig_size(2.5)
+        figsize = _calculate_fig_size(3)
     elif "auc_macro_f1-score" in title:
-        figsize = _calculate_fig_size(2.5)
+        figsize = _calculate_fig_size(3)
+    elif "standard_metric_kendall" in title:
+        figsize = _calculate_fig_size(3)
+    elif "auc_metric_kendall" in title:
+        figsize = _calculate_fig_size(3)
     elif "single_hyper_EXP_BATCH_SIZE_full_auc_weighted_f1" in title:
         figsize = _calculate_fig_size(2)
     elif "single_indice_EXP_BATCH_SIZE_full_auc__selected_indices_jaccard" in title:
