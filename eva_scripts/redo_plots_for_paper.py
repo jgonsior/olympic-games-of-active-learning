@@ -27,10 +27,10 @@ pandarallel.initialize(
 
 
 parquet_files = [
-    "basic_metrics/Standard Metrics.parquet",
-    "AUC/auc_macro_f1-score.parquet",
     "leaderboard_single_hyperparameter_influence/auc_metric_kendall.parquet",
     "leaderboard_single_hyperparameter_influence/standard_metric_kendall.parquet",
+    "basic_metrics/Standard Metrics.parquet",
+    "AUC/auc_macro_f1-score.parquet",
     "runtime/query_selection_time.parquet",
     "single_learning_curve/weighted_f1-score.parquet",
     "single_learning_curve/single_exemplary_learning_curve.parquet",

@@ -38,7 +38,10 @@ for modus in ["standard"]:
         config.OUTPUT_PATH / "plots/basic_metrics/Standard Metrics.parquet"
     )
     if output_path.exists():
-        corrmat = pd.read_parquet(output_path).to_numpy()
+        corrmat_df = pd.read_parquet(output_path)
+        keys = corrmat_df.keys()
+
+        corrmat = corrmat_df.to_numpy()
     else:
         if modus == "extended" or modus == "auc" or modus == "auc2":
             #  standard_metrics = ["macro_f1-score"]
@@ -146,7 +149,7 @@ for modus in ["standard"]:
     save_correlation_plot(
         data=corrmat,
         title="basic_metrics/Standard Metrics",
-        keys=standard_metrics,
+        keys=keys,
         config=config,
         total=True,
         rotation=30,

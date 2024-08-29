@@ -54,9 +54,9 @@ ax.set(title="", xlabel="AL Cycle", ylabel="ML Performance Metric")
 ax.xaxis.set_major_locator(ticker.FixedLocator([rrr for rrr in range(0, 10)]))
 # ax.set_title(f"Learning Curve: {standard_metric}")
 
-# ts.to_parquet(destination_path / f"{standard_metric}.parquet")
 
 destination_path = Path(config.OUTPUT_PATH / f"plots/single_learning_curve/")
+ts.to_parquet(destination_path / f"single_exemplary_learning_curve.parquet")
 plt.savefig(
     destination_path / f"single_exemplary_learning_curve.pdf",
     dpi=300,

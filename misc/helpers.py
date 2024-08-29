@@ -301,23 +301,27 @@ def save_correlation_plot(
     rotation=False,
 ):
 
-    keys = [kkk.removeprefix("full_auc_") for kkk in keys]
-    keys = [kkk.removesuffix("_weighted_f1-score") for kkk in keys]
+    # keys = [kkk.removesuffix("_weighted_f1-score") for kkk in keys]
+
+    if "standard_metric_kendall" in title:
+        keys = [kkk.removeprefix("full_auc_") for kkk in keys]
+        keys = [kkk.replace("Full Mean", "Class Weighted F1-Score") for kkk in keys]
 
     renaming_dict = {
         "accuracy": "Accuracy",
         "weighted_f1-score": "Class Weighted F1-Score",
         "weighted_precision": "Class Weighted Precision",
         "weighted_recall": "Class Weighted Recall",
-        "macro_f1-score": "F1-Score",
+        "macro_f1-score": "Macro F1-Score",
         "macro_recall": "Macro Recall",
         "macro_precision": "Macro Precision",
-        "ramp_up_auc_macro_f1-score": "Ramp-Up",
-        "first_5_macro_f1-score": "First 5",
-        "final_value_macro_f1-score": "Last Value",
-        "last_5_macro_f1-score": "Last 5",
-        "plateau_auc_macro_f1-score": "Plateau",
-        "full_auc_macro_f1-score": "Full Mean",
+        "ramp_up_auc_weighted_f1-score": "Ramp-Up",
+        "first_5_weighted_f1-score": "First 5",
+        "final_value_weighted_f1-score": "Last Value",
+        "last_5_weighted_f1-score": "Last 5",
+        "plateau_auc_weighted_f1-score": "Plateau",
+        "full_auc_weighted_f1-score": "Full Mean",
+        "gold standard": "ZGold Standard",
     }
 
     keys = [renaming_dict[kkk] if kkk in renaming_dict else kkk for kkk in keys]
@@ -345,6 +349,9 @@ def save_correlation_plot(
     data_df = pd.DataFrame(data=data, columns=keys, index=keys)
     data_df = data_df.sort_index(axis=0)
     data_df = data_df.sort_index(axis=1)
+
+    data_df = data_df.rename({"ZGold Standard": "Gold Standard"}, axis=0)
+    data_df = data_df.rename({"ZGold Standard": "Gold Standard"}, axis=1)
     Path(result_folder / f"{title}").parent.mkdir(exist_ok=True, parents=True)
     data_df.to_parquet(result_folder / f"{title}.parquet")
 
