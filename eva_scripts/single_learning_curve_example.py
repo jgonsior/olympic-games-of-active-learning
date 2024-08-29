@@ -56,7 +56,7 @@ ax.xaxis.set_major_locator(ticker.FixedLocator([rrr for rrr in range(0, 10)]))
 
 
 destination_path = Path(config.OUTPUT_PATH / f"plots/single_learning_curve/")
-ts.to_parquet(destination_path / f"single_exemplary_learning_curve.parquet")
+data.to_parquet(destination_path / f"single_exemplary_learning_curve.parquet")
 plt.savefig(
     destination_path / f"single_exemplary_learning_curve.pdf",
     dpi=300,
