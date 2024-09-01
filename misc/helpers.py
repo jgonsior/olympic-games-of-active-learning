@@ -1,3 +1,4 @@
+import ast
 import csv
 from datetime import timedelta
 import glob
@@ -8,6 +9,7 @@ from typing import Any, Callable, Dict, List, Optional
 from jinja2 import Template
 from joblib import Parallel, delayed
 from matplotlib import pyplot as plt
+from natsort import natsort_keygen, natsorted
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -17,7 +19,12 @@ import scipy
 import scipy.stats
 from datasets import DATASET
 from misc.config import Config
-from misc.plotting import _rename_strategy, set_matplotlib_size, set_seaborn_style
+from misc.plotting import (
+    _rename_learner_model,
+    _rename_strategy,
+    set_matplotlib_size,
+    set_seaborn_style,
+)
 import seaborn as sns
 
 from resources.data_types import AL_STRATEGY, LEARNER_MODEL
@@ -306,7 +313,24 @@ def save_correlation_plot(
     if "standard_metric_kendall" in title:
         keys = [kkk.removeprefix("full_auc_") for kkk in keys]
         keys = [kkk.replace("Full Mean", "Class Weighted F1-Score") for kkk in keys]
+    elif "AUC/auc_weighted_f1-score" in title:
+        keys = [kkk.replace("Class Weighted F1-Score", "full_auc") for kkk in keys]
 
+        if not "First 5" in keys:
+            keys = [f"{kkk}_weighted_f1-score" for kkk in keys]
+    elif "leaderboard_types_kendall" in title:
+        keys = [kkk.replace("_full_auc_weighted_f1-score", "") for kkk in keys]
+        keys = [
+            kkk.replace(
+                "dataset_normalized_percentages_", "Percentages Dataset Normalization"
+            )
+            for kkk in keys
+        ]
+        keys = [kkk.replace("percentages_", "Percentages") for kkk in keys]
+        keys = [kkk.replace("rank_", "Ranks") for kkk in keys]
+        keys = [kkk.replace("dense_none", " Dense") for kkk in keys]
+        keys = [kkk.replace("sparse_none", " Sparse None") for kkk in keys]
+        keys = [kkk.replace("sparse_zero", " Sparse Zero") for kkk in keys]
     renaming_dict = {
         "accuracy": "Accuracy",
         "weighted_f1-score": "Class Weighted F1-Score",
@@ -339,7 +363,7 @@ def save_correlation_plot(
             keys = keys
     elif "EXP_LEARNER_MODEL" in title:
         try:
-            keys = [LEARNER_MODEL(int(kkk)).name for kkk in keys]
+            keys = [_rename_learner_model(LEARNER_MODEL(int(kkk)).name) for kkk in keys]
         except:
             keys = keys
 
@@ -361,37 +385,84 @@ def save_correlation_plot(
 
     print(data_df)
     print(result_folder / f"{title}.jpg")
-    set_seaborn_style(font_size=7)
+    set_seaborn_style(font_size=5)
     # plt.figure(figsize=set_matplotlib_size(fraction=10))
 
     # calculate fraction based on length of keys
 
     if "Standard Metrics" in title:
         figsize = _calculate_fig_size(3)
-    elif "auc_macro_f1-score" in title:
+    elif "AUC/auc_weighted_f1-score" in title:
+        # set_seaborn_style(font_size=6)
         figsize = _calculate_fig_size(3)
+        rotation = 30
     elif "standard_metric_kendall" in title:
         figsize = _calculate_fig_size(3)
     elif "auc_metric_kendall" in title:
         figsize = _calculate_fig_size(3)
-    elif "single_hyper_EXP_BATCH_SIZE_full_auc_weighted_f1" in title:
-        figsize = _calculate_fig_size(2)
+    elif "leaderboard_types_kendall" in title:
+        figsize = _calculate_fig_size(0.5 * 7.1413)
+        rotation = 30
+        set_seaborn_style(font_size=6)
     elif "single_indice_EXP_BATCH_SIZE_full_auc__selected_indices_jaccard" in title:
         figsize = _calculate_fig_size(2)
+    elif "single_hyper_EXP_BATCH_SIZE_full_auc_weighted_f1-score" in title:
+        figsize = _calculate_fig_size(2)
+        # set_seaborn_style(font_size=5)
+    elif "EXP_BATCH_SIZE_kendall" in title:
+        figsize = _calculate_fig_size(2)
+
+        custom_dict = {"1": 1, "10": 10, "100": 100, "20": 20, "5": 5, "50": 50}
+
+        data_df = data_df.sort_index(axis=0, key=lambda x: x.map(custom_dict))
+        data_df = data_df.sort_index(axis=1, key=lambda x: x.map(custom_dict))
+
+        rotation = 30
     elif "single_hyper_EXP_DATASET_full_auc_weighted_f1" in title:
         figsize = _calculate_fig_size(1 * 7.1413)
+        set_seaborn_style(font_size=6)
     elif "single_hyper_EXP_LEARNER_MODEL_full_auc_weighted_f1" in title:
         figsize = _calculate_fig_size(1.5)
+        set_seaborn_style(font_size=7)
+        rotation = 30
     elif "single_indice_EXP_LEARNER_MODEL_full_auc__selected_indices_jaccard" in title:
         figsize = _calculate_fig_size(1.5)
+        set_seaborn_style(font_size=7)
+        rotation = 30
+    elif "EXP_LEARNER_MODEL_kendall" in title:
+        figsize = _calculate_fig_size(1.5)
+        set_seaborn_style(font_size=7)
+        rotation = 30
     elif "single_hyper_EXP_STRATEGY_full_auc_weighted_f1" in title:
         figsize = _calculate_fig_size(0.92 * 7.1413)
+        set_seaborn_style(font_size=4)
     elif "single_indice_EXP_STRATEGY_full_auc__selected_indices_jaccard" in title:
         figsize = _calculate_fig_size(0.92 * 7.1413)
+        set_seaborn_style(font_size=4)
+    elif "EXP_TRAIN_TEST_BUCKET_SIZE_kendall" in title:
+        figsize = _calculate_fig_size(3)
+        # set_seaborn_style(font_size=7)
+        rotation = 30
+    elif "EXP_START_POINT_kendall" in title:
+        figsize = _calculate_fig_size(3)
+        # set_seaborn_style(font_size=7)
+        # rotation = 30
     else:
         figsize = set_matplotlib_size(fraction=len(keys) / 12)
     plt.figure(figsize=figsize)
-    ax = sns.heatmap(data_df, annot=True, fmt=".2f", vmin=0, vmax=1)
+
+    data_df = data_df * 100
+    ax = sns.heatmap(
+        data_df,
+        annot=True,
+        fmt=".1f",
+        vmin=0,
+        vmax=100,
+        cmap=sns.color_palette("flare_r", as_cmap=True),
+        # square=True,
+    )
+    # ax = sns.heatmap(data_df, annot=True, fmt=".2%", vmin=0, vmax=1)
+    ax.tick_params(left=False, bottom=False, pad=-4)
 
     ax.set_title("")
 

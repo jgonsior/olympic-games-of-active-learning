@@ -44,7 +44,7 @@ for corr_method in ["kendall"]:
     # calculate fraction based on length of keys
     plt.figure(figsize=set_matplotlib_size(fraction=len(corr_data.columns) / 6))
 
-    ax = sns.heatmap(corr_data, annot=True, fmt=".2%")
+    ax = sns.heatmap(corr_data, annot=True, fmt=".2%", square=True)
 
     ax.set_title(f": {ranking_path}")
 

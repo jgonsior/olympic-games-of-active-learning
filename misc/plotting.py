@@ -2,13 +2,13 @@ import seaborn as sns
 
 from matplotlib import pyplot as plt
 
-from resources.data_types import AL_STRATEGY
+from resources.data_types import AL_STRATEGY, LEARNER_MODEL
 
 
-def set_seaborn_style(font_size=5.8, usetex=False):
+def set_seaborn_style(font_size=5.8):
     tex_fonts = {
         # Use LaTeX to write all text
-        "text.usetex": usetex,
+        "text.usetex": False,
         "font.family": "Times New Roman",
         # Use 10pt font in plots, to match 10pt font in document
         "axes.labelsize": font_size,
@@ -23,10 +23,11 @@ def set_seaborn_style(font_size=5.8, usetex=False):
     }
 
     plt.rcParams.update(tex_fonts)  # type: ignore
-
     sns.set_style("ticks")
     sns.set_context("paper")
-    sns.set_palette("colorblind")
+    # sns.set_palette("colorblind")
+    # plt.style.use("seaborn-v0_8-paper")
+    # plt.style.use("ggplot")
     plt.rcParams.update(tex_fonts)  # type: ignore
 
 
@@ -114,3 +115,15 @@ def _rename_strategy(al_strat: str) -> str:
     }
 
     return renaming_dict[al_strat]
+
+
+def _rename_learner_model(learner_model: str) -> str:
+    learner_model = LEARNER_MODEL[learner_model]
+
+    renaming_dict = {
+        LEARNER_MODEL.MLP: "MLP",
+        LEARNER_MODEL.RBF_SVM: "SVM (RBF)",
+        LEARNER_MODEL.RF: "RF",
+    }
+
+    return renaming_dict[learner_model]
