@@ -31,6 +31,14 @@ pandarallel.initialize(
 
 
 parquet_files = [
+    "leaderboard_single_hyperparameter_influence/min_hyper_reduction_EXP_START_POINT_kendall.parquet",
+    "leaderboard_single_hyperparameter_influence/min_hyper_reduction_EXP_TRAIN_TEST_BUCKET_SIZE_kendall.parquet",
+    "leaderboard_single_hyperparameter_influence/min_hyper2_kendall.parquet",
+    # "error",
+    "leaderboard_single_hyperparameter_influence/min_hyper_reduction_EXP_BATCH_SIZE_kendall.parquet",
+    "leaderboard_single_hyperparameter_influence/min_hyper_reduction_EXP_LEARNER_MODEL_kendall.parquet",
+    "leaderboard_single_hyperparameter_influence/EXP_START_POINT_kendall.parquet",
+    "leaderboard_single_hyperparameter_influence/EXP_TRAIN_TEST_BUCKET_SIZE_kendall.parquet",
     "single_hyperparameter/EXP_LEARNER_MODEL/single_hyper_EXP_LEARNER_MODEL_full_auc_weighted_f1-score.parquet",
     "single_hyperparameter/EXP_LEARNER_MODEL/single_indice_EXP_LEARNER_MODEL_full_auc__selected_indices_jaccard.parquet",
     "leaderboard_single_hyperparameter_influence/EXP_LEARNER_MODEL_kendall.parquet",
@@ -38,9 +46,6 @@ parquet_files = [
     "single_hyperparameter/EXP_BATCH_SIZE/single_hyper_EXP_BATCH_SIZE_full_auc_weighted_f1-score.parquet",
     "single_hyperparameter/EXP_BATCH_SIZE/single_indice_EXP_BATCH_SIZE_full_auc__selected_indices_jaccard.parquet",
     "leaderboard_invariances/leaderboard_types_kendall.parquet",
-    "eee",
-    "leaderboard_single_hyperparameter_influence/EXP_START_POINT_kendall.parquet",
-    "leaderboard_single_hyperparameter_influence/EXP_TRAIN_TEST_BUCKET_SIZE_kendall.parquet",
     # "error",
     "leaderboard_single_hyperparameter_influence/EXP_DATASET_kendall.parquet",
     "AUC/auc_weighted_f1-score.parquet",
@@ -56,12 +61,6 @@ parquet_files = [
     "single_hyperparameter/EXP_DATASET/single_hyper_EXP_DATASET_full_auc_weighted_f1-score.parquet",
     "single_learning_curve/weighted_f1-score.parquet",
     # "error",
-    "leaderboard_single_hyperparameter_influence/min_hyper_reduction_EXP_START_POINT_kendall.parquet",
-    "leaderboard_single_hyperparameter_influence/min_hyper_reduction_EXP_TRAIN_TEST_BUCKET_SIZE_kendall.parquet",
-    "leaderboard_single_hyperparameter_influence/min_hyper2_kendall.parquet",
-    # "error",
-    "leaderboard_single_hyperparameter_influence/min_hyper_reduction_EXP_BATCH_SIZE_kendall.parquet",
-    "leaderboard_single_hyperparameter_influence/min_hyper_reduction_EXP_LEARNER_MODEL_kendall.parquet",
     "eee",
     # "error",
 ]
@@ -197,27 +196,42 @@ for pf in parquet_files:
                 set_seaborn_style(font_size=6)
                 plt.figure(figsize=_calculate_fig_size(2))
 
-                ax = sns.lineplot(
+                corrmat_df["index"] = corrmat_df["index"].astype("int64")
+
+                ax = sns.regplot(
                     data=corrmat_df,
                     x="index",
+                    # x_estimator=lambda x: np.percentile(x, 95),
                     y="spearman",
+                    ci=None,
+                    color=".5",
+                    line_kws=dict(color="darkorange"),
+                    order=3,
+                    marker="x",
+                    scatter_kws={"s": 0.01, "rasterized": True},
+                    # robust=True,
+                    # logistic=True,
+                    # lowess=True,
+                    # lowess=True,  # order=4,
                     # errorbar=lambda x: (x.min(), x.max()),
                     #  errorbar="sd",:w
                     # errorbar="sd",
-                    errorbar="ci",
-                    #  sizes=(0.1, 0.1),
+                    # errorbar="ci",
+                    # sizes=(0.1, 0.1),
                     #  alpha=0.2,
-                    #  edgecolor="none",
+                    # edgecolor="none",
                     #  hue=0.3,
                 )
+                # ax.set_title("test")
                 #  ax.xaxis.set_major_locator(ticker.LinearLocator(20))
-                ax.xaxis.set_major_locator(ticker.AutoLocator())
+                # ax.xaxis.set_major_locator(ticker.AutoLocator())
                 ax.set(xlabel="\# hyperparameter combinations")
                 ax.set(ylabel="spearman coefficient")
                 ax.set(ylim=(0, 1))
+
                 plt.savefig(
                     config.OUTPUT_PATH / f"plots/{pf.split('.parquet')[0]}.pdf",
-                    dpi=300,
+                    dpi=600,
                     bbox_inches="tight",
                     pad_inches=0,
                 )

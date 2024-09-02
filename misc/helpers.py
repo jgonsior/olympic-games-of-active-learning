@@ -363,7 +363,10 @@ def save_correlation_plot(
             keys = keys
     elif "EXP_LEARNER_MODEL" in title:
         try:
-            keys = [_rename_learner_model(LEARNER_MODEL(int(kkk)).name) for kkk in keys]
+            keys = [
+                _rename_learner_model(kkk) if kkk is not "Gold Standard" else kkk
+                for kkk in keys
+            ]
         except:
             keys = keys
 
@@ -440,13 +443,19 @@ def save_correlation_plot(
         figsize = _calculate_fig_size(0.92 * 7.1413)
         set_seaborn_style(font_size=4)
     elif "EXP_TRAIN_TEST_BUCKET_SIZE_kendall" in title:
-        figsize = _calculate_fig_size(3)
+        figsize = _calculate_fig_size(2.5)
         # set_seaborn_style(font_size=7)
         rotation = 30
     elif "EXP_START_POINT_kendall" in title:
-        figsize = _calculate_fig_size(3)
+        figsize = _calculate_fig_size(0.92 * 7.1413)
+        set_seaborn_style(font_size=5)
         # set_seaborn_style(font_size=7)
-        # rotation = 30
+
+        custom_dict = {str(kkk): kkk for kkk in range(0, 20)}
+
+        data_df = data_df.sort_index(axis=0, key=lambda x: x.map(custom_dict))
+        data_df = data_df.sort_index(axis=1, key=lambda x: x.map(custom_dict))
+        rotation = 30
     else:
         figsize = set_matplotlib_size(fraction=len(keys) / 12)
     plt.figure(figsize=figsize)
