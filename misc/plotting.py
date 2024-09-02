@@ -118,6 +118,8 @@ def _rename_strategy(al_strat: str) -> str:
 
 
 def _rename_learner_model(learner_model: str) -> str:
+    if learner_model == "Gold Standard":
+        return "Gold Standard"
     learner_model = LEARNER_MODEL[learner_model]
 
     renaming_dict = {

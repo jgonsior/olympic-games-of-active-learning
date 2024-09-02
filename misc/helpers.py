@@ -362,13 +362,13 @@ def save_correlation_plot(
         except:
             keys = keys
     elif "EXP_LEARNER_MODEL" in title:
-        try:
-            keys = [
-                _rename_learner_model(kkk) if kkk is not "Gold Standard" else kkk
-                for kkk in keys
-            ]
-        except:
-            keys = keys
+        # try:
+        keys = [
+            _rename_learner_model(kkk) if kkk is not "Gold Standard" else kkk
+            for kkk in keys
+        ]
+        # except:
+        keys = keys
 
     result_folder = Path(config.OUTPUT_PATH / f"plots/")
     result_folder.mkdir(parents=True, exist_ok=True)
