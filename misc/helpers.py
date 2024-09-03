@@ -307,7 +307,6 @@ def save_correlation_plot(
     total=False,
     rotation=False,
 ):
-
     # keys = [kkk.removesuffix("_weighted_f1-score") for kkk in keys]
 
     if "standard_metric_kendall" in title:
@@ -322,26 +321,24 @@ def save_correlation_plot(
         keys = [kkk.replace("_full_auc_weighted_f1-score", "") for kkk in keys]
         keys = [
             kkk.replace(
-                "dataset_normalized_percentages_", "Percentages Dataset Normalization"
+                "dataset_normalized_percentages_",
+                "percentages + dataset normalization",
             )
             for kkk in keys
         ]
         keys = [kkk.replace("percentages_", "percentages") for kkk in keys]
-        keys = [kkk.replace("Percentages", "percentages") for kkk in keys]
+        keys = [kkk.replace("_average_of_same_strategy", " + average") for kkk in keys]
         keys = [kkk.replace("rank_", "ranks") for kkk in keys]
-        keys = [kkk.replace("dense_none", " dense") for kkk in keys]
-        keys = [kkk.replace("sparse_none", " sparse none") for kkk in keys]
-        keys = [kkk.replace("sparse_zero", " sparse zero") for kkk in keys]
         keys = [kkk.replace("sparse", "") for kkk in keys]
-        keys = [kkk.replace(" none", "") for kkk in keys]
-        keys = [kkk.replace(" zero", ", interpolation") for kkk in keys]
-        keys = [
-            kkk.replace(" Dataset Normalization", ", dataset normalization")
-            for kkk in keys
-        ]
+        keys = [kkk.replace("_none", "") for kkk in keys]
+        keys = [kkk.replace("_zero", " + interpolation") for kkk in keys]
+        keys = [kkk.replace("dense", " + removal") for kkk in keys]
+
+        # keys = [kkk.replace(" none", "") for kkk in keys]
         keys = [kkk.replace("  ", " ") for kkk in keys]
-        keys = [kkk.replace(" ,", ",") for kkk in keys]
-        keys = [kkk.replace(", ", " + ") for kkk in keys]
+        keys = [kkk.replace("__", "_") for kkk in keys]
+        keys = [kkk.replace("+ +", "+") for kkk in keys]
+        # keys = [kkk.replace(", ", " + ") for kkk in keys]
     renaming_dict = {
         "accuracy": "Accuracy",
         "weighted_f1-score": "Class Weighted F1-Score",
@@ -360,13 +357,18 @@ def save_correlation_plot(
     }
 
     keys = [renaming_dict[kkk] if kkk in renaming_dict else kkk for kkk in keys]
+    keys = [kkk.lower() if type(kkk) == str else kkk for kkk in keys]
+    keys = [kkk.replace("f1", "F1") if type(kkk) == str else kkk for kkk in keys]
 
     if "EXP_STRATEGY" in title:
         rotation = 45
         try:
             keys = [_rename_strategy(AL_STRATEGY(int(kkk)).name) for kkk in keys]
         except:
-            keys = keys
+            keys = [kkk.upper() if type(kkk) == str else kkk for kkk in keys]
+            keys = [
+                kkk.replace("UNC", "Unc") if type(kkk) == str else kkk for kkk in keys
+            ]
     elif "EXP_DATASET" in title:
         try:
             keys = [DATASET(int(kkk)).name for kkk in keys]
@@ -379,7 +381,9 @@ def save_correlation_plot(
                 for kkk in keys
             ]
         except:
-            keys = keys
+            renaming_dict = {"mlp": "MLP", "rf": "RF", "svm (rbf)": "SVM (RBF)"}
+
+            keys = [renaming_dict[kkk] if kkk in renaming_dict else kkk for kkk in keys]
 
     result_folder = Path(config.OUTPUT_PATH / f"plots/")
     result_folder.mkdir(parents=True, exist_ok=True)
@@ -388,13 +392,13 @@ def save_correlation_plot(
     data_df = data_df.sort_index(axis=0)
     data_df = data_df.sort_index(axis=1)
 
-    data_df = data_df.rename({"ZGold Standard": "Gold Standard"}, axis=0)
-    data_df = data_df.rename({"ZGold Standard": "Gold Standard"}, axis=1)
+    data_df = data_df.rename({"zgold Standard": "gold standard"}, axis=0)
+    data_df = data_df.rename({"zgold Standard": "gold standard"}, axis=1)
     Path(result_folder / f"{title}").parent.mkdir(exist_ok=True, parents=True)
     data_df.to_parquet(result_folder / f"{title}.parquet")
 
     if total:
-        data_df.loc[:, "Total"] = data_df.mean(axis=1)
+        data_df.loc[:, "total"] = data_df.mean(axis=1)
         # data_df.sort_values(by=["Total"], inplace=True)
 
     print(data_df)
@@ -415,9 +419,9 @@ def save_correlation_plot(
     elif "auc_metric_kendall" in title:
         figsize = _calculate_fig_size(3)
     elif "leaderboard_types_kendall" in title:
-        figsize = _calculate_fig_size(3)
+        figsize = _calculate_fig_size(0.5 * 7.1413)
         rotation = 30
-        set_seaborn_style(font_size=6)
+        set_seaborn_style(font_size=7)
     elif "single_indice_EXP_BATCH_SIZE_full_auc__selected_indices_jaccard" in title:
         figsize = _calculate_fig_size(2)
     elif "single_hyper_EXP_BATCH_SIZE_full_auc_weighted_f1-score" in title:

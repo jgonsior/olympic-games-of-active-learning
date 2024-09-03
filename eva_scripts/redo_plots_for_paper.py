@@ -32,7 +32,7 @@ pandarallel.initialize(
 
 parquet_files = [
     "leaderboard_invariances/leaderboard_types_kendall.parquet",
-    "eee",
+    # "eee",
     "leaderboard_single_hyperparameter_influence/EXP_LEARNER_MODEL_kendall.parquet",
     # "errr",
     "leaderboard_single_hyperparameter_influence/min_hyper_reduction_EXP_START_POINT_kendall.parquet",
@@ -77,7 +77,7 @@ for pf in parquet_files:
 
             plt.figure(figsize=_calculate_fig_size(3.57))
             ax = sns.lineplot(corrmat_df, x="ix", y="metric_value", hue="EXP_STRATEGY")
-            ax.set(title="", xlabel="AL Cycle", ylabel="Class Weighted F1-Score")
+            ax.set(title="", xlabel="AL cycle", ylabel="class weighted F1-score")
             plt.legend([], [], frameon=False)
 
             plt.savefig(
@@ -177,30 +177,34 @@ for pf in parquet_files:
                 bbox_inches="tight",
                 pad_inches=0,
             )
+        case "leaderboard_invariances/leaderboard_types_kendall.parquet":
+            corrmat_df = corrmat_df.loc[
+                ~corrmat_df.index.str.contains("sparse_average_of_same_strategy"),
+                :,
+            ]
+            corrmat_df = corrmat_df.loc[
+                ~corrmat_df.index.str.contains("sparse_remove"), :
+            ]
+            corrmat_df = corrmat_df.loc[
+                :,
+                ~corrmat_df.columns.str.contains("sparse_average_of_same_strategy"),
+            ]
+            corrmat_df = corrmat_df.loc[
+                :, ~corrmat_df.columns.str.contains("sparse_remove")
+            ]
+            # corrmat_df = corrmat_df.loc[~corrmat_df.columns.str.contains("dense"), :]
+            # corrmat_df = corrmat_df.loc[:, ~corrmat_df.columns.str.contains("dense")]
+            # print(corrmat_df.keys())
+            # exit(-1)
+            save_correlation_plot(
+                data=corrmat_df.to_numpy(),
+                title=pf.split(".parquet")[0],
+                keys=corrmat_df.columns,
+                config=config,
+                total=True,
+            )
         case _:
-
-            if pf == "leaderboard_invariances/leaderboard_types_kendall.parquet":
-                corrmat_df = corrmat_df.loc[
-                    ~corrmat_df.index.str.endswith("sparse_average_of_same_strategy"),
-                    :,
-                ]
-                corrmat_df = corrmat_df.loc[
-                    ~corrmat_df.index.str.endswith("sparse_remove"), :
-                ]
-                corrmat_df = corrmat_df.loc[
-                    :,
-                    ~corrmat_df.columns.str.endswith("sparse_average_of_same_strategy"),
-                ]
-                corrmat_df = corrmat_df.loc[
-                    :, ~corrmat_df.columns.str.endswith("sparse_remove")
-                ]
-                corrmat_df = corrmat_df.loc[
-                    ~corrmat_df.columns.str.endswith("dense"), :
-                ]
-                corrmat_df = corrmat_df.loc[
-                    :, ~corrmat_df.columns.str.endswith("dense")
-                ]
-            elif pf.startswith("leaderboard_single_hyperparameter_influence/min_hyper"):
+            if pf.startswith("leaderboard_single_hyperparameter_influence/min_hyper"):
                 set_seaborn_style(font_size=6)
                 plt.figure(figsize=_calculate_fig_size(2))
 
