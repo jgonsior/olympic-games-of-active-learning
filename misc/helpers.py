@@ -326,14 +326,22 @@ def save_correlation_plot(
             )
             for kkk in keys
         ]
-        keys = [kkk.replace("percentages_", "Percentages") for kkk in keys]
-        keys = [kkk.replace("rank_", "Ranks") for kkk in keys]
-        keys = [kkk.replace("dense_none", " Dense") for kkk in keys]
-        keys = [kkk.replace("sparse_none", " Sparse None") for kkk in keys]
-        keys = [kkk.replace("sparse_zero", " Sparse Zero") for kkk in keys]
-        keys = [kkk.replace("Sparse", "") for kkk in keys]
-        keys = [kkk.replace(" None", "") for kkk in keys]
-        keys = [kkk.replace("Zero", " Interpolation") for kkk in keys]
+        keys = [kkk.replace("percentages_", "percentages") for kkk in keys]
+        keys = [kkk.replace("Percentages", "percentages") for kkk in keys]
+        keys = [kkk.replace("rank_", "ranks") for kkk in keys]
+        keys = [kkk.replace("dense_none", " dense") for kkk in keys]
+        keys = [kkk.replace("sparse_none", " sparse none") for kkk in keys]
+        keys = [kkk.replace("sparse_zero", " sparse zero") for kkk in keys]
+        keys = [kkk.replace("sparse", "") for kkk in keys]
+        keys = [kkk.replace(" none", "") for kkk in keys]
+        keys = [kkk.replace(" zero", ", interpolation") for kkk in keys]
+        keys = [
+            kkk.replace(" Dataset Normalization", ", dataset normalization")
+            for kkk in keys
+        ]
+        keys = [kkk.replace("  ", " ") for kkk in keys]
+        keys = [kkk.replace(" ,", ",") for kkk in keys]
+        keys = [kkk.replace(", ", " + ") for kkk in keys]
     renaming_dict = {
         "accuracy": "Accuracy",
         "weighted_f1-score": "Class Weighted F1-Score",
