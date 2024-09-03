@@ -31,6 +31,8 @@ pandarallel.initialize(
 
 
 parquet_files = [
+    "leaderboard_invariances/leaderboard_types_kendall.parquet",
+    "eee",
     "leaderboard_single_hyperparameter_influence/EXP_LEARNER_MODEL_kendall.parquet",
     # "errr",
     "leaderboard_single_hyperparameter_influence/min_hyper_reduction_EXP_START_POINT_kendall.parquet",
@@ -46,7 +48,6 @@ parquet_files = [
     "leaderboard_single_hyperparameter_influence/EXP_BATCH_SIZE_kendall.parquet",
     "single_hyperparameter/EXP_BATCH_SIZE/single_hyper_EXP_BATCH_SIZE_full_auc_weighted_f1-score.parquet",
     "single_hyperparameter/EXP_BATCH_SIZE/single_indice_EXP_BATCH_SIZE_full_auc__selected_indices_jaccard.parquet",
-    "leaderboard_invariances/leaderboard_types_kendall.parquet",
     # "error",
     "leaderboard_single_hyperparameter_influence/EXP_DATASET_kendall.parquet",
     "AUC/auc_weighted_f1-score.parquet",
@@ -193,6 +194,12 @@ for pf in parquet_files:
                 corrmat_df = corrmat_df.loc[
                     :, ~corrmat_df.columns.str.endswith("sparse_remove")
                 ]
+                corrmat_df = corrmat_df.loc[
+                    ~corrmat_df.columns.str.endswith("dense"), :
+                ]
+                corrmat_df = corrmat_df.loc[
+                    :, ~corrmat_df.columns.str.endswith("dense")
+                ]
             elif pf.startswith("leaderboard_single_hyperparameter_influence/min_hyper"):
                 set_seaborn_style(font_size=6)
                 plt.figure(figsize=_calculate_fig_size(2))
@@ -226,7 +233,7 @@ for pf in parquet_files:
                 # ax.set_title("test")
                 #  ax.xaxis.set_major_locator(ticker.LinearLocator(20))
                 # ax.xaxis.set_major_locator(ticker.AutoLocator())
-                ax.set(xlabel="\# hyperparameter combinations")
+                ax.set(xlabel="# hyperparameter combinations")
                 ax.set(ylabel="spearman coefficient")
                 ax.set(ylim=(0, 1))
 

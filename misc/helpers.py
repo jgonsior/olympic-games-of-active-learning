@@ -331,6 +331,9 @@ def save_correlation_plot(
         keys = [kkk.replace("dense_none", " Dense") for kkk in keys]
         keys = [kkk.replace("sparse_none", " Sparse None") for kkk in keys]
         keys = [kkk.replace("sparse_zero", " Sparse Zero") for kkk in keys]
+        keys = [kkk.replace("Sparse", "") for kkk in keys]
+        keys = [kkk.replace(" None", "") for kkk in keys]
+        keys = [kkk.replace("Zero", " Interpolation") for kkk in keys]
     renaming_dict = {
         "accuracy": "Accuracy",
         "weighted_f1-score": "Class Weighted F1-Score",
@@ -362,13 +365,13 @@ def save_correlation_plot(
         except:
             keys = keys
     elif "EXP_LEARNER_MODEL" in title:
-        # try:
-        keys = [
-            _rename_learner_model(kkk) if kkk is not "Gold Standard" else kkk
-            for kkk in keys
-        ]
-        # except:
-        keys = keys
+        try:
+            keys = [
+                _rename_learner_model(kkk) if kkk is not "Gold Standard" else kkk
+                for kkk in keys
+            ]
+        except:
+            keys = keys
 
     result_folder = Path(config.OUTPUT_PATH / f"plots/")
     result_folder.mkdir(parents=True, exist_ok=True)
@@ -404,7 +407,7 @@ def save_correlation_plot(
     elif "auc_metric_kendall" in title:
         figsize = _calculate_fig_size(3)
     elif "leaderboard_types_kendall" in title:
-        figsize = _calculate_fig_size(0.5 * 7.1413)
+        figsize = _calculate_fig_size(3)
         rotation = 30
         set_seaborn_style(font_size=6)
     elif "single_indice_EXP_BATCH_SIZE_full_auc__selected_indices_jaccard" in title:
