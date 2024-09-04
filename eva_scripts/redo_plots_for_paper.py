@@ -31,8 +31,9 @@ pandarallel.initialize(
 
 
 parquet_files = [
-    "AUC/auc_weighted_f1-score.parquet",
+    "basic_metrics/Standard Metrics.parquet",
     "eee",
+    "AUC/auc_weighted_f1-score.parquet",
     "leaderboard_invariances/leaderboard_types_kendall.parquet",
     "leaderboard_single_hyperparameter_influence/EXP_LEARNER_MODEL_kendall.parquet",
     # "errr",
@@ -52,7 +53,6 @@ parquet_files = [
     # "error",
     "leaderboard_single_hyperparameter_influence/auc_metric_kendall.parquet",
     "leaderboard_single_hyperparameter_influence/EXP_DATASET_kendall.parquet",
-    "basic_metrics/Standard Metrics.parquet",
     "single_learning_curve/single_exemplary_learning_curve.parquet",
     "leaderboard_single_hyperparameter_influence/standard_metric_kendall.parquet",
     "runtime/query_selection_time.parquet",

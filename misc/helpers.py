@@ -320,6 +320,14 @@ def save_correlation_plot(
 
         if not "first 5" in keys:
             keys = [f"{kkk}_weighted_f1-score" for kkk in keys]
+    elif "basic_metrics/Standard Metrics" in title:
+        keys = [kkk.replace("F1-score", "macro F1-score") for kkk in keys]
+        keys = [
+            kkk.replace("class weighted macro F1-score", "class weighted F1-score")
+            for kkk in keys
+        ]
+        keys = [kkk.replace("macro macro F1-score", "macro F1-score") for kkk in keys]
+
     elif "leaderboard_types_kendall" in title:
         keys = [kkk.replace("_full_auc_weighted_f1-score", "") for kkk in keys]
         keys = [
