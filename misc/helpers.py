@@ -313,9 +313,12 @@ def save_correlation_plot(
         keys = [kkk.removeprefix("full_auc_") for kkk in keys]
         keys = [kkk.replace("Full Mean", "Class Weighted F1-Score") for kkk in keys]
     elif "AUC/auc_weighted_f1-score" in title:
-        keys = [kkk.replace("Class Weighted F1-Score", "full_auc") for kkk in keys]
+        keys = [kkk.replace("class weighted F1-Score", "full_auc") for kkk in keys]
+        keys = [kkk.replace("_weighted_F1-score", "") for kkk in keys]
+        keys = [kkk.replace("_weighted_F1-score", "") for kkk in keys]
+        keys = [kkk.replace("_weighted_F1-score", "") for kkk in keys]
 
-        if not "First 5" in keys:
+        if not "first 5" in keys:
             keys = [f"{kkk}_weighted_f1-score" for kkk in keys]
     elif "leaderboard_types_kendall" in title:
         keys = [kkk.replace("_full_auc_weighted_f1-score", "") for kkk in keys]
@@ -392,8 +395,8 @@ def save_correlation_plot(
     data_df = data_df.sort_index(axis=0)
     data_df = data_df.sort_index(axis=1)
 
-    data_df = data_df.rename({"zgold Standard": "gold standard"}, axis=0)
-    data_df = data_df.rename({"zgold Standard": "gold standard"}, axis=1)
+    data_df = data_df.rename({"zgold standard": "gold standard"}, axis=0)
+    data_df = data_df.rename({"zgold standard": "gold standard"}, axis=1)
     Path(result_folder / f"{title}").parent.mkdir(exist_ok=True, parents=True)
     data_df.to_parquet(result_folder / f"{title}.parquet")
 
