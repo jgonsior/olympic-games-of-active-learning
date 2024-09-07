@@ -242,6 +242,9 @@ for auc_prefix in [
             values="metric_value",
         )
 
+        print(ts)
+        exit(-1)
+
         def _calculate_rank_correlations(r):
             js = []
             for c1, c2 in combinations(r.to_list(), 2):

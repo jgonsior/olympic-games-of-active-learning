@@ -31,8 +31,10 @@ pandarallel.initialize(
 
 
 parquet_files = [
-    "basic_metrics/Standard Metrics.parquet",
+    "leaderboard_single_hyperparameter_influence/auc_metric_kendall.parquet",
+    "leaderboard_single_hyperparameter_influence/standard_metric_kendall.parquet",
     "eee",
+    "basic_metrics/Standard Metrics.parquet",
     "AUC/auc_weighted_f1-score.parquet",
     "leaderboard_invariances/leaderboard_types_kendall.parquet",
     "leaderboard_single_hyperparameter_influence/EXP_LEARNER_MODEL_kendall.parquet",
@@ -51,10 +53,8 @@ parquet_files = [
     "single_hyperparameter/EXP_BATCH_SIZE/single_hyper_EXP_BATCH_SIZE_full_auc_weighted_f1-score.parquet",
     "single_hyperparameter/EXP_BATCH_SIZE/single_indice_EXP_BATCH_SIZE_full_auc__selected_indices_jaccard.parquet",
     # "error",
-    "leaderboard_single_hyperparameter_influence/auc_metric_kendall.parquet",
     "leaderboard_single_hyperparameter_influence/EXP_DATASET_kendall.parquet",
     "single_learning_curve/single_exemplary_learning_curve.parquet",
-    "leaderboard_single_hyperparameter_influence/standard_metric_kendall.parquet",
     "runtime/query_selection_time.parquet",
     "single_hyperparameter/EXP_START_POINT/single_hyper_EXP_START_POINT_full_auc_weighted_f1-score.parquet",
     "single_hyperparameter/EXP_STRATEGY/single_hyper_EXP_STRATEGY_full_auc_weighted_f1-score.parquet",
@@ -125,6 +125,17 @@ for pf in parquet_files:
                 rotation=30,
             )
         case "leaderboard_single_hyperparameter_influence/auc_metric_kendall.parquet":
+            corrmat_df = corrmat_df.loc[
+                ~corrmat_df.index.str.contains("gold standard"),
+                :,
+            ]
+            print(corrmat_df)
+
+            corrmat_df = corrmat_df.loc[
+                :,
+                ~corrmat_df.columns.str.contains("gold standard"),
+            ]
+            print(corrmat_df)
             save_correlation_plot(
                 data=corrmat_df.to_numpy(),
                 title=pf.split(".parquet")[0],
@@ -134,6 +145,15 @@ for pf in parquet_files:
                 rotation=30,
             )
         case "leaderboard_single_hyperparameter_influence/standard_metric_kendall.parquet":
+            corrmat_df = corrmat_df.loc[
+                ~corrmat_df.index.str.contains("gold standard"),
+                :,
+            ]
+            corrmat_df = corrmat_df.loc[
+                :,
+                ~corrmat_df.columns.str.contains("gold standard"),
+            ]
+            print(corrmat_df)
             save_correlation_plot(
                 data=corrmat_df.to_numpy(),
                 title=pf.split(".parquet")[0],
