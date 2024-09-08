@@ -1,3 +1,4 @@
+import random
 import sys
 from turtle import up
 from matplotlib import pyplot as plt, ticker
@@ -51,19 +52,35 @@ config = Config()
         ],"""
 
 data = pd.DataFrame(
-    data=[[*[iii for iii in range(0, 100)], *[100 for _ in range(0, 100)]]],
+    # data=[[*[iii for iii in range(0, 100)], *[100 for _ in range(0, 100)]]],
+    data=[
+        [
+            *[
+                2.4,
+                4,
+                5,
+                4.8,
+                5,
+                5.8,
+                6,
+                6,
+                6.4,
+                6,  ##
+            ],
+            *[random.uniform(5.8, 6.3) for _ in range(15)],
+        ]
+    ]
 ).T
-# data /= 8
+data /= 7
 print(data)
 current_row_np = data[0].to_numpy()
 print(current_row_np)
 
-average_improvement_over_all_time_steps = np.sum(np.diff(current_row_np)) / len(
-    current_row_np
-)
+average_improvement_over_all_time_steps = np.sum(current_row_np) / len(current_row_np)
 
-window_size = 10
+window_size = 5
 cutoff_value = None
+last_fixed_avg = 0
 for window_param in range(window_size, len(current_row_np)):
     fixed_window = current_row_np[
         (len(current_row_np) - window_param) : (
@@ -72,13 +89,14 @@ for window_param in range(window_size, len(current_row_np)):
     ]
     print(fixed_window)
 
-    fixed_average = np.sum(np.diff(fixed_window)) / len(fixed_window)
+    fixed_average = np.mean(fixed_window)
     print(
         f"{len(current_row_np)-window_param}: {fixed_average:.2} >? {average_improvement_over_all_time_steps}  ({np.diff(fixed_window)})"
     )
     if fixed_average > average_improvement_over_all_time_steps:
-        cutoff_value = len(current_row_np) - window_param + 1
-        break
+        cutoff_value = len(current_row_np) - window_param
+        last_fixed_avg = fixed_average
+        continue
 
 print(cutoff_value)
 
@@ -92,8 +110,32 @@ sns.set_style("whitegrid")
 
 plt.figure(figsize=_calculate_fig_size(3.57))
 ax = sns.lineplot(data, legend=False, markers=True)
-ax.axvline(cutoff_value, color="r")
+# ax.axvline(cutoff_value, color="r")
 ax.set(title="", xlabel="AL Cycle", ylabel="ML Performance Metric")
+
+ax.axhline(average_improvement_over_all_time_steps, color=sns.color_palette()[3])
+# ax.axhline(last_fixed_avg, color="lightgreen")
+
+
+plt.plot(
+    list(range(0, 5)),
+    data[0:5].to_numpy().flatten().tolist(),
+    "s",
+    markerfacecolor=sns.color_palette()[4],
+    markeredgecolor="w",
+    markersize=5,
+    marker="D",
+)
+plt.plot(
+    list(range(5, 25)),
+    data[5:25].to_numpy().flatten().tolist(),
+    "s",
+    markerfacecolor=sns.color_palette()[5],
+    markeredgecolor="w",
+    markersize=6,
+    marker="h",
+)
+
 
 # ax.xaxis.set_major_locator(ticker.FixedLocator([rrr for rrr in range(0, 10)]))
 # ax.set_title(f"Learning Curve: {standard_metric}")

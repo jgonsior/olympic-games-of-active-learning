@@ -33,3 +33,12 @@ python -m eva_scripts.single_hyperparameter_evaluation_indices --EXP_TITLE full_
 python -m eva_scripts.single_hyperparameter_evaluation_metric --EXP_TITLE full_exp_jan
 python -m eva_scripts.auc_metric_correlation --EXP_TITLE full_exp_jan
 python -m eva_scripts.leaderboard_single_hyperparameter_influence_analyze --EXP_TITLE full_exp_jan
+
+
+
+
+#python -m eva_scripts.calculate_dataset_dependend_random_ramp_slope --EXP_TITLE full_exp_jan
+#python -m scripts.create_auc_selected_ts --EXP_TITLE full_exp_jan
+#python -m eva_scripts.auc_metric_correlation --EXP_TITLE full_exp_jan -> neue ram
+#python -m eva_scripts.leaderboard_single_hyperparameter_influence --EXP_TITLE full_exp_jan
+#python -m eva_scripts.leaderboard_single_hyperparameter_influence_analyze --EXP_TITLE full_exp_jan

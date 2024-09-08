@@ -243,7 +243,7 @@ for auc_prefix in [
         )
 
         print(ts)
-        exit(-1)
+        # exit(-1)
 
         def _calculate_rank_correlations(r):
             js = []

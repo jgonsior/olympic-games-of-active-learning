@@ -29,7 +29,7 @@ def _find_thresholds_and_plot_them(file_name, config):
     set_seaborn_style(font_size=10)
     metric_file = Path(file_name)
     print(metric_file)
-    df = pd.read_parquet(metric_file)
+    df = pd.read_csv(metric_file)
     # print(df)
 
     small_done_df = done_workload_df.loc[
@@ -209,10 +209,6 @@ def _calculate_thresholds_and_save_them(file_name, config):
         ]
     )["EXP_UNIQUE_ID"].apply(lambda rrr: rrr)
 
-    """
-    ich habe ein growing sliding window, und ab dem punkt wo das growing sliding window mehr "improvement" hat, als die durchschnittliche verbesserung -> da ist unser cutoff punkt
-    also solange es kaum verbesserung im verlgeich zum durchschnitt gibt ->
-    """
     for group, EXP_UNIQUE_ID in grouped.items():
         current_row = df.loc[df["EXP_UNIQUE_ID"] == EXP_UNIQUE_ID]
         del current_row["EXP_UNIQUE_ID"]
@@ -220,11 +216,11 @@ def _calculate_thresholds_and_save_them(file_name, config):
         current_row_np = current_row_np[~np.isnan(current_row_np)]
         # print(current_row_np)
 
-        average_improvement_over_all_time_steps = np.sum(np.diff(current_row_np)) / len(
+        average_improvement_over_all_time_steps = np.sum(current_row_np) / len(
             current_row_np
         )
 
-        window_size = 10
+        window_size = 5
         cutoff_value = None
         for window_param in range(window_size, len(current_row_np)):
             fixed_window = current_row_np[
@@ -233,11 +229,11 @@ def _calculate_thresholds_and_save_them(file_name, config):
                 )
             ]
 
-            fixed_average = np.sum(np.diff(fixed_window)) / len(fixed_window)
+            fixed_average = np.mean(fixed_window)
 
             if fixed_average > average_improvement_over_all_time_steps:
-                cutoff_value = len(current_row_np) - window_param + 1
-                break
+                cutoff_value = len(current_row_np) - window_param
+                continue
 
         if cutoff_value is None:
             cutoff_value = round(len(current_row_np) / 2)
