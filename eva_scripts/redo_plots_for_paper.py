@@ -31,12 +31,12 @@ pandarallel.initialize(
 
 
 parquet_files = [
-    "leaderboard_single_hyperparameter_influence/auc_metric_kendall.parquet",
-    "leaderboard_single_hyperparameter_influence/standard_metric_kendall.parquet",
-    "eee",
     "basic_metrics/Standard Metrics.parquet",
-    "AUC/auc_weighted_f1-score.parquet",
+    "leaderboard_single_hyperparameter_influence/standard_metric_kendall.parquet",
+    "leaderboard_single_hyperparameter_influence/auc_metric_kendall.parquet",
     "leaderboard_invariances/leaderboard_types_kendall.parquet",
+    "AUC/auc_weighted_f1-score.parquet",
+    # "eee",
     "leaderboard_single_hyperparameter_influence/EXP_LEARNER_MODEL_kendall.parquet",
     # "errr",
     "leaderboard_single_hyperparameter_influence/min_hyper_reduction_EXP_START_POINT_kendall.parquet",
@@ -112,10 +112,11 @@ for pf in parquet_files:
                 title=pf.split(".parquet")[0],
                 keys=corrmat_df.columns,
                 config=config,
-                total=True,
+                total=False,
                 rotation=30,
             )
         case "AUC/auc_macro_f1-score.parquet":
+            set_seaborn_style(font_size=5)
             save_correlation_plot(
                 data=corrmat_df.to_numpy(),
                 title=pf.split(".parquet")[0],
@@ -125,6 +126,7 @@ for pf in parquet_files:
                 rotation=30,
             )
         case "leaderboard_single_hyperparameter_influence/auc_metric_kendall.parquet":
+            set_seaborn_style(font_size=5)
             corrmat_df = corrmat_df.loc[
                 ~corrmat_df.index.str.contains("gold standard"),
                 :,
@@ -141,7 +143,7 @@ for pf in parquet_files:
                 title=pf.split(".parquet")[0],
                 keys=corrmat_df.columns,
                 config=config,
-                total=True,
+                total=False,
                 rotation=30,
             )
         case "leaderboard_single_hyperparameter_influence/standard_metric_kendall.parquet":
@@ -159,7 +161,7 @@ for pf in parquet_files:
                 title=pf.split(".parquet")[0],
                 keys=corrmat_df.columns,
                 config=config,
-                total=True,
+                total=False,
                 rotation=30,
             )
         case "runtime/query_selection_time.parquet":
@@ -221,7 +223,7 @@ for pf in parquet_files:
                 title=pf.split(".parquet")[0],
                 keys=corrmat_df.columns,
                 config=config,
-                total=True,
+                total=False,
             )
         case _:
             if pf.startswith("leaderboard_single_hyperparameter_influence/min_hyper"):
