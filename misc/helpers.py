@@ -395,7 +395,8 @@ def save_correlation_plot(
             renaming_dict = {"mlp": "MLP", "rf": "RF", "svm (rbf)": "SVM (RBF)"}
 
             keys = [renaming_dict[kkk] if kkk in renaming_dict else kkk for kkk in keys]
-
+    elif "framework_al_strat" in title:
+        keys = [kkk.upper() for kkk in keys]
     result_folder = Path(config.OUTPUT_PATH / f"plots/")
     result_folder.mkdir(parents=True, exist_ok=True)
 
