@@ -481,13 +481,13 @@ def save_correlation_plot(
     elif "single_indice_EXP_STRATEGY_full_auc__selected_indices_jaccard" in title:
         figsize = _calculate_fig_size(0.92 * 7.1413)
         set_seaborn_style(font_size=4)
-    elif "EXP_TRAIN_TEST_BUCKET_SIZE_kendall" in title:
-        figsize = _calculate_fig_size(2.5)
-        # set_seaborn_style(font_size=7)
+    elif "EXP_TRAIN_TEST_BUCKET_SIZE" in title:
+        figsize = _calculate_fig_size(2)
+        set_seaborn_style(font_size=6)
         rotation = 30
-    elif "EXP_START_POINT_kendall" in title:
-        figsize = _calculate_fig_size(0.92 * 7.1413)
-        set_seaborn_style(font_size=5)
+    elif "EXP_START_POINT" in title:
+        figsize = _calculate_fig_size(0.5 * 7.1413)
+        set_seaborn_style(font_size=3)
         # set_seaborn_style(font_size=7)
 
         custom_dict = {str(kkk): kkk for kkk in range(0, 20)}

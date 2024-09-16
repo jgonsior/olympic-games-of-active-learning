@@ -45,11 +45,11 @@ for standard_metric in standard_metrics:
     log_and_time(f"Starting {standard_metric}")
 
     targets_to_evaluate = [
-        "EXP_STRATEGY",
-        "EXP_LEARNER_MODEL",
-        "EXP_BATCH_SIZE",
-        "EXP_DATASET",
-        "EXP_TRAIN_TEST_BUCKET_SIZE",
+        # "EXP_STRATEGY",
+        # "EXP_LEARNER_MODEL",
+        # "EXP_BATCH_SIZE",
+        # "EXP_DATASET",
+        # "EXP_TRAIN_TEST_BUCKET_SIZE",
         "EXP_START_POINT",
     ]
 
@@ -119,80 +119,83 @@ for standard_metric in standard_metrics:
 
     ts_orig = ts.copy()
     for target_to_evaluate in targets_to_evaluate:
-        correlation_data_path = Path(
-            config.OUTPUT_PATH
-            / f"plots/single_hyperparameter/{target_to_evaluate}/{standard_metric}.parquet"
-        )
-        log_and_time(target_to_evaluate)
-        if correlation_data_path.exists():
-            corrmat = pd.read_parquet(correlation_data_path)
-            print(corrmat)
-            keys = corrmat.columns
-            corrmat = corrmat.to_numpy()
-            print("hui")
-        else:
-            ts = ts_orig.copy()
+        for dataset_id in ts_orig["EXP_DATASET"].unique():
 
-            fingerprint_cols = list(ts.columns)
-            fingerprint_cols.remove("metric_value")
-            fingerprint_cols.remove(target_to_evaluate)
-            print(ts.dtypes)
-            ts["fingerprint"] = ts[fingerprint_cols].parallel_apply(
-                lambda row: "_".join([str(rrr) for rrr in row]), axis=1
+            correlation_data_path = Path(
+                config.OUTPUT_PATH
+                / f"plots/single_hyperparameter/{target_to_evaluate}/{standard_metric}_{dataset_id}.parquet"
             )
+            log_and_time(target_to_evaluate)
+            if correlation_data_path.exists():
+                corrmat = pd.read_parquet(correlation_data_path)
+                print(corrmat)
+                keys = corrmat.columns
+                corrmat = corrmat.to_numpy()
+                print("hui")
+            else:
+                ts = ts_orig.copy()
+                ts = ts.loc[ts["EXP_DATASET"] == dataset_id]
 
-            log_and_time("Done fingerprinting")
-
-            for fg_col in fingerprint_cols:
-                del ts[fg_col]
-
-            # ts = ts.sort_values(by="fingerprint")
-
-            if type(ts.iloc[0]["metric_value"]) == np.ndarray:
-                ts["metric_value"] = ts["metric_value"].parallel_apply(
-                    lambda aaa: aaa[0]
+                fingerprint_cols = list(ts.columns)
+                fingerprint_cols.remove("metric_value")
+                fingerprint_cols.remove(target_to_evaluate)
+                print(ts.dtypes)
+                ts["fingerprint"] = ts[fingerprint_cols].parallel_apply(
+                    lambda row: "_".join([str(rrr) for rrr in row]), axis=1
                 )
 
-            # log_and_time("Done sorting")
-            shared_fingerprints = None
-            for target_value in ts[target_to_evaluate].unique():
-                tmp_fingerprints = set(
-                    ts.loc[ts[target_to_evaluate] == target_value][
-                        "fingerprint"
-                    ].to_list()
-                )
+                log_and_time("Done fingerprinting")
 
-                if shared_fingerprints is None:
-                    shared_fingerprints = tmp_fingerprints
-                else:
-                    shared_fingerprints = shared_fingerprints.intersection(
-                        tmp_fingerprints
+                for fg_col in fingerprint_cols:
+                    del ts[fg_col]
+
+                # ts = ts.sort_values(by="fingerprint")
+
+                if type(ts.iloc[0]["metric_value"]) == np.ndarray:
+                    ts["metric_value"] = ts["metric_value"].parallel_apply(
+                        lambda aaa: aaa[0]
                     )
 
-            log_and_time(
-                f"Done calculating shared fingerprints - {len(shared_fingerprints)}"
-            )
+                # log_and_time("Done sorting")
+                shared_fingerprints = None
+                for target_value in ts[target_to_evaluate].unique():
+                    tmp_fingerprints = set(
+                        ts.loc[ts[target_to_evaluate] == target_value][
+                            "fingerprint"
+                        ].to_list()
+                    )
 
-            limited_ts = {}
-            for target_value in ts[target_to_evaluate].unique():
-                limited_ts[target_value] = ts.loc[
-                    (ts[target_to_evaluate] == target_value)
-                    & (ts["fingerprint"].isin(shared_fingerprints))
-                ]["metric_value"].to_numpy()
+                    if shared_fingerprints is None:
+                        shared_fingerprints = tmp_fingerprints
+                    else:
+                        shared_fingerprints = shared_fingerprints.intersection(
+                            tmp_fingerprints
+                        )
 
-            log_and_time("Done indexing ts")
+                log_and_time(
+                    f"Done calculating shared fingerprints - {len(shared_fingerprints)}"
+                )
 
-            limited_ts_np = np.array([*limited_ts.values()])
+                limited_ts = {}
+                for target_value in ts[target_to_evaluate].unique():
+                    limited_ts[target_value] = ts.loc[
+                        (ts[target_to_evaluate] == target_value)
+                        & (ts["fingerprint"].isin(shared_fingerprints))
+                    ]["metric_value"].to_numpy()
 
-            corrmat = np.corrcoef(limited_ts_np)
+                log_and_time("Done indexing ts")
 
-            log_and_time("Done correlation computations")
+                limited_ts_np = np.array([*limited_ts.values()])
 
-            keys = [*limited_ts.keys()]
+                corrmat = np.corrcoef(limited_ts_np)
 
-            save_correlation_plot(
-                data=corrmat,
-                title=f"single_hyperparameter/{target_to_evaluate}/single_hyper_{target_to_evaluate}_{standard_metric}",
-                keys=keys,
-                config=config,
-            )
+                log_and_time("Done correlation computations")
+
+                keys = [*limited_ts.keys()]
+
+                save_correlation_plot(
+                    data=corrmat,
+                    title=f"single_hyperparameter/{target_to_evaluate}/single_hyper_{target_to_evaluate}_{standard_metric}_{dataset_id}",
+                    keys=keys,
+                    config=config,
+                )
