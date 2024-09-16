@@ -61,17 +61,40 @@ for k, v in framework_dict_other.items():
 
 df = pd.DataFrame(fra_to_fra_corr, columns=["fra", "frb", "corr"])
 
-df = df["corr"].groupby([df["fra"], df["frb"]]).apply(np.mean).reset_index()
+df2 = df["corr"].groupby([df["fra"], df["frb"]]).apply(np.mean).reset_index()
+df = df["corr"].groupby([df["fra"], df["frb"]]).apply(np.std).reset_index()
+df2 = df2.pivot(index="fra", columns="frb", values="corr")
 df = df.pivot(index="fra", columns="frb", values="corr")
+print(df)
+print(df2)
+# exit(-1)
 # df.columns = df.columns.droplevel(level=0)
 print(df.to_numpy())
 print(df.columns)
-set_seaborn_style(font_size=5)
+
+mean_data = df2.to_numpy().tolist()
+std_data = df.to_numpy().tolist()
+
+
+annot_data = [[x1, x2] for x1, x2 in zip(mean_data, std_data)]
+annot_data2 = []
+
+for x1x2 in annot_data:
+    x1 = x1x2[0]
+    x2 = x1x2[1]
+
+    ad = []
+    for xx1, xx2 in zip(x1, x2):
+        ad.append(f"{xx1*100:.1f}\n± {xx2*100:.1f}")
+    annot_data2.append(ad)
+annot_data2 = np.array(annot_data2)
+
 save_correlation_plot(
-    data=df.to_numpy(),
+    data=df2.to_numpy(),
     title="framework_al_strat_correlation",
     keys=df.columns.str.upper(),
     config=config,
     total=False,
+    annot=annot_data2,
     # rotation=30,
 )

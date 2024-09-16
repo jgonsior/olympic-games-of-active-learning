@@ -3,6 +3,7 @@ import csv
 from datetime import timedelta
 import glob
 from itertools import combinations
+from math import e
 import multiprocessing
 import sys
 from typing import Any, Callable, Dict, List, Optional
@@ -306,6 +307,7 @@ def save_correlation_plot(
     config: Config,
     total=False,
     rotation=False,
+    annot=True,
 ):
     # keys = [kkk.removesuffix("_weighted_f1-score") for kkk in keys]
 
@@ -380,6 +382,10 @@ def save_correlation_plot(
             keys = [
                 kkk.replace("UNC", "Unc") if type(kkk) == str else kkk for kkk in keys
             ]
+            keys = [
+                kkk.replace("Unc_BT", "Unc_SM") if type(kkk) == str else kkk
+                for kkk in keys
+            ]
     elif "EXP_DATASET" in title:
         try:
             keys = [DATASET(int(kkk)).name for kkk in keys]
@@ -424,6 +430,10 @@ def save_correlation_plot(
 
     if "Standard Metrics" in title:
         figsize = _calculate_fig_size(3)
+    elif "framework_al_strat" in title:
+        figsize = _calculate_fig_size(2)
+        set_seaborn_style(font_size=6)
+
     elif "AUC/auc_weighted_f1-score" in title:
         # set_seaborn_style(font_size=6)
         figsize = _calculate_fig_size(3)
@@ -490,13 +500,38 @@ def save_correlation_plot(
     plt.figure(figsize=figsize)
 
     data_df = data_df * 100
+    print(annot)
+
+    if "single_hyperparameter/" in title and "single_indice_" in title:
+        cmap = sns.light_palette("green", reverse=True, as_cmap=True)
+    elif "single_hyperparameter/" in title and "single_hyper_" in title:
+        cmap = sns.light_palette("blue", reverse=True, as_cmap=True)
+    elif "leaderboard_single_hyperparameter_influence/" in title:
+        cmap = sns.light_palette("orange", reverse=True, as_cmap=True)
+    elif title in [
+        "basic_metrics/Standard Metrics",
+        "leaderboard_single_hyperparameter_influence/standard_metric_kendall",
+        "leaderboard_single_hyperparameter_influence/auc_metric_kendall",
+        "leaderboard_invariances/leaderboard_types_kendall",
+        "AUC/auc_weighted_f1-score",
+    ]:
+        cmap = sns.light_palette("blue", reverse=True, as_cmap=True)
+    else:
+        cmap = sns.light_palette("purple", reverse=True, as_cmap=True)
+
+    if annot is not True:
+        fmt = ""
+    else:
+        fmt = ".1f"
+
     ax = sns.heatmap(
         data_df,
-        annot=True,
-        fmt=".1f",
+        annot=annot,
+        fmt=fmt,
+        # fmt=".1f",
         vmin=0,
         vmax=100,
-        cmap=sns.color_palette("flare_r", as_cmap=True),
+        cmap=cmap,
         # square=True,
     )
     # ax = sns.heatmap(data_df, annot=True, fmt=".2%", vmin=0, vmax=1)
