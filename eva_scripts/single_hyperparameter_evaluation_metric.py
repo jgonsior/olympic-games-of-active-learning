@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 
+from datasets import DATASET
 from misc.helpers import (
     create_fingerprint_joined_timeseries_csv_files,
     log_and_time,
@@ -123,7 +124,7 @@ for standard_metric in standard_metrics:
 
             correlation_data_path = Path(
                 config.OUTPUT_PATH
-                / f"plots/single_hyperparameter/{target_to_evaluate}/{standard_metric}_{dataset_id}.parquet"
+                / f"plots/single_hyperparameter/{target_to_evaluate}/{standard_metric}_{DATASET(dataset_id).name}.parquet"
             )
             log_and_time(target_to_evaluate)
             if correlation_data_path.exists():
@@ -195,7 +196,7 @@ for standard_metric in standard_metrics:
 
                 save_correlation_plot(
                     data=corrmat,
-                    title=f"single_hyperparameter/{target_to_evaluate}/single_hyper_{target_to_evaluate}_{standard_metric}_{dataset_id}",
+                    title=f"single_hyperparameter/{target_to_evaluate}/single_hyper_{target_to_evaluate}_{standard_metric}_{DATASET(dataset_id).name}",
                     keys=keys,
                     config=config,
                 )
