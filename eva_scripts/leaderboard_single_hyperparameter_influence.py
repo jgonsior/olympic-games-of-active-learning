@@ -313,8 +313,9 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
 
             def _dataset_normalized_percentages(row: pd.Series) -> pd.Series:
                 row = row.dropna()
+                print(row)
                 transformer = RobustScaler().fit(
-                    row  # _flatten([rrr for rrr in row.to_list()])
+                    row.to_list()  # _flatten([rrr for rrr in row.to_list()])
                 )
                 data = [[[rxrxrx] for rxrxrx in rrr] for rrr in row]
                 result = [transformer.transform(rrr) for rrr in data]
