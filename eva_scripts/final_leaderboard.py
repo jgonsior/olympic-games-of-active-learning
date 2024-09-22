@@ -6,7 +6,8 @@ from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
 from pathlib import Path
-from sklearn.preprocessing import RobustScaler
+from sklearn.discriminant_analysis import StandardScaler
+from sklearn.preprocessing import MinMaxScaler, RobustScaler
 import matplotlib as mpl
 import scipy
 from datasets import DATASET
@@ -295,7 +296,8 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
 
                     def _dataset_normalized_percentages(row: pd.Series) -> pd.Series:
                         row = row.dropna()
-                        transformer = RobustScaler().fit(
+                        # transformer = RobustScaler().fit(
+                        transformer = MinMaxScaler().fit(
                             _flatten([rrr for rrr in row.to_list()])
                         )
                         data = [[[rxrxrx] for rxrxrx in rrr] for rrr in row]
