@@ -302,7 +302,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
                     ts = ts.parallel_applymap(_zero_interpolation)
                 case "average_of_same_strategy":
                     ts = ts.parallel_applymap(_average_of_same_strategy_interpolation)
-        print(ts)
+        # print(ts)
         if rank_or_percentage == "dataset_normalized_percentages":
 
             def _flatten(xss):
@@ -313,7 +313,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
 
             def _dataset_normalized_percentages(row: pd.Series) -> pd.Series:
                 row = row.dropna()
-                print(row)
+                # print(row)
                 transformer = RobustScaler().fit(
                     _flatten([rrr for rrr in row.to_list()])
                 )
