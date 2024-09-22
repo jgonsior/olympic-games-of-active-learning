@@ -220,30 +220,6 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
                 )
                 print(ts)
 
-                if rank_or_percentage == "dataset_normalized_percentages":
-
-                    def _flatten(xss):
-                        return [[x] for xs in xss for x in xs]
-
-                    def _unflatten(xss):
-                        return [xs[0] for xs in xss]
-
-                    def _dataset_normalized_percentages(row: pd.Series) -> pd.Series:
-                        row = row.dropna()
-                        transformer = RobustScaler().fit(
-                            _flatten([rrr.tolist() for rrr in row.to_list()])
-                        )
-                        data = [[[rxrxrx] for rxrxrx in rrr] for rrr in row]
-                        result = [transformer.transform(rrr) for rrr in data]
-
-                        result = pd.Series(
-                            [_unflatten(rrr) for rrr in result], index=row.index
-                        )
-                        return result
-
-                    # ts = ts.parallel_apply(_dataset_normalized_percentages, axis=1)
-                    ts = ts.parallel_apply(_dataset_normalized_percentages, axis=1)
-
                 if grid_type == "sparse":
                     # remove combinations which are not sparse
                     def _count_sparse(cell):
@@ -308,6 +284,30 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
                             ts = ts.parallel_applymap(
                                 _average_of_same_strategy_interpolation
                             )
+
+                if rank_or_percentage == "dataset_normalized_percentages":
+
+                    def _flatten(xss):
+                        return [[x] for xs in xss for x in xs]
+
+                    def _unflatten(xss):
+                        return [xs[0] for xs in xss]
+
+                    def _dataset_normalized_percentages(row: pd.Series) -> pd.Series:
+                        row = row.dropna()
+                        transformer = RobustScaler().fit(
+                            _flatten([rrr.tolist() for rrr in row.to_list()])
+                        )
+                        data = [[[rxrxrx] for rxrxrx in rrr] for rrr in row]
+                        result = [transformer.transform(rrr) for rrr in data]
+
+                        result = pd.Series(
+                            [_unflatten(rrr) for rrr in result], index=row.index
+                        )
+                        return result
+
+                    # ts = ts.parallel_apply(_dataset_normalized_percentages, axis=1)
+                    ts = ts.parallel_apply(_dataset_normalized_percentages, axis=1)
                 ts = ts.parallel_applymap(np.mean)
                 # print(ts)
 

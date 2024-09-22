@@ -31,9 +31,11 @@ pandarallel.initialize(
 
 
 parquet_files = [
+    "final_leaderboard/dataset_normalized_percentages_sparse_zero_full_auc_weighted_f1-score.parquet",
+    "eee",
     "leaderboard_single_hyperparameter_influence/EXP_TRAIN_TEST_BUCKET_SIZE_kendall.parquet",
     "single_hyperparameter/EXP_TRAIN_TEST_BUCKET_SIZE/single_hyper_EXP_TRAIN_TEST_BUCKET_SIZE_full_auc_weighted_f1-score.parquet",
-    "eee",
+    # "eee",
     "leaderboard_single_hyperparameter_influence/EXP_START_POINT_kendall.parquet",
     "single_hyperparameter/EXP_START_POINT/single_hyper_EXP_START_POINT_full_auc_weighted_f1-score.parquet",
     "AUC/auc_weighted_f1-score.parquet",
@@ -74,6 +76,34 @@ for pf in parquet_files:
     corrmat_df = pd.read_parquet(config.OUTPUT_PATH / f"plots/{pf}")
 
     match pf:
+        case "final_leaderboard/dataset_normalized_percentages_sparse_zero_full_auc_weighted_f1-score.parquet":
+            set_seaborn_style(font_size=3)
+
+            print(corrmat_df)
+            plt.figure(figsize=_calculate_fig_size(3.57 * 2, heigh_bonus=1.2))
+
+            ax = sns.heatmap(
+                corrmat_df * 100,
+                annot=True,
+                fmt=".1f",
+                # vmin=0,
+                # vmax=100,
+                # cmap=cmap,
+                # square=True,
+            )
+            # ax = sns.heatmap(data_df, annot=True, fmt=".2%", vmin=0, vmax=1)
+            ax.tick_params(left=False, bottom=False, pad=-4)
+            # ax.set(title="", xlabel="AL cycle", ylabel="class weighted F1-score")
+            plt.legend([], [], frameon=False)
+            ax.set_xticklabels(ax.get_xticklabels(), rotation=30, ha="right")
+            # ax.set_yticklabels(ax.get_yticklabels(), rotation=30, ha="right")
+
+            plt.savefig(
+                config.OUTPUT_PATH / f"plots/{pf.split('.parquet')[0]}.pdf",
+                dpi=300,
+                bbox_inches="tight",
+                pad_inches=0,
+            )
         case "single_learning_curve/weighted_f1-score.parquet":
             set_seaborn_style(font_size=7)
 

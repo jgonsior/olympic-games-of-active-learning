@@ -372,6 +372,10 @@ def save_correlation_plot(
     keys = [renaming_dict[kkk] if kkk in renaming_dict else kkk for kkk in keys]
     keys = [kkk.lower() if type(kkk) == str else kkk for kkk in keys]
     keys = [kkk.replace("f1", "F1") if type(kkk) == str else kkk for kkk in keys]
+    keys = [
+        kkk.replace("class weighted", "class-weighted") if type(kkk) == str else kkk
+        for kkk in keys
+    ]
 
     if "EXP_STRATEGY" in title:
         rotation = 45
