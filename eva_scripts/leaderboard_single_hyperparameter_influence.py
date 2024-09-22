@@ -302,7 +302,7 @@ for hyperparameter_to_evaluate in hyperparameters_to_evaluate:
                     ts = ts.parallel_applymap(_zero_interpolation)
                 case "average_of_same_strategy":
                     ts = ts.parallel_applymap(_average_of_same_strategy_interpolation)
-
+        print(ts)
         if rank_or_percentage == "dataset_normalized_percentages":
 
             def _flatten(xss):
