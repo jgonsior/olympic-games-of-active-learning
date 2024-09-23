@@ -261,13 +261,16 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
                         print(
                             f"plots/final_leaderboard/{rank_or_percentage}_{grid_type}_{interpolation}_{standard_metric}"
                         )
+                        print("row")
                         print(row)
 
                         transformer = MinMaxScaler().fit(
                             _flatten([rrr for rrr in row.to_list()])
                         )
                         data = [[[rxrxrx] for rxrxrx in rrr] for rrr in row]
+                        print("data")
                         print(data)
+                        # print(np.shape(data))
                         result = [transformer.transform(rrr) for rrr in data]
 
                         result = pd.Series(
@@ -276,7 +279,7 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
                         return result
 
                     # ts = ts.parallel_apply(_dataset_normalized_percentages, axis=1)
-                    ts = ts.parallel_apply(_dataset_normalized_percentages, axis=1)
+                    ts = ts.apply(_dataset_normalized_percentages, axis=1)
                 ts = ts.parallel_applymap(np.mean)
 
                 if rank_or_percentage == "rank":
