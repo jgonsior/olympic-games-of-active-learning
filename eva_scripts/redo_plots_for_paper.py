@@ -32,7 +32,7 @@ pandarallel.initialize(
 
 parquet_files = [
     "final_leaderboard/dataset_normalized_percentages_sparse_zero_full_auc_weighted_f1-score.parquet",
-    # "eee",
+    "eee",
     "leaderboard_single_hyperparameter_influence/EXP_TRAIN_TEST_BUCKET_SIZE_kendall.parquet",
     "single_hyperparameter/EXP_TRAIN_TEST_BUCKET_SIZE/single_hyper_EXP_TRAIN_TEST_BUCKET_SIZE_full_auc_weighted_f1-score.parquet",
     # "eee",
@@ -77,17 +77,26 @@ for pf in parquet_files:
 
     match pf:
         case "final_leaderboard/dataset_normalized_percentages_sparse_zero_full_auc_weighted_f1-score.parquet":
-            set_seaborn_style(font_size=3)
+            set_seaborn_style(font_size=3.5)
 
             print(corrmat_df)
-            plt.figure(figsize=_calculate_fig_size(3.57 * 2, heigh_bonus=1.2))
+            plt.figure(figsize=_calculate_fig_size(3.57 * 2, heigh_bonus=1.35))
+
+            def sort_index(index: np.ndarray):
+                print(index)
+                index = [iii.lower() if iii != "Total" else "zzz" for iii in index]
+                print(index)
+                return index
+
+            corrmat_df = corrmat_df.sort_index(axis=0, key=sort_index)
 
             ax = sns.heatmap(
                 corrmat_df * 100,
                 annot=True,
                 fmt=".1f",
-                # vmin=0,
-                # vmax=100,
+                cbar_kws={"shrink": 0.3},
+                vmin=0,
+                vmax=100,
                 # cmap=cmap,
                 # square=True,
             )
