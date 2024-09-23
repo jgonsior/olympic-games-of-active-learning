@@ -271,6 +271,11 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
                         print("data")
                         print(data)
                         # print(np.shape(data))
+
+                        for rrr in data:
+                            print(rrr)
+                            t = transformer.transform(rrr)
+
                         result = [transformer.transform(rrr) for rrr in data]
 
                         result = pd.Series(
