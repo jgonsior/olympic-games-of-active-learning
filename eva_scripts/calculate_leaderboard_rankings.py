@@ -273,7 +273,7 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
                         # print(np.shape(data))
 
                         result = [
-                            transformer.transform(rrr) if len(rrr) is not 0 else []
+                            transformer.transform(rrr) if len(rrr) != 0 else []
                             for rrr in data
                         ]
 
