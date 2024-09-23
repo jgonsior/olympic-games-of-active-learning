@@ -258,6 +258,8 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
 
                     def _dataset_normalized_percentages(row: pd.Series) -> pd.Series:
                         row = row.dropna()
+                        print(row)
+
                         transformer = MinMaxScaler().fit(
                             _flatten([rrr for rrr in row.to_list()])
                         )
