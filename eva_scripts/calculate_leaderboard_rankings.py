@@ -272,11 +272,10 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
                         print(data)
                         # print(np.shape(data))
 
-                        for rrr in data:
-                            print(rrr)
-                            t = transformer.transform(rrr)
-
-                        result = [transformer.transform(rrr) for rrr in data]
+                        result = [
+                            transformer.transform(rrr) if len(rrr) is not 0 else []
+                            for rrr in data
+                        ]
 
                         result = pd.Series(
                             [_unflatten(rrr) for rrr in result], index=row.index
@@ -284,7 +283,7 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
                         return result
 
                     # ts = ts.parallel_apply(_dataset_normalized_percentages, axis=1)
-                    ts = ts.apply(_dataset_normalized_percentages, axis=1)
+                    ts = ts.parallel_apply(_dataset_normalized_percentages, axis=1)
                 ts = ts.parallel_applymap(np.mean)
 
                 if rank_or_percentage == "rank":
