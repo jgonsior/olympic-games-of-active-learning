@@ -258,6 +258,9 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
 
                     def _dataset_normalized_percentages(row: pd.Series) -> pd.Series:
                         row = row.dropna()
+                        print(
+                            f"plots/final_leaderboard/{rank_or_percentage}_{grid_type}_{interpolation}_{standard_metric}"
+                        )
                         print(row)
 
                         transformer = MinMaxScaler().fit(
