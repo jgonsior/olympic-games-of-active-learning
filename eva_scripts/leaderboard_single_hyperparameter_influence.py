@@ -30,8 +30,10 @@ pandarallel.initialize(
 
 default_standard_metric = "full_auc_weighted_f1-score"
 grid_type = "sparse"  # dense is not supported by this script!
-rank_or_percentage = "dataset_normalized_percentages"
-interpolation = "average_of_same_strategy"
+# rank_or_percentage = "dataset_normalized_percentages"
+rank_or_percentage = "rank"
+# interpolation = "average_of_same_strategy"
+interpolation = "zero"
 
 hyperparameters_to_evaluate = [
     "standard_metric",
