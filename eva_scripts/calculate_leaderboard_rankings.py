@@ -267,6 +267,7 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
                             _flatten([rrr for rrr in row.to_list()])
                         )
                         data = [[[rxrxrx] for rxrxrx in rrr] for rrr in row]
+                        print(data)
                         result = [transformer.transform(rrr) for rrr in data]
 
                         result = pd.Series(
