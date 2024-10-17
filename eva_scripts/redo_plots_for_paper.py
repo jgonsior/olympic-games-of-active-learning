@@ -31,8 +31,13 @@ pandarallel.initialize(
 
 
 parquet_files = [
-    "final_leaderboard/dataset_normalized_percentages_sparse_zero_full_auc_weighted_f1-score.parquet",
+    "basic_metrics/Standard Metrics.parquet",
     "eee",
+    "final_leaderboard/rank_sparse_zero_full_auc_weighted_f1-score.parquet",
+    # "final_leaderboard/dataset_normalized_percentages_sparse_zero_full_auc_weighted_f1-score.parquet",
+    "leaderboard_single_hyperparameter_influence/EXP_LEARNER_MODEL_kendall.parquet",
+    "single_hyperparameter/EXP_LEARNER_MODEL/single_hyper_EXP_LEARNER_MODEL_full_auc_weighted_f1-score.parquet",
+    "single_hyperparameter/EXP_LEARNER_MODEL/single_indice_EXP_LEARNER_MODEL_full_auc__selected_indices_jaccard.parquet",
     "leaderboard_single_hyperparameter_influence/EXP_TRAIN_TEST_BUCKET_SIZE_kendall.parquet",
     "single_hyperparameter/EXP_TRAIN_TEST_BUCKET_SIZE/single_hyper_EXP_TRAIN_TEST_BUCKET_SIZE_full_auc_weighted_f1-score.parquet",
     # "eee",
@@ -40,13 +45,9 @@ parquet_files = [
     "single_hyperparameter/EXP_START_POINT/single_hyper_EXP_START_POINT_full_auc_weighted_f1-score.parquet",
     "AUC/auc_weighted_f1-score.parquet",
     "leaderboard_invariances/leaderboard_types_kendall.parquet",
-    "basic_metrics/Standard Metrics.parquet",
     "leaderboard_single_hyperparameter_influence/standard_metric_kendall.parquet",
     "leaderboard_single_hyperparameter_influence/auc_metric_kendall.parquet",
     #  "framework_al_strat_correlation.parquet",
-    "leaderboard_single_hyperparameter_influence/EXP_LEARNER_MODEL_kendall.parquet",
-    "single_hyperparameter/EXP_LEARNER_MODEL/single_hyper_EXP_LEARNER_MODEL_full_auc_weighted_f1-score.parquet",
-    "single_hyperparameter/EXP_LEARNER_MODEL/single_indice_EXP_LEARNER_MODEL_full_auc__selected_indices_jaccard.parquet",
     # "eee",
     "single_hyperparameter/EXP_STRATEGY/single_hyper_EXP_STRATEGY_full_auc_weighted_f1-score.parquet",
     "single_hyperparameter/EXP_STRATEGY/single_indice_EXP_STRATEGY_full_auc__selected_indices_jaccard.parquet",
@@ -76,7 +77,8 @@ for pf in parquet_files:
     corrmat_df = pd.read_parquet(config.OUTPUT_PATH / f"plots/{pf}")
 
     match pf:
-        case "final_leaderboard/dataset_normalized_percentages_sparse_zero_full_auc_weighted_f1-score.parquet":
+        # case "final_leaderboard/dataset_normalized_percentages_sparse_zero_full_auc_weighted_f1-score.parquet":
+        case "final_leaderboard/rank_sparse_zero_full_auc_weighted_f1-score.parquet":
             set_seaborn_style(font_size=3.5)
 
             print(corrmat_df)
@@ -91,12 +93,12 @@ for pf in parquet_files:
             corrmat_df = corrmat_df.sort_index(axis=0, key=sort_index)
 
             ax = sns.heatmap(
-                corrmat_df * 100,
+                corrmat_df,
                 annot=True,
-                fmt=".1f",
+                # fmt=".1f",
                 cbar_kws={"shrink": 0.3},
-                vmin=0,
-                vmax=100,
+                # vmin=0,
+                # vmax=100,
                 # cmap=cmap,
                 # square=True,
             )

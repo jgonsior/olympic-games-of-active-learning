@@ -367,6 +367,7 @@ def save_correlation_plot(
         "plateau_auc_weighted_f1-score": "Plateau",
         "full_auc_weighted_f1-score": "Full Mean",
         "gold standard": "ZGold Standard",
+        "class-weighted macro F1-score": "class-weighted F1-score",
     }
 
     keys = [renaming_dict[kkk] if kkk in renaming_dict else kkk for kkk in keys]
@@ -402,7 +403,12 @@ def save_correlation_plot(
                 for kkk in keys
             ]
         except:
-            renaming_dict = {"mlp": "MLP", "rf": "RF", "svm (rbf)": "SVM (RBF)"}
+            renaming_dict = {
+                "mlp": "MLP",
+                "rf": "RF",
+                "svm (rbf)": "SVM (RBF)",
+                "rbf_svm": "SVM (RBF)",
+            }
 
             keys = [renaming_dict[kkk] if kkk in renaming_dict else kkk for kkk in keys]
     elif "framework_al_strat" in title:
