@@ -315,13 +315,15 @@ def save_correlation_plot(
         keys = [kkk.removeprefix("full_auc_") for kkk in keys]
         keys = [kkk.replace("Full Mean", "Class Weighted F1-Score") for kkk in keys]
     elif "AUC/auc_weighted_f1-score" in title:
-        keys = [kkk.replace("class weighted F1-Score", "full_auc") for kkk in keys]
+        keys = [kkk.replace("class-weighted F1-score", "full mean") for kkk in keys]
+        keys = [kkk.replace("full_auc", "full mean") for kkk in keys]
         keys = [kkk.replace("_weighted_F1-score", "") for kkk in keys]
         keys = [kkk.replace("_weighted_F1-score", "") for kkk in keys]
         keys = [kkk.replace("_weighted_F1-score", "") for kkk in keys]
 
         if not "first 5" in keys:
             keys = [f"{kkk}_weighted_f1-score" for kkk in keys]
+
     elif "basic_metrics/Standard Metrics" in title:
         keys = [kkk.replace("F1-score", "macro F1-score") for kkk in keys]
         keys = [

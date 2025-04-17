@@ -31,8 +31,10 @@ pandarallel.initialize(
 
 
 parquet_files = [
-    "basic_metrics/Standard Metrics.parquet",
+    "runtime/query_selection_time.parquet",
     "eee",
+    "AUC/auc_weighted_f1-score.parquet",
+    "basic_metrics/Standard Metrics.parquet",
     "final_leaderboard/rank_sparse_zero_full_auc_weighted_f1-score.parquet",
     # "final_leaderboard/dataset_normalized_percentages_sparse_zero_full_auc_weighted_f1-score.parquet",
     "leaderboard_single_hyperparameter_influence/EXP_LEARNER_MODEL_kendall.parquet",
@@ -43,7 +45,6 @@ parquet_files = [
     # "eee",
     "leaderboard_single_hyperparameter_influence/EXP_START_POINT_kendall.parquet",
     "single_hyperparameter/EXP_START_POINT/single_hyper_EXP_START_POINT_full_auc_weighted_f1-score.parquet",
-    "AUC/auc_weighted_f1-score.parquet",
     "leaderboard_invariances/leaderboard_types_kendall.parquet",
     "leaderboard_single_hyperparameter_influence/standard_metric_kendall.parquet",
     "leaderboard_single_hyperparameter_influence/auc_metric_kendall.parquet",
@@ -58,7 +59,6 @@ parquet_files = [
     # "error",
     "leaderboard_single_hyperparameter_influence/EXP_DATASET_kendall.parquet",
     "single_learning_curve/single_exemplary_learning_curve.parquet",
-    "runtime/query_selection_time.parquet",
     "single_hyperparameter/EXP_DATASET/single_hyper_EXP_DATASET_full_auc_weighted_f1-score.parquet",
     "single_learning_curve/weighted_f1-score.parquet",
     "leaderboard_single_hyperparameter_influence/min_hyper_reduction_EXP_START_POINT_kendall.parquet",
