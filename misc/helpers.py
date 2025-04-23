@@ -553,8 +553,9 @@ def save_correlation_plot(
 
     if rotation is not False:
         # plt.xticks(rotation=rotation)
-        ax.set_xticklabels(ax.get_xticklabels(), rotation=rotation, ha="right")
-        # ax.tick_params(axis="x", labelrotation=rotation)
+        ax.set_xticklabels(
+            ax.get_xticklabels(), rotation=rotation, ha="right", rotation_mode="anchor"
+        )
 
     plt.savefig(
         result_folder / f"{title}.jpg",

@@ -1,14 +1,16 @@
+import enum
 from itertools import combinations
 import multiprocessing
 import subprocess
 import sys
 from typing import Literal
 from matplotlib import pyplot as plt, ticker
+from matplotlib.legend_handler import HandlerTuple
 from scipy.stats import kendalltau
 import numpy as np
 import pandas as pd
 from pathlib import Path
-
+import matplotlib.patches as mpatches
 from misc.helpers import (
     _calculate_fig_size,
     create_fingerprint_joined_timeseries_csv_files,
@@ -106,8 +108,9 @@ for pf in parquet_files:
             ax.tick_params(left=False, bottom=False, pad=-4)
             # ax.set(title="", xlabel="AL cycle", ylabel="class weighted F1-score")
             plt.legend([], [], frameon=False)
-            ax.set_xticklabels(ax.get_xticklabels(), rotation=30, ha="right")
-            # ax.set_yticklabels(ax.get_yticklabels(), rotation=30, ha="right")
+            ax.set_xticklabels(
+                ax.get_xticklabels(), rotation=30, ha="right", rotation_mode="anchor"
+            )
 
             plt.savefig(
                 config.OUTPUT_PATH / f"plots/{pf.split('.parquet')[0]}.pdf",
@@ -208,8 +211,8 @@ for pf in parquet_files:
                 rotation=30,
             )
         case "runtime/query_selection_time.parquet":
-            set_seaborn_style(font_size=7)
-            plt.figure(figsize=_calculate_fig_size(3.57, heigh_bonus=0.9))
+            set_seaborn_style(font_size=6)
+            plt.figure(figsize=_calculate_fig_size(3.57 * 2, heigh_bonus=0.4))
 
             ax = sns.barplot(
                 data=corrmat_df, x="EXP_STRATEGY", y="mean", hue="EXP_STRATEGY"
@@ -228,13 +231,51 @@ for pf in parquet_files:
             ax.set_ylim(0, 260)
             ax.set(ylabel="Mean Duration of AL cycle in seconds")
 
-            ax.set_xticklabels(ax.get_xticklabels(), rotation=90, ha="right")
+            ax.set_xticklabels(
+                ax.get_xticklabels(), rotation=30, ha="right", rotation_mode="anchor"
+            )
 
             xs = []
             for container in ax.containers:
                 ax.bar_label(container, padding=1, fmt="%.2f", rotation=90)
 
                 xs.append(container.datavalues[0])
+
+            # Define some hatches
+            hatches = {
+                "ALI": "//",
+                "SM": "oo",
+                "LIB": "\\\\",
+                "SKA": "..",
+                "OG": "++",
+            }
+
+            for x_tick_label, (i, thisbar) in zip(
+                ax.get_xticklabels(), enumerate(ax.patches)
+            ):
+                print(thisbar)
+                print(x_tick_label.get_text())
+                # Set a different hatch for each bar
+                if "(" in x_tick_label.get_text():
+                    framework_name = x_tick_label.get_text().split("(")[1][:-1]
+                else:
+                    framework_name = "OG"
+                thisbar.set_hatch(hatches[framework_name])
+
+            legend_hatches = []
+            for k, v in hatches.items():
+                legend_hatches.append(
+                    mpatches.Patch(facecolor="#222222", alpha=0.6, hatch=v, label=k)
+                )
+
+            ax.legend(
+                handles=legend_hatches,
+                loc=2,
+                handleheight=4,
+                handlelength=1.4,
+                ncol=len(legend_hatches),
+                columnspacing=0.8,
+            )
 
             plt.savefig(
                 config.OUTPUT_PATH / f"plots/{pf.split('.parquet')[0]}.pdf",
