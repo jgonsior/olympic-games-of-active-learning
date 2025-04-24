@@ -215,7 +215,9 @@ for pf in parquet_files:
             plt.figure(figsize=_calculate_fig_size(3.57 * 2, heigh_bonus=0.4))
 
             ax = sns.barplot(
-                data=corrmat_df, x="EXP_STRATEGY", y="mean", hue="EXP_STRATEGY"
+                data=corrmat_df,
+                x="EXP_STRATEGY",
+                y="mean",  # hue="EXP_STRATEGY"
             )
             ax.set(xlabel=None)
             ax.set_yscale("log")
@@ -243,11 +245,11 @@ for pf in parquet_files:
 
             # Define some hatches
             hatches = {
-                "ALI": "//",
-                "SM": "oo",
-                "LIB": "\\\\",
-                "SKA": "..",
-                "OG": "++",
+                "ALI": "////",
+                "SM": "----",
+                "LIB": "\\\\\\\\",
+                "SKA": "...",
+                "OG": "+++",
             }
 
             for x_tick_label, (i, thisbar) in zip(
@@ -265,7 +267,7 @@ for pf in parquet_files:
             legend_hatches = []
             for k, v in hatches.items():
                 legend_hatches.append(
-                    mpatches.Patch(facecolor="#222222", alpha=0.6, hatch=v, label=k)
+                    mpatches.Patch(facecolor="#3173a1", alpha=1, hatch=v, label=k)
                 )
 
             ax.legend(
