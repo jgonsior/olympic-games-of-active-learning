@@ -12,8 +12,9 @@ HPC Cluster installation instructions:
 
 ```bash# https://stackoverflow.com/a/71110028
 # replace $WS_URL with the url of the workspace
-module load Anaconda3
-sh $EBROOTANACONDA3/etc/profile.d/conda.sh
+module load release/25.06
+module load Anaconda3/2025.06-1
+source $EBROOTANACONDA3/etc/profile.d/conda.sh
 conda create --prefix $WS_URL/conda-env --file conda-linux-64.lock
 conda activate $WS_URL/conda-env
 poetry install

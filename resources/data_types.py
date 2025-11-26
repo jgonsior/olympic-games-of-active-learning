@@ -381,6 +381,9 @@ class LEARNER_MODEL(IntEnum):
     LOG_REG = 10
     SVM_LIBACT = 11
     LR = 12
+    DEEP_LEARNING2=13
+    DEEP_LEARNING3=14
+
 
 
 learner_models_to_classes_mapping: Dict[
@@ -415,6 +418,30 @@ learner_models_to_classes_mapping: Dict[
         MLPClassifier,
         {
             "hidden_layer_sizes": (100,),
+            "activation": "relu",
+            "solver": "adam",
+            "learning_rate": "adaptive",
+            "max_iter": 1000,
+            "warm_start": False,
+            "early_stopping": False,
+        },
+    ),  # default values
+    LEARNER_MODEL.DEEP_LEARNING2: (
+        MLPClassifier,
+        {
+            "hidden_layer_sizes": (100,100,100),
+            "activation": "relu",
+            "solver": "adam",
+            "learning_rate": "adaptive",
+            "max_iter": 1000,
+            "warm_start": False,
+            "early_stopping": False,
+        },
+    ),  # default values
+    LEARNER_MODEL.DEEP_LEARNING3: (
+        MLPClassifier,
+        {
+            "hidden_layer_sizes": (100,100,100,100,100,100),
             "activation": "relu",
             "solver": "adam",
             "learning_rate": "adaptive",

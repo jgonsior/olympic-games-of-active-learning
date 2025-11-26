@@ -1,14 +1,15 @@
+import glob
 import multiprocessing
 from pathlib import Path
 from typing import Any, Dict
 
 import numpy as np
-import yaml
-from misc.config import Config
-import glob
 import pandas as pd
-from tabulate import tabulate
+import yaml
 from sklearn.metrics import pairwise_distances
+from tabulate import tabulate
+
+from misc.config import Config
 
 config = Config()
 
@@ -123,6 +124,7 @@ for dataset_csv in list(glob.glob(str(config.DATASETS_PATH) + "/*.csv")):
         ]
     )
 data_df = pd.DataFrame(data)
+print(data_df)
 data_df.set_index(0, inplace=True)
 data_df.sort_index(axis=0, inplace=True)
 print(tabulate(data_df, tablefmt="fancy_grid"))
