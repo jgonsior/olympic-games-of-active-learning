@@ -13,6 +13,7 @@ pandarallel.initialize(
     nb_workers=multiprocessing.cpu_count(), progress_bar=True, use_memory_fs=False
 )
 config = Config()
+
 dataset_dependend_thresholds_df = pd.read_csv(
     config.DATASET_DEPENDENT_RANDOM_RAMP_PLATEAU_THRESHOLD_PATH
 )

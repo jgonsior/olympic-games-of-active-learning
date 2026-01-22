@@ -1,12 +1,13 @@
-from itertools import combinations
 import multiprocessing
 import subprocess
 import sys
+from itertools import combinations
+from pathlib import Path
 from typing import Literal
-from scipy.stats import kendalltau
+
 import numpy as np
 import pandas as pd
-from pathlib import Path
+from scipy.stats import kendalltau
 
 from misc.helpers import (
     create_fingerprint_joined_timeseries_csv_files,
@@ -19,6 +20,7 @@ sys.dont_write_bytecode = True
 from misc.config import Config
 
 config = Config()
+
 from pandarallel import pandarallel
 
 pandarallel.initialize(
@@ -37,10 +39,10 @@ for auc_prefix in [
 ]:
     log_and_time(f"Calculating for {standard_metric}")
     targets_to_evaluate = [
-        "EXP_STRATEGY",  # gibt es strategie ähnlichkeiten?
+        # "EXP_STRATEGY",  # gibt es strategie ähnlichkeiten?
         "EXP_LEARNER_MODEL",  # gibt es ähnlichkeiten zwischen den learner modellen?
-        "EXP_START_POINT",  # wurden vom selben startpunkt ausgehend diesselben datenpunkte ausgewählt?
-        "EXP_BATCH_SIZE",
+        # "EXP_START_POINT",  # wurden vom selben startpunkt ausgehend diesselben datenpunkte ausgewählt?
+        # "EXP_BATCH_SIZE",
         # "EXP_DATASET",
         # "EXP_TRAIN_TEST_BUCKET_SIZE",
         # "EXP_START_POINT",
@@ -64,6 +66,7 @@ for auc_prefix in [
             unsorted_f.unlink()
         print(unparqueted_f)
         log_and_time("sorted, now parqueting")
+
         ts = pd.read_csv(
             unparqueted_f,
             header=None,
@@ -81,6 +84,7 @@ for auc_prefix in [
                 "metric_value",
             ],
         )
+
         print(ts["metric_value"])
         ts["metric_value"] = ts["metric_value"].apply(
             lambda xxx: (

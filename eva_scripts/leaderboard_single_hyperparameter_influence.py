@@ -2,11 +2,11 @@ import multiprocessing
 import random
 import subprocess
 import sys
+from pathlib import Path
 from typing import Dict
+
 import numpy as np
 import pandas as pd
-from pathlib import Path
-
 import scipy
 from sklearn.preprocessing import MinMaxScaler, RobustScaler
 
@@ -38,11 +38,11 @@ interpolation = "zero"
 hyperparameters_to_evaluate = [
     "standard_metric",
     "EXP_LEARNER_MODEL",
-    "EXP_BATCH_SIZE",
-    "EXP_DATASET",
-    "EXP_TRAIN_TEST_BUCKET_SIZE",
-    "EXP_START_POINT",
-    "auc_metric",
+    #"EXP_BATCH_SIZE",
+    #"EXP_DATASET",
+    #"EXP_TRAIN_TEST_BUCKET_SIZE",
+    #"EXP_START_POINT",
+    #"auc_metric",
 ]
 
 

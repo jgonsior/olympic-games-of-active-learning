@@ -1,5 +1,4 @@
 import seaborn as sns
-
 from matplotlib import pyplot as plt
 
 from resources.data_types import AL_STRATEGY, LEARNER_MODEL
@@ -99,7 +98,7 @@ def _rename_strategy(al_strat: str) -> str:
         AL_STRATEGY.SMALLTEXT_EMBEDDINGKMEANS: "EKM (SM)",
         AL_STRATEGY.SMALLTEXT_DISCRIMINATIVEAL: "DAL (SM)",
         AL_STRATEGY.SMALLTEXT_GREEDYCORESET: "Core (SM)",
-        # AL_STRATEGY.SMALLTEXT_LIGHTWEIGHTCORESET: "Lightweight Greedy Coreset (SM)",
+        AL_STRATEGY.SMALLTEXT_LIGHTWEIGHTCORESET: "Lightweight Greedy Coreset (SM)",
         AL_STRATEGY.SMALLTEXT_CONTRASTIVEAL: "CAL (SM)",
         AL_STRATEGY.SMALLTEXT_RANDOM: "Rand (SM)",
         AL_STRATEGY.SKACTIVEML_QBC: "QBC KL (SKA)",
@@ -120,12 +119,14 @@ def _rename_strategy(al_strat: str) -> str:
 def _rename_learner_model(learner_model: str) -> str:
     if learner_model == "Gold Standard":
         return "Gold Standard"
-    learner_model = LEARNER_MODEL[learner_model]
+    learner_model = LEARNER_MODEL(int(learner_model))
 
     renaming_dict = {
-        LEARNER_MODEL.MLP: "MLP",
+        LEARNER_MODEL.MLP: "MLP (1 layer)",
         LEARNER_MODEL.RBF_SVM: "SVM (RBF)",
         LEARNER_MODEL.RF: "RF",
+        LEARNER_MODEL.DEEP_LEARNING2: "MLP (3 layer)",
+        LEARNER_MODEL.DEEP_LEARNING3: "MLP (6 layer)",
     }
 
     return renaming_dict[learner_model]

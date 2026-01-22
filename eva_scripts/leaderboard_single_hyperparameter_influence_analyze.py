@@ -1,18 +1,20 @@
+import ast
 import multiprocessing
 import sys
-from matplotlib import pyplot as plt
+from pathlib import Path
+
+import matplotlib as mpl
+import matplotlib.ticker as ticker
 import numpy as np
 import pandas as pd
-from pathlib import Path
-import matplotlib as mpl
 import scipy
+import seaborn as sns
+from matplotlib import pyplot as plt
+
 from datasets import DATASET
 from misc.helpers import _calculate_fig_size
 from misc.plotting import _rename_strategy, set_matplotlib_size, set_seaborn_style
 from resources.data_types import LEARNER_MODEL
-import seaborn as sns
-import ast
-import matplotlib.ticker as ticker
 
 sys.dont_write_bytecode = True
 
@@ -32,14 +34,14 @@ if combined_plot:
         # "adv_start_scenario",
         # "start_point_scenario",
         # "dataset_scenario",
-        "standard_metric",
+        #"standard_metric",
         # "EXP_STRATEGY",
         "EXP_LEARNER_MODEL",
-        "EXP_BATCH_SIZE",
+        #"EXP_BATCH_SIZE",
         # "EXP_DATASET",
-        "EXP_TRAIN_TEST_BUCKET_SIZE",
+        #"EXP_TRAIN_TEST_BUCKET_SIZE",
         # "EXP_START_POINT",
-        "auc_metric",
+        #"auc_metric",
     ]
 
     rankings_df: pd.DataFrame = pd.DataFrame()
@@ -185,14 +187,14 @@ hyperparameters_to_evaluate = [
     # "adv_start_scenario",
     # "dataset_scenario",
     # "start_point_scenario",
-    "standard_metric",
+    #"standard_metric",
     # "EXP_STRATEGY",
-    "EXP_START_POINT",
+    #"EXP_START_POINT",
     "EXP_LEARNER_MODEL",
-    "EXP_BATCH_SIZE",
-    "EXP_DATASET",
-    "EXP_TRAIN_TEST_BUCKET_SIZE",
-    "auc_metric",
+    #"EXP_BATCH_SIZE",
+    #"EXP_DATASET",
+    #"EXP_TRAIN_TEST_BUCKET_SIZE",
+    #"auc_metric",
 ]
 
 hyperparameter_to_evaluate_addendum = False

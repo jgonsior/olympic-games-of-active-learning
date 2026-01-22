@@ -1,20 +1,23 @@
-from pathlib import Path
+import glob
+import multiprocessing
 import subprocess
 import sys
-import glob
+from pathlib import Path
+
 import pandas as pd
+
 from misc.helpers import (
     create_fingerprint_joined_timeseries_csv_files,
     log_and_time,
     save_correlation_plot,
 )
-import multiprocessing
 
 sys.dont_write_bytecode = True
 
-from misc.config import Config
 import numpy as np
 from pandarallel import pandarallel
+
+from misc.config import Config
 
 pandarallel.initialize(nb_workers=multiprocessing.cpu_count(), progress_bar=True)
 config = Config()
@@ -100,6 +103,7 @@ for standard_metric in [
         standard_metrics.remove(standard_metric)
 
         for sm in standard_metrics:
+            print(config.CORRELATION_TS_PATH / f"{sm}.parquet")
             ts = pd.read_parquet(
                 config.CORRELATION_TS_PATH / f"{sm}.parquet",
                 columns=["EXP_UNIQUE_ID_ix"],

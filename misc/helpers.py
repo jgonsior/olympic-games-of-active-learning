@@ -1,23 +1,25 @@
 import ast
 import csv
-from datetime import timedelta
 import glob
-from itertools import combinations
-from math import e
 import multiprocessing
 import sys
+from datetime import timedelta
+from itertools import combinations
+from math import e
+from pathlib import Path
+from timeit import default_timer as timer
 from typing import Any, Callable, Dict, List, Optional
+
+import numpy as np
+import pandas as pd
+import scipy
+import scipy.stats
+import seaborn as sns
 from jinja2 import Template
 from joblib import Parallel, delayed
 from matplotlib import pyplot as plt
 from natsort import natsort_keygen, natsorted
-import numpy as np
-import pandas as pd
-from pathlib import Path
-from timeit import default_timer as timer
 
-import scipy
-import scipy.stats
 from datasets import DATASET
 from misc.config import Config
 from misc.plotting import (
@@ -26,8 +28,6 @@ from misc.plotting import (
     set_matplotlib_size,
     set_seaborn_style,
 )
-import seaborn as sns
-
 from resources.data_types import AL_STRATEGY, LEARNER_MODEL
 
 
@@ -80,6 +80,10 @@ def get_glob_list(
     limit: str = "**/*",
     ignore_original_workloads=True,
 ) -> List[Path]:
+    print(limit)
+    print(limit)
+    print(limit)
+    print(limit)
     print(str(config.OUTPUT_PATH) + f"/{limit}.csv.xz")
     glob_list = [
         *[
@@ -269,7 +273,8 @@ def create_fingerprint_joined_timeseries_csv_files(
     for metric_name in metric_names:
         glob_list = [*glob_list, *get_glob_list(config, limit=f"**/{metric_name}")]
     glob_list = sorted(set(glob_list))
-    #  print(glob_list[:10])
+
+    print(glob_list[:10])
     #  print(glob_list[-10:])
 
     # remove those from glob list which already exist as timeseries
@@ -401,7 +406,7 @@ def save_correlation_plot(
     elif "EXP_LEARNER_MODEL" in title:
         try:
             keys = [
-                _rename_learner_model(kkk) if kkk is not "Gold Standard" else kkk
+                _rename_learner_model(int(kkk)) if kkk != "Gold Standard" else kkk
                 for kkk in keys
             ]
         except:
