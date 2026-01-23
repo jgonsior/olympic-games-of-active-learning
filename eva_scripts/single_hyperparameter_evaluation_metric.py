@@ -292,21 +292,29 @@ for standard_metric in standard_metrics:
 
             keys = [*limited_ts.keys()]
             print(corrcoef_cis)
+            print(corrmat)
+            # (exit - 1)
 
-            annot_lo_hi = np.zeros(corrcoef_cis[0].shape)
+            annot_lo_hi = np.copy(corrmat).astype(str)
 
-            print(annot_lo_hi)
-            # exit(-1)
+            for row_ix, col_ix in np.ndindex(annot_lo_hi.shape):
+                value = annot_lo_hi[row_ix][col_ix]
+                lower_bound = -(float(corrcoef_cis[1][row_ix][col_ix]) - float(value))
+                upper_bound = float(value) - float(corrcoef_cis[2][row_ix][col_ix])
 
+                if row_ix == col_ix:
+                    annot_lo_hi[row_ix][col_ix] = "100.0"
+                else:
+                    annot_lo_hi[row_ix][col_ix] = str(
+                        f"{float(value) * 100:.1f}$\pm${lower_bound * 100:.1f}"
+                    )
             save_correlation_plot(
                 data=corrcoef_cis[0],
-                title=f"single_hyperparameter/{target_to_evaluate}/single_hyper_{target_to_evaluate}_{standard_metric}",
+                title=f"single_hyperparameter/{target_to_evaluate}/single_hyper_{target_to_evaluate}_{standard_metric}_cis",
                 keys=keys,
                 config=config,
                 annot=annot_lo_hi,
             )
-
-            exit(-1)
 
             save_correlation_plot(
                 data=corrmat,

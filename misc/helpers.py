@@ -1,11 +1,9 @@
-import ast
 import csv
 import glob
 import multiprocessing
 import sys
 from datetime import timedelta
 from itertools import combinations
-from math import e
 from pathlib import Path
 from timeit import default_timer as timer
 from typing import Any, Callable, Dict, List, Optional
@@ -18,7 +16,6 @@ import seaborn as sns
 from jinja2 import Template
 from joblib import Parallel, delayed
 from matplotlib import pyplot as plt
-from natsort import natsort_keygen, natsorted
 
 from datasets import DATASET
 from misc.config import Config
@@ -28,7 +25,7 @@ from misc.plotting import (
     set_matplotlib_size,
     set_seaborn_style,
 )
-from resources.data_types import AL_STRATEGY, LEARNER_MODEL
+from resources.data_types import AL_STRATEGY
 
 
 def append_and_create(file_name: Path, content: Dict):
@@ -284,7 +281,7 @@ def create_fingerprint_joined_timeseries_csv_files(
     existent_ts_files = [
         ggg.split("/")[-1].split(".")[0] + ".csv.xz"
         for ggg in glob.glob(
-            str(config.CORRELATION_TS_PATH) + f"/*.parquet", recursive=True
+            str(config.CORRELATION_TS_PATH) + "/*.parquet", recursive=True
         )
     ]
     #  print(existent_ts_files[:10])
@@ -326,7 +323,7 @@ def save_correlation_plot(
         keys = [kkk.replace("_weighted_F1-score", "") for kkk in keys]
         keys = [kkk.replace("_weighted_F1-score", "") for kkk in keys]
 
-        if not "first 5" in keys:
+        if "first 5" not in keys:
             keys = [f"{kkk}_weighted_f1-score" for kkk in keys]
 
     elif "basic_metrics/Standard Metrics" in title:
@@ -420,12 +417,20 @@ def save_correlation_plot(
             keys = [renaming_dict[kkk] if kkk in renaming_dict else kkk for kkk in keys]
     elif "framework_al_strat" in title:
         keys = [kkk.upper() for kkk in keys]
-    result_folder = Path(config.OUTPUT_PATH / f"plots/")
+    result_folder = Path(config.OUTPUT_PATH / "plots/")
     result_folder.mkdir(parents=True, exist_ok=True)
 
     data_df = pd.DataFrame(data=data, columns=keys, index=keys)
     data_df = data_df.sort_index(axis=0)
     data_df = data_df.sort_index(axis=1)
+
+    if annot is not True:
+        # sort annot as well accordingly to annotation
+        annot_df = pd.DataFrame(data=annot, columns=keys, index=keys)
+        annot_df.sort_index(axis=0, inplace=True)
+        annot_df.sort_index(axis=1, inplace=True)
+
+        annot = annot_df.values
 
     data_df = data_df.rename({"zgold standard": "total grid"}, axis=0)
     data_df = data_df.rename({"zgold standard": "total grid"}, axis=1)
@@ -512,10 +517,19 @@ def save_correlation_plot(
         data_df = data_df.sort_index(axis=0, key=lambda x: x.map(custom_dict))
         data_df = data_df.sort_index(axis=1, key=lambda x: x.map(custom_dict))
         rotation = 30
+    elif "single_hyper_EXP_LEARNER_MODEL_full_auc_weighted_f1-score_cis" in title:
+        figsize = (8, 6)  # _calculate_fig_size(5 * 7.1413)
+        set_seaborn_style(font_size=16)
+        rotation = 90
+
     else:
         figsize = set_matplotlib_size(fraction=len(keys) / 12)
-    plt.figure(figsize=figsize)
 
+    nrows, ncols = data_df.shape
+    fig, ax = plt.subplots(
+        figsize=(max(8, ncols * 0.6), max(6, nrows * 0.55)), constrained_layout=False
+    )
+    set_seaborn_style(font_size=32)
     data_df = data_df * 100
     print(annot)
 
@@ -541,6 +555,7 @@ def save_correlation_plot(
     else:
         fmt = ".1f"
 
+    font_size = 16
     ax = sns.heatmap(
         data_df,
         annot=annot,
@@ -550,9 +565,19 @@ def save_correlation_plot(
         vmax=100,
         cmap=cmap,
         # square=True,
+        annot_kws={"size": font_size},
+        # linewidths=0.5,
     )
     # ax = sns.heatmap(data_df, annot=True, fmt=".2%", vmin=0, vmax=1)
     ax.tick_params(left=False, bottom=False, pad=-4)
+
+    ax.tick_params(axis="both", labelsize=font_size)
+    ax.set_xlabel(ax.get_xlabel(), fontsize=font_size)
+    ax.set_ylabel(ax.get_ylabel(), fontsize=font_size)
+    cbar = ax.collections[0].colorbar
+    cbar.ax.tick_params(labelsize=font_size)
+
+    fig.subplots_adjust(bottom=0.38, left=0.38)
 
     ax.set_title("")
 
@@ -560,6 +585,9 @@ def save_correlation_plot(
         # plt.xticks(rotation=rotation)
         ax.set_xticklabels(
             ax.get_xticklabels(), rotation=rotation, ha="right", rotation_mode="anchor"
+        )
+        ax.set_yticklabels(
+            ax.get_yticklabels(), rotation=0, ha="right", rotation_mode="anchor"
         )
 
     plt.savefig(

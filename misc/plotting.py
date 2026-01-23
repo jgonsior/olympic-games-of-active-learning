@@ -7,7 +7,7 @@ from resources.data_types import AL_STRATEGY, LEARNER_MODEL
 def set_seaborn_style(font_size=5.8):
     tex_fonts = {
         # Use LaTeX to write all text
-        "text.usetex": False,
+        "text.usetex": True,
         "font.family": "Times New Roman",
         # Use 10pt font in plots, to match 10pt font in document
         "axes.labelsize": font_size,
