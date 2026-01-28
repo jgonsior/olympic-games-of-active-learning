@@ -2,14 +2,16 @@ import csv
 import multiprocessing
 import subprocess
 import sys
-from matplotlib import pyplot as plt
+from pathlib import Path
+
+import matplotlib as mpl
 import numpy as np
 import pandas as pd
-from pathlib import Path
-from sklearn.discriminant_analysis import StandardScaler
-from sklearn.preprocessing import MinMaxScaler, RobustScaler
-import matplotlib as mpl
 import scipy
+import seaborn as sns
+from matplotlib import pyplot as plt
+from sklearn.preprocessing import MinMaxScaler
+
 from datasets import DATASET
 from misc.helpers import (
     create_fingerprint_joined_timeseries_csv_files,
@@ -17,7 +19,6 @@ from misc.helpers import (
 )
 from misc.plotting import _rename_strategy, set_matplotlib_size, set_seaborn_style
 from resources.data_types import AL_STRATEGY
-import seaborn as sns
 
 sys.dont_write_bytecode = True
 
@@ -33,14 +34,16 @@ pandarallel.initialize(
 orig_standard_metric = "weighted_f1-score"
 
 
-for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentages"]:
-    for grid_type in ["sparse", "dense"]:
+# for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentages"]:
+for rank_or_percentage in ["rank"]:
+    # for grid_type in ["sparse", "dense"]:
+    for grid_type in ["sparse"]:
         for interpolation in [
-            "count",
-            "count_dense",
-            "remove",
+            # "count",
+            # "count_dense",
+            # "remove",
             "zero",
-            "average_of_same_strategy",
+            # "average_of_same_strategy",
         ]:
             if rank_or_percentage == "rank" and interpolation == "count_dense":
                 continue
@@ -59,11 +62,11 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
 
             for auc_prefix in [
                 "full_auc_",
-                # "first_5_",
-                # "last_5_",
-                # "ramp_up_auc_",
-                # "plateau_auc_",
-                # "final_value_",
+                "first_5_",
+                "last_5_",
+                "ramp_up_auc_",
+                "plateau_auc_",
+                "final_value_",
             ]:
                 standard_metric = auc_prefix + orig_standard_metric
 
@@ -351,7 +354,7 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
                 ts = ts.T
                 print(ts)
 
-                print(str(destination_path) + f".jpg")
+                print(str(destination_path) + ".jpg")
                 set_seaborn_style(font_size=8)
                 mpl.rcParams["path.simplify"] = True
                 mpl.rcParams["path.simplify_threshold"] = 1.0
@@ -373,10 +376,10 @@ for rank_or_percentage in ["dataset_normalized_percentages", "rank", "percentage
                     f"Final leaderboard: {rank_or_percentage} {grid_type} {interpolation} {standard_metric}"
                 )
 
-                ts.to_parquet(str(destination_path) + f".parquet")
+                ts.to_parquet(str(destination_path) + ".parquet")
 
                 plt.savefig(
-                    str(destination_path) + f".jpg",
+                    str(destination_path) + ".jpg",
                     dpi=300,
                     bbox_inches="tight",
                     pad_inches=0,
