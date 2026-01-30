@@ -23,6 +23,7 @@ The framework evaluates:
 | Document | Description |
 |----------|-------------|
 | [Pipeline](pipeline.md) | Step-by-step guide to the sequential experiment pipeline |
+| [Reproducing the Paper](reproducing_paper.md) | Complete workflow to reproduce OPARA archive results |
 | [Scripts & Evaluation](scripts.md) | Utility scripts and evaluation analysis scripts |
 | [Configuration](configuration.md) | Shared configuration system explained |
 | [Results Format](results_format.md) | Output paths, file formats, and result schemas |
@@ -37,12 +38,13 @@ The framework evaluates:
 | **Research Paper** | [arXiv:2506.03817](https://arxiv.org/abs/2506.03817) - "Survey of Active Learning Hyperparameters" |
 | GitHub Repository | [jgonsior/olympic-games-of-active-learning](https://github.com/jgonsior/olympic-games-of-active-learning) |
 | Archived Data (DOI) | [10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862) - Raw experiment results |
+| **Reproduction Guide** | [Reproducing the Paper](reproducing_paper.md) - Complete workflow to regenerate results |
 
 ### Paper Abstract
 
 > Annotating data is a time-consuming and costly task, but it is inherently required for supervised machine learning. Active Learning (AL) is an established method that minimizes human labeling effort by iteratively selecting the most informative unlabeled samples for expert annotation. Despite being known for decades, AL is still rarely used in real-world applications due to complexity and lack of trust in its effectiveness. We hypothesize that both reasons share the same culprit: **the large hyperparameter space of AL**. This mostly unexplored hyperparameter space often leads to misleading and irreproducible AL experiment results.
 
-The DOI reference (OPARA-862) provides the raw experiment results (~terabytes of data) for long-term preservation and reproducibility.
+The DOI reference (OPARA-862) provides the raw experiment results (~terabytes of data) for long-term preservation and reproducibility. See [Reproducing the Paper](reproducing_paper.md) for the exact configuration (`full_exp_jan`) used to generate these results.
 
 ## Pipeline Overview
 
