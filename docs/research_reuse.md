@@ -79,7 +79,7 @@ my_experiment:
 
 ### Step 1: Choose or Create a Framework Runner
 
-OGAL supports multiple AL frameworks:
+OGAL supports multiple AL frameworks (source: `framework_runners/` directory):
 
 | Framework | Runner File |
 |-----------|-------------|
@@ -88,6 +88,7 @@ OGAL supports multiple AL frameworks:
 | small-text | `framework_runners/smalltext_runner.py` |
 | scikit-activeml | `framework_runners/skactiveml_runner.py` |
 | playground | `framework_runners/playground_runner.py` |
+| optimal (oracle) | `framework_runners/optimal_runner.py` |
 
 ### Step 2: Add Strategy to Enum
 
@@ -123,6 +124,10 @@ If using a new framework, create a new runner in `framework_runners/`:
 from framework_runners.base_runner import AL_Experiment
 
 class MY_FRAMEWORK_AL_Experiment(AL_Experiment):
+    """
+    Custom AL framework adapter.
+    Base class: framework_runners/base_runner.py::AL_Experiment
+    """
     def get_AL_strategy(self):
         # Initialize your strategy
         self.strategy = MyStrategyClass(**params)
@@ -410,14 +415,16 @@ Run OGAL experiments on new datasets using the same hyperparameter grid, then co
 
 | Purpose | File |
 |---------|------|
-| Dataset loading | `datasets/__init__.py` |
-| AL strategy dispatch | `02_run_experiment.py` |
-| Strategy definitions | `resources/data_types.py` |
-| Runner base class | `framework_runners/base_runner.py` |
-| Metric base class | `metrics/base_metric.py` |
-| Configuration | `misc/config.py` |
+| Dataset loading | `datasets/__init__.py` (DATASET enum, loader classes) |
+| AL strategy dispatch | `02_run_experiment.py` (main experiment runner) |
+| Strategy definitions | `resources/data_types.py` (AL_STRATEGY enum, mappings) |
+| Runner base class | `framework_runners/base_runner.py` (AL_Experiment abstract class) |
+| Metric base class | `metrics/base_metric.py` (Base_Metric abstract class) |
+| Configuration | `misc/config.py` (Config class) |
 
 ### Understanding the AL Loop
+
+The active learning loop is implemented in `framework_runners/base_runner.py::AL_Experiment`:
 
 ```
 02_run_experiment.py
@@ -431,6 +438,8 @@ Run OGAL experiments on new datasets using the same hyperparameter grid, then co
                 ├── model.fit()  # Retrain
                 └── metric.post_retraining_of_learner_hook()
 ```
+
+(source: `framework_runners/base_runner.py::AL_Experiment.al_cycle`)
 
 ---
 

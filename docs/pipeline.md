@@ -245,7 +245,7 @@ Per experiment, organized by strategy and dataset:
 | `OUTPUT_PATH/<STRATEGY>/<DATASET>/query_selection_time.csv` | CSV | Query timing |
 | `OUTPUT_PATH/<STRATEGY>/<DATASET>/y_pred_*.parquet` | Parquet | Predictions per cycle |
 
-Global tracking files:
+Global tracking files (source: `misc/config.py::Config.OVERALL_*_PATH`):
 
 | Path | Description |
 |------|-------------|
@@ -264,7 +264,7 @@ python 02_run_experiment.py --EXP_TITLE test --WORKER_INDEX 0
 
 ### Runtime Limits
 
-- `EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT`: Per-query timeout (default: 300s)
+- `EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT`: Per-query timeout (default: 300s; source: `misc/config.py::Config.EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT`)
 - Experiments exceeding this limit are early-stopped
 
 ### Common Failures

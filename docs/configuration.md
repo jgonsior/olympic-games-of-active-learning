@@ -85,12 +85,12 @@ OUTPUT_PATH=/home/user/al_survey/exp_results
 
 ### How Scripts Load This File
 
-The `Config` class in `misc/config.py` loads this file via `_load_server_setup_from_file()`:
+The `Config` class in `misc/config.py` loads this file via `_load_server_setup_from_file()` (source: `misc/config.py::Config._load_server_setup_from_file`):
 
 1. Parses both `[HPC]` and `[LOCAL]` sections
 2. Prefixes each key with section name (e.g., `HPC_DATASETS_PATH`, `LOCAL_DATASETS_PATH`)
 3. Sets attributes on the Config instance
-4. The `_pathes_magic()` method then selects the appropriate paths based on `RUNNING_ENVIRONMENT`
+4. The `_pathes_magic()` method then selects the appropriate paths based on `RUNNING_ENVIRONMENT` (source: `misc/config.py::Config._pathes_magic`)
 
 ---
 
@@ -267,32 +267,34 @@ This creates: 90 × 30 × 3 × 6 × 1 × 100 × 5 × 1 = **~24 million experimen
 
 ## Config Class Reference
 
-The `Config` class (`misc/config.py`) is the central configuration manager.
+The `Config` class (`misc/config.py`) is the central configuration manager (source: `misc/config.py::Config`).
 
 ### Key Attributes
 
 | Attribute | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `RUNNING_ENVIRONMENT` | Literal["local", "hpc"] | "local" | Execution environment |
+| `RUNNING_ENVIRONMENT` | Literal["local", "hpc"] | "local" | Execution environment (source: `misc/config.py::Config.RUNNING_ENVIRONMENT`) |
 | `EXP_TITLE` | str | Required | Experiment name |
 | `WORKER_INDEX` | int | None | Workload row index |
-| `RANDOM_SEED` | int | 1312 | Global random seed |
+| `RANDOM_SEED` | int | 1312 | Global random seed (source: `misc/config.py::Config.RANDOM_SEED`) |
 | `N_JOBS` | int | 1 | Parallel workers |
-| `EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT` | int | 300 | Per-query timeout |
+| `EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT` | int | 300 | Per-query timeout (source: `misc/config.py::Config.EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT`) |
 
 ### Path Attributes (Auto-computed)
 
-| Attribute | Description |
-|-----------|-------------|
-| `OUTPUT_PATH` | Base output directory |
-| `DATASETS_PATH` | Dataset directory |
-| `WORKLOAD_FILE_PATH` | Path to workload CSV |
-| `CONFIG_FILE_PATH` | Path to saved config |
-| `OVERALL_DONE_WORKLOAD_PATH` | Completed experiments |
-| `OVERALL_FAILED_WORKLOAD_PATH` | Failed experiments |
-| `METRIC_RESULTS_FOLDER` | Per-experiment results |
+| Attribute | Description | Source |
+|-----------|-------------|--------|
+| `OUTPUT_PATH` | Base output directory | `misc/config.py::Config._pathes_magic` |
+| `DATASETS_PATH` | Dataset directory | `misc/config.py::Config._pathes_magic` |
+| `WORKLOAD_FILE_PATH` | Path to workload CSV | `misc/config.py::Config.WORKLOAD_FILE_PATH` |
+| `CONFIG_FILE_PATH` | Path to saved config | `misc/config.py::Config.CONFIG_FILE_PATH` |
+| `OVERALL_DONE_WORKLOAD_PATH` | Completed experiments | `misc/config.py::Config.OVERALL_DONE_WORKLOAD_PATH` |
+| `OVERALL_FAILED_WORKLOAD_PATH` | Failed experiments | `misc/config.py::Config.OVERALL_FAILED_WORKLOAD_PATH` |
+| `METRIC_RESULTS_FOLDER` | Per-experiment results | `misc/config.py::Config.METRIC_RESULTS_FOLDER` |
 
 ### Loading Order
+
+Configuration is loaded in this priority order (source: `misc/config.py::Config.__init__`):
 
 1. **CLI Arguments**: Parsed first, highest priority
 2. **Server Credentials**: `.server_access_credentials.cfg`

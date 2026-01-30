@@ -64,7 +64,7 @@ The DOI reference (OPARA-862) provides the raw experiment results (~terabytes of
 
 ## Pipeline Overview
 
-OGAL follows a strict sequential execution order:
+OGAL follows a strict sequential execution order (source: root directory structure):
 
 ```mermaid
 flowchart TD
@@ -114,21 +114,92 @@ python 02_run_experiment.py --EXP_TITLE test --WORKER_INDEX 0
 
 | Directory | Purpose |
 |-----------|---------|
-| `datasets/` | Dataset loading utilities |
-| `framework_runners/` | AL framework adapters (ALiPy, libact, etc.) |
-| `optimal_query_strategies/` | Oracle strategy implementations |
-| `metrics/` | Metric computation modules |
-| `resources/` | Configuration and templates |
-| `scripts/` | Utility, conversion, and maintenance scripts |
-| `eva_scripts/` | Evaluation, visualization, and paper figure scripts |
-| `misc/` | Shared utilities (config, logging, helpers) |
+| `datasets/` | Dataset loading utilities (see `datasets/__init__.py`) |
+| `framework_runners/` | AL framework adapters: ALiPy, libact, small-text, scikit-activeml, playground (see `framework_runners/*.py`) |
+| `optimal_query_strategies/` | Oracle strategy implementations (see `optimal_query_strategies/*.py`) |
+| `metrics/` | Metric computation modules (see `metrics/base_metric.py` and `metrics/Standard_ML_Metrics.py`) |
+| `resources/` | Configuration and templates (see `resources/exp_config.yaml`, `resources/data_types.py`) |
+| `scripts/` | Utility, conversion, and maintenance scripts (see `scripts/` directory) |
+| `eva_scripts/` | Evaluation, visualization, and paper figure scripts (see `eva_scripts/` directory) |
+| `misc/` | Shared utilities: config, logging, helpers (see `misc/config.py`, `misc/helpers.py`) |
 
 ### Deprecated
 
 | Directory | Status |
 |-----------|--------|
-| `analyse_results/` | **Deprecated / not used.** |
+| `analyse_results/` | **Deprecated / not used.** Prefer `eva_scripts/` for analysis. |
 
 ## License
 
 AGPL-3.0. See [LICENSE](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/LICENSE) for details.
+
+---
+
+## Documentation QA Checklist
+
+This section helps maintain documentation quality and accuracy.
+
+### Building Docs Locally
+
+```bash
+# Install MkDocs and dependencies
+pip install mkdocs-material
+
+# Serve docs locally (with live reload)
+mkdocs serve
+
+# Open browser to http://127.0.0.1:8000
+```
+
+### Validating Mermaid Rendering
+
+Mermaid diagrams are configured via `pymdownx.superfences` extension in `mkdocs.yml`:
+
+1. **Check configuration**: Verify `mkdocs.yml` has:
+   ```yaml
+   markdown_extensions:
+     - pymdownx.superfences:
+         custom_fences:
+           - name: mermaid
+             class: mermaid
+             format: !!python/name:pymdownx.superfences.fence_code_format
+   ```
+
+2. **Test locally**: Run `mkdocs serve` and check that diagrams render as flowcharts/graphs (not raw text)
+
+3. **Valid syntax**: Mermaid blocks must use triple-backtick fences:
+   ````markdown
+   ```mermaid
+   flowchart TD
+       A --> B
+   ```
+   ````
+
+### Spotting Stale or Unsafe Claims
+
+When reviewing documentation, verify claims about code behavior with source code:
+
+**Code pointer format**: `(source: path/to/file.py::ClassName.method_name)` or `(see path/to/file.py)`
+
+**Red flags requiring verification**:
+
+| Claim Type | Example | How to Verify |
+|------------|---------|---------------|
+| Default values | "default batch size is 10" | Check `misc/config.py::Config` class attributes or `resources/exp_config.yaml` |
+| Output paths | "Results saved to `OUTPUT_PATH/metrics/`" | Check script that writes the file (e.g., `02_run_experiment.py`) |
+| File formats | "CSV with columns X, Y, Z" | Check actual output generation code or `pandas.to_csv()` calls |
+| Behavior claims | "Automatically resumes from checkpoint" | Check script logic for resume/checkpoint code |
+| Config keys | "`EXP_GRID_DATASET` controls datasets" | Check `resources/data_types.py` enums and `misc/config.py` |
+
+**Marking unverified claims**: If you cannot find source code support, add `TODO(verify):` prefix:
+
+```markdown
+TODO(verify): Default timeout is 300 seconds per query.
+```
+
+**Finding source code**:
+
+- Configuration: `misc/config.py`, `resources/exp_config.yaml`, `resources/data_types.py`
+- Pipeline scripts: `00_download_datasets.py` through `07b_create_results_without_flask.py`
+- Output formats: Search for `to_csv()`, `to_parquet()`, file write operations
+- Behavior: Read script main logic and helper functions in `misc/helpers.py`
