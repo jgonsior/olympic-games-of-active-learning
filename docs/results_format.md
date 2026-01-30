@@ -38,8 +38,8 @@ OUTPUT_PATH/<EXP_TITLE>/
         ├── macro_recall.csv
         ├── selected_indices.csv
         ├── query_selection_time.csv
-        ├── retraining_time.csv
-        └── y_pred_*.parquet
+        ├── learner_training_time.csv
+        └── y_pred_*.csv.xz.parquet
 ```
 
 ---
@@ -157,8 +157,8 @@ Missing values (e.g., early stopping) are represented as empty cells or `NaN`.
 
 | File | Format | Description |
 |------|--------|-------------|
-| `y_pred_train.parquet` | Parquet | Train set predictions per cycle |
-| `y_pred_test.parquet` | Parquet | Test set predictions per cycle |
+| `y_pred_train.csv.xz.parquet` | Parquet | Train set predictions per cycle |
+| `y_pred_test.csv.xz.parquet` | Parquet | Test set predictions per cycle |
 
 ---
 
@@ -246,8 +246,8 @@ accuracy = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/accuracy.csv")
 # Load compressed CSV
 metrics = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/full_auc_accuracy.csv.xz")
 
-# Load Parquet
-predictions = pd.read_parquet("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/y_pred_train.parquet")
+# Load Parquet predictions
+predictions = pd.read_parquet("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/y_pred_train.csv.xz.parquet")
 ```
 
 ---

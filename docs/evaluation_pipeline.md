@@ -344,7 +344,25 @@ python -m eva_scripts.runtime --EXP_TITLE your_experiment
 |--------|------|
 | Runtime data | `OUTPUT_PATH/<EXP_TITLE>/plots/runtime/query_selection_time.parquet` |
 
-### 5.5 Hyperparameter Influence Analysis
+### 5.5 AUC Metric Correlation
+
+**Script:** `eva_scripts/auc_metric_correlation.py`
+
+```bash
+python -m eva_scripts.auc_metric_correlation --EXP_TITLE your_experiment
+```
+
+**Required Inputs:**
+
+- AUC metrics from Step 2 (`full_auc_*.csv.xz` files)
+
+**Outputs:**
+
+| Output | Path |
+|--------|------|
+| AUC correlation matrix | `OUTPUT_PATH/<EXP_TITLE>/plots/AUC/auc_weighted_f1-score.parquet` |
+
+### 5.6 Hyperparameter Influence Analysis
 
 **Scripts:**  
 - `eva_scripts/leaderboard_single_hyperparameter_influence.py`  
@@ -361,7 +379,7 @@ python -m eva_scripts.leaderboard_single_hyperparameter_influence_analyze --EXP_
 |--------|------|
 | Kendall τ heatmaps | `OUTPUT_PATH/<EXP_TITLE>/plots/leaderboard_single_hyperparameter_influence/*_kendall.parquet` |
 
-### 5.6 Single Hyperparameter Evaluation
+### 5.7 Single Hyperparameter Evaluation
 
 **Scripts:**  
 - `eva_scripts/single_hyperparameter_evaluation_metric.py` (metric-based heatmaps)  
@@ -465,7 +483,10 @@ This section maps paper figures/tables to the scripts and output files that prod
 | RQ | Question | Primary Script(s) |
 |----|----------|-------------------|
 | **RQ1** | What influence do hyperparameters have? | `single_hyperparameter_evaluation_*.py`, `leaderboard_single_hyperparameter_influence*.py` |
-| **RQ2** | Which hyperparameters should be included? | `leaderboard_scenarios.py`, `workload_reduction.py` |
+| **RQ2** | Which hyperparameters should be included? | `leaderboard_scenarios.py` (optional), `workload_reduction.py` (optional) |
+
+!!! note "RQ2 Supplementary Scripts"
+    The scripts `leaderboard_scenarios.py` and `workload_reduction.py` are used for extended RQ2 analysis studying minimal hyperparameter grids. They are not required for basic paper reproduction. See [Reproducing the Paper](reproducing_paper.md) for detailed usage of these scripts.
 
 ---
 
