@@ -4,6 +4,8 @@
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
 [![arXiv](https://img.shields.io/badge/arXiv-2506.03817-b31b1b.svg)](https://arxiv.org/abs/2506.03817)
 
+> **Note**: This documentation was generated with the assistance of GitHub Copilot (Claude AI) based on analysis of the codebase, research paper ([arXiv:2506.03817](https://arxiv.org/abs/2506.03817)), and archived data ([DOI:10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862)). While efforts were made to ensure accuracy, users should verify critical details against the source code and paper.
+
 **OGAL** is a large-scale benchmarking framework for evaluating **Active Learning (AL)** query strategies across diverse datasets, learner models, and hyperparameter configurations. The framework implements a sequential pipeline that spans dataset acquisition, experiment execution, and comprehensive post-processing to support reproducible AL research.
 
 ## Overview
