@@ -1,6 +1,9 @@
 // Initialize Mermaid.js for diagram rendering
 // Wait for Mermaid library to be available
-(function initMermaid() {
+(function initMermaid(retryCount) {
+  retryCount = retryCount || 0;
+  const maxRetries = 50;  // 5 seconds total (50 * 100ms)
+  
   if (typeof mermaid !== 'undefined') {
     // Mermaid is available, initialize it
     mermaid.initialize({
@@ -31,9 +34,12 @@
         renderMermaid();
       }
     }
-  } else {
+  } else if (retryCount < maxRetries) {
     // Mermaid not yet loaded, retry after a short delay
-    setTimeout(initMermaid, 100);
+    setTimeout(function() { initMermaid(retryCount + 1); }, 100);
+  } else {
+    // Max retries reached, log error but don't break the page
+    console.warn('Mermaid library failed to load after ' + maxRetries + ' attempts');
   }
 })();
 
