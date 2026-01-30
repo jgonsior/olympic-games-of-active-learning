@@ -228,7 +228,9 @@ def facet_histplot(
         ax.axvline(hi, linewidth=1.0, ls="--", alpha=0.85)
 
         ax.set_xlim(*xlim)
-        ax.set_ylabel("Count")
+
+        # CHANGED: remove per-row y-label
+        ax.set_ylabel("")
 
         # Metric label only
         ax.text(
@@ -259,8 +261,15 @@ def facet_histplot(
         )
 
     g.set_xlabels(r"Kendall's $\tau_b$")
+
+    # NEW: single shared y-label (Matplotlib 3.4+). Fallback if not available.
+    # if hasattr(g.fig, "supylabel"):
+    #    g.fig.supylabel("Count")
+    # else:
+    #    g.fig.text(0.02, 0.5, "Count", rotation=90, va="center", ha="left")
+
     g.fig.suptitle(title, fontsize=10, y=1.01)
-    g.tight_layout()
+    g.tight_layout(rect=(0.04, 0, 1, 1))
     g.savefig(out_pdf)
     plt.close(g.fig)
 
