@@ -8,7 +8,7 @@ Key components:
     - Base_AL_Strategy: Abstract base class for oracle strategies
     - Greedy_Optimal: Greedy selection based on future performance
     - True_Optimal: Exhaustive search for optimal selection
-    - Beeam_Search_Optimal: Beam search approximation
+    - Beam_Search_Optimal: Beam search approximation
 
 These strategies are not practical for real AL but serve as baselines
 to evaluate how close practical strategies come to optimal performance.
