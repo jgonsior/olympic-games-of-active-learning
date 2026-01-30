@@ -100,7 +100,7 @@ python 02_run_experiment.py \
 
 ### Batching Strategy
 
-For large workloads, experiments are batched:
+For large workloads, experiments are batched (source: `misc/config.py::Config.SLURM_ITERATIONS_PER_BATCH`):
 
 - `SLURM_ITERATIONS_PER_BATCH`: Number of experiments per array task (default: 100)
 - Array task 0 runs experiments 0-99
@@ -304,14 +304,14 @@ print(f"Estimated wall time: {total_hours:.1f} hours")
 
 ### Additional Config Options
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| `RUNNING_ENVIRONMENT` | Set to "hpc" on cluster | "local" |
-| `SLURM_TIME_LIMIT` | SLURM time limit string | "1:59:59" |
-| `SLURM_NR_THREADS` | CPUs per task | 1 |
-| `SLURM_MEMORY` | Memory per task (MB) | 2210 |
-| `SLURM_OFFSET` | Starting array index | 0 |
-| `SLURM_ITERATIONS_PER_BATCH` | Experiments per array task | 100 |
+| Option | Description | Default | Source |
+|--------|-------------|---------|--------|
+| `RUNNING_ENVIRONMENT` | Set to "hpc" on cluster | "local" | `misc/config.py::Config.RUNNING_ENVIRONMENT` |
+| `SLURM_TIME_LIMIT` | SLURM time limit string | "1:59:59" | `misc/config.py::Config.SLURM_TIME_LIMIT` |
+| `SLURM_NR_THREADS` | CPUs per task | 1 | `misc/config.py::Config.SLURM_NR_THREADS` |
+| `SLURM_MEMORY` | Memory per task (MB) | 2210 | `misc/config.py::Config.SLURM_MEMORY` |
+| `SLURM_OFFSET` | Starting array index | 0 | `misc/config.py::Config.SLURM_OFFSET` |
+| `SLURM_ITERATIONS_PER_BATCH` | Experiments per array task | 100 | `misc/config.py::Config.SLURM_ITERATIONS_PER_BATCH` |
 
 ### Setting Environment
 
