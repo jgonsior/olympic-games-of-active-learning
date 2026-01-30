@@ -32,6 +32,7 @@ theme:
 nav:
   - Home: index.md
   - Pipeline: pipeline.md
+  - Scripts & Evaluation: scripts.md
   - Configuration: configuration.md
   - Results Format: results_format.md
   - HPC Setup: hpc.md

@@ -463,3 +463,64 @@ python 04_calculate_advanced_metrics.py --EXP_TITLE test --COMPUTED_METRICS _ALL
 python 05_analyze_partially_run_workload.py --EXP_TITLE test
 python 07b_create_results_without_flask.py --EXP_TITLE test
 ```
+
+---
+
+## Auxiliary Scripts
+
+Beyond the main pipeline, OGAL includes utility and evaluation scripts in two directories:
+
+### `scripts/` - Utility Scripts
+
+These scripts support data processing, format conversion, bug fixes, and experiment recovery:
+
+| Category | Examples |
+|----------|----------|
+| **Data Conversion** | `convert_y_pred_to_parquet.py`, `convert_metrics_csvs_to_exp_id_csvs.py` |
+| **Workload Management** | `create_dense_workload.py`, `reduce_to_dense.py`, `merge_two_workloads.py` |
+| **Data Validation** | `find_missing_exp_ids_in_metric_files.py`, `find_broken_file.py` |
+| **Bug Fixes** | `fix_duplicate_header_columns.py`, `fix_oom_workload.py` |
+| **Experiment Recovery** | `rerun_broken_experiments.py`, `rerun_missing_exp_ids.py` |
+
+**Common workflow after main pipeline:**
+
+```bash
+# Check for missing experiment IDs
+python -m scripts.find_missing_exp_ids_in_metric_files --EXP_TITLE test
+
+# Create dense workload (for large experiments)
+python -m scripts.create_dense_workload --EXP_TITLE test
+
+# Reduce all files to dense subset
+python -m scripts.reduce_to_dense --EXP_TITLE test
+```
+
+### `eva_scripts/` - Evaluation Scripts
+
+These scripts generate analyses, figures, and tables for the research paper. They analyze the experiment results to produce:
+
+| Category | Examples | Paper Section |
+|----------|----------|---------------|
+| **Leaderboard Rankings** | `calculate_leaderboard_rankings.py`, `final_leaderboard.py` | Main results |
+| **Hyperparameter Influence** | `leaderboard_single_hyperparameter_influence.py` | RQ1 analysis |
+| **Correlation Analysis** | `basic_metrics_correlation.py`, `similar_strategies.py` | Metric analysis |
+| **Learning Curves** | `learning_curve.py`, `single_learning_curve_example.py` | Figures |
+| **Runtime Analysis** | `runtime.py` | Performance analysis |
+
+**Example evaluation workflow:**
+
+```bash
+# Compute metric correlations
+python -m eva_scripts.basic_metrics_correlation --EXP_TITLE test
+
+# Calculate leaderboard rankings
+python -m eva_scripts.calculate_leaderboard_rankings --EXP_TITLE test
+
+# Generate runtime analysis
+python -m eva_scripts.runtime --EXP_TITLE test
+
+# Analyze hyperparameter influence
+python -m eva_scripts.leaderboard_single_hyperparameter_influence --EXP_TITLE test
+```
+
+For complete documentation of all utility and evaluation scripts, see [Scripts Documentation](scripts.md).

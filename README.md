@@ -2,27 +2,31 @@
 
 [![Documentation](https://img.shields.io/badge/docs-mkdocs-blue)](https://jgonsior.github.io/olympic-games-of-active-learning/)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
+[![arXiv](https://img.shields.io/badge/arXiv-2506.03817-b31b1b.svg)](https://arxiv.org/abs/2506.03817)
 
 **OGAL** is a large-scale benchmarking framework for evaluating **Active Learning (AL)** query strategies across diverse datasets, learner models, and hyperparameter configurations. The framework implements a sequential pipeline that spans dataset acquisition, experiment execution, and comprehensive post-processing to support reproducible AL research.
 
 ## Overview
 
-This repository contains the complete experimental framework used to systematically compare Active Learning strategies. The pipeline evaluates:
+This repository contains the complete experimental framework used for the **largest conducted AL study to date** with over **4.6 million hyperparameter combinations**. The pipeline evaluates:
 
-- **50+ AL strategies** from multiple frameworks (ALiPy, libact, small-text, scikit-activeml, playground)
-- **90+ datasets** from OpenML and Kaggle
-- **Multiple learner models**: Random Forest, MLP, SVM, Decision Tree, etc.
-- **Hyperparameter variations**: batch sizes, train/test splits, start points, random seeds
+- **28 AL strategies** from 5 frameworks (ALiPy, libact, small-text, scikit-activeml, playground)
+- **92 datasets** from OpenML, Kaggle, and UCI (100-20,000 samples, 2-31 classes)
+- **3 learner models**: Random Forest, MLP, SVM with RBF kernel
+- **6 batch sizes**: 1, 5, 10, 20, 50, 100
+- **5 train-test splits × 20 start points** per dataset (100 repetitions)
+
+The study analyzes the impact of each hyperparameter on AL experiment results and provides recommendations for reproducible AL research.
 
 ## Paper & Archived Artifacts
 
 | Resource | Link |
 |----------|------|
-| **Research Paper** | [arXiv:2506.03817](https://arxiv.org/abs/2506.03817) |
+| **Research Paper** | [arXiv:2506.03817](https://arxiv.org/abs/2506.03817) - "Survey of Active Learning Hyperparameters" |
 | GitHub Repository | [jgonsior/olympic-games-of-active-learning](https://github.com/jgonsior/olympic-games-of-active-learning) |
-| Archived Companion (DOI) | [10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862) |
+| Archived Data (DOI) | [10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862) - Raw experiment results |
 
-The research paper (arXiv:2506.03817) describes the methodology, experimental design, and findings from the OGAL benchmark study. The DOI reference (OPARA-862) provides the canonical archived companion for long-term preservation, frozen snapshots, and released experimental bundles.
+The research paper describes the methodology, experimental design, and findings. The DOI reference (OPARA-862) provides the raw experiment results (~terabytes) for long-term preservation and reproducibility.
 
 ## Sequential Pipeline
 
@@ -39,6 +43,8 @@ OGAL is a **strictly sequential pipeline**. Each script produces outputs consume
 | 4 | `04_calculate_advanced_metrics.py` | Compute derived metrics (AUC, time-lag, distance metrics) |
 | 5 | `05_analyze_partially_run_workload.py` | Analyze completion status and timing statistics |
 | 6 | `07b_create_results_without_flask.py` | Generate final visualizations and result tables |
+
+Additionally, `scripts/` and `eva_scripts/` provide utility and evaluation scripts for data processing and paper figure generation.
 
 For detailed documentation on each step, see [docs/pipeline.md](docs/pipeline.md).
 

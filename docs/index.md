@@ -4,20 +4,26 @@ Welcome to the **Olympic Games of Active Learning (OGAL)** documentation. This f
 
 ## What is OGAL?
 
-OGAL is a large-scale experimental framework designed to systematically evaluate Active Learning (AL) strategies across:
+OGAL is a large-scale experimental framework designed to systematically evaluate Active Learning (AL) strategies. As described in the research paper, AL is rarely used in real-world applications due to complexity and lack of trust in its effectiveness. This framework addresses these challenges by:
 
-- **50+ AL strategies** from multiple frameworks
-- **90+ datasets** from OpenML and Kaggle
-- **Multiple learner models** (RF, MLP, SVM, etc.)
-- **Extensive hyperparameter variations**
+- Compiling a **hyperparameter grid of 4.6+ million combinations**
+- Recording performance across the **largest conducted AL study to date**
+- Analyzing the **impact of each hyperparameter** on experiment results
 
-The framework implements a **sequential pipeline** that handles everything from dataset acquisition to final result visualization.
+The framework evaluates:
+
+- **28 AL strategies** from 5 frameworks (ALiPy, libact, small-text, scikit-activeml, playground)
+- **92 datasets** from OpenML, Kaggle, and UCI
+- **3 learner models**: Random Forest, MLP, SVM
+- **6 batch sizes**: 1, 5, 10, 20, 50, 100
+- **5 train-test splits × 20 start points** per dataset
 
 ## Quick Links
 
 | Document | Description |
 |----------|-------------|
 | [Pipeline](pipeline.md) | Step-by-step guide to the sequential experiment pipeline |
+| [Scripts & Evaluation](scripts.md) | Utility scripts and evaluation analysis scripts |
 | [Configuration](configuration.md) | Shared configuration system explained |
 | [Results Format](results_format.md) | Output paths, file formats, and result schemas |
 | [HPC Setup](hpc.md) | Running experiments on HPC clusters with SLURM |
@@ -28,11 +34,15 @@ The framework implements a **sequential pipeline** that handles everything from 
 
 | Resource | Link |
 |----------|------|
-| **Research Paper** | [arXiv:2506.03817](https://arxiv.org/abs/2506.03817) |
+| **Research Paper** | [arXiv:2506.03817](https://arxiv.org/abs/2506.03817) - "Survey of Active Learning Hyperparameters" |
 | GitHub Repository | [jgonsior/olympic-games-of-active-learning](https://github.com/jgonsior/olympic-games-of-active-learning) |
-| Archived Companion (DOI) | [10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862) |
+| Archived Data (DOI) | [10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862) - Raw experiment results |
 
-The research paper (arXiv:2506.03817) describes the methodology, experimental design, and key findings. The DOI reference provides the canonical archived companion for long-term preservation, frozen snapshots, and released experimental bundles.
+### Paper Abstract
+
+> Annotating data is a time-consuming and costly task, but it is inherently required for supervised machine learning. Active Learning (AL) is an established method that minimizes human labeling effort by iteratively selecting the most informative unlabeled samples for expert annotation. Despite being known for decades, AL is still rarely used in real-world applications due to complexity and lack of trust in its effectiveness. We hypothesize that both reasons share the same culprit: **the large hyperparameter space of AL**. This mostly unexplored hyperparameter space often leads to misleading and irreproducible AL experiment results.
+
+The DOI reference (OPARA-862) provides the raw experiment results (~terabytes of data) for long-term preservation and reproducibility.
 
 ## Pipeline Overview
 
@@ -52,8 +62,15 @@ flowchart TD
         CFG2[resources/exp_config.yaml]
     end
     
+    subgraph Auxiliary["Auxiliary Scripts"]
+        S1[scripts/]
+        S2[eva_scripts/]
+    end
+    
     CFG1 --> A
     CFG2 --> B
+    G --> S1
+    G --> S2
 ```
 
 See [Pipeline Documentation](pipeline.md) for complete details on each step.
@@ -80,13 +97,13 @@ python 02_run_experiment.py --EXP_TITLE test --WORKER_INDEX 0
 | Directory | Purpose |
 |-----------|---------|
 | `datasets/` | Dataset loading utilities |
-| `framework_runners/` | AL framework adapters |
+| `framework_runners/` | AL framework adapters (ALiPy, libact, etc.) |
 | `optimal_query_strategies/` | Oracle strategy implementations |
 | `metrics/` | Metric computation modules |
 | `resources/` | Configuration and templates |
-| `scripts/` | Utility and maintenance scripts |
-| `eva_scripts/` | Evaluation and plotting scripts |
-| `misc/` | Shared utilities |
+| `scripts/` | Utility, conversion, and maintenance scripts |
+| `eva_scripts/` | Evaluation, visualization, and paper figure scripts |
+| `misc/` | Shared utilities (config, logging, helpers) |
 
 ### Deprecated
 
