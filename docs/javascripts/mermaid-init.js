@@ -42,4 +42,3 @@
     console.warn('Mermaid library failed to load after ' + maxRetries + ' attempts');
   }
 })();
-
