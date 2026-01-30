@@ -320,7 +320,7 @@ full_exp_jan/
 │       ├── y_pred_test.csv.xz.parquet  # Test predictions
 │       ├── selected_indices.csv.xz     # Selected sample indices
 │       │
-│       │── # Aggregated metrics (computed by 04_calculate_advanced_metrics.py)
+│       ├── # Aggregated metrics (from 04_calculate_advanced_metrics.py)
 │       ├── full_auc_accuracy.csv.xz
 │       ├── first_5_accuracy.csv.xz
 │       ├── last_5_accuracy.csv.xz
@@ -328,7 +328,7 @@ full_exp_jan/
 │       ├── full_auc_weighted_f1-score.csv.xz
 │       ├── full_auc_macro_f1-score.csv.xz
 │       │
-│       │── # Dataset categorizations (computed by 03_calculate_dataset_categorizations.py)
+│       ├── # Dataset categorizations (from 03_calculate_dataset_categorizations.py)
 │       ├── AVERAGE_UNCERTAINTY.csv.xz
 │       ├── CLOSENESS_TO_CLUSTER_CENTER.csv.xz
 │       ├── CLOSENESS_TO_DECISION_BOUNDARY.csv.xz
@@ -342,11 +342,11 @@ full_exp_jan/
 │       ├── REGION_DENSITY.csv.xz
 │       ├── SWITCHES_CLASS_OFTEN.csv.xz
 │       │
-│       │── # Time-lag variants (for correlation analysis)
+│       ├── # Time-lag variants (for correlation analysis)
 │       ├── accuracy_time_lag.csv.xz
 │       ├── *_time_lag.csv.xz           # Time-lagged versions of all metrics
 │       │
-│       │── # Distance metrics
+│       ├── # Distance metrics
 │       ├── avg_dist_batch.csv.xz
 │       ├── avg_dist_labeled.csv.xz
 │       └── avg_dist_unlabeled.csv.xz
