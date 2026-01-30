@@ -1,10 +1,12 @@
 # Results Format
 
-This document describes the output directory structure, file formats, and result schemas produced by OGAL experiments.
+This document describes the output directory structure, file formats, and result schemas produced by OGAL experiments. All paths and schemas are verified against source code.
 
 ## Output Directory Structure
 
 All experiment outputs are stored under `OUTPUT_PATH/<EXP_TITLE>/`:
+
+(source: `misc/config.py::Config._pathes_magic`, line 224)
 
 ```
 OUTPUT_PATH/<EXP_TITLE>/
@@ -36,75 +38,89 @@ OUTPUT_PATH/<EXP_TITLE>/
         ├── macro_recall.csv
         ├── selected_indices.csv
         ├── query_selection_time.csv
-        ├── retraining_time.csv
-        └── y_pred_*.parquet
+        ├── learner_training_time.csv
+        └── y_pred_*.csv.xz.parquet
 ```
 
 ---
 
-## Workload Files
+## Primary Result Files Schema
 
 ### 01_workload.csv
 
 The main workload file defining all experiment configurations.
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `EXP_UNIQUE_ID` | int | Unique identifier for this configuration |
-| `EXP_DATASET` | int | Dataset enum value |
-| `EXP_STRATEGY` | int | AL strategy enum value |
-| `EXP_LEARNER_MODEL` | int | Learner model enum value |
-| `EXP_BATCH_SIZE` | int | Query batch size |
-| `EXP_RANDOM_SEED` | int | Random seed |
-| `EXP_START_POINT` | int | Initial labeled set index |
-| `EXP_TRAIN_TEST_BUCKET_SIZE` | int | Train/test split bucket |
-| `EXP_NUM_QUERIES` | int | Number of AL iterations |
+(source: `01_create_workload.py::_generate_exp_param_grid`, lines 40-98)
+
+| Column | Type | Description | Source |
+|--------|------|-------------|--------|
+| `EXP_UNIQUE_ID` | int | Unique identifier (0-indexed row after shuffle) | Line 96 |
+| `EXP_DATASET` | int | Dataset enum value | `resources/data_types.py::DATASET` |
+| `EXP_STRATEGY` | int | AL strategy enum value | `resources/data_types.py::AL_STRATEGY` |
+| `EXP_LEARNER_MODEL` | int | Learner model enum value | `resources/data_types.py::LEARNER_MODEL` |
+| `EXP_BATCH_SIZE` | int | Query batch size | `misc/config.py::Config.EXP_BATCH_SIZE` |
+| `EXP_RANDOM_SEED` | int | Random seed | `misc/config.py::Config.EXP_RANDOM_SEED` |
+| `EXP_START_POINT` | int | Initial labeled set index | `misc/config.py::Config.EXP_START_POINT` |
+| `EXP_TRAIN_TEST_BUCKET_SIZE` | int | Train/test split bucket | `misc/config.py::Config.EXP_TRAIN_TEST_BUCKET_SIZE` |
+| `EXP_NUM_QUERIES` | int | Number of AL iterations | `misc/config.py::Config.EXP_NUM_QUERIES` |
 
 ### 05_done_workload.csv
 
 Tracks successfully completed experiments. Same schema as `01_workload.csv`.
 
+(source: `framework_runners/base_runner.py::AL_Experiment.run_experiment`, lines 224-229)
+
 ### 05_failed_workloads.csv
 
 Tracks failed experiments with error information.
+
+(source: `framework_runners/base_runner.py::AL_Experiment.run_experiment`, lines 210-217)
 
 | Column | Type | Description |
 |--------|------|-------------|
 | (All columns from workload) | | Same as 01_workload.csv |
 | `error` | str | Exception type that caused failure |
 
-Common error types:
-- `<class 'sklearn.exceptions.ConvergenceWarning'>`: Model convergence issues
-- `<class 'MemoryError'>`: Out of memory
-- `<class 'TimeoutError'>`: Query selection exceeded time limit
+**Common error types:**
+
+| Error | Meaning |
+|-------|---------|
+| `<class 'sklearn.exceptions.ConvergenceWarning'>` | Model convergence issues |
+| `<class 'MemoryError'>` | Out of memory |
+| `<class 'TimeoutError'>` | Query selection exceeded time limit |
+| `<class 'OSError'>` | I/O or file system error |
 
 ### 05_started_oom_workloads.csv
 
-Experiments that started but were killed by OOM killer. Same schema as `01_workload.csv`.
+Experiments that started but were presumed killed by OOM. Written **before** experiment runs, removed from tracking if it completes successfully.
+
+(source: `framework_runners/base_runner.py::AL_Experiment.run_experiment`, lines 120-126)
+
+Same schema as `01_workload.csv` (no error column).
 
 ---
 
-## Per-Cycle Metric Files
+## Per-Cycle Metric Files Schema
 
 Located at `<STRATEGY>/<DATASET>/<metric>.csv`
 
-### Schema
+(source: `metrics/base_metric.py::Base_Metric.save_metrics`)
 
-All per-cycle metric files share this structure:
+### Common Schema for All Per-Cycle Metrics
 
 | Column | Type | Description |
 |--------|------|-------------|
 | `EXP_UNIQUE_ID` | int | Links to workload row |
-| `0` | float | Metric value at iteration 0 |
+| `0` | float | Metric value at iteration 0 (initial) |
 | `1` | float | Metric value at iteration 1 |
 | ... | ... | ... |
 | `N` | float | Metric value at iteration N |
 
-Missing values (e.g., early stopping) are represented as `NaN`.
+Missing values (e.g., early stopping) are represented as empty cells or `NaN`.
 
-### Available Metrics
+### Standard ML Metrics
 
-#### Standard ML Metrics
+(source: `metrics/Standard_ML_Metrics.py`)
 
 | File | Description | Range |
 |------|-------------|-------|
@@ -116,69 +132,87 @@ Missing values (e.g., early stopping) are represented as `NaN`.
 | `macro_precision.csv` | Macro-averaged precision | [0, 1] |
 | `macro_recall.csv` | Macro-averaged recall | [0, 1] |
 
-#### Selection Metrics
+### Selection Metrics
+
+(source: `metrics/Selected_Indices.py`)
 
 | File | Description |
 |------|-------------|
 | `selected_indices.csv` | Sample indices selected per iteration |
 
-Format: Each cell contains a list of selected indices (as string representation).
+**Format:** Each cell contains a Python list representation of selected indices (e.g., `[5, 10, 15]`).
 
-#### Timing Metrics
+### Timing Metrics
+
+(source: `metrics/Timing_Metrics.py`)
 
 | File | Description | Unit |
 |------|-------------|------|
 | `query_selection_time.csv` | Time to select query samples | seconds |
-| `retraining_time.csv` | Time to retrain the model | seconds |
+| `learner_training_time.csv` | Time to retrain the model | seconds |
 
 ### Prediction Files
 
+(source: `metrics/Predicted_Samples.py`)
+
 | File | Format | Description |
 |------|--------|-------------|
-| `y_pred_train_<iteration>.parquet` | Parquet | Train set predictions per cycle |
-| `y_pred_test_<iteration>.parquet` | Parquet | Test set predictions per cycle |
+| `y_pred_train.csv.xz.parquet` | Parquet | Train set predictions per cycle |
+| `y_pred_test.csv.xz.parquet` | Parquet | Test set predictions per cycle |
 
 ---
 
-## Derived Metrics
+## Derived Metrics Schema
 
 Computed by `04_calculate_advanced_metrics.py`.
 
+(source: `metrics/computed/` directory)
+
 ### AUC Metrics
 
-Area-under-curve computations for learning curves:
+| File Pattern | Description | Computation |
+|--------------|-------------|-------------|
+| `full_auc_<metric>.csv.xz` | AUC over entire learning curve | `np.trapz(values)` |
+| `ramp_up_auc_<metric>.csv.xz` | AUC during initial "ramp-up" phase | First N iterations |
+| `plateau_auc_<metric>.csv.xz` | AUC during plateau phase | Later iterations |
+| `first_5_<metric>.csv.xz` | Average of first 5 iterations | `mean(values[:5])` |
+| `last_5_<metric>.csv.xz` | Average of last 5 iterations | `mean(values[-5:])` |
+| `final_value_<metric>.csv.xz` | Final iteration value | `values[-1]` |
 
-| Metric | Description |
-|--------|-------------|
-| `full_auc_<metric>` | AUC over entire learning curve |
-| `ramp_up_auc_<metric>` | AUC during initial "ramp-up" phase |
-| `plateau_auc_<metric>` | AUC during plateau phase |
-| `first_5_<metric>` | Average of first 5 iterations |
-| `last_5_<metric>` | Average of last 5 iterations |
-| `final_value_<metric>` | Final iteration value |
+**Schema:** Same as per-cycle metrics but with a single value column.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `EXP_UNIQUE_ID` | int | Links to workload row |
+| `value` | float | Computed aggregated metric value |
 
 ### Distance Metrics
 
-Sample-level distance analysis:
+(source: `metrics/computed/DISTANCE_METRICS.py`)
 
-| Metric | Description |
-|--------|-------------|
-| `DISTANCE_METRICS` | Pairwise distance statistics |
-| `MISMATCH_TRAIN_TEST` | Train/test distribution divergence |
+| File | Description |
+|------|-------------|
+| `avg_dist_batch.csv.xz` | Average pairwise distance within batch |
+| `avg_dist_labeled.csv.xz` | Average distance to labeled samples |
+| `avg_dist_unlabeled.csv.xz` | Average distance to unlabeled samples |
 
-### Dataset Categorization
+### Dataset Categorization Files
+
+(source: `metrics/computed/base_samples_categorizer.py`)
 
 Per-sample characteristics computed by `03_calculate_dataset_categorizations.py`:
 
-| Categorizer | Description |
-|-------------|-------------|
-| `COUNT_WRONG_CLASSIFICATIONS` | Misclassification frequency |
-| `SWITCHES_CLASS_OFTEN` | Prediction instability |
-| `CLOSENESS_TO_DECISION_BOUNDARY` | Margin from boundary |
-| `REGION_DENSITY` | Local sample density |
-| `MELTING_POT_REGION` | Mixed-class neighborhood |
-| `OUTLIERNESS` | Outlier score |
-| `AVERAGE_UNCERTAINTY` | Mean prediction uncertainty |
+| File | Description |
+|------|-------------|
+| `COUNT_WRONG_CLASSIFICATIONS.csv.xz` | How often sample is misclassified |
+| `SWITCHES_CLASS_OFTEN.csv.xz` | Prediction instability count |
+| `CLOSENESS_TO_DECISION_BOUNDARY.csv.xz` | Distance to decision boundary |
+| `REGION_DENSITY.csv.xz` | Local sample density |
+| `MELTING_POT_REGION.csv.xz` | Mixed-class neighborhood indicator |
+| `OUTLIERNESS.csv.xz` | Outlier score |
+| `AVERAGE_UNCERTAINTY.csv.xz` | Mean prediction uncertainty |
+
+**Schema:** Per-sample values indexed by sample ID.
 
 ---
 
@@ -210,25 +244,64 @@ workload = pd.read_csv("OUTPUT_PATH/test/01_workload.csv")
 accuracy = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/accuracy.csv")
 
 # Load compressed CSV
-metrics = pd.read_csv("OUTPUT_PATH/test/metrics/some_metric.csv.xz")
+metrics = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/full_auc_accuracy.csv.xz")
 
-# Load Parquet
-predictions = pd.read_parquet("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/y_pred_train_10.parquet")
+# Load Parquet predictions
+predictions = pd.read_parquet("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/y_pred_train.csv.xz.parquet")
+```
+
+---
+
+## Aggregation Conventions
+
+### By Random Seed
+
+When aggregating across seeds (if multiple `EXP_GRID_RANDOM_SEED` values):
+
+```python
+# Group by all hyperparameters except seed
+groupby_cols = ['EXP_DATASET', 'EXP_STRATEGY', 'EXP_LEARNER_MODEL', 
+                'EXP_BATCH_SIZE', 'EXP_START_POINT', 'EXP_TRAIN_TEST_BUCKET_SIZE']
+aggregated = df.groupby(groupby_cols)['final_accuracy'].agg(['mean', 'std'])
+```
+
+### By Dataset
+
+(source: `eva_scripts/final_leaderboard.py`)
+
+Leaderboard rankings are computed per-dataset, then aggregated:
+
+```python
+# Rank strategies within each dataset
+df['rank'] = df.groupby('EXP_DATASET')['metric'].rank(ascending=False)
+# Aggregate ranks across datasets
+final_rank = df.groupby('EXP_STRATEGY')['rank'].mean()
+```
+
+### By Train/Test Split
+
+Split bucket indices (0-4 by default) represent different random data partitions:
+
+(source: `misc/config.py::Config.EXP_GRID_TRAIN_TEST_BUCKET_SIZE`)
+
+```python
+# Aggregate across splits
+aggregated = df.groupby(['EXP_DATASET', 'EXP_STRATEGY', 'EXP_LEARNER_MODEL'])['metric'].mean()
 ```
 
 ---
 
 ## Mapping Scripts to Outputs
 
-| Script | Primary Outputs |
-|--------|-----------------|
-| `00_download_datasets.py` | `DATASETS_PATH/*.csv`, `*_split.csv` |
-| `01_create_workload.py` | `01_workload.csv`, `00_config.yaml`, SLURM files |
-| `02_run_experiment.py` | `<STRATEGY>/<DATASET>/*.csv`, `05_*.csv` |
-| `03_calculate_dataset_categorizations.py` | `workloads/DATASET_CATEGORIZATIONS/` |
-| `04_calculate_advanced_metrics.py` | `workloads/advanced_metrics/`, AUC files |
-| `05_analyze_partially_run_workload.py` | Analysis statistics |
-| `07b_create_results_without_flask.py` | `plots/`, HTML reports |
+| Script | Primary Outputs | Code Pointer |
+|--------|-----------------|--------------|
+| `00_download_datasets.py` | `DATASETS_PATH/*.csv`, `*_split.csv` | `datasets/__init__.py` |
+| `01_create_workload.py` | `01_workload.csv`, `00_config.yaml`, SLURM files | `01_create_workload.py::create_workload` |
+| `02_run_experiment.py` | `<STRATEGY>/<DATASET>/*.csv`, `05_*.csv` | `framework_runners/base_runner.py` |
+| `03_calculate_dataset_categorizations.py` | `<STRATEGY>/<DATASET>/<CATEGORIZER>.csv.xz` | `03_calculate_dataset_categorizations.py` |
+| `04_calculate_advanced_metrics.py` | `<STRATEGY>/<DATASET>/full_auc_*.csv.xz` | `04_calculate_advanced_metrics.py` |
+| `05_analyze_partially_run_workload.py` | Console output (analysis) | `05_analyze_partially_run_workload.py` |
+| `07b_create_results_without_flask.py` | `plots/`, HTML reports | `07b_create_results_without_flask.py` |
 
 ---
 

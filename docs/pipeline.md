@@ -2,6 +2,11 @@
 
 This document provides a complete runbook for the OGAL sequential pipeline. Each script must be executed in order, as outputs from one step serve as inputs to the next.
 
+!!! tip "Related Documentation"
+    - **[HPC Setup](hpc.md)**: For running Step 2 at scale on HPC clusters with SLURM
+    - **[Evaluation Pipeline](evaluation_pipeline.md)**: For post-processing (Steps 3-6) and generating paper figures
+    - **[Results Format](results_format.md)**: For understanding output file schemas
+
 ## Paper Context
 
 The pipeline implements the hyperparameter grid search described in [arXiv:2506.03817](https://arxiv.org/abs/2506.03817). In the paper's notation:

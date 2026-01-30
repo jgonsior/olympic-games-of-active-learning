@@ -2,6 +2,9 @@
 
 This document describes the utility scripts in `scripts/` and evaluation scripts in `eva_scripts/`. These scripts support the main pipeline with data processing, bug fixes, and result analysis/visualization.
 
+!!! tip "Canonical Evaluation Guide"
+    For a step-by-step guide to running evaluation scripts in the correct order and generating paper figures, see **[Evaluation Pipeline](evaluation_pipeline.md)**.
+
 ## Overview
 
 The OGAL framework includes two auxiliary script directories:

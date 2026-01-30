@@ -32,11 +32,12 @@ theme:
 nav:
   - Home: index.md
   - Pipeline: pipeline.md
+  - HPC Setup: hpc.md
+  - Evaluation Pipeline: evaluation_pipeline.md
+  - Results Format: results_format.md
+  - Configuration: configuration.md
   - Reproducing the Paper: reproducing_paper.md
   - Scripts & Evaluation: scripts.md
-  - Configuration: configuration.md
-  - Results Format: results_format.md
-  - HPC Setup: hpc.md
   - Research Reuse: research_reuse.md
   - Contributing: contributing.md
 

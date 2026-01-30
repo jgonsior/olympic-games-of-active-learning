@@ -39,11 +39,12 @@ The framework evaluates:
 | Document | Description |
 |----------|-------------|
 | [Pipeline](pipeline.md) | Step-by-step guide to the sequential experiment pipeline |
+| [HPC Setup](hpc.md) | **HPC Runbook** - Running experiments on HPC clusters with SLURM |
+| [Evaluation Pipeline](evaluation_pipeline.md) | **Canonical evaluation guide** - From raw outputs to paper figures |
+| [Results Format](results_format.md) | Output paths, file formats, and result schemas |
+| [Configuration](configuration.md) | Shared configuration system explained |
 | [Reproducing the Paper](reproducing_paper.md) | Complete workflow to reproduce OPARA archive results |
 | [Scripts & Evaluation](scripts.md) | Utility scripts and evaluation analysis scripts |
-| [Configuration](configuration.md) | Shared configuration system explained |
-| [Results Format](results_format.md) | Output paths, file formats, and result schemas |
-| [HPC Setup](hpc.md) | Running experiments on HPC clusters with SLURM |
 | [Research Reuse](research_reuse.md) | Extending the framework for your research |
 | [Contributing](contributing.md) | Development setup and contribution guidelines |
 
@@ -127,7 +128,7 @@ python 02_run_experiment.py --EXP_TITLE test --WORKER_INDEX 0
 
 | Directory | Status |
 |-----------|--------|
-| `analyse_results/` | **Deprecated / not used.** Prefer `eva_scripts/` for analysis. |
+| `analyse_results/` | **Deprecated / not used.** Use `eva_scripts/` for analysis. See [Evaluation Pipeline](evaluation_pipeline.md). |
 
 ## License
 
