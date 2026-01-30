@@ -293,25 +293,114 @@ Based on OGAL's experimental design:
 
 ---
 
-## Using the DOI Artifact
+## Using the OPARA Archived Results
 
-The archived companion at [10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862) provides:
+The complete experiment results (4.6M+ hyperparameter combinations) are archived at **[DOI: 10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862)**.
 
-- Frozen snapshots of experimental data
-- Released experimental bundles
-- Long-term preservation of results
+### What's in the Archive
+
+The OPARA archive (`full_exp_jan.zip`) contains:
+
+| Content | Description |
+|---------|-------------|
+| **Raw experiment results** | Per-cycle metrics for all 4.6M hyperparameter combinations |
+| **28 AL strategies** | From ALiPy, libact, scikit-activeml, small-text, playground |
+| **92 datasets** | Binary and multi-class classification tasks |
+| **Computed metrics** | AUC, ramp-up, plateau, time-lag, distance metrics |
+| **Dataset categorizations** | Per-sample hardness metrics |
+| **Workload files** | Complete experiment definitions |
+
+### Archive Structure
+
+```
+full_exp_jan/
+├── ALIPY_RANDOM/              # Strategy results
+│   ├── Iris/                  # Dataset results
+│   │   ├── accuracy.csv.xz
+│   │   ├── weighted_f1-score.csv.xz
+│   │   ├── full_auc_accuracy.csv.xz
+│   │   └── ...
+│   ├── wine_origin/
+│   └── ...
+├── ALIPY_UNCERTAINTY_LC/
+├── SKACTIVEML_RANDOM/
+├── ... (28 strategies total)
+├── 05_done_workload.csv       # 4.5M+ completed experiments
+└── 05_failed_workloads.csv    # Failed experiments with errors
+```
 
 ### Integration with OGAL
 
-If the archived artifact contains datasets or results that can be integrated:
+The archive format matches OGAL's output exactly. To use the archived data:
 
-1. Download the artifact from the DOI landing page
-2. Extract to appropriate directories:
-   - Datasets → `DATASETS_PATH/`
-   - Results → `OUTPUT_PATH/<EXP_TITLE>/`
-3. Update configuration to reference these paths
+#### 1. Download and Extract
 
-**Note:** The repository must explicitly support the artifact's file structure. Check the artifact's README for compatibility information.
+```bash
+# Download from OPARA portal (requires manual download)
+# Extract selectively (full archive is several TB):
+unzip -q full_exp_jan.zip "full_exp_jan/ALIPY_RANDOM/*" "full_exp_jan/05_*.csv"
+```
+
+#### 2. Configure OGAL to Point to Archived Data
+
+```ini
+# .server_access_credentials.cfg
+[LOCAL]
+LOCAL_OUTPUT_PATH = /path/to/full_exp_jan/
+```
+
+#### 3. Run Evaluation Scripts on Archived Data
+
+```bash
+# Regenerate paper leaderboard rankings
+python -m eva_scripts.calculate_leaderboard_rankings --EXP_TITLE full_exp_jan
+
+# Compute metric correlations
+python -m eva_scripts.basic_metrics_correlation --EXP_TITLE full_exp_jan
+
+# Analyze runtime
+python -m eva_scripts.runtime --EXP_TITLE full_exp_jan
+```
+
+### Building on the Archived Results
+
+#### Compare New Strategies Against Archive
+
+```python
+import pandas as pd
+
+# Load archived results
+archived_accuracy = pd.read_csv(
+    "full_exp_jan/ALIPY_RANDOM/Iris/full_auc_accuracy.csv.xz"
+)
+
+# Load your new experiment results
+your_results = pd.read_csv(
+    "your_exp/YOUR_NEW_STRATEGY/Iris/full_auc_accuracy.csv.xz"
+)
+
+# Merge on EXP_UNIQUE_ID (matching hyperparameter combinations)
+comparison = archived_accuracy.merge(
+    your_results, 
+    on="EXP_UNIQUE_ID", 
+    suffixes=("_archived", "_new")
+)
+```
+
+#### Extend with New Datasets
+
+Run OGAL experiments on new datasets using the same hyperparameter grid, then combine with archived results for extended analysis.
+
+### File Size Considerations
+
+| Subset | Approximate Size |
+|--------|-----------------|
+| Single strategy/dataset | ~50-500 MB |
+| All results for one strategy | ~5-50 GB |
+| Complete archive | Several TB |
+| Dense workload subset | ~100 GB |
+
+**Tip:** Start with the dense workload subset (`06_dense_workload.csv`) which contains ~1.1M complete hyperparameter combinations with no missing values.
 
 ---
 

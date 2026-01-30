@@ -296,3 +296,143 @@ for csv_file in results_dir.glob("**/*.csv"):
     except Exception as e:
         broken_files.append((csv_file, str(e)))
 ```
+
+---
+
+## OPARA Archived Results
+
+The complete experiment results from the paper are archived at **[DOI: 10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862)**.
+
+### Archive Structure
+
+The archive contains a ZIP file (`full_exp_jan.zip`) with the following structure:
+
+```
+full_exp_jan/
+├── <STRATEGY_NAME>/                    # e.g., ALIPY_BMDR/, ALIPY_CORESET_GREEDY/
+│   └── <DATASET_NAME>/                 # e.g., Bioresponse/, Iris/
+│       ├── accuracy.csv.xz             # Per-cycle accuracy
+│       ├── weighted_f1-score.csv.xz    # Per-cycle weighted F1
+│       ├── macro_f1-score.csv.xz       # Per-cycle macro F1
+│       ├── query_selection_time.csv.xz # Query selection timing
+│       ├── learner_training_time.csv.xz # Model training timing
+│       ├── y_pred_train.csv.xz.parquet # Train predictions
+│       ├── y_pred_test.csv.xz.parquet  # Test predictions
+│       ├── selected_indices.csv.xz     # Selected sample indices
+│       │
+│       │── # Aggregated metrics (computed by 04_calculate_advanced_metrics.py)
+│       ├── full_auc_accuracy.csv.xz
+│       ├── first_5_accuracy.csv.xz
+│       ├── last_5_accuracy.csv.xz
+│       ├── final_value_accuracy.csv.xz
+│       ├── full_auc_weighted_f1-score.csv.xz
+│       ├── full_auc_macro_f1-score.csv.xz
+│       │
+│       │── # Dataset categorizations (computed by 03_calculate_dataset_categorizations.py)
+│       ├── AVERAGE_UNCERTAINTY.csv.xz
+│       ├── CLOSENESS_TO_CLUSTER_CENTER.csv.xz
+│       ├── CLOSENESS_TO_DECISION_BOUNDARY.csv.xz
+│       ├── CLOSENESS_TO_SAMPLES_OF_OTHER_CLASS.csv.xz
+│       ├── CLOSENESS_TO_SAMPLES_OF_SAME_CLASS.csv.xz
+│       ├── COUNT_WRONG_CLASSIFICATIONS.csv.xz
+│       ├── IMPROVES_ACCURACY_BY.csv.xz
+│       ├── INCLUDED_IN_OPTIMAL_STRATEGY.csv.xz
+│       ├── MELTING_POT_REGION.csv.xz
+│       ├── OUTLIERNESS.csv.xz
+│       ├── REGION_DENSITY.csv.xz
+│       ├── SWITCHES_CLASS_OFTEN.csv.xz
+│       │
+│       │── # Time-lag variants (for correlation analysis)
+│       ├── accuracy_time_lag.csv.xz
+│       ├── *_time_lag.csv.xz           # Time-lagged versions of all metrics
+│       │
+│       │── # Distance metrics
+│       ├── avg_dist_batch.csv.xz
+│       ├── avg_dist_labeled.csv.xz
+│       └── avg_dist_unlabeled.csv.xz
+├── 05_done_workload.csv                # Completed experiment configurations
+├── 05_failed_workloads.csv             # Failed experiments
+└── 01_workload.csv                     # Full workload definition
+```
+
+### Strategies in Archive
+
+The archive contains results for 28 AL strategies from 5 frameworks:
+
+| Framework | Strategies |
+|-----------|------------|
+| **ALiPy** | ALIPY_BMDR, ALIPY_CORESET_GREEDY, ALIPY_DENSITY_WEIGHTED, ALIPY_GRAPH_DENSITY, ALIPY_HIERARCHICAL, ALIPY_LAL, ALIPY_QBC, ALIPY_QUERY_BY_COMMITTEE, ALIPY_RANDOM, ALIPY_UNCERTAINTY_* |
+| **libact** | LIBACT_* strategies |
+| **scikit-activeml** | SKACTIVEML_* strategies |
+| **small-text** | SMALL_TEXT_* strategies |
+| **playground** | PLAYGROUND_* strategies |
+
+### Datasets in Archive
+
+The archive includes results for 92 datasets covering:
+
+- **Binary classification**: 60 datasets
+- **Multi-class classification**: 32 datasets (up to 31 classes)
+- **Sample sizes**: 100 to 20,000 samples
+- **Feature dimensions**: 2 to 1,776 features
+
+### Using Archived Results
+
+#### 1. Download and Extract
+
+```bash
+# Download from OPARA (manual download required due to authentication)
+# Then extract:
+unzip full_exp_jan.zip
+```
+
+#### 2. Load into OGAL for Analysis
+
+Configure your `.server_access_credentials.cfg` to point to the extracted data:
+
+```ini
+[LOCAL]
+LOCAL_DATASETS_PATH = /path/to/datasets/
+LOCAL_OUTPUT_PATH = /path/to/full_exp_jan/
+```
+
+#### 3. Run Evaluation Scripts
+
+The `eva_scripts/` can directly analyze the archived data:
+
+```python
+# Set experiment title to match archive
+# python -m eva_scripts.calculate_leaderboard_rankings --EXP_TITLE full_exp_jan
+
+# The archive structure matches OGAL's output format exactly
+import pandas as pd
+
+# Load completed workload
+done = pd.read_csv("full_exp_jan/05_done_workload.csv")
+print(f"Total completed experiments: {len(done)}")
+
+# Load metrics for a specific strategy/dataset combination
+accuracy = pd.read_csv(
+    "full_exp_jan/ALIPY_CORESET_GREEDY/Bioresponse/accuracy.csv.xz"
+)
+print(f"Experiments for this combination: {len(accuracy)}")
+```
+
+#### 4. Reproduce Paper Figures
+
+The evaluation scripts can regenerate paper figures from the archived data:
+
+```bash
+# After setting OUTPUT_PATH to point to the extracted archive:
+python -m eva_scripts.basic_metrics_correlation --EXP_TITLE full_exp_jan
+python -m eva_scripts.calculate_leaderboard_rankings --EXP_TITLE full_exp_jan
+python -m eva_scripts.runtime --EXP_TITLE full_exp_jan
+```
+
+### File Size Considerations
+
+The complete archive is several terabytes when uncompressed. For initial exploration, you can:
+
+1. **Extract selectively**: Only extract specific strategies or datasets
+2. **Use dense workload**: The dense subset contains ~1.1M complete hyperparameter combinations
+3. **Start with metrics only**: Skip `y_pred_*.parquet` files (prediction arrays) if not needed
