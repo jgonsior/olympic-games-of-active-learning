@@ -27,9 +27,22 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install dependencies
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Python dependencies
         run: |
           pip install mkdocs-material pymdown-extensions mkdocs-mermaid2-plugin
+
+      - name: Install Mermaid CLI
+        run: |
+          npm install -g @mermaid-js/mermaid-cli
+
+      - name: Pre-render Mermaid diagrams to SVG
+        run: |
+          python scripts/render_mermaid.py
 
       - name: Build documentation
         run: mkdocs build --strict
