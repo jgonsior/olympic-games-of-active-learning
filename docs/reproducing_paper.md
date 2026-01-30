@@ -164,8 +164,10 @@ EXP_GRID_STRATEGY:
 
 ### Other Hyperparameters
 
+The paper defines the hyperparameter grid as the Cartesian product **𝕊 × 𝔻 × 𝕋 × 𝕀 × 𝔹 × 𝕃**.
+
 ```yaml
-# Metrics to record
+# Metrics to record (𝕄 in paper)
 METRICS:
   - Predicted_Samples
   - Selected_Indices
@@ -175,20 +177,20 @@ METRICS:
 # Random seed (fixed for reproducibility)
 EXP_GRID_RANDOM_SEED: [0]
 
-# Initial labeled set variations (20 different start points)
+# Initial labeled set variations (𝕀 in paper - 20 different start sets)
 # Note: [0-19] is OGAL shorthand syntax that expands to [0, 1, 2, ..., 19]
 EXP_GRID_START_POINT: [0-19]
 
-# Number of AL iterations
+# Number of AL cycles (c in paper - 100 iterations)
 EXP_GRID_NUM_QUERIES: [100]
 
-# Batch sizes to evaluate
+# Batch sizes to evaluate (𝔹 in paper)
 EXP_GRID_BATCH_SIZE: [1, 5, 10, 20, 50, 100]
 
-# Learner models
+# Learner models (𝕃 in paper)
 EXP_GRID_LEARNER_MODEL: [MLP, RBF_SVM, RF]
 
-# Train/test split buckets (5 different splits)
+# Train/test split buckets (𝕋 in paper - 5 different splits)
 # Note: [0-4] is OGAL shorthand syntax that expands to [0, 1, 2, 3, 4]
 EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0-4]
 ```
@@ -198,9 +200,11 @@ EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0-4]
 
 ### Total Hyperparameter Combinations
 
+Using the paper's notation:
+
 ```
-92 datasets × 28 strategies × 20 start points × 6 batch sizes × 3 learners × 5 splits
-= 92 × 28 × 20 × 6 × 3 × 5
+|𝔻| × |𝕊| × |𝕀| × |𝔹| × |𝕃| × |𝕋|
+= 92 datasets × 28 strategies × 20 start sets × 6 batch sizes × 3 learners × 5 splits
 = 4,636,800 experiments
 ```
 

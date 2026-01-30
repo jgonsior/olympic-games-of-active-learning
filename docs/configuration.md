@@ -2,6 +2,31 @@
 
 OGAL uses a shared configuration system that controls all aspects of the experimental pipeline. This document explains the configuration files, their structure, and how they are loaded by each script.
 
+## Paper Terminology Reference
+
+The OGAL configuration parameters map to the notation used in the research paper ([arXiv:2506.03817](https://arxiv.org/abs/2506.03817)):
+
+| Paper Symbol | Paper Term | OGAL Config Parameter | Description |
+|-------------|------------|----------------------|-------------|
+| 𝔻 | Dataset | `EXP_GRID_DATASET` | Dataset identifiers |
+| 𝕊 | AL Strategy | `EXP_GRID_STRATEGY` | Query strategy selection |
+| 𝕃 | Learner Model | `EXP_GRID_LEARNER_MODEL` | ML classification model |
+| 𝔹 | Batch Size | `EXP_GRID_BATCH_SIZE` | Samples queried per AL cycle |
+| 𝕋 | Train-Test-Split | `EXP_GRID_TRAIN_TEST_BUCKET_SIZE` | Data partitioning |
+| 𝕀 | Initial Start Set | `EXP_GRID_START_POINT` | Initial labeled samples |
+| 𝕄 | Metric | `METRICS` | Evaluation metrics |
+| c | AL Cycles | `EXP_GRID_NUM_QUERIES` | Number of iterations |
+
+The paper defines a single AL experiment as:
+
+> **E = (𝒮, D, 𝒯, ℐ, M, b, c, ℒ)**
+>
+> A combination of hyperparameters for simulating one AL strategy on a dataset.
+
+The experimental grid is the Cartesian product: **𝕊 × 𝔻 × 𝕋 × 𝕀 × 𝔹 × 𝕃**
+
+---
+
 ## Configuration Files Overview
 
 | File | Purpose | Format |
@@ -94,30 +119,40 @@ experiment_name:
 
 #### Grid Parameters (EXP_GRID_*)
 
-These define the Cartesian product for the experiment workload:
+These define the Cartesian product for the experiment workload. Each maps to a hyperparameter from the paper's notation:
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `EXP_GRID_DATASET` | List | Dataset identifiers (names or IDs) |
-| `EXP_GRID_STRATEGY` | List | AL strategy names |
-| `EXP_GRID_LEARNER_MODEL` | List | Learner model types |
-| `EXP_GRID_BATCH_SIZE` | List[int] | Query batch sizes |
-| `EXP_GRID_RANDOM_SEED` | List[int] | Random seeds for reproducibility |
-| `EXP_GRID_START_POINT` | List[int] | Initial labeled sample set indices |
-| `EXP_GRID_TRAIN_TEST_BUCKET_SIZE` | List[int] | Train/test split bucket indices |
-| `EXP_GRID_NUM_QUERIES` | List[int] | Number of AL iterations |
+| Field | Type | Paper Symbol | Description |
+|-------|------|--------------|-------------|
+| `EXP_GRID_DATASET` | List | 𝔻 | Dataset identifiers (names or IDs) |
+| `EXP_GRID_STRATEGY` | List | 𝕊 | AL query strategy names |
+| `EXP_GRID_LEARNER_MODEL` | List | 𝕃 | Learner model types |
+| `EXP_GRID_BATCH_SIZE` | List[int] | 𝔹 | Query batch sizes (samples per AL cycle) |
+| `EXP_GRID_RANDOM_SEED` | List[int] | - | Random seeds for reproducibility |
+| `EXP_GRID_START_POINT` | List[int] | 𝕀 | Initial labeled set indices |
+| `EXP_GRID_TRAIN_TEST_BUCKET_SIZE` | List[int] | 𝕋 | Train/test split bucket indices |
+| `EXP_GRID_NUM_QUERIES` | List[int] | c | Number of AL cycles/iterations |
 
-#### Metrics
+#### Metrics (𝕄 in paper)
 
 | Field | Type | Description |
 |-------|------|-------------|
 | `METRICS` | List[str] | Metrics to compute per AL cycle |
 
-Available metrics:
-- `Standard_ML_Metrics`: Accuracy, F1, precision, recall
-- `Selected_Indices`: Which samples were selected
+Available metrics (corresponds to paper's aggregation-metrics):
+
+- `Standard_ML_Metrics`: Accuracy, F1-score, precision, recall (standard ML metrics from paper)
+- `Selected_Indices`: Which samples were queried (R(Q) in paper notation)
 - `Timing_Metrics`: Query selection timing
 - `Predicted_Samples`: Model predictions
+
+The paper discusses several aggregation-metrics for evaluating learning curves:
+- **Full AUC**: Area under entire learning curve
+- **Ramp-up AUC**: Early-phase performance (initial AL cycles)
+- **Plateau AUC**: Late-phase performance (saturation)
+- **Final Value**: Last AL cycle's metric value
+- **First-5 / Last-5**: Mean of first/last 5 iterations
+
+These are computed by `04_calculate_advanced_metrics.py`.
 
 ### Range Syntax
 

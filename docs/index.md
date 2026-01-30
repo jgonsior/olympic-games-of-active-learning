@@ -4,19 +4,33 @@ Welcome to the **Olympic Games of Active Learning (OGAL)** documentation. This f
 
 ## What is OGAL?
 
-OGAL is a large-scale experimental framework designed to systematically evaluate Active Learning (AL) strategies. As described in the research paper, AL is rarely used in real-world applications due to complexity and lack of trust in its effectiveness. This framework addresses these challenges by:
+OGAL is a large-scale experimental framework designed to systematically evaluate Active Learning (AL) strategies. As described in the research paper ([arXiv:2506.03817](https://arxiv.org/abs/2506.03817)), AL is rarely used in real-world applications due to complexity and lack of trust in its effectiveness. This framework addresses these challenges by:
 
 - Compiling a **hyperparameter grid of 4.6+ million combinations**
 - Recording performance across the **largest conducted AL study to date**
 - Analyzing the **impact of each hyperparameter** on experiment results
 
+### Paper Terminology
+
+The paper defines an AL experiment as **E = (𝒮, D, 𝒯, ℐ, M, b, c, ℒ)** — a combination of hyperparameters:
+
+| Symbol | Term | OGAL Parameter |
+|--------|------|----------------|
+| 𝔻 | Dataset | `EXP_GRID_DATASET` |
+| 𝕊 | AL Strategy (Query Strategy) | `EXP_GRID_STRATEGY` |
+| 𝕃 | Learner Model | `EXP_GRID_LEARNER_MODEL` |
+| 𝔹 | Batch Size | `EXP_GRID_BATCH_SIZE` |
+| 𝕋 | Train-Test-Split | `EXP_GRID_TRAIN_TEST_BUCKET_SIZE` |
+| 𝕀 | Initial Start Set | `EXP_GRID_START_POINT` |
+| c | AL Cycles | `EXP_GRID_NUM_QUERIES` |
+
 The framework evaluates:
 
-- **28 AL strategies** from 5 frameworks (ALiPy, libact, small-text, scikit-activeml, playground)
-- **92 datasets** from OpenML, Kaggle, and UCI
-- **3 learner models**: Random Forest, MLP, SVM
-- **6 batch sizes**: 1, 5, 10, 20, 50, 100
-- **5 train-test splits × 20 start points** per dataset
+- **28 AL strategies (𝕊)** from 5 frameworks (ALiPy, libact, small-text, scikit-activeml, playground)
+- **92 datasets (𝔻)** from OpenML, Kaggle, and UCI
+- **3 learner models (𝕃)**: Random Forest, MLP, SVM
+- **6 batch sizes (𝔹)**: 1, 5, 10, 20, 50, 100
+- **5 train-test splits (𝕋) × 20 start sets (𝕀)** per dataset
 
 ## Quick Links
 

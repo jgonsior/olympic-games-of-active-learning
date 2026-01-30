@@ -2,6 +2,15 @@
 
 This document provides a complete runbook for the OGAL sequential pipeline. Each script must be executed in order, as outputs from one step serve as inputs to the next.
 
+## Paper Context
+
+The pipeline implements the hyperparameter grid search described in [arXiv:2506.03817](https://arxiv.org/abs/2506.03817). In the paper's notation:
+
+- **Experiment E = (𝒮, D, 𝒯, ℐ, M, b, c, ℒ)** — a single AL simulation
+- **Experimental grid = 𝕊 × 𝔻 × 𝕋 × 𝕀 × 𝔹 × 𝕃** — Cartesian product of hyperparameters
+- **Results R(M)** — time series of metrics M over AL cycles
+- **Results R(Q)** — time series of queried sample indices
+
 ## Pipeline Data Flow
 
 ```mermaid
@@ -139,7 +148,14 @@ python 00_download_datasets.py
 
 ### Purpose
 
-Generates the experiment workload by creating a Cartesian product of all hyperparameter combinations (datasets × strategies × models × batch sizes × seeds × start points × train/test buckets).
+Generates the experiment workload by creating the Cartesian product **𝕊 × 𝔻 × 𝕋 × 𝕀 × 𝔹 × 𝕃** of all hyperparameter combinations:
+
+- Datasets (𝔻)
+- AL Strategies (𝕊)
+- Learner Models (𝕃)
+- Batch Sizes (𝔹)
+- Train/Test Splits (𝕋)
+- Start Sets (𝕀)
 
 ### Configuration
 
