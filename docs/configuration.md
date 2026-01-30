@@ -39,7 +39,7 @@ The experimental grid is the Cartesian product: **𝕊 × 𝔻 × 𝕋 × 𝕀 �
 
 **File:** `.server_access_credentials.cfg` (gitignored)
 
-This file defines paths for both local development and HPC cluster environments. The `RUNNING_ENVIRONMENT` setting (default: `local`) determines which section is active.
+This file defines paths for both local development and HPC cluster environments. The `RUNNING_ENVIRONMENT` setting determines which section is active (default: `local`; source: `misc/config.py::Config.RUNNING_ENVIRONMENT`).
 
 ### Structure
 
