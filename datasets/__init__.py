@@ -1,3 +1,20 @@
+"""Dataset loading and management for OGAL.
+
+This module provides utilities for loading datasets from various sources
+(OpenML, Kaggle, local files) and preparing them for Active Learning experiments.
+
+Key components:
+    - DATASET: Enum of available datasets (dynamically populated from YAML configs)
+    - load_dataset: Load a dataset and its train/test split information
+    - split_dataset: Extract features, labels, and indices for AL experiments
+
+The DATASET enum is populated at import time from:
+    - resources/kaggle_datasets.yaml
+    - resources/openml_datasets.yaml
+    - resources/local_datasets.yaml (if exists)
+
+For more details, see docs/pipeline.md
+"""
 from __future__ import annotations
 import ast
 

@@ -1,3 +1,23 @@
+"""Central configuration management for OGAL.
+
+This module provides the Config class that manages all configuration for
+OGAL experiments. Configuration is loaded from multiple sources with the
+following priority (highest first):
+    1. CLI arguments
+    2. Server credentials file (.server_access_credentials.cfg)
+    3. Experiment YAML (resources/exp_config.yaml)
+    4. Workload row (when WORKER_INDEX is provided)
+    5. Default values
+
+Key features:
+    - Automatic CLI argument generation from type hints
+    - Support for both local and HPC environments
+    - Automatic path resolution based on RUNNING_ENVIRONMENT
+    - Workload row loading for experiment execution
+    - Configuration persistence to YAML
+
+For more details, see docs/configuration.md
+"""
 import argparse
 import random
 import sys
