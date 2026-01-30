@@ -3,18 +3,21 @@
 if (typeof document$ !== 'undefined') {
   // Material for MkDocs with instant loading
   document$.subscribe(function() {
-    mermaid.initialize({
-      startOnLoad: true,
-      theme: 'default'
-    });
-    mermaid.contentLoaded();
+    if (typeof mermaid !== 'undefined') {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: 'default'
+      });
+    }
   });
 } else {
   // Fallback for standard page loads
   document.addEventListener('DOMContentLoaded', function() {
-    mermaid.initialize({
-      startOnLoad: true,
-      theme: 'default'
-    });
+    if (typeof mermaid !== 'undefined') {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: 'default'
+      });
+    }
   });
 }
