@@ -2,6 +2,11 @@
 
 This document provides the complete workflow used to generate the results archived at [DOI:10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862), which correspond to the findings in the paper [arXiv:2506.03817](https://arxiv.org/abs/2506.03817) "Survey of Active Learning Hyperparameters".
 
+!!! tip "Related Documentation"
+    - **[Evaluation Pipeline](evaluation_pipeline.md)**: Step-by-step guide for running evaluation scripts and generating paper figures
+    - **[HPC Setup](hpc.md)**: Detailed guide for HPC-scale experiment execution
+    - **[Results Format](results_format.md)**: Schema reference for output files
+
 ## Overview
 
 The OPARA archive (`full_exp_jan.zip`) was generated using the `full_exp_jan` experiment configuration defined in `resources/exp_config.yaml`. This document details:
