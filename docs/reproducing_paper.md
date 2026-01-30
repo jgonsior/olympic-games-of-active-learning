@@ -176,6 +176,7 @@ METRICS:
 EXP_GRID_RANDOM_SEED: [0]
 
 # Initial labeled set variations (20 different start points)
+# Note: [0-19] is OGAL shorthand syntax that expands to [0, 1, 2, ..., 19]
 EXP_GRID_START_POINT: [0-19]
 
 # Number of AL iterations
@@ -188,8 +189,12 @@ EXP_GRID_BATCH_SIZE: [1, 5, 10, 20, 50, 100]
 EXP_GRID_LEARNER_MODEL: [MLP, RBF_SVM, RF]
 
 # Train/test split buckets (5 different splits)
+# Note: [0-4] is OGAL shorthand syntax that expands to [0, 1, 2, 3, 4]
 EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0-4]
 ```
+
+!!! note "OGAL YAML Shorthand"
+    The notation `[0-19]` is OGAL-specific shorthand that automatically expands to `[0, 1, 2, ..., 19]`. This is parsed by the Config class when loading experiment configurations.
 
 ### Total Hyperparameter Combinations
 
@@ -212,10 +217,21 @@ conda activate al_olympics_env
 poetry install
 
 # 2. Configure paths in .server_access_credentials.cfg
-# [HPC]
-# HPC_DATASETS_PATH = /path/to/datasets/
-# HPC_OUTPUT_PATH = /path/to/output/
 ```
+
+Create `.server_access_credentials.cfg` with at minimum:
+
+```ini
+[HPC]
+HPC_DATASETS_PATH = /path/to/hpc/datasets/
+HPC_OUTPUT_PATH = /path/to/hpc/output/
+
+[LOCAL]
+LOCAL_DATASETS_PATH = /path/to/local/datasets/
+LOCAL_OUTPUT_PATH = /path/to/local/output/
+```
+
+See [Configuration](configuration.md) for a complete list of configuration fields.
 
 ### Phase 2: Download Datasets
 
@@ -370,27 +386,41 @@ python -m scripts.create_auc_selected_ts --EXP_TITLE full_exp_jan
 
 ### Workload Reduction Analysis
 
+The workload reduction analysis studies how experiment results change when using fewer hyperparameter combinations. This is used for the paper's RQ2 about minimal hyperparameter grids.
+
 ```bash
 # Analyze workload reduction at different thresholds
+# The nested loop runs multiple iterations per threshold to ensure statistical robustness
+# - create: generates the reduced workload definition
+# - local: computes leaderboard rankings on reduced workload
+# - reduce: stores results indexed by worker for later aggregation
+
 for threshold in 0.3 0.4 0.5 0.6 0.7 0.8 0.9 0.95 0.99; do
     for i in $(seq 0 50); do
+        # Create workload for this iteration
         python -m eva_scripts.workload_reduction \
             --EXP_TITLE full_exp_jan \
             --EVA_WORKLOAD_REDUCTION_THRESHOLD $threshold \
             --EVA_MODE create \
             --WORKER_INDEX $i
         
+        # Compute rankings on reduced workload
         python -m eva_scripts.workload_reduction \
             --EXP_TITLE full_exp_jan \
             --EVA_WORKLOAD_REDUCTION_THRESHOLD $threshold \
             --EVA_MODE local
         
+        # Store iteration results
         python -m eva_scripts.workload_reduction \
             --EXP_TITLE full_exp_jan \
             --EVA_WORKLOAD_REDUCTION_THRESHOLD $threshold \
             --EVA_MODE reduce \
             --WORKER_INDEX $i
     done
+    
+    # Move results to threshold-specific directory
+    mv OUTPUT_PATH/full_exp_jan/workloads/workload_reduction \
+       OUTPUT_PATH/full_exp_jan/workloads/workload_reduction_$(echo $threshold | tr -d '.')
 done
 ```
 
@@ -415,7 +445,7 @@ python 01_create_workload.py --USE_EXP_YAML full_exp_jan
 sbatch OUTPUT_PATH/full_exp_jan/02_slurm.slurm
 
 # Step 3: Calculate dataset categorizations
-python 03_calculate_dataset_categorizations.py --EXP_TITLE full_exp_jan --SAMPLES_CATEGORIZER _ALL
+python 03_calculate_dataset_categorizations.py --EXP_TITLE full_exp_jan --SAMPLES_CATEGORIZER _ALL --EVA_MODE local
 
 # Step 4: Calculate advanced metrics
 python 04_calculate_advanced_metrics.py --EXP_TITLE full_exp_jan --COMPUTED_METRICS _ALL --EVA_MODE local
