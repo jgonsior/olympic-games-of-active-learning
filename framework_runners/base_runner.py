@@ -1,3 +1,25 @@
+"""Base Active Learning experiment runner.
+
+This module provides the abstract base class for all AL framework runners.
+Each supported AL framework (ALiPy, libact, small-text, scikit-activeml, etc.)
+has a concrete implementation that inherits from AL_Experiment.
+
+Key components:
+    - AL_Experiment: Abstract base class defining the AL loop interface
+    
+The AL loop follows this structure:
+    1. Load dataset and create train/test splits
+    2. Initialize the learner model
+    3. For each iteration:
+        a. Run metric pre-hooks
+        b. Query the AL strategy for samples to label
+        c. Run metric post-hooks
+        d. Retrain the model with new labels
+        e. Record metrics
+    4. Save all metrics to CSV files
+
+For more details, see docs/pipeline.md
+"""
 from __future__ import annotations
 
 from abc import ABC, abstractmethod

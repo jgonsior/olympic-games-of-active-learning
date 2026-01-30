@@ -1,0 +1,65 @@
+site_name: OGAL - Olympic Games of Active Learning
+site_description: Documentation for the OGAL Active Learning Benchmarking Framework
+site_url: https://jgonsior.github.io/olympic-games-of-active-learning/
+repo_url: https://github.com/jgonsior/olympic-games-of-active-learning
+repo_name: jgonsior/olympic-games-of-active-learning
+
+theme:
+  name: material
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+nav:
+  - Home: index.md
+  - Pipeline: pipeline.md
+  - Configuration: configuration.md
+  - Results Format: results_format.md
+  - HPC Setup: hpc.md
+  - Research Reuse: research_reuse.md
+  - Contributing: contributing.md
+
+plugins:
+  - search
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - pymdownx.details
+  - tables
+  - toc:
+      permalink: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/jgonsior/olympic-games-of-active-learning

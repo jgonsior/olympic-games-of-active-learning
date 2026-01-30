@@ -1,3 +1,27 @@
+"""Base metric class for OGAL experiments.
+
+This module provides the abstract base class for all metrics computed
+during Active Learning experiments. Metrics are recorded at each AL cycle
+and saved to CSV files at experiment completion.
+
+Key components:
+    - Base_Metric: Abstract base class with hook methods for metric computation
+
+Available hooks (called by AL_Experiment during each cycle):
+    - pre_query_selection_hook: Before AL strategy selects samples
+    - post_query_selection_hook: After selection, before training
+    - pre_retraining_of_learner_hook: Before model.fit()
+    - post_retraining_of_learner_hook: After model.fit()
+    - save_metrics: At experiment end, writes all values to CSV
+
+Concrete implementations:
+    - Standard_ML_Metrics: Accuracy, F1, precision, recall
+    - Selected_Indices: Track which samples were selected
+    - Timing_Metrics: Query selection and retraining timing
+    - Predicted_Samples: Model predictions per cycle
+
+For more details, see docs/results_format.md
+"""
 from __future__ import annotations
 from abc import ABC
 import csv
