@@ -44,7 +44,7 @@ DATASETS_PATH/
 └── my_new_dataset_split.csv    # Train/test split indices
 ```
 
-**Dataset CSV format:**
+**Dataset CSV format** (source: `datasets/__init__.py::load_dataset` - expects `LABEL_TARGET` column):
 
 ```csv
 feature1,feature2,...,featureN,LABEL_TARGET

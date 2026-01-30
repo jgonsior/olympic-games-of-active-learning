@@ -140,10 +140,10 @@ These define the Cartesian product for the experiment workload. Each maps to a h
 
 Available metrics (corresponds to paper's aggregation-metrics):
 
-- `Standard_ML_Metrics`: Accuracy, F1-score, precision, recall (standard ML metrics from paper)
-- `Selected_Indices`: Which samples were queried (R(Q) in paper notation)
-- `Timing_Metrics`: Query selection timing
-- `Predicted_Samples`: Model predictions
+- `Standard_ML_Metrics`: Accuracy, F1-score, precision, recall (source: `metrics/Standard_ML_Metrics.py` - standard ML metrics from paper)
+- `Selected_Indices`: Which samples were queried (R(Q) in paper notation; source: `metrics/Selected_Indices.py`)
+- `Timing_Metrics`: Query selection timing (source: `metrics/Timing_Metrics.py`)
+- `Predicted_Samples`: Model predictions (source: `metrics/Predicted_Samples.py`)
 
 The paper discusses several aggregation-metrics for evaluating learning curves:
 - **Full AUC**: Area under entire learning curve
@@ -156,7 +156,7 @@ These are computed by `04_calculate_advanced_metrics.py`.
 
 ### Range Syntax
 
-The YAML parser supports range syntax for consecutive integers:
+The YAML parser supports range syntax for consecutive integers (source: `misc/config.py::Config._load_from_yaml_file`, lines ~350-355):
 
 ```yaml
 # These are equivalent:

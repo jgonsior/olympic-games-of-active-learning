@@ -196,7 +196,7 @@ EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0-4]
 ```
 
 !!! note "OGAL YAML Shorthand"
-    The notation `[0-19]` is OGAL-specific shorthand that automatically expands to `[0, 1, 2, ..., 19]`. This is parsed by the Config class when loading experiment configurations.
+    The notation `[0-19]` is OGAL-specific shorthand that automatically expands to `[0, 1, 2, ..., 19]`. This is parsed by the Config class when loading experiment configurations (source: `misc/config.py::Config._load_from_yaml_file`).
 
 ### Total Hyperparameter Combinations
 

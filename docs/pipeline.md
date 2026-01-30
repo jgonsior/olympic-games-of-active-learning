@@ -124,7 +124,7 @@ Downloads and preprocesses datasets from OpenML and Kaggle, creating standardize
 
 | Path | Format | Description |
 |------|--------|-------------|
-| `DATASETS_PATH/<dataset>.csv` | CSV | Feature matrix with `LABEL_TARGET` column |
+| `DATASETS_PATH/<dataset>.csv` | CSV | Feature matrix with `LABEL_TARGET` column (source: `datasets/__init__.py::load_dataset`) |
 | `DATASETS_PATH/<dataset>_split.csv` | CSV | Train/test indices and start points |
 | `DATASETS_PATH/<dataset>_distances.csv.gzip` | Gzipped CSV | Pairwise distance matrix (optional) |
 
@@ -204,7 +204,7 @@ python 01_create_workload.py --EXP_TITLE test
 
 ### Workload Resume Behavior
 
-If `05_done_workload.csv` exists, the script automatically:
+If `05_done_workload.csv` exists, the script automatically (source: `01_create_workload.py` lines 105-121):
 
 1. Loads completed experiment IDs
 2. Excludes them from the new workload

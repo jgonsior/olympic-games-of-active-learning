@@ -153,7 +153,7 @@ mkdocs serve
 
 ### Validating Mermaid Rendering
 
-Mermaid diagrams are configured via `pymdownx.superfences` extension in `mkdocs.yml`:
+Mermaid diagrams are configured using **Approach B: mkdocs-material's Mermaid support via extra_javascript** in `mkdocs.yml`:
 
 1. **Check configuration**: Verify `mkdocs.yml` has:
    ```yaml
@@ -162,12 +162,15 @@ Mermaid diagrams are configured via `pymdownx.superfences` extension in `mkdocs.
          custom_fences:
            - name: mermaid
              class: mermaid
-             format: !!python/name:pymdownx.superfences.fence_code_format
+             format: !!python/name:pymdownx.superfences.fence_div_format
+   
+   extra_javascript:
+     - https://unpkg.com/mermaid@10/dist/mermaid.min.js
    ```
 
 2. **Test locally**: Run `mkdocs serve` and check that diagrams render as flowcharts/graphs (not raw text)
 
-3. **Valid syntax**: Mermaid blocks must use triple-backtick fences:
+3. **Valid syntax**: Mermaid blocks must use triple-backtick fences with `mermaid` language:
    ````markdown
    ```mermaid
    flowchart TD
