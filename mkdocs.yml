@@ -34,7 +34,9 @@ nav:
   - Pipeline: pipeline.md
   - HPC Setup: hpc.md
   - Evaluation Pipeline: evaluation_pipeline.md
+  - Eva Scripts: eva_scripts.md
   - Results Format: results_format.md
+  - Data Enrichment: data_enrichment.md
   - Configuration: configuration.md
   - Reproducing the Paper: reproducing_paper.md
   - Scripts & Evaluation: scripts.md

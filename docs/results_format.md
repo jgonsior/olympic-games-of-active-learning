@@ -2,6 +2,22 @@
 
 This document describes the output directory structure, file formats, and result schemas produced by OGAL experiments. All paths and schemas are verified against source code.
 
+!!! tip "Related Documentation"
+    - **[Eva Scripts](eva_scripts.md)**: Detailed catalog of evaluation scripts and their I/O
+    - **[Data Enrichment](data_enrichment.md)**: Protocol for adding new results
+    - **[Evaluation Pipeline](evaluation_pipeline.md)**: How raw outputs become final figures
+
+---
+
+## Results Overview
+
+OGAL results fall into two categories:
+
+| Category | Source | Examples | Typical Location |
+|----------|--------|----------|------------------|
+| **Raw Experiment Outputs** | `02_run_experiment.py` | `accuracy.csv`, `selected_indices.csv`, `05_done_workload.csv` | `<STRATEGY>/<DATASET>/` |
+| **Derived Artifacts** | `03_*.py`, `04_*.py`, `eva_scripts/` | `full_auc_*.csv.xz`, `_TS/*.parquet`, `plots/*.parquet` | `<STRATEGY>/<DATASET>/`, `_TS/`, `plots/` |
+
 ## Output Directory Structure
 
 All experiment outputs are stored under `OUTPUT_PATH/<EXP_TITLE>/`:
@@ -100,7 +116,73 @@ Same schema as `01_workload.csv` (no error column).
 
 ---
 
-## Per-Cycle Metric Files Schema
+## Minimal Example: How Keys Tie Together
+
+This section shows a concrete example of how `EXP_UNIQUE_ID` links data across files.
+
+### Example Workload Row
+
+From `05_done_workload.csv`:
+
+| EXP_UNIQUE_ID | EXP_DATASET | EXP_STRATEGY | EXP_LEARNER_MODEL | EXP_BATCH_SIZE | EXP_RANDOM_SEED | EXP_START_POINT | EXP_TRAIN_TEST_BUCKET_SIZE | EXP_NUM_QUERIES |
+|---------------|-------------|--------------|-------------------|----------------|-----------------|-----------------|---------------------------|-----------------|
+| 12345 | 3 | 7 | 1 | 5 | 0 | 0 | 0 | 100 |
+
+**Interpretation:**
+- `EXP_UNIQUE_ID=12345`: Unique identifier for this experiment run
+- `EXP_DATASET=3`: Dataset enum value (e.g., `DATASET.Iris.value = 3`)
+- `EXP_STRATEGY=7`: Strategy enum value (e.g., `AL_STRATEGY.ALIPY_RANDOM.value = 7`)
+- `EXP_LEARNER_MODEL=1`: Model enum value (e.g., `LEARNER_MODEL.RF.value = 1`)
+- `EXP_BATCH_SIZE=5`: Query 5 samples per AL cycle
+- `EXP_START_POINT=0`: Use first pre-generated initial labeled set
+- `EXP_TRAIN_TEST_BUCKET_SIZE=0`: Use first train/test split
+
+### Corresponding Metric File Row
+
+From `ALIPY_RANDOM/Iris/accuracy.csv.xz`:
+
+| EXP_UNIQUE_ID | 0 | 1 | 2 | 3 | ... | 99 |
+|---------------|-----|-----|-----|-----|-----|------|
+| 12345 | 0.72 | 0.78 | 0.82 | 0.85 | ... | 0.95 |
+
+**Interpretation:**
+- Same `EXP_UNIQUE_ID=12345` links this row to the workload
+- Columns `0`, `1`, `2`, ... represent AL cycle indices
+- Values are the metric (accuracy) at each cycle
+
+### Corresponding Derived Metric
+
+From `ALIPY_RANDOM/Iris/full_auc_accuracy.csv.xz`:
+
+| EXP_UNIQUE_ID | value |
+|---------------|-------|
+| 12345 | 0.87 |
+
+**Interpretation:**
+- `full_auc_accuracy` = Area under the accuracy learning curve
+- Computed by `04_calculate_advanced_metrics.py` from the per-cycle values
+
+### Corresponding Time Series Entry
+
+From `_TS/full_auc_accuracy.parquet`:
+
+| EXP_DATASET | EXP_STRATEGY | EXP_START_POINT | EXP_BATCH_SIZE | EXP_LEARNER_MODEL | EXP_TRAIN_TEST_BUCKET_SIZE | ix | EXP_UNIQUE_ID_ix | metric_value |
+|-------------|--------------|-----------------|----------------|-------------------|---------------------------|-----|------------------|--------------|
+| 3 | 7 | 0 | 5 | 1 | 0 | 0 | 12345_0 | 0.87 |
+
+**Interpretation:**
+- Time series format used by eva_scripts for correlation analysis
+- `EXP_UNIQUE_ID_ix` combines experiment ID with cycle index for unique identification
+
+(source: `misc/helpers.py::create_fingerprint_joined_timeseries_csv_files`, lines 200-267)
+
+---
+
+## Part 1: Raw Experiment Outputs
+
+These files are produced directly by `02_run_experiment.py` during experiment execution.
+
+### Per-Cycle Metric Files Schema
 
 Located at `<STRATEGY>/<DATASET>/<metric>.csv`
 
@@ -162,7 +244,11 @@ Missing values (e.g., early stopping) are represented as empty cells or `NaN`.
 
 ---
 
-## Derived Metrics Schema
+## Part 2: Derived Artifacts (Post-Processing + Eva Scripts)
+
+These files are computed from raw outputs by post-processing scripts and eva_scripts.
+
+### Derived Metrics Schema
 
 Computed by `04_calculate_advanced_metrics.py`.
 
