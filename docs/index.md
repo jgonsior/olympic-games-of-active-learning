@@ -41,12 +41,23 @@ The framework evaluates:
 | [Pipeline](pipeline.md) | Step-by-step guide to the sequential experiment pipeline |
 | [HPC Setup](hpc.md) | **HPC Runbook** - Running experiments on HPC clusters with SLURM |
 | [Evaluation Pipeline](evaluation_pipeline.md) | **Canonical evaluation guide** - From raw outputs to paper figures |
+| [Eva Scripts](eva_scripts.md) | **Detailed catalog** - All evaluation scripts with I/O schemas |
 | [Results Format](results_format.md) | Output paths, file formats, and result schemas |
-| [Configuration](configuration.md) | Shared configuration system explained |
+| [Data Enrichment](data_enrichment.md) | **Protocol** - Adding new results safely and reproducibly |
 | [Reproducing the Paper](reproducing_paper.md) | Complete workflow to reproduce OPARA archive results |
 | [Scripts & Evaluation](scripts.md) | Utility scripts and evaluation analysis scripts |
 | [Research Reuse](research_reuse.md) | Extending the framework for your research |
 | [Contributing](contributing.md) | Development setup and contribution guidelines |
+
+## Core Concepts
+
+| Document | Description |
+|----------|-------------|
+| [Architecture](architecture.md) | System design, core abstractions, failure recovery, HPC parallelism |
+| [Configuration](configuration.md) | Config files, data flow, environment setup |
+| [Data Model](data_model.md) | Run identity, workload schema, result schemas, enum definitions |
+| [Dataset Metadata](dataset_metadata.md) | Auto-computed per-sample categorizations |
+| [Utilities](utilities.md) | Helper modules and scripts catalog |
 
 ## Paper & Archived Artifacts
 

@@ -3,16 +3,80 @@
 [![Documentation](https://img.shields.io/badge/docs-mkdocs-blue)](https://jgonsior.github.io/olympic-games-of-active-learning/)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
 [![arXiv](https://img.shields.io/badge/arXiv-2506.03817-b31b1b.svg)](https://arxiv.org/abs/2506.03817)
+[![DOI](https://img.shields.io/badge/DOI-10.25532%2FOPARA--862-blue)](https://doi.org/10.25532/OPARA-862)
 
 > **Note**: This documentation was generated with the assistance of GitHub Copilot (Claude AI) based on analysis of the codebase, research paper ([arXiv:2506.03817](https://arxiv.org/abs/2506.03817)), and archived data ([DOI:10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862)). While efforts were made to ensure accuracy, users should verify critical details against the source code and paper.
 
-**OGAL** is a large-scale benchmarking framework for evaluating **Active Learning (AL)** query strategies across diverse datasets, learner models, and hyperparameter configurations. The framework implements a sequential pipeline that spans dataset acquisition, experiment execution, and comprehensive post-processing to support reproducible AL research.
+---
+
+## Why OGAL?
+
+**OGAL** provides three key capabilities for Active Learning researchers:
+
+| Capability | Description |
+|------------|-------------|
+| 🔄 **Unified Multi-Framework API** | Run 50+ strategies from 5 different AL frameworks (ALiPy, libact, small-text, scikit-activeml, playground) through a single, consistent experiment protocol |
+| 📊 **Shared Archived Dataset** | Access 4.6M+ experiment results via [OPARA-862](https://doi.org/10.25532/OPARA-862) with a documented [enrichment protocol](docs/data_enrichment.md) for adding new results |
+| 📈 **Eva Scripts Analysis API** | Turn raw experiment results into paper-ready figures and tables using the [eva_scripts/](docs/eva_scripts.md) evaluation toolkit |
+
+---
+
+## Unified Active Learning Benchmarking API
+
+OGAL's key innovation is providing a **single experiment API** that runs strategies from multiple AL frameworks under a **consistent protocol**:
+
+- **Same train/test splits** across all strategies and datasets
+- **Same random seeds** for reproducibility
+- **Same budget/batch configurations**
+- **Same output schema** (metrics, selected indices, timing)
+
+```python
+# Configure by strategy NAME, not framework details
+# resources/exp_config.yaml
+my_experiment:
+  EXP_GRID_STRATEGY:
+    - ALIPY_UNCERTAINTY_LC      # ALiPy framework
+    - LIBACT_QUIRE              # libact framework
+    - SMALLTEXT_EMBEDDINGKMEANS # small-text framework
+    - SKACTIVEML_QBC            # scikit-activeml framework
+  # OGAL handles framework dispatch internally
+```
+
+See the **[Strategy Catalog](https://jgonsior.github.io/olympic-games-of-active-learning/strategies/)** for all 50+ available strategies.
+
+---
+
+## Core Concepts
+
+Understand OGAL's internal architecture and design:
+
+| Concept | Description |
+|---------|-------------|
+| **[Architecture](https://jgonsior.github.io/olympic-games-of-active-learning/architecture/)** | System design, core abstractions, failure recovery, HPC parallelism |
+| **[Configuration](https://jgonsior.github.io/olympic-games-of-active-learning/configuration/)** | Config files, data flow, environment setup |
+| **[Data Model](https://jgonsior.github.io/olympic-games-of-active-learning/data_model/)** | Run identity, workload schema, result schemas, enum definitions |
+| **[Dataset Metadata](https://jgonsior.github.io/olympic-games-of-active-learning/dataset_metadata/)** | Auto-computed per-sample categorizations |
+| **[Utilities](https://jgonsior.github.io/olympic-games-of-active-learning/utilities/)** | Helper modules and scripts catalog |
+
+---
+
+## Key Documentation Links
+
+| Document | Purpose |
+|----------|---------|
+| 📋 **[Strategy Catalog](https://jgonsior.github.io/olympic-games-of-active-learning/strategies/)** | Complete list of all AL strategies (strategy-first reference) |
+| 📈 **[Eva Scripts](https://jgonsior.github.io/olympic-games-of-active-learning/eva_scripts/)** | Analyze experiment results and generate paper figures |
+| ➕ **[Data Enrichment](https://jgonsior.github.io/olympic-games-of-active-learning/data_enrichment/)** | Protocol for adding new results to the shared dataset |
+| 🖥️ **[HPC Runbook](https://jgonsior.github.io/olympic-games-of-active-learning/hpc/)** | Running large-scale experiments on SLURM clusters |
+| 📦 **[DOI:10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862)** | Archived experiment results (terabytes of raw data) |
+
+---
 
 ## Overview
 
 This repository contains the complete experimental framework used for the **largest conducted AL study to date** with over **4.6 million hyperparameter combinations**. The pipeline evaluates:
 
-- **28 AL strategies** from 5 frameworks (ALiPy, libact, small-text, scikit-activeml, playground)
+- **50+ AL strategies** from 5 frameworks (ALiPy, libact, small-text, scikit-activeml, playground)
 - **92 datasets** from OpenML, Kaggle, and UCI (100-20,000 samples, 2-31 classes)
 - **3 learner models**: Random Forest, MLP, SVM with RBF kernel
 - **6 batch sizes**: 1, 5, 10, 20, 50, 100
@@ -20,15 +84,39 @@ This repository contains the complete experimental framework used for the **larg
 
 The study analyzes the impact of each hyperparameter on AL experiment results and provides recommendations for reproducible AL research.
 
+---
+
 ## Paper & Archived Artifacts
 
-| Resource | Link |
-|----------|------|
-| **Research Paper** | [arXiv:2506.03817](https://arxiv.org/abs/2506.03817) - "Survey of Active Learning Hyperparameters" |
-| GitHub Repository | [jgonsior/olympic-games-of-active-learning](https://github.com/jgonsior/olympic-games-of-active-learning) |
-| Archived Data (DOI) | [10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862) - Raw experiment results |
+| Resource | Description |
+|----------|-------------|
+| **Research Paper** | [arXiv:2506.03817](https://arxiv.org/abs/2506.03817) - Methodology, experimental design, and findings |
+| **GitHub Repository** | [jgonsior/olympic-games-of-active-learning](https://github.com/jgonsior/olympic-games-of-active-learning) - Source code and experiment pipeline |
+| **Archived Data (DOI)** | [10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862) - Raw experiment results (~terabytes) |
 
-The research paper describes the methodology, experimental design, and findings. The DOI reference (OPARA-862) provides the raw experiment results (~terabytes) for long-term preservation and reproducibility.
+**What's in the DOI archive vs this repo?**
+
+- **OPARA-862 (DOI)**: Raw experiment outputs (metrics CSVs, selected indices, timing data) - the shared dataset
+- **This repo**: Code to run experiments, post-processing scripts, eva_scripts for analysis
+
+---
+
+## Supported Strategies (Preview)
+
+| Strategy | Family | Framework |
+|----------|--------|-----------|
+| `ALIPY_UNCERTAINTY_LC` | Uncertainty | ALiPy |
+| `ALIPY_UNCERTAINTY_ENTROPY` | Uncertainty | ALiPy |
+| `LIBACT_QUIRE` | Query-specific | libact |
+| `LIBACT_DWUS` | Density-weighted | libact |
+| `SMALLTEXT_EMBEDDINGKMEANS` | Diversity | small-text |
+| `SKACTIVEML_QBC` | Committee | scikit-activeml |
+| `SKACTIVEML_MC_EER_LOG_LOSS` | Expected Error | scikit-activeml |
+| `PLAYGROUND_KCENTER_GREEDY` | Diversity | Playground |
+
+➡️ **[See all 50+ strategies in the Strategy Catalog](https://jgonsior.github.io/olympic-games-of-active-learning/strategies/)**
+
+---
 
 ## Sequential Pipeline
 
