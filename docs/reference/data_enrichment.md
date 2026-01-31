@@ -3,8 +3,8 @@
 This document defines the strict protocol for adding new experiment results to the OGAL shared dataset. Follow these steps exactly to ensure data integrity and reproducibility.
 
 !!! warning "Before You Begin"
-    - Read [Results Format](results_format.md) to understand the output schema
-    - Read [Evaluation Pipeline](evaluation_pipeline.md) to understand the processing chain
+    - Read [Results Format](results_schema.md) to understand the output schema
+    - Read [Evaluation Pipeline](../analyze_dataset.md) to understand the processing chain
     - Ensure your experiments use the same schema version as existing data
 
 ---
@@ -217,9 +217,9 @@ PROVENANCE:
 
 Use [`scripts/validate_results_schema.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/validate_results_schema.py) to verify data integrity:
 
-```yaml
-SCHEMA_VERSION: "1.0"  # Add this field for future compatibility
-```000000
+```bash
+python scripts/validate_results_schema.py --results_path /path/to/NEW_RESULTS_ROOT
+```
 
 ### 4.2 What the Validator Checks
 
@@ -242,9 +242,12 @@ SCHEMA_VERSION: "1.0"  # Add this field for future compatibility
 
 **Example Output:**
 
-```yaml
-SCHEMA_VERSION: "1.0"  # Add this field for future compatibility
-```111111
+```
+Validation Results:
+✓ Required columns present in 05_done_workload.csv
+✓ EXP_UNIQUE_ID values are unique
+✗ Missing metric files for 3 experiments (see details)
+```
 
 ---
 
@@ -296,18 +299,20 @@ When sharing results with others:
 
 **If validation fails with duplicates:**
 
-```yaml
-SCHEMA_VERSION: "1.0"  # Add this field for future compatibility
-```222222
+```bash
+python -m scripts.remove_duplicated_exp_ids --EXP_TITLE your_experiment
+```
 
 **If metric files are corrupted:**
 
-```yaml
-SCHEMA_VERSION: "1.0"  # Add this field for future compatibility
-```333333
+```bash
+python -m scripts.find_broken_file --EXP_TITLE your_experiment
+```
 
 **If workload is incomplete:**
 
-```yaml
-SCHEMA_VERSION: "1.0"  # Add this field for future compatibility
-```444444
+```bash
+# Regenerate workload (excludes completed experiments)
+python 01_create_workload.py --EXP_TITLE your_experiment
+# Rerun remaining experiments
+```

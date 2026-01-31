@@ -3,7 +3,7 @@
 This page documents the backend AL frameworks that OGAL integrates. OGAL provides a **unified wrapper** that runs strategies from all these frameworks under a consistent protocol.
 
 !!! info "Strategy-First Approach"
-    For most use cases, refer to the **[Strategy Catalog](strategies.md)** instead. This page is for understanding the underlying framework implementations.
+    For most use cases, refer to the **[Strategy Catalog](strategy_catalog.md)** instead. This page is for understanding the underlying framework implementations.
 
 ---
 
@@ -236,7 +236,7 @@ AL_framework_to_classes_mapping = {
 
 ## Cross-References
 
-- **[Strategy Catalog](strategies.md)**: Complete list of all strategies (strategy-first)
-- **[Pipeline](pipeline.md)**: How experiments are executed
-- **[Configuration](configuration.md)**: Experiment configuration options
+- **[Strategy Catalog](strategy_catalog.md)**: Complete list of all strategies (strategy-first)
+- **[Pipeline](runbook.md)**: How experiments are executed
+- **[Configuration](concepts/configuration_spine.md)**: Experiment configuration options
 - **[Research Reuse](research_reuse.md)**: Adding new frameworks/strategies

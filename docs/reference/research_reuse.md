@@ -152,7 +152,7 @@ class MY_FRAMEWORK_AL_Experiment(AL_Experiment):
 # resources/kaggle_datasets.yaml
 my_kaggle_dataset:
   kaggle_name: username/dataset-name
-```000000
+```
 
 ---
 
@@ -166,7 +166,7 @@ In [`resources/data_types.py`](https://github.com/jgonsior/olympic-games-of-acti
 # resources/kaggle_datasets.yaml
 my_kaggle_dataset:
   kaggle_name: username/dataset-name
-```111111
+```
 
 ### Step 2: Add Mapping
 
@@ -174,7 +174,7 @@ my_kaggle_dataset:
 # resources/kaggle_datasets.yaml
 my_kaggle_dataset:
   kaggle_name: username/dataset-name
-```222222
+```
 
 ### Requirements
 
@@ -196,7 +196,7 @@ In [`metrics/`](https://github.com/jgonsior/olympic-games-of-active-learning/blo
 # resources/kaggle_datasets.yaml
 my_kaggle_dataset:
   kaggle_name: username/dataset-name
-```333333
+```
 
 ### Step 2: Register Metric
 
@@ -206,7 +206,7 @@ Add to experiment YAML:
 # resources/kaggle_datasets.yaml
 my_kaggle_dataset:
   kaggle_name: username/dataset-name
-```444444
+```
 
 ### Available Hooks
 
@@ -301,7 +301,7 @@ The OPARA archive (`full_exp_jan.zip`) contains:
 # resources/kaggle_datasets.yaml
 my_kaggle_dataset:
   kaggle_name: username/dataset-name
-```555555
+```
 
 ### Integration with OGAL
 
@@ -313,7 +313,7 @@ The archive format matches OGAL's output exactly. To use the archived data:
 # resources/kaggle_datasets.yaml
 my_kaggle_dataset:
   kaggle_name: username/dataset-name
-```666666
+```
 
 #### 2. Configure OGAL to Point to Archived Data
 
@@ -321,7 +321,7 @@ my_kaggle_dataset:
 # resources/kaggle_datasets.yaml
 my_kaggle_dataset:
   kaggle_name: username/dataset-name
-```777777
+```
 
 #### 3. Run Evaluation Scripts on Archived Data
 
@@ -329,7 +329,7 @@ my_kaggle_dataset:
 # resources/kaggle_datasets.yaml
 my_kaggle_dataset:
   kaggle_name: username/dataset-name
-```888888
+```
 
 ### Building on the Archived Results
 
@@ -339,7 +339,7 @@ my_kaggle_dataset:
 # resources/kaggle_datasets.yaml
 my_kaggle_dataset:
   kaggle_name: username/dataset-name
-```999999
+```
 
 #### Extend with New Datasets
 
@@ -379,7 +379,7 @@ The active learning loop is implemented in [`framework_runners/base_runner.py::A
 my_local_dataset:
   enum_id: 200  # Unique integer ID not used by other datasets
   path: my_local_dataset.csv  # Relative to DATASETS_PATH
-```000000
+```
 
 (source: [`framework_runners/base_runner.py::AL_Experiment.al_cycle`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/base_runner.py))
 
@@ -395,7 +395,7 @@ Here's a complete example of adding a custom uncertainty sampling variant:
 my_local_dataset:
   enum_id: 200  # Unique integer ID not used by other datasets
   path: my_local_dataset.csv  # Relative to DATASETS_PATH
-```111111
+```
 
 ### 2. Implement Strategy
 
@@ -403,7 +403,7 @@ my_local_dataset:
 my_local_dataset:
   enum_id: 200  # Unique integer ID not used by other datasets
   path: my_local_dataset.csv  # Relative to DATASETS_PATH
-```222222
+```
 
 ### 3. Add Mapping
 
@@ -411,7 +411,7 @@ my_local_dataset:
 my_local_dataset:
   enum_id: 200  # Unique integer ID not used by other datasets
   path: my_local_dataset.csv  # Relative to DATASETS_PATH
-```333333
+```
 
 ### 4. Create Runner Method
 
@@ -419,7 +419,7 @@ my_local_dataset:
 my_local_dataset:
   enum_id: 200  # Unique integer ID not used by other datasets
   path: my_local_dataset.csv  # Relative to DATASETS_PATH
-```444444
+```
 
 ### 5. Use in Experiment
 
@@ -427,4 +427,4 @@ my_local_dataset:
 my_local_dataset:
   enum_id: 200  # Unique integer ID not used by other datasets
   path: my_local_dataset.csv  # Relative to DATASETS_PATH
-```555555
+```

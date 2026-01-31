@@ -3,8 +3,8 @@
 This page provides canonical definitions of the **three correlation metrics** used in the OGAL paper ([arXiv:2506.03817](https://arxiv.org/abs/2506.03817)), including their mathematical formulations (LaTeX), visual aids, and precise mappings to code implementations.
 
 !!! tip "Related Documentation"
-    - **[Evaluation Pipeline](evaluation_pipeline.md)**: Step-by-step guide from raw experiments to final outputs
-    - **[Eva Scripts Reference](eva_scripts.md)**: Detailed catalog of all evaluation scripts
+    - **[Evaluation Pipeline](../analyze_dataset.md)**: Step-by-step guide from raw experiments to final outputs
+    - **[Eva Scripts Reference](eva_scripts_catalog.md)**: Detailed catalog of all evaluation scripts
 
 ---
 

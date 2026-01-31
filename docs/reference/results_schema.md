@@ -3,9 +3,9 @@
 This document describes the output directory structure, file formats, and result schemas produced by OGAL experiments. All paths and schemas are verified against source code.
 
 !!! tip "Related Documentation"
-    - **[Eva Scripts](eva_scripts.md)**: Detailed catalog of evaluation scripts and their I/O
+    - **[Eva Scripts](eva_scripts_catalog.md)**: Detailed catalog of evaluation scripts and their I/O
     - **[Data Enrichment](data_enrichment.md)**: Protocol for adding new results
-    - **[Evaluation Pipeline](evaluation_pipeline.md)**: How raw outputs become final figures
+    - **[Evaluation Pipeline](../analyze_dataset.md)**: How raw outputs become final figures
 
 ---
 
@@ -553,7 +553,7 @@ metrics = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/full_auc_accuracy.csv.
 
 # Load Parquet predictions
 predictions = pd.read_parquet("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/y_pred_train.csv.xz.parquet")
-```000000
+```
 
 #### 2. Load into OGAL for Analysis
 
@@ -573,7 +573,7 @@ metrics = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/full_auc_accuracy.csv.
 
 # Load Parquet predictions
 predictions = pd.read_parquet("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/y_pred_train.csv.xz.parquet")
-```111111
+```
 
 #### 3. Run Evaluation Scripts
 
@@ -593,7 +593,7 @@ metrics = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/full_auc_accuracy.csv.
 
 # Load Parquet predictions
 predictions = pd.read_parquet("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/y_pred_train.csv.xz.parquet")
-```222222
+```
 
 #### 4. Reproduce Paper Figures
 
@@ -613,7 +613,7 @@ metrics = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/full_auc_accuracy.csv.
 
 # Load Parquet predictions
 predictions = pd.read_parquet("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/y_pred_train.csv.xz.parquet")
-```333333
+```
 
 ### File Size Considerations
 

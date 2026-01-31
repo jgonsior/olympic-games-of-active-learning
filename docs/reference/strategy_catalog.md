@@ -299,8 +299,8 @@ python scripts/export_strategy_catalog.py --format csv
 
 ## Cross-References
 
-- **[Eva Scripts](eva_scripts.md)**: Analyze experiment results with evaluation scripts
-- **[Results Format](results_format.md)**: Output file schemas and structure
+- **[Eva Scripts](eva_scripts_catalog.md)**: Analyze experiment results with evaluation scripts
+- **[Results Format](results_schema.md)**: Output file schemas and structure
 - **[Data Enrichment](data_enrichment.md)**: Add new results to the shared dataset
 - **[Frameworks](frameworks.md)**: Backend framework details and fork information
-- **[Configuration](configuration.md)**: Experiment configuration reference
+- **[Configuration](concepts/configuration_spine.md)**: Experiment configuration reference
