@@ -9,15 +9,19 @@
 
 ---
 
-## Why OGAL?
+## Value of the published dataset
 
-**OGAL** provides three key capabilities for Active Learning researchers:
+### Why OGAL?
+- Unified multi-framework AL benchmarking runner with a single API and consistent protocol for 50+ strategies (see [`resources/exp_config.yaml`](resources/exp_config.yaml)).
+- Shared archived experimental dataset [OPARA-862](https://doi.org/10.25532/OPARA-862) that can be reused and extended via the documented enrichment protocol.
+- [`eva_scripts/`](docs/eva_scripts.md) as the analysis API to turn raw runs into derived artifacts and plots.
+- **Compute saved:** Reproducing the full hyperparameter grid from scratch costs **~3.6 million CPU hours** (paper: [arXiv:2506.03817](https://arxiv.org/abs/2506.03817)).
 
-| Capability | Description |
-|------------|-------------|
-| 🔄 **Unified Multi-Framework API** | Run 50+ strategies from 5 different AL frameworks (ALiPy, libact, small-text, scikit-activeml, playground) through a single, consistent experiment protocol |
-| 📊 **Shared Archived Dataset** | Access 4.6M+ experiment results via [OPARA-862](https://doi.org/10.25532/OPARA-862) with a documented [enrichment protocol](docs/data_enrichment.md) for adding new results |
-| 📈 **Eva Scripts Analysis API** | Turn raw experiment results into paper-ready figures and tables using the [eva_scripts/](docs/eva_scripts.md) evaluation toolkit |
+### What's inside the dataset?
+- Preview: [Dataset value](docs/dataset_value.md) · [Data enrichment](docs/data_enrichment.md) · [Eva scripts](docs/eva_scripts.md)
+
+### Research opportunities
+- See [Research opportunities](docs/research_opportunities.md) for concrete analyses enabled by the archived data and eva scripts.
 
 ---
 
