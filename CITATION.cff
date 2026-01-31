@@ -1,0 +1,59 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: "OGAL: Olympic Games of Active Learning"
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Julius
+    family-names: Gonsior
+  - given-names: Tim
+    family-names: Rieß
+  - given-names: Anja
+    family-names: Reusch
+  - given-names: Claudio
+    family-names: Hartmann
+  - given-names: Maik
+    family-names: Thiele
+  - given-names: Wolfgang
+    family-names: Lehner
+repository-code: "https://github.com/jgonsior/olympic-games-of-active-learning"
+url: "https://jgonsior.github.io/olympic-games-of-active-learning/"
+abstract: >-
+  OGAL is a large-scale benchmarking framework for evaluating
+  Active Learning (AL) query strategies across diverse datasets,
+  learner models, and hyperparameter configurations. The framework
+  implements a sequential pipeline that spans dataset acquisition,
+  experiment execution, and comprehensive post-processing to support
+  reproducible AL research.
+keywords:
+  - active learning
+  - machine learning
+  - benchmarking
+  - query strategies
+license: AGPL-3.0
+preferred-citation:
+  type: article
+  authors:
+    - given-names: Julius
+      family-names: Gonsior
+    - given-names: Tim
+      family-names: Rieß
+    - given-names: Anja
+      family-names: Reusch
+    - given-names: Claudio
+      family-names: Hartmann
+    - given-names: Maik
+      family-names: Thiele
+    - given-names: Wolfgang
+      family-names: Lehner
+  title: "Olympic Games of Active Learning: A Large-Scale Empirical Study of Active Learning Strategies"
+  year: 2025
+  identifiers:
+    - type: other
+      value: "arXiv:2506.03817"
+      description: arXiv preprint
+  url: "https://arxiv.org/abs/2506.03817"
