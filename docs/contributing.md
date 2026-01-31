@@ -111,7 +111,7 @@ pytest tests/test_specific.py
 
 ### Test Script
 
-The `test.sh` script runs the full evaluation pipeline:
+The [`test.sh`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/test.sh) script runs the full evaluation pipeline:
 
 ```bash
 ./test.sh
@@ -186,24 +186,13 @@ olympic-games-of-active-learning/
 
 Use Google-style docstrings:
 
-```python
-def my_function(param1: int, param2: str) -> bool:
-    """Short description of function.
-    
-    Longer description if needed.
-    
-    Args:
-        param1: Description of param1.
-        param2: Description of param2.
-    
-    Returns:
-        Description of return value.
-    
-    Raises:
-        ValueError: When param1 is negative.
-    """
-    pass
-```
+```bash
+# Update Poetry dependencies
+poetry update
+
+# Regenerate conda lock files (requires conda-lock)
+conda-lock --file environment.yml --platform linux-64 --platform osx-64 --platform osx-arm64 --platform win-64
+```000000
 
 ### Imports
 
@@ -212,17 +201,13 @@ Order imports as:
 2. Third-party packages
 3. Local modules
 
-```python
-import sys
-from pathlib import Path
-from typing import List, Dict
+```bash
+# Update Poetry dependencies
+poetry update
 
-import numpy as np
-import pandas as pd
-
-from misc.config import Config
-from datasets import DATASET
-```
+# Regenerate conda lock files (requires conda-lock)
+conda-lock --file environment.yml --platform linux-64 --platform osx-64 --platform osx-arm64 --platform win-64
+```111111
 
 ---
 
@@ -242,22 +227,13 @@ Before submitting a PR:
 
 ### PR Template
 
-```markdown
-## Description
-Brief description of changes.
+```bash
+# Update Poetry dependencies
+poetry update
 
-## Type of Change
-- [ ] Bug fix
-- [ ] New feature
-- [ ] Documentation update
-- [ ] Performance improvement
-
-## Testing
-Describe how changes were tested.
-
-## Related Issues
-Fixes #123
-```
+# Regenerate conda lock files (requires conda-lock)
+conda-lock --file environment.yml --platform linux-64 --platform osx-64 --platform osx-arm64 --platform win-64
+```222222
 
 ---
 
@@ -268,31 +244,37 @@ Fixes #123
 1. Create the script file (e.g., `06_new_script.py`)
 2. Import and use the `Config` class for configuration
 3. Follow the existing patterns from other numbered scripts
-4. Add documentation to `docs/pipeline.md`
+4. Add documentation to [`docs/pipeline.md`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/docs/pipeline.md)
 
 ### Debugging Experiments
 
-```python
-# Run single experiment with verbose logging
-python 02_run_experiment.py --EXP_TITLE test --WORKER_INDEX 0 --LOG_FILE console
-```
+```bash
+# Update Poetry dependencies
+poetry update
+
+# Regenerate conda lock files (requires conda-lock)
+conda-lock --file environment.yml --platform linux-64 --platform osx-64 --platform osx-arm64 --platform win-64
+```333333
 
 ### Testing Configuration Changes
 
-```python
-# Test config loading without running experiments
-python -c "from misc.config import Config; c = Config({'EXP_TITLE': 'test'}); print(c.OUTPUT_PATH)"
-```
+```bash
+# Update Poetry dependencies
+poetry update
+
+# Regenerate conda lock files (requires conda-lock)
+conda-lock --file environment.yml --platform linux-64 --platform osx-64 --platform osx-arm64 --platform win-64
+```444444
 
 ### Profiling Performance
 
 ```bash
-# Profile a single experiment
-python -m cProfile -o profile.stats 02_run_experiment.py --EXP_TITLE test --WORKER_INDEX 0
+# Update Poetry dependencies
+poetry update
 
-# View profile
-python -m pstats profile.stats
-```
+# Regenerate conda lock files (requires conda-lock)
+conda-lock --file environment.yml --platform linux-64 --platform osx-64 --platform osx-arm64 --platform win-64
+```555555
 
 ---
 
@@ -308,29 +290,21 @@ When reporting bugs, include:
 
 ### Bug Report Template
 
-```markdown
-## Description
-Clear description of the bug.
+```bash
+# Update Poetry dependencies
+poetry update
 
-## To Reproduce
-1. Step 1
-2. Step 2
-3. ...
-
-## Environment
-- OS: Ubuntu 22.04
-- Python: 3.11
-- Branch: main
-- Commit: abc1234
-
-## Error Message
-```
+# Regenerate conda lock files (requires conda-lock)
+conda-lock --file environment.yml --platform linux-64 --platform osx-64 --platform osx-arm64 --platform win-64
+```666666
 Paste full traceback here
-```
+```bash
+# Update Poetry dependencies
+poetry update
 
-## Expected Behavior
-What you expected to happen.
-```
+# Regenerate conda lock files (requires conda-lock)
+conda-lock --file environment.yml --platform linux-64 --platform osx-64 --platform osx-arm64 --platform win-64
+```777777
 
 ---
 

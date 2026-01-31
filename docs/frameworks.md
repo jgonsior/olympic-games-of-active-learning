@@ -55,7 +55,7 @@ flowchart LR
     A6 --> F6
 ```
 
-(source: `framework_runners/base_runner.py::AL_Experiment`; `resources/data_types.py::AL_framework_to_classes_mapping`)
+(source: [`framework_runners/base_runner.py::AL_Experiment`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/base_runner.py); [`resources/data_types.py::AL_framework_to_classes_mapping`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py))
 
 ---
 
@@ -70,7 +70,7 @@ flowchart LR
 | Playground | 9 | [google/active-learning](https://github.com/google/active-learning) | [jgonsior/active-learning](https://github.com/jgonsior/active-learning) | `playground_runner.py` |
 | OPTIMAL | 4 | N/A (OGAL-native) | N/A | `optimal_runner.py` |
 
-(source: `pyproject.toml`, lines 39-42; `resources/data_types.py::AL_STRATEGY`)
+(source: [`pyproject.toml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/pyproject.toml#L39-L42), lines 39-42; [`resources/data_types.py::AL_STRATEGY`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py))
 
 ---
 
@@ -83,14 +83,14 @@ flowchart LR
 | **Upstream** | [https://github.com/NUAA-AL/ALiPy](https://github.com/NUAA-AL/ALiPy) |
 | **OGAL Fork** | [https://github.com/jgonsior/ALiPy](https://github.com/jgonsior/ALiPy) |
 | **Dependency** | `alipy = {git = "https://github.com/jgonsior/ALiPy.git"}` |
-| **Adapter** | `framework_runners/alipy_runner.py::ALIPY_AL_Experiment` |
+| **Adapter** | [`framework_runners/alipy_runner.py::ALIPY_AL_Experiment`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/alipy_runner.py) |
 | **Strategies** | 14 (Random, Uncertainty variants, QBC, EER, Graph Density, Coreset, BMDR, SPAL, LAL, Density-Weighted) |
 
 ### Why a Fork?
 
 OGAL uses a fork of ALiPy to ensure compatibility with the experiment protocol and to fix any issues encountered during large-scale experiments. The fork maintains API compatibility with upstream.
 
-(source: `pyproject.toml`, line 39)
+(source: [`pyproject.toml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/pyproject.toml#L39), line 39)
 
 ---
 
@@ -103,14 +103,14 @@ OGAL uses a fork of ALiPy to ensure compatibility with the experiment protocol a
 | **Upstream** | [https://github.com/ntucllab/libact](https://github.com/ntucllab/libact) |
 | **OGAL Fork** | [https://github.com/jgonsior/libact](https://github.com/jgonsior/libact) |
 | **Dependency** | `libact = {git = "https://github.com/jgonsior/libact"}` |
-| **Adapter** | `framework_runners/libact_runner.py::LIBACT_Experiment` |
+| **Adapter** | [`framework_runners/libact_runner.py::LIBACT_Experiment`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/libact_runner.py) |
 | **Strategies** | 9 (Uncertainty variants, QBC, DWUS, QUIRE, EER, Hierarchical, ALBL) |
 
 ### Why a Fork?
 
 OGAL uses a fork of libact for Python 3.11 compatibility and to resolve dependency conflicts with other frameworks.
 
-(source: `pyproject.toml`, line 42)
+(source: [`pyproject.toml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/pyproject.toml#L42), line 42)
 
 ---
 
@@ -123,14 +123,14 @@ OGAL uses a fork of libact for Python 3.11 compatibility and to resolve dependen
 | **Upstream** | [https://github.com/webis-de/small-text](https://github.com/webis-de/small-text) |
 | **OGAL Fork** | None (uses PyPI package) |
 | **Dependency** | `small-text = "^1.3.2"` |
-| **Adapter** | `framework_runners/smalltext_runner.py::SMALLTEXT_AL_Experiment` |
+| **Adapter** | [`framework_runners/smalltext_runner.py::SMALLTEXT_AL_Experiment`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/smalltext_runner.py) |
 | **Strategies** | 9 (Least Confidence, Prediction Entropy, Breaking Ties, Embedding KMeans, Coreset variants, Contrastive AL, Discriminative AL, Random) |
 
 ### No Fork Needed
 
 small-text is used directly from PyPI without modifications. OGAL adapts its API through the `SMALLTEXT_AL_Experiment` adapter.
 
-(source: `pyproject.toml`, line 32)
+(source: [`pyproject.toml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/pyproject.toml#L32), line 32)
 
 ---
 
@@ -143,14 +143,14 @@ small-text is used directly from PyPI without modifications. OGAL adapts its API
 | **Upstream** | [https://github.com/scikit-activeml/scikit-activeml](https://github.com/scikit-activeml/scikit-activeml) |
 | **OGAL Fork** | [https://github.com/jgonsior/scikit-activeml](https://github.com/jgonsior/scikit-activeml) |
 | **Dependency** | `scikit-activeml = {git = "https://github.com/jgonsior/scikit-activeml"}` |
-| **Adapter** | `framework_runners/skactiveml_runner.py::SKACTIVEML_AL_Experiment` |
+| **Adapter** | [`framework_runners/skactiveml_runner.py::SKACTIVEML_AL_Experiment`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/skactiveml_runner.py) |
 | **Strategies** | 14 (Uncertainty variants, QBC, Monte Carlo EER, Value of Information, QUIRE, Discriminative AL, Probabilistic AL, Cost Embedding) |
 
 ### Why a Fork?
 
 OGAL uses a fork of scikit-activeml to ensure compatibility with the specific scikit-learn version and to fix issues encountered during experiments.
 
-(source: `pyproject.toml`, line 41)
+(source: [`pyproject.toml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/pyproject.toml#L41), line 41)
 
 ---
 
@@ -163,14 +163,14 @@ OGAL uses a fork of scikit-activeml to ensure compatibility with the specific sc
 | **Upstream** | [https://github.com/google/active-learning](https://github.com/google/active-learning) |
 | **OGAL Fork** | [https://github.com/jgonsior/active-learning](https://github.com/jgonsior/active-learning) |
 | **Dependency** | `playground = {git = "https://github.com/jgonsior/active-learning.git"}` |
-| **Adapter** | `framework_runners/playground_runner.py::PLAYGROUND_AL_Experiment` |
+| **Adapter** | [`framework_runners/playground_runner.py::PLAYGROUND_AL_Experiment`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/playground_runner.py) |
 | **Strategies** | 9 (Graph Density, Hierarchical Cluster, Informative+Diverse, k-Center Greedy, Margin, Mixture, MCM, Uniform, Bandit) |
 
 ### Why a Fork?
 
 OGAL uses a fork of the Google playground to adapt it for use as a Python package (the original is a research codebase not designed for pip installation).
 
-(source: `pyproject.toml`, line 40)
+(source: [`pyproject.toml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/pyproject.toml#L40), line 40)
 
 ---
 
@@ -182,12 +182,12 @@ OGAL includes native implementations of oracle/optimal strategies for baseline c
 |----------|-------|
 | **Upstream** | N/A (OGAL-native) |
 | **OGAL Fork** | N/A |
-| **Adapter** | `framework_runners/optimal_runner.py::OPTIMAL_AL_Experiment` |
+| **Adapter** | [`framework_runners/optimal_runner.py::OPTIMAL_AL_Experiment`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/optimal_runner.py) |
 | **Strategies** | 4 (Beam Search Optimal, True Optimal, Greedy 10, Greedy 20) |
 
 These strategies serve as oracle baselines that require knowledge of the full dataset labels to make optimal decisions.
 
-(source: `optimal_query_strategies/`)
+(source: [`optimal_query_strategies/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/optimal_query_strategies/))
 
 ---
 
@@ -211,13 +211,13 @@ class AL_Experiment(ABC):
 
 The unified runner (`02_run_experiment.py`) loads the appropriate adapter based on the strategy prefix (e.g., `ALIPY_` → `ALIPY_AL_Experiment`).
 
-(source: `framework_runners/base_runner.py::AL_Experiment`, lines 53-100)
+(source: [`framework_runners/base_runner.py::AL_Experiment`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/base_runner.py#L53-L100), lines 53-100)
 
 ---
 
 ## Framework Mapping in Code
 
-The framework-to-adapter mapping is defined in `resources/data_types.py`:
+The framework-to-adapter mapping is defined in [`resources/data_types.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py):
 
 ```python
 AL_framework_to_classes_mapping = {
@@ -230,7 +230,7 @@ AL_framework_to_classes_mapping = {
 }
 ```
 
-(source: `resources/data_types.py::AL_framework_to_classes_mapping`, lines 480-487)
+(source: [`resources/data_types.py::AL_framework_to_classes_mapping`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py#L480-L487), lines 480-487)
 
 ---
 

@@ -12,11 +12,11 @@ The original issue was that Mermaid diagrams were not displaying in GitHub Pages
 
 ### Components
 
-1. **Pre-rendering Script** (`scripts/render_mermaid.py`)
+1. **Pre-rendering Script** ([`scripts/render_mermaid.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/render_mermaid.py))
    - Python script that scans markdown files for mermaid code blocks
    - Extracts diagram code and renders to SVG using `mmdc` (mermaid-cli)
    - Generates reproducible filenames with content-based hashing
-   - Saves SVG files to `docs/images/mermaid/`
+   - Saves SVG files to [`docs/images/mermaid/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/docs/images/mermaid)
 
 2. **Puppeteer Configuration** (`puppeteer-config.json`)
    - Configures Puppeteer to run in no-sandbox mode
@@ -29,7 +29,7 @@ The original issue was that Mermaid diagrams were not displaying in GitHub Pages
    - Runs pre-rendering script before MkDocs build
    - SVG files are included in the final build
 
-4. **Documentation** (`docs/images/mermaid/README.md`)
+4. **Documentation** ([`docs/images/mermaid/README.md`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/docs/images/mermaid/README.md))
    - Explains the purpose and usage of pre-rendered SVGs
    - Documents the file naming convention
    - Provides instructions for local generation

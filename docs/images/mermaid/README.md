@@ -14,9 +14,9 @@ These SVG files serve as static fallbacks for the Mermaid diagrams, providing:
 
 ## Generation
 
-SVG files are automatically generated during the CI/CD build process by the `scripts/render_mermaid.py` script, which:
+SVG files are automatically generated during the CI/CD build process by the [`scripts/render_mermaid.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/render_mermaid.py) script, which:
 
-1. Scans all markdown files in `docs/` for mermaid code blocks
+1. Scans all markdown files in [`docs/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/docs) for mermaid code blocks
 2. Extracts the diagram code
 3. Uses `@mermaid-js/mermaid-cli` (mmdc) to render each diagram to SVG
 4. Saves files with reproducible names based on content hash
@@ -53,4 +53,4 @@ npm install -g @mermaid-js/mermaid-cli
 python scripts/render_mermaid.py
 ```
 
-The script uses `puppeteer-config.json` for Puppeteer configuration (required for CI environments).
+The script uses [`puppeteer-config.json`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/puppeteer-config.json) for Puppeteer configuration (required for CI environments).

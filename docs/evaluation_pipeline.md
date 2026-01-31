@@ -91,8 +91,8 @@ Before running evaluation, ensure the main pipeline (Steps 0-2) has completed:
 
 ## Step 1: Dataset Categorizations
 
-**Script:** `03_calculate_dataset_categorizations.py`  
-(source: `03_calculate_dataset_categorizations.py`)
+**Script:** [`03_calculate_dataset_categorizations.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/03_calculate_dataset_categorizations.py)  
+(source: [`03_calculate_dataset_categorizations.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/03_calculate_dataset_categorizations.py))
 
 ### Purpose
 
@@ -118,8 +118,8 @@ python 03_calculate_dataset_categorizations.py \
 
 | Input | Path | Source |
 |-------|------|--------|
-| Experiment results | `OUTPUT_PATH/<EXP_TITLE>/<STRATEGY>/<DATASET>/*.csv` | From `02_run_experiment.py` |
-| Dataset files | `DATASETS_PATH/<dataset>.csv` | From `00_download_datasets.py` |
+| Experiment results | `OUTPUT_PATH/<EXP_TITLE>/<STRATEGY>/<DATASET>/*.csv` | From [`02_run_experiment.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/02_run_experiment.py) |
+| Dataset files | `DATASETS_PATH/<dataset>.csv` | From [`00_download_datasets.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/00_download_datasets.py) |
 
 ### Outputs Produced
 
@@ -130,7 +130,7 @@ python 03_calculate_dataset_categorizations.py \
 
 ### Available Categorizers
 
-(source: `resources/data_types.py::SAMPLES_CATEGORIZER`)
+(source: [`resources/data_types.py::SAMPLES_CATEGORIZER`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py))
 
 | Categorizer | Description |
 |-------------|-------------|
@@ -146,8 +146,8 @@ python 03_calculate_dataset_categorizations.py \
 
 ## Step 2: Advanced Metrics
 
-**Script:** `04_calculate_advanced_metrics.py`  
-(source: `04_calculate_advanced_metrics.py`)
+**Script:** [`04_calculate_advanced_metrics.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/04_calculate_advanced_metrics.py)  
+(source: [`04_calculate_advanced_metrics.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/04_calculate_advanced_metrics.py))
 
 ### Purpose
 
@@ -173,7 +173,7 @@ python 04_calculate_advanced_metrics.py \
 
 | Input | Path | Source |
 |-------|------|--------|
-| Per-cycle metrics | `OUTPUT_PATH/<EXP_TITLE>/<STRATEGY>/<DATASET>/*.csv` | From `02_run_experiment.py` |
+| Per-cycle metrics | `OUTPUT_PATH/<EXP_TITLE>/<STRATEGY>/<DATASET>/*.csv` | From [`02_run_experiment.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/02_run_experiment.py) |
 | Dataset categorizations | `OUTPUT_PATH/<EXP_TITLE>/<STRATEGY>/<DATASET>/<CATEGORIZER>.csv.xz` | From Step 1 |
 
 ### Outputs Produced
@@ -192,7 +192,7 @@ python 04_calculate_advanced_metrics.py \
 
 ### Available Computed Metrics
 
-(source: `resources/data_types.py::COMPUTED_METRIC`)
+(source: [`resources/data_types.py::COMPUTED_METRIC`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py))
 
 | Metric | Description |
 |--------|-------------|
@@ -207,8 +207,8 @@ python 04_calculate_advanced_metrics.py \
 
 ## Step 3: Analysis of Partial Results
 
-**Script:** `05_analyze_partially_run_workload.py`  
-(source: `05_analyze_partially_run_workload.py`)
+**Script:** [`05_analyze_partially_run_workload.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/05_analyze_partially_run_workload.py)  
+(source: [`05_analyze_partially_run_workload.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/05_analyze_partially_run_workload.py))
 
 ### Purpose
 
@@ -224,9 +224,9 @@ python 05_analyze_partially_run_workload.py --EXP_TITLE your_experiment
 
 | Input | Path | Source |
 |-------|------|--------|
-| Completed workload | `OUTPUT_PATH/<EXP_TITLE>/05_done_workload.csv` | From `02_run_experiment.py` |
-| Failed workload | `OUTPUT_PATH/<EXP_TITLE>/05_failed_workloads.csv` | From `02_run_experiment.py` |
-| Timing data | `OUTPUT_PATH/<EXP_TITLE>/<STRATEGY>/<DATASET>/query_selection_time.csv` | From `02_run_experiment.py` |
+| Completed workload | `OUTPUT_PATH/<EXP_TITLE>/05_done_workload.csv` | From [`02_run_experiment.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/02_run_experiment.py) |
+| Failed workload | `OUTPUT_PATH/<EXP_TITLE>/05_failed_workloads.csv` | From [`02_run_experiment.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/02_run_experiment.py) |
+| Timing data | `OUTPUT_PATH/<EXP_TITLE>/<STRATEGY>/<DATASET>/query_selection_time.csv` | From [`02_run_experiment.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/02_run_experiment.py) |
 
 ### Outputs Produced
 
@@ -246,7 +246,7 @@ python -m scripts.find_missing_exp_ids_in_metric_files --EXP_TITLE your_experime
 
 **Output:** `OUTPUT_PATH/<EXP_TITLE>/07_missing_exp_ids.csv`
 
-(source: `scripts/find_missing_exp_ids_in_metric_files.py`)
+(source: [`scripts/find_missing_exp_ids_in_metric_files.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/find_missing_exp_ids_in_metric_files.py))
 
 ### Create Dense Workload
 
@@ -258,7 +258,7 @@ python -m scripts.create_dense_workload --EXP_TITLE your_experiment
 
 **Output:** `OUTPUT_PATH/<EXP_TITLE>/06_dense_workload.csv`
 
-(source: `scripts/create_dense_workload.py`)
+(source: [`scripts/create_dense_workload.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/create_dense_workload.py))
 
 ### Reduce Files to Dense Subset
 
@@ -266,7 +266,7 @@ python -m scripts.create_dense_workload --EXP_TITLE your_experiment
 python -m scripts.reduce_to_dense --EXP_TITLE your_experiment
 ```
 
-(source: `scripts/reduce_to_dense.py`)
+(source: [`scripts/reduce_to_dense.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/reduce_to_dense.py))
 
 ---
 
@@ -276,7 +276,7 @@ These scripts generate the analyses for the research paper.
 
 ### 5.1 Basic Metrics Correlation
 
-**Script:** `eva_scripts/basic_metrics_correlation.py`
+**Script:** [`eva_scripts/basic_metrics_correlation.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/basic_metrics_correlation.py)
 
 ```bash
 python -m eva_scripts.basic_metrics_correlation --EXP_TITLE your_experiment
@@ -294,11 +294,11 @@ python -m eva_scripts.basic_metrics_correlation --EXP_TITLE your_experiment
 |--------|------|
 | Correlation matrix | `OUTPUT_PATH/<EXP_TITLE>/plots/basic_metrics/Standard Metrics.parquet` |
 
-(source: `eva_scripts/basic_metrics_correlation.py`, lines 26-45)
+(source: [`eva_scripts/basic_metrics_correlation.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/basic_metrics_correlation.py#L26-L45), lines 26-45)
 
 ### 5.2 Leaderboard Rankings
 
-**Script:** `eva_scripts/calculate_leaderboard_rankings.py`
+**Script:** [`eva_scripts/calculate_leaderboard_rankings.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/calculate_leaderboard_rankings.py)
 
 ```bash
 python -m eva_scripts.calculate_leaderboard_rankings --EXP_TITLE your_experiment
@@ -312,7 +312,7 @@ python -m eva_scripts.calculate_leaderboard_rankings --EXP_TITLE your_experiment
 
 ### 5.3 Final Leaderboard
 
-**Script:** `eva_scripts/final_leaderboard.py`
+**Script:** [`eva_scripts/final_leaderboard.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/final_leaderboard.py)
 
 ```bash
 python -m eva_scripts.final_leaderboard --EXP_TITLE your_experiment
@@ -329,15 +329,25 @@ python -m eva_scripts.final_leaderboard --EXP_TITLE your_experiment
 |--------|------|
 | Rank heatmap data | `OUTPUT_PATH/<EXP_TITLE>/plots/final_leaderboard/rank_sparse_zero_full_auc_weighted_f1-score.parquet` |
 
-(source: `eva_scripts/final_leaderboard.py`, lines 34-71)
+(source: [`eva_scripts/final_leaderboard.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/final_leaderboard.py#L34-L71), lines 34-71)
 
 ### 5.4 Runtime Analysis
 
-**Script:** `eva_scripts/runtime.py`
+**Script:** [`eva_scripts/runtime.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/runtime.py)
 
 ```bash
-python -m eva_scripts.runtime --EXP_TITLE your_experiment
-```
+# Create workload for HPC execution
+python 03_calculate_dataset_categorizations.py \
+    --EXP_TITLE your_experiment \
+    --SAMPLES_CATEGORIZER _ALL \
+    --EVA_MODE create
+
+# Run locally (small experiments)
+python 03_calculate_dataset_categorizations.py \
+    --EXP_TITLE your_experiment \
+    --SAMPLES_CATEGORIZER _ALL \
+    --EVA_MODE local
+```000000
 
 **Required Inputs:**
 
@@ -351,11 +361,21 @@ python -m eva_scripts.runtime --EXP_TITLE your_experiment
 
 ### 5.5 AUC Metric Correlation
 
-**Script:** `eva_scripts/auc_metric_correlation.py`
+**Script:** [`eva_scripts/auc_metric_correlation.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/auc_metric_correlation.py)
 
 ```bash
-python -m eva_scripts.auc_metric_correlation --EXP_TITLE your_experiment
-```
+# Create workload for HPC execution
+python 03_calculate_dataset_categorizations.py \
+    --EXP_TITLE your_experiment \
+    --SAMPLES_CATEGORIZER _ALL \
+    --EVA_MODE create
+
+# Run locally (small experiments)
+python 03_calculate_dataset_categorizations.py \
+    --EXP_TITLE your_experiment \
+    --SAMPLES_CATEGORIZER _ALL \
+    --EVA_MODE local
+```111111
 
 **Required Inputs:**
 
@@ -370,13 +390,22 @@ python -m eva_scripts.auc_metric_correlation --EXP_TITLE your_experiment
 ### 5.6 Hyperparameter Influence Analysis
 
 **Scripts:**  
-- `eva_scripts/leaderboard_single_hyperparameter_influence.py`  
-- `eva_scripts/leaderboard_single_hyperparameter_influence_analyze.py`
+- [`eva_scripts/leaderboard_single_hyperparameter_influence.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/leaderboard_single_hyperparameter_influence.py)  
+- [`eva_scripts/leaderboard_single_hyperparameter_influence_analyze.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/leaderboard_single_hyperparameter_influence_analyze.py)
 
 ```bash
-python -m eva_scripts.leaderboard_single_hyperparameter_influence --EXP_TITLE your_experiment
-python -m eva_scripts.leaderboard_single_hyperparameter_influence_analyze --EXP_TITLE your_experiment
-```
+# Create workload for HPC execution
+python 03_calculate_dataset_categorizations.py \
+    --EXP_TITLE your_experiment \
+    --SAMPLES_CATEGORIZER _ALL \
+    --EVA_MODE create
+
+# Run locally (small experiments)
+python 03_calculate_dataset_categorizations.py \
+    --EXP_TITLE your_experiment \
+    --SAMPLES_CATEGORIZER _ALL \
+    --EVA_MODE local
+```222222
 
 **Outputs:**
 
@@ -387,13 +416,22 @@ python -m eva_scripts.leaderboard_single_hyperparameter_influence_analyze --EXP_
 ### 5.7 Single Hyperparameter Evaluation
 
 **Scripts:**  
-- `eva_scripts/single_hyperparameter_evaluation_metric.py` (metric-based heatmaps)  
-- `eva_scripts/single_hyperparameter_evaluation_indices.py` (queried samples heatmaps)
+- [`eva_scripts/single_hyperparameter_evaluation_metric.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/single_hyperparameter_evaluation_metric.py) (metric-based heatmaps)  
+- [`eva_scripts/single_hyperparameter_evaluation_indices.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/single_hyperparameter_evaluation_indices.py) (queried samples heatmaps)
 
 ```bash
-python -m eva_scripts.single_hyperparameter_evaluation_metric --EXP_TITLE your_experiment
-python -m eva_scripts.single_hyperparameter_evaluation_indices --EXP_TITLE your_experiment
-```
+# Create workload for HPC execution
+python 03_calculate_dataset_categorizations.py \
+    --EXP_TITLE your_experiment \
+    --SAMPLES_CATEGORIZER _ALL \
+    --EVA_MODE create
+
+# Run locally (small experiments)
+python 03_calculate_dataset_categorizations.py \
+    --EXP_TITLE your_experiment \
+    --SAMPLES_CATEGORIZER _ALL \
+    --EVA_MODE local
+```333333
 
 **Outputs:**
 
@@ -404,11 +442,21 @@ python -m eva_scripts.single_hyperparameter_evaluation_indices --EXP_TITLE your_
 
 ### 5.7 Learning Curve Examples
 
-**Script:** `eva_scripts/single_learning_curve_example.py`
+**Script:** [`eva_scripts/single_learning_curve_example.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/single_learning_curve_example.py)
 
 ```bash
-python -m eva_scripts.single_learning_curve_example --EXP_TITLE your_experiment
-```
+# Create workload for HPC execution
+python 03_calculate_dataset_categorizations.py \
+    --EXP_TITLE your_experiment \
+    --SAMPLES_CATEGORIZER _ALL \
+    --EVA_MODE create
+
+# Run locally (small experiments)
+python 03_calculate_dataset_categorizations.py \
+    --EXP_TITLE your_experiment \
+    --SAMPLES_CATEGORIZER _ALL \
+    --EVA_MODE local
+```444444
 
 **Outputs:**
 
@@ -416,38 +464,48 @@ python -m eva_scripts.single_learning_curve_example --EXP_TITLE your_experiment
 |--------|------|
 | Exemplary curve | `OUTPUT_PATH/<EXP_TITLE>/plots/single_learning_curve/single_exemplary_learning_curve.parquet` |
 
-(source: `eva_scripts/single_learning_curve_example.py`, lines 58-65)
+(source: [`eva_scripts/single_learning_curve_example.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/single_learning_curve_example.py#L58-L65), lines 58-65)
 
 ---
 
 ## Step 6: Publication-Ready Plots
 
-**Script:** `eva_scripts/redo_plots_for_paper.py`  
-(source: `eva_scripts/redo_plots_for_paper.py`)
+**Script:** [`eva_scripts/redo_plots_for_paper.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/redo_plots_for_paper.py)  
+(source: [`eva_scripts/redo_plots_for_paper.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/redo_plots_for_paper.py))
 
 This script reads intermediate Parquet files and generates publication-quality PDFs.
 
 ### Execution
 
 ```bash
-python -m eva_scripts.redo_plots_for_paper --EXP_TITLE your_experiment
-```
+# Create workload for HPC execution
+python 03_calculate_dataset_categorizations.py \
+    --EXP_TITLE your_experiment \
+    --SAMPLES_CATEGORIZER _ALL \
+    --EVA_MODE create
+
+# Run locally (small experiments)
+python 03_calculate_dataset_categorizations.py \
+    --EXP_TITLE your_experiment \
+    --SAMPLES_CATEGORIZER _ALL \
+    --EVA_MODE local
+```555555
 
 ### Required Inputs
 
 The following Parquet files must exist from previous steps:
 
-(source: `eva_scripts/redo_plots_for_paper.py`, lines 35-75)
+(source: [`eva_scripts/redo_plots_for_paper.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/redo_plots_for_paper.py#L35-L75), lines 35-75)
 
 | Input File | Source Script |
 |------------|---------------|
-| `plots/runtime/query_selection_time.parquet` | `eva_scripts/runtime.py` |
-| `plots/basic_metrics/Standard Metrics.parquet` | `eva_scripts/basic_metrics_correlation.py` |
-| `plots/AUC/auc_weighted_f1-score.parquet` | `eva_scripts/auc_metric_correlation.py` |
-| `plots/final_leaderboard/rank_*.parquet` | `eva_scripts/final_leaderboard.py` |
-| `plots/single_learning_curve/*.parquet` | `eva_scripts/single_learning_curve_example.py` |
+| `plots/runtime/query_selection_time.parquet` | [`eva_scripts/runtime.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/runtime.py) |
+| `plots/basic_metrics/Standard Metrics.parquet` | [`eva_scripts/basic_metrics_correlation.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/basic_metrics_correlation.py) |
+| `plots/AUC/auc_weighted_f1-score.parquet` | [`eva_scripts/auc_metric_correlation.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/auc_metric_correlation.py) |
+| `plots/final_leaderboard/rank_*.parquet` | [`eva_scripts/final_leaderboard.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/final_leaderboard.py) |
+| `plots/single_learning_curve/*.parquet` | [`eva_scripts/single_learning_curve_example.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/single_learning_curve_example.py) |
 | `plots/single_hyperparameter/*/*.parquet` | `eva_scripts/single_hyperparameter_evaluation_*.py` |
-| `plots/leaderboard_single_hyperparameter_influence/*.parquet` | `eva_scripts/leaderboard_single_hyperparameter_influence_analyze.py` |
+| `plots/leaderboard_single_hyperparameter_influence/*.parquet` | [`eva_scripts/leaderboard_single_hyperparameter_influence_analyze.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/leaderboard_single_hyperparameter_influence_analyze.py) |
 
 ### Outputs
 
@@ -457,11 +515,21 @@ Publication-ready PDFs in `OUTPUT_PATH/<EXP_TITLE>/plots/` with same names as in
 
 ## Step 7: Merge Multi-Plot Figures (Optional)
 
-**Script:** `eva_scripts/merge_multiple_plots_single_page.py`
+**Script:** [`eva_scripts/merge_multiple_plots_single_page.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/merge_multiple_plots_single_page.py)
 
 ```bash
-python -m eva_scripts.merge_multiple_plots_single_page --EXP_TITLE your_experiment
-```
+# Create workload for HPC execution
+python 03_calculate_dataset_categorizations.py \
+    --EXP_TITLE your_experiment \
+    --SAMPLES_CATEGORIZER _ALL \
+    --EVA_MODE create
+
+# Run locally (small experiments)
+python 03_calculate_dataset_categorizations.py \
+    --EXP_TITLE your_experiment \
+    --SAMPLES_CATEGORIZER _ALL \
+    --EVA_MODE local
+```666666
 
 Combines related heatmaps into single-page figures for the paper.
 
@@ -475,13 +543,13 @@ This section maps paper figures/tables to the scripts and output files that prod
 
 | Paper Figure | Description | Script(s) | Output File(s) |
 |--------------|-------------|-----------|----------------|
-| Fig. 2 | Example learning curves (cluttered vs ambiguous) | `eva_scripts/single_learning_curve_example.py` | `plots/single_learning_curve/weighted_f1-score.parquet` |
-| Fig. 3 | Aggregation metrics illustration | `eva_scripts/single_learning_curve_example.py` | `plots/single_learning_curve/single_exemplary_learning_curve.parquet` |
-| Fig. 4+ (blue) | Metric-based heatmaps | `eva_scripts/single_hyperparameter_evaluation_metric.py` | `plots/single_hyperparameter/*/single_hyper_*.parquet` |
-| Fig. 4+ (green) | Queried samples heatmaps | `eva_scripts/single_hyperparameter_evaluation_indices.py` | `plots/single_hyperparameter/*/single_indice_*.parquet` |
-| Fig. 4+ (orange) | Leaderboard invariance heatmaps | `eva_scripts/leaderboard_single_hyperparameter_influence_analyze.py` | `plots/leaderboard_single_hyperparameter_influence/*_kendall.parquet` |
-| Final Table | Strategy rankings | `eva_scripts/final_leaderboard.py` | `plots/final_leaderboard/rank_sparse_zero_full_auc_weighted_f1-score.parquet` |
-| Runtime | Runtime bar chart | `eva_scripts/runtime.py` | `plots/runtime/query_selection_time.parquet` |
+| Fig. 2 | Example learning curves (cluttered vs ambiguous) | [`eva_scripts/single_learning_curve_example.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/single_learning_curve_example.py) | `plots/single_learning_curve/weighted_f1-score.parquet` |
+| Fig. 3 | Aggregation metrics illustration | [`eva_scripts/single_learning_curve_example.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/single_learning_curve_example.py) | `plots/single_learning_curve/single_exemplary_learning_curve.parquet` |
+| Fig. 4+ (blue) | Metric-based heatmaps | [`eva_scripts/single_hyperparameter_evaluation_metric.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/single_hyperparameter_evaluation_metric.py) | `plots/single_hyperparameter/*/single_hyper_*.parquet` |
+| Fig. 4+ (green) | Queried samples heatmaps | [`eva_scripts/single_hyperparameter_evaluation_indices.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/single_hyperparameter_evaluation_indices.py) | `plots/single_hyperparameter/*/single_indice_*.parquet` |
+| Fig. 4+ (orange) | Leaderboard invariance heatmaps | [`eva_scripts/leaderboard_single_hyperparameter_influence_analyze.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/leaderboard_single_hyperparameter_influence_analyze.py) | `plots/leaderboard_single_hyperparameter_influence/*_kendall.parquet` |
+| Final Table | Strategy rankings | [`eva_scripts/final_leaderboard.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/final_leaderboard.py) | `plots/final_leaderboard/rank_sparse_zero_full_auc_weighted_f1-score.parquet` |
+| Runtime | Runtime bar chart | [`eva_scripts/runtime.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/runtime.py) | `plots/runtime/query_selection_time.parquet` |
 
 ### Research Question Mapping
 
@@ -515,34 +583,26 @@ This section maps paper figures/tables to the scripts and output files that prod
 | Mixing incompatible runs | Different `EXP_TITLE` in analysis | Use consistent `--EXP_TITLE` |
 | Differing metrics | Mismatched column names | Verify metric file columns |
 | Missing seeds/splits | Sparse workload entries | Check `05_done_workload.csv` coverage |
-| Incomplete post-processing | Missing AUC files | Rerun `04_calculate_advanced_metrics.py` |
-| Corrupted CSV files | Pandas read errors | Run `scripts/find_broken_file.py` |
+| Incomplete post-processing | Missing AUC files | Rerun [`04_calculate_advanced_metrics.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/04_calculate_advanced_metrics.py) |
+| Corrupted CSV files | Pandas read errors | Run [`scripts/find_broken_file.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/find_broken_file.py) |
 
 ### Validating Pipeline Completeness
 
 Before generating plots, verify:
 
-```python
-import pandas as pd
-from pathlib import Path
+```bash
+# Create workload for HPC execution
+python 03_calculate_dataset_categorizations.py \
+    --EXP_TITLE your_experiment \
+    --SAMPLES_CATEGORIZER _ALL \
+    --EVA_MODE create
 
-exp_title = "your_experiment"
-output_path = Path(f"OUTPUT_PATH/{exp_title}")
-
-# 1. Check experiment completion
-workload = pd.read_csv(output_path / "01_workload.csv")
-done = pd.read_csv(output_path / "05_done_workload.csv")
-completion_rate = len(done) / len(workload) * 100
-print(f"Completion rate: {completion_rate:.1f}%")
-
-# 2. Check advanced metrics exist
-auc_files = list(output_path.glob("*/*/full_auc_weighted_f1-score.csv.xz"))
-print(f"AUC metric files: {len(auc_files)}")
-
-# 3. Check time series directory
-ts_files = list((output_path / "_TS").glob("*.parquet"))
-print(f"Time series files: {len(ts_files)}")
-```
+# Run locally (small experiments)
+python 03_calculate_dataset_categorizations.py \
+    --EXP_TITLE your_experiment \
+    --SAMPLES_CATEGORIZER _ALL \
+    --EVA_MODE local
+```777777
 
 ---
 
@@ -551,35 +611,22 @@ print(f"Time series files: {len(ts_files)}")
 For a complete evaluation run, execute in order:
 
 ```bash
-#!/bin/bash
-EXP_TITLE="your_experiment"
+# Create workload for HPC execution
+python 03_calculate_dataset_categorizations.py \
+    --EXP_TITLE your_experiment \
+    --SAMPLES_CATEGORIZER _ALL \
+    --EVA_MODE create
 
-# Post-processing
-python 03_calculate_dataset_categorizations.py --EXP_TITLE $EXP_TITLE --SAMPLES_CATEGORIZER _ALL --EVA_MODE local
-python 04_calculate_advanced_metrics.py --EXP_TITLE $EXP_TITLE --COMPUTED_METRICS _ALL --EVA_MODE local
-python 05_analyze_partially_run_workload.py --EXP_TITLE $EXP_TITLE
-
-# Data validation (optional)
-python -m scripts.find_missing_exp_ids_in_metric_files --EXP_TITLE $EXP_TITLE
-
-# Evaluation scripts
-python -m eva_scripts.single_learning_curve_example --EXP_TITLE $EXP_TITLE
-python -m eva_scripts.runtime --EXP_TITLE $EXP_TITLE
-python -m eva_scripts.basic_metrics_correlation --EXP_TITLE $EXP_TITLE
-python -m eva_scripts.auc_metric_correlation --EXP_TITLE $EXP_TITLE
-python -m eva_scripts.single_hyperparameter_evaluation_indices --EXP_TITLE $EXP_TITLE
-python -m eva_scripts.single_hyperparameter_evaluation_metric --EXP_TITLE $EXP_TITLE
-python -m eva_scripts.leaderboard_single_hyperparameter_influence_analyze --EXP_TITLE $EXP_TITLE
-python -m eva_scripts.final_leaderboard --EXP_TITLE $EXP_TITLE
-
-# Publication plots
-python -m eva_scripts.redo_plots_for_paper --EXP_TITLE $EXP_TITLE
-python -m eva_scripts.merge_multiple_plots_single_page --EXP_TITLE $EXP_TITLE
-```
+# Run locally (small experiments)
+python 03_calculate_dataset_categorizations.py \
+    --EXP_TITLE your_experiment \
+    --SAMPLES_CATEGORIZER _ALL \
+    --EVA_MODE local
+```888888
 
 ---
 
 ## Deprecated: analyse_results Directory
 
 !!! warning "Deprecation Notice"
-    The `analyse_results/` directory is **deprecated** and not actively maintained. Use `eva_scripts/` for all analysis and visualization tasks. The scripts in `analyse_results/` may not work with current data formats.
+    The [`analyse_results/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/analyse_results) directory is **deprecated** and not actively maintained. Use [`eva_scripts/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts) for all analysis and visualization tasks. The scripts in [`analyse_results/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/analyse_results) may not work with current data formats.

@@ -1,10 +1,10 @@
 # Architecture Rationale
 
 Design goals:
-- HPC-scale parallelism and sharding of millions of runs (`01_create_workload.py` builds the grid; `02_run_experiment.py` shards by `WORKER_INDEX`).
-- Rerunnable after failures with idempotent outputs (`framework_runners/base_runner.py::AL_Experiment.run_experiment` appends to `05_done_workload.csv` / `05_failed_workloads.csv`).
-- Grid-first workload generation for deterministic slicing (`01_create_workload.py::_generate_exp_param_grid`).
-- Unified code reuse across scripts (shared `Config` and data types in `misc/config.py`, `resources/data_types.py`).
+- HPC-scale parallelism and sharding of millions of runs ([`01_create_workload.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/01_create_workload.py) builds the grid; [`02_run_experiment.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/02_run_experiment.py) shards by `WORKER_INDEX`).
+- Rerunnable after failures with idempotent outputs ([`framework_runners/base_runner.py::AL_Experiment.run_experiment`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/base_runner.py) appends to `05_done_workload.csv` / `05_failed_workloads.csv`).
+- Grid-first workload generation for deterministic slicing ([`01_create_workload.py::_generate_exp_param_grid`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/01_create_workload.py)).
+- Unified code reuse across scripts (shared `Config` and data types in [`misc/config.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py), [`resources/data_types.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py)).
 - Fast processing with minimal overhead for millions of runs (vectorized workload creation, per-metric CSV append, NPZ caching for categorizations).
 
 ```mermaid

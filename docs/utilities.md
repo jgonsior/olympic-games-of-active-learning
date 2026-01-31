@@ -1,12 +1,12 @@
 # Utilities Reference
 
-This document catalogs the utility modules in `misc/` and helper scripts in `scripts/`. Each entry indicates whether the utility is pipeline-critical, optional, or a debug/legacy tool.
+This document catalogs the utility modules in [`misc/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc) and helper scripts in [`scripts/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts). Each entry indicates whether the utility is pipeline-critical, optional, or a debug/legacy tool.
 
 ---
 
 ## misc/ Directory
 
-The `misc/` directory contains shared utility modules used throughout OGAL.
+The [`misc/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc) directory contains shared utility modules used throughout OGAL.
 
 ### Module Catalog
 
@@ -34,7 +34,7 @@ The `misc/` directory contains shared utility modules used throughout OGAL.
 
 **Details:** See [Configuration](configuration.md)
 
-(source: `misc/config.py::Config`)
+(source: [`misc/config.py::Config`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py))
 
 ---
 
@@ -58,7 +58,7 @@ The `misc/` directory contains shared utility modules used throughout OGAL.
 | `create_workload()` | Generic workload creation | Post-processing |
 | `run_from_workload()` | Execute function across workload | Post-processing |
 
-(source: `misc/helpers.py`)
+(source: [`misc/helpers.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/helpers.py))
 
 ---
 
@@ -80,7 +80,7 @@ init_logger("console")  # or init_logger("/path/to/logfile.log")
 log_it("Starting experiment")
 ```
 
-(source: `misc/logging.py`)
+(source: [`misc/logging.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/logging.py))
 
 ---
 
@@ -100,7 +100,7 @@ log_it("Starting experiment")
 
 **Safe to ignore:** Yes - convenience functions that can be replaced with manual pandas calls.
 
-(source: `misc/io_utils.py`)
+(source: [`misc/io_utils.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/io_utils.py))
 
 ---
 
@@ -118,7 +118,7 @@ log_it("Starting experiment")
 
 **Safe to ignore:** Yes - only needed for generating paper figures.
 
-(source: `misc/plotting.py`)
+(source: [`misc/plotting.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/plotting.py))
 
 ---
 
@@ -134,13 +134,13 @@ log_it("Starting experiment")
 
 **Safe to ignore:** Yes - internal error handling.
 
-(source: `misc/Errors.py`)
+(source: [`misc/Errors.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/Errors.py))
 
 ---
 
 ## scripts/ Directory
 
-The `scripts/` directory contains utility scripts for data processing, fixing issues, and analysis.
+The [`scripts/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts) directory contains utility scripts for data processing, fixing issues, and analysis.
 
 ### Script Categories
 
@@ -174,7 +174,7 @@ The `scripts/` directory contains utility scripts for data processing, fixing is
 | `reduce_to_dense.py` | Filter results to dense workload | Before analysis on subset |
 | `merge_two_workloads.py` | Combine workloads from different experiments | Merging experiment results |
 
-(source: `scripts/create_dense_workload.py`, `scripts/merge_two_workloads.py`)
+(source: [`scripts/create_dense_workload.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/create_dense_workload.py), [`scripts/merge_two_workloads.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/merge_two_workloads.py))
 
 #### Data Conversion
 
@@ -184,7 +184,7 @@ The `scripts/` directory contains utility scripts for data processing, fixing is
 | `convert_metrics_csvs_to_exp_id_csvs.py` | Reorganize metrics by EXP_ID | Legacy conversion |
 | `convert_y_pred_to_parquet.py` | Convert prediction CSVs to parquet | Storage optimization |
 
-(source: `scripts/convert_*.py`)
+(source: [`scripts/convert_*.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/convert_*.py))
 
 #### Data Fixes
 
@@ -206,7 +206,7 @@ The `scripts/` directory contains utility scripts for data processing, fixing is
 | `remove_oom_results_from_metric_files.py` | Clean OOM-contaminated results | After OOM recovery |
 | `replace_broken_parquet_csvs_with_working_file.py` | Replace corrupted files | After file corruption |
 
-(source: `scripts/fix_*.py`, `scripts/remove_*.py`)
+(source: [`scripts/fix_*.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/fix_*.py), `scripts/remove_*.py`)
 
 ---
 
@@ -221,7 +221,7 @@ The `scripts/` directory contains utility scripts for data processing, fixing is
 | `exp_results_data_format_test.py` | Test data format compliance | Validation |
 | `create_auc_selected_ts.py` | Create AUC time series | Analysis preparation |
 
-(source: `scripts/find_*.py`, `scripts/*_test.py`)
+(source: [`scripts/find_*.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/find_*.py), `scripts/*_test.py`)
 
 ---
 
@@ -233,7 +233,7 @@ The `scripts/` directory contains utility scripts for data processing, fixing is
 | `rerun_broken_experiments.py` | Rerun failed experiments | Recovery from failures |
 | `rerun_missing_exp_ids.py` | Rerun missing experiments | Completing partial runs |
 
-(source: `scripts/rerun_*.py`)
+(source: [`scripts/rerun_*.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/rerun_*.py))
 
 ---
 
@@ -244,7 +244,7 @@ The `scripts/` directory contains utility scripts for data processing, fixing is
 | `create_gaussian.py` | Generate Gaussian test dataset | Testing |
 | `create_xor.py` | Generate XOR test dataset | Testing |
 
-(source: `scripts/create_gaussian.py`, `scripts/create_xor.py`)
+(source: [`scripts/create_gaussian.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/create_gaussian.py), [`scripts/create_xor.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/create_xor.py))
 
 ---
 
@@ -254,7 +254,7 @@ The `scripts/` directory contains utility scripts for data processing, fixing is
 |--------|---------|-------------|
 | `render_mermaid.py` | Render Mermaid diagrams | Documentation |
 
-(source: `scripts/render_mermaid.py`)
+(source: [`scripts/render_mermaid.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/render_mermaid.py))
 
 ---
 
@@ -264,9 +264,9 @@ The `scripts/` directory contains utility scripts for data processing, fixing is
 
 | Category | Files |
 |----------|-------|
-| Plotting utilities | `misc/plotting.py` |
-| Error classes | `misc/Errors.py` |
-| I/O convenience | `misc/io_utils.py` |
+| Plotting utilities | [`misc/plotting.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/plotting.py) |
+| Error classes | [`misc/Errors.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/Errors.py) |
+| I/O convenience | [`misc/io_utils.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/io_utils.py) |
 | All `fix_*.py` scripts | Unless you encounter the specific issue |
 | All `rerun_*.py` scripts | Unless you need recovery |
 | Data generation | `create_gaussian.py`, `create_xor.py` |
@@ -275,10 +275,10 @@ The `scripts/` directory contains utility scripts for data processing, fixing is
 
 | Category | Files |
 |----------|-------|
-| Configuration | `misc/config.py` |
-| Helpers | `misc/helpers.py` |
-| Logging | `misc/logging.py` |
-| Validation | `scripts/validate_results_schema.py` |
+| Configuration | [`misc/config.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) |
+| Helpers | [`misc/helpers.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/helpers.py) |
+| Logging | [`misc/logging.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/logging.py) |
+| Validation | [`scripts/validate_results_schema.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/validate_results_schema.py) |
 
 ---
 

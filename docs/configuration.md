@@ -32,14 +32,14 @@ The experimental grid is the Cartesian product: **𝕊 × 𝔻 × 𝕋 × 𝕀 �
 | File | Purpose | Format |
 |------|---------|--------|
 | `.server_access_credentials.cfg` | Machine-specific paths (local vs HPC) | INI |
-| `resources/exp_config.yaml` | Experiment grid definitions | YAML |
+| [`resources/exp_config.yaml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/exp_config.yaml) | Experiment grid definitions | YAML |
 | `OUTPUT_PATH/<EXP_TITLE>/00_config.yaml` | Saved experiment configuration | YAML |
 
 ## Server Access Credentials
 
 **File:** `.server_access_credentials.cfg` (gitignored)
 
-This file defines paths for both local development and HPC cluster environments. The `RUNNING_ENVIRONMENT` setting determines which section is active (default: `local`; source: `misc/config.py::Config.RUNNING_ENVIRONMENT`).
+This file defines paths for both local development and HPC cluster environments. The `RUNNING_ENVIRONMENT` setting determines which section is active (default: `local`; source: [`misc/config.py::Config.RUNNING_ENVIRONMENT`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py)).
 
 ### Structure
 
@@ -85,18 +85,18 @@ OUTPUT_PATH=/home/user/al_survey/exp_results
 
 ### How Scripts Load This File
 
-The `Config` class in `misc/config.py` loads this file via `_load_server_setup_from_file()` (source: `misc/config.py::Config._load_server_setup_from_file`):
+The `Config` class in [`misc/config.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) loads this file via `_load_server_setup_from_file()` (source: [`misc/config.py::Config._load_server_setup_from_file`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py)):
 
 1. Parses both `[HPC]` and `[LOCAL]` sections
 2. Prefixes each key with section name (e.g., `HPC_DATASETS_PATH`, `LOCAL_DATASETS_PATH`)
 3. Sets attributes on the Config instance
-4. The `_pathes_magic()` method then selects the appropriate paths based on `RUNNING_ENVIRONMENT` (source: `misc/config.py::Config._pathes_magic`)
+4. The `_pathes_magic()` method then selects the appropriate paths based on `RUNNING_ENVIRONMENT` (source: [`misc/config.py::Config._pathes_magic`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py))
 
 ---
 
 ## Experiment Configuration
 
-**File:** `resources/exp_config.yaml`
+**File:** [`resources/exp_config.yaml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/exp_config.yaml)
 
 This file defines named experiment configurations as hyperparameter grids.
 
@@ -140,10 +140,10 @@ These define the Cartesian product for the experiment workload. Each maps to a h
 
 Available metrics (corresponds to paper's aggregation-metrics):
 
-- `Standard_ML_Metrics`: Accuracy, F1-score, precision, recall (source: `metrics/Standard_ML_Metrics.py` - standard ML metrics from paper)
-- `Selected_Indices`: Which samples were queried (R(Q) in paper notation; source: `metrics/Selected_Indices.py`)
-- `Timing_Metrics`: Query selection timing (source: `metrics/Timing_Metrics.py`)
-- `Predicted_Samples`: Model predictions (source: `metrics/Predicted_Samples.py`)
+- `Standard_ML_Metrics`: Accuracy, F1-score, precision, recall (source: [`metrics/Standard_ML_Metrics.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/Standard_ML_Metrics.py) - standard ML metrics from paper)
+- `Selected_Indices`: Which samples were queried (R(Q) in paper notation; source: [`metrics/Selected_Indices.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/Selected_Indices.py))
+- `Timing_Metrics`: Query selection timing (source: [`metrics/Timing_Metrics.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/Timing_Metrics.py))
+- `Predicted_Samples`: Model predictions (source: [`metrics/Predicted_Samples.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/Predicted_Samples.py))
 
 The paper discusses several aggregation-metrics for evaluating learning curves:
 - **Full AUC**: Area under entire learning curve
@@ -152,11 +152,11 @@ The paper discusses several aggregation-metrics for evaluating learning curves:
 - **Final Value**: Last AL cycle's metric value
 - **First-5 / Last-5**: Mean of first/last 5 iterations
 
-These are computed by `04_calculate_advanced_metrics.py`.
+These are computed by [`04_calculate_advanced_metrics.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/04_calculate_advanced_metrics.py).
 
 ### Range Syntax
 
-The YAML parser supports range syntax for consecutive integers (source: `misc/config.py::Config._load_from_yaml_file`, lines ~350-355):
+The YAML parser supports range syntax for consecutive integers (source: [`misc/config.py::Config._load_from_yaml_file`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py), lines ~350-355):
 
 ```yaml
 # These are equivalent:
@@ -267,34 +267,34 @@ This creates: 90 × 30 × 3 × 6 × 1 × 100 × 5 × 1 = **~24 million experimen
 
 ## Config Class Reference
 
-The `Config` class (`misc/config.py`) is the central configuration manager (source: `misc/config.py::Config`).
+The `Config` class ([`misc/config.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py)) is the central configuration manager (source: [`misc/config.py::Config`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py)).
 
 ### Key Attributes
 
 | Attribute | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `RUNNING_ENVIRONMENT` | Literal["local", "hpc"] | "local" | Execution environment (source: `misc/config.py::Config.RUNNING_ENVIRONMENT`) |
+| `RUNNING_ENVIRONMENT` | Literal["local", "hpc"] | "local" | Execution environment (source: [`misc/config.py::Config.RUNNING_ENVIRONMENT`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py)) |
 | `EXP_TITLE` | str | Required | Experiment name |
 | `WORKER_INDEX` | int | None | Workload row index |
-| `RANDOM_SEED` | int | 1312 | Global random seed (source: `misc/config.py::Config.RANDOM_SEED`) |
+| `RANDOM_SEED` | int | 1312 | Global random seed (source: [`misc/config.py::Config.RANDOM_SEED`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py)) |
 | `N_JOBS` | int | 1 | Parallel workers |
-| `EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT` | int | 300 | Per-query timeout (source: `misc/config.py::Config.EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT`) |
+| `EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT` | int | 300 | Per-query timeout (source: [`misc/config.py::Config.EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py)) |
 
 ### Path Attributes (Auto-computed)
 
 | Attribute | Description | Source |
 |-----------|-------------|--------|
-| `OUTPUT_PATH` | Base output directory | `misc/config.py::Config._pathes_magic` |
-| `DATASETS_PATH` | Dataset directory | `misc/config.py::Config._pathes_magic` |
-| `WORKLOAD_FILE_PATH` | Path to workload CSV | `misc/config.py::Config.WORKLOAD_FILE_PATH` |
-| `CONFIG_FILE_PATH` | Path to saved config | `misc/config.py::Config.CONFIG_FILE_PATH` |
-| `OVERALL_DONE_WORKLOAD_PATH` | Completed experiments | `misc/config.py::Config.OVERALL_DONE_WORKLOAD_PATH` |
-| `OVERALL_FAILED_WORKLOAD_PATH` | Failed experiments | `misc/config.py::Config.OVERALL_FAILED_WORKLOAD_PATH` |
-| `METRIC_RESULTS_FOLDER` | Per-experiment results | `misc/config.py::Config.METRIC_RESULTS_FOLDER` |
+| `OUTPUT_PATH` | Base output directory | [`misc/config.py::Config._pathes_magic`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) |
+| `DATASETS_PATH` | Dataset directory | [`misc/config.py::Config._pathes_magic`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) |
+| `WORKLOAD_FILE_PATH` | Path to workload CSV | [`misc/config.py::Config.WORKLOAD_FILE_PATH`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) |
+| `CONFIG_FILE_PATH` | Path to saved config | [`misc/config.py::Config.CONFIG_FILE_PATH`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) |
+| `OVERALL_DONE_WORKLOAD_PATH` | Completed experiments | [`misc/config.py::Config.OVERALL_DONE_WORKLOAD_PATH`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) |
+| `OVERALL_FAILED_WORKLOAD_PATH` | Failed experiments | [`misc/config.py::Config.OVERALL_FAILED_WORKLOAD_PATH`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) |
+| `METRIC_RESULTS_FOLDER` | Per-experiment results | [`misc/config.py::Config.METRIC_RESULTS_FOLDER`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) |
 
 ### Loading Order
 
-Configuration is loaded in this priority order (source: `misc/config.py::Config.__init__`):
+Configuration is loaded in this priority order (source: [`misc/config.py::Config.__init__`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py)):
 
 1. **CLI Arguments**: Parsed first, highest priority
 2. **Server Credentials**: `.server_access_credentials.cfg`

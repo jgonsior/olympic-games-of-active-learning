@@ -15,14 +15,14 @@ OGAL results fall into two categories:
 
 | Category | Source | Examples | Typical Location |
 |----------|--------|----------|------------------|
-| **Raw Experiment Outputs** | `02_run_experiment.py` | `accuracy.csv`, `selected_indices.csv`, `05_done_workload.csv` | `<STRATEGY>/<DATASET>/` |
-| **Derived Artifacts** | `03_*.py`, `04_*.py`, `eva_scripts/` | `full_auc_*.csv.xz`, `_TS/*.parquet`, `plots/*.parquet` | `<STRATEGY>/<DATASET>/`, `_TS/`, `plots/` |
+| **Raw Experiment Outputs** | [`02_run_experiment.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/02_run_experiment.py) | `accuracy.csv`, `selected_indices.csv`, `05_done_workload.csv` | `<STRATEGY>/<DATASET>/` |
+| **Derived Artifacts** | `03_*.py`, `04_*.py`, [`eva_scripts/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts) | `full_auc_*.csv.xz`, `_TS/*.parquet`, `plots/*.parquet` | `<STRATEGY>/<DATASET>/`, `_TS/`, [`plots/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/plots) |
 
 ## Output Directory Structure
 
 All experiment outputs are stored under `OUTPUT_PATH/<EXP_TITLE>/`:
 
-(source: `misc/config.py::Config._pathes_magic`, line 224)
+(source: [`misc/config.py::Config._pathes_magic`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py#L224), line 224)
 
 ```
 OUTPUT_PATH/<EXP_TITLE>/
@@ -66,31 +66,31 @@ OUTPUT_PATH/<EXP_TITLE>/
 
 The main workload file defining all experiment configurations.
 
-(source: `01_create_workload.py::_generate_exp_param_grid`, lines 40-98)
+(source: [`01_create_workload.py::_generate_exp_param_grid`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/01_create_workload.py#L40-L98), lines 40-98)
 
 | Column | Type | Description | Source |
 |--------|------|-------------|--------|
 | `EXP_UNIQUE_ID` | int | Unique identifier (0-indexed row after shuffle) | Line 96 |
-| `EXP_DATASET` | int | Dataset enum value | `resources/data_types.py::DATASET` |
-| `EXP_STRATEGY` | int | AL strategy enum value | `resources/data_types.py::AL_STRATEGY` |
-| `EXP_LEARNER_MODEL` | int | Learner model enum value | `resources/data_types.py::LEARNER_MODEL` |
-| `EXP_BATCH_SIZE` | int | Query batch size | `misc/config.py::Config.EXP_BATCH_SIZE` |
-| `EXP_RANDOM_SEED` | int | Random seed | `misc/config.py::Config.EXP_RANDOM_SEED` |
-| `EXP_START_POINT` | int | Initial labeled set index | `misc/config.py::Config.EXP_START_POINT` |
-| `EXP_TRAIN_TEST_BUCKET_SIZE` | int | Train/test split bucket | `misc/config.py::Config.EXP_TRAIN_TEST_BUCKET_SIZE` |
-| `EXP_NUM_QUERIES` | int | Number of AL iterations | `misc/config.py::Config.EXP_NUM_QUERIES` |
+| `EXP_DATASET` | int | Dataset enum value | [`resources/data_types.py::DATASET`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py) |
+| `EXP_STRATEGY` | int | AL strategy enum value | [`resources/data_types.py::AL_STRATEGY`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py) |
+| `EXP_LEARNER_MODEL` | int | Learner model enum value | [`resources/data_types.py::LEARNER_MODEL`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py) |
+| `EXP_BATCH_SIZE` | int | Query batch size | [`misc/config.py::Config.EXP_BATCH_SIZE`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) |
+| `EXP_RANDOM_SEED` | int | Random seed | [`misc/config.py::Config.EXP_RANDOM_SEED`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) |
+| `EXP_START_POINT` | int | Initial labeled set index | [`misc/config.py::Config.EXP_START_POINT`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) |
+| `EXP_TRAIN_TEST_BUCKET_SIZE` | int | Train/test split bucket | [`misc/config.py::Config.EXP_TRAIN_TEST_BUCKET_SIZE`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) |
+| `EXP_NUM_QUERIES` | int | Number of AL iterations | [`misc/config.py::Config.EXP_NUM_QUERIES`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) |
 
 ### 05_done_workload.csv
 
 Tracks successfully completed experiments. Same schema as `01_workload.csv`.
 
-(source: `framework_runners/base_runner.py::AL_Experiment.run_experiment`, lines 224-229)
+(source: [`framework_runners/base_runner.py::AL_Experiment.run_experiment`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/base_runner.py#L224-L229), lines 224-229)
 
 ### 05_failed_workloads.csv
 
 Tracks failed experiments with error information.
 
-(source: `framework_runners/base_runner.py::AL_Experiment.run_experiment`, lines 210-217)
+(source: [`framework_runners/base_runner.py::AL_Experiment.run_experiment`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/base_runner.py#L210-L217), lines 210-217)
 
 | Column | Type | Description |
 |--------|------|-------------|
@@ -110,7 +110,7 @@ Tracks failed experiments with error information.
 
 Experiments that started but were presumed killed by OOM. Written **before** experiment runs, removed from tracking if it completes successfully.
 
-(source: `framework_runners/base_runner.py::AL_Experiment.run_experiment`, lines 120-126)
+(source: [`framework_runners/base_runner.py::AL_Experiment.run_experiment`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/base_runner.py#L120-L126), lines 120-126)
 
 Same schema as `01_workload.csv` (no error column).
 
@@ -160,7 +160,7 @@ From `ALIPY_RANDOM/Iris/full_auc_accuracy.csv.xz`:
 
 **Interpretation:**
 - `full_auc_accuracy` = Area under the accuracy learning curve
-- Computed by `04_calculate_advanced_metrics.py` from the per-cycle values
+- Computed by [`04_calculate_advanced_metrics.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/04_calculate_advanced_metrics.py) from the per-cycle values
 
 ### Corresponding Time Series Entry
 
@@ -174,19 +174,19 @@ From `_TS/full_auc_accuracy.parquet`:
 - Time series format used by eva_scripts for correlation analysis
 - `EXP_UNIQUE_ID_ix` combines experiment ID with cycle index for unique identification
 
-(source: `misc/helpers.py::create_fingerprint_joined_timeseries_csv_files`, lines 200-267)
+(source: [`misc/helpers.py::create_fingerprint_joined_timeseries_csv_files`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/helpers.py#L200-L267), lines 200-267)
 
 ---
 
 ## Part 1: Raw Experiment Outputs
 
-These files are produced directly by `02_run_experiment.py` during experiment execution.
+These files are produced directly by [`02_run_experiment.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/02_run_experiment.py) during experiment execution.
 
 ### Per-Cycle Metric Files Schema
 
 Located at `<STRATEGY>/<DATASET>/<metric>.csv`
 
-(source: `metrics/base_metric.py::Base_Metric.save_metrics`)
+(source: [`metrics/base_metric.py::Base_Metric.save_metrics`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/base_metric.py))
 
 ### Common Schema for All Per-Cycle Metrics
 
@@ -202,7 +202,7 @@ Missing values (e.g., early stopping) are represented as empty cells or `NaN`.
 
 ### Standard ML Metrics
 
-(source: `metrics/Standard_ML_Metrics.py`)
+(source: [`metrics/Standard_ML_Metrics.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/Standard_ML_Metrics.py))
 
 | File | Description | Range |
 |------|-------------|-------|
@@ -216,7 +216,7 @@ Missing values (e.g., early stopping) are represented as empty cells or `NaN`.
 
 ### Selection Metrics
 
-(source: `metrics/Selected_Indices.py`)
+(source: [`metrics/Selected_Indices.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/Selected_Indices.py))
 
 | File | Description |
 |------|-------------|
@@ -226,7 +226,7 @@ Missing values (e.g., early stopping) are represented as empty cells or `NaN`.
 
 ### Timing Metrics
 
-(source: `metrics/Timing_Metrics.py`)
+(source: [`metrics/Timing_Metrics.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/Timing_Metrics.py))
 
 | File | Description | Unit |
 |------|-------------|------|
@@ -235,7 +235,7 @@ Missing values (e.g., early stopping) are represented as empty cells or `NaN`.
 
 ### Prediction Files
 
-(source: `metrics/Predicted_Samples.py`)
+(source: [`metrics/Predicted_Samples.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/Predicted_Samples.py))
 
 | File | Format | Description |
 |------|--------|-------------|
@@ -250,7 +250,7 @@ These files are computed from raw outputs by post-processing scripts and eva_scr
 
 ### Derived Metrics Schema
 
-Computed by `04_calculate_advanced_metrics.py`.
+Computed by [`04_calculate_advanced_metrics.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/04_calculate_advanced_metrics.py).
 
 (source: `metrics/computed/` directory)
 
@@ -274,7 +274,7 @@ Computed by `04_calculate_advanced_metrics.py`.
 
 ### Distance Metrics
 
-(source: `metrics/computed/DISTANCE_METRICS.py`)
+(source: [`metrics/computed/DISTANCE_METRICS.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/computed/DISTANCE_METRICS.py))
 
 | File | Description |
 |------|-------------|
@@ -284,9 +284,9 @@ Computed by `04_calculate_advanced_metrics.py`.
 
 ### Dataset Categorization Files
 
-(source: `metrics/computed/base_samples_categorizer.py`)
+(source: [`metrics/computed/base_samples_categorizer.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/computed/base_samples_categorizer.py))
 
-Per-sample characteristics computed by `03_calculate_dataset_categorizations.py`:
+Per-sample characteristics computed by [`03_calculate_dataset_categorizations.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/03_calculate_dataset_categorizations.py):
 
 | File | Description |
 |------|-------------|
@@ -353,7 +353,7 @@ aggregated = df.groupby(groupby_cols)['final_accuracy'].agg(['mean', 'std'])
 
 ### By Dataset
 
-(source: `eva_scripts/final_leaderboard.py`)
+(source: [`eva_scripts/final_leaderboard.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/final_leaderboard.py))
 
 Leaderboard rankings are computed per-dataset, then aggregated:
 
@@ -368,7 +368,7 @@ final_rank = df.groupby('EXP_STRATEGY')['rank'].mean()
 
 Split bucket indices (0-4 by default) represent different random data partitions:
 
-(source: `misc/config.py::Config.EXP_GRID_TRAIN_TEST_BUCKET_SIZE`)
+(source: [`misc/config.py::Config.EXP_GRID_TRAIN_TEST_BUCKET_SIZE`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py))
 
 ```python
 # Aggregate across splits
@@ -381,13 +381,13 @@ aggregated = df.groupby(['EXP_DATASET', 'EXP_STRATEGY', 'EXP_LEARNER_MODEL'])['m
 
 | Script | Primary Outputs | Code Pointer |
 |--------|-----------------|--------------|
-| `00_download_datasets.py` | `DATASETS_PATH/*.csv`, `*_split.csv` | `datasets/__init__.py` |
-| `01_create_workload.py` | `01_workload.csv`, `00_config.yaml`, SLURM files | `01_create_workload.py::create_workload` |
-| `02_run_experiment.py` | `<STRATEGY>/<DATASET>/*.csv`, `05_*.csv` | `framework_runners/base_runner.py` |
-| `03_calculate_dataset_categorizations.py` | `<STRATEGY>/<DATASET>/<CATEGORIZER>.csv.xz` | `03_calculate_dataset_categorizations.py` |
-| `04_calculate_advanced_metrics.py` | `<STRATEGY>/<DATASET>/full_auc_*.csv.xz` | `04_calculate_advanced_metrics.py` |
-| `05_analyze_partially_run_workload.py` | Console output (analysis) | `05_analyze_partially_run_workload.py` |
-| `07b_create_results_without_flask.py` | `plots/`, HTML reports | `07b_create_results_without_flask.py` |
+| [`00_download_datasets.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/00_download_datasets.py) | `DATASETS_PATH/*.csv`, `*_split.csv` | [`datasets/__init__.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/datasets/__init__.py) |
+| [`01_create_workload.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/01_create_workload.py) | `01_workload.csv`, `00_config.yaml`, SLURM files | [`01_create_workload.py::create_workload`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/01_create_workload.py) |
+| [`02_run_experiment.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/02_run_experiment.py) | `<STRATEGY>/<DATASET>/*.csv`, `05_*.csv` | [`framework_runners/base_runner.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/base_runner.py) |
+| [`03_calculate_dataset_categorizations.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/03_calculate_dataset_categorizations.py) | `<STRATEGY>/<DATASET>/<CATEGORIZER>.csv.xz` | [`03_calculate_dataset_categorizations.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/03_calculate_dataset_categorizations.py) |
+| [`04_calculate_advanced_metrics.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/04_calculate_advanced_metrics.py) | `<STRATEGY>/<DATASET>/full_auc_*.csv.xz` | [`04_calculate_advanced_metrics.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/04_calculate_advanced_metrics.py) |
+| [`05_analyze_partially_run_workload.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/05_analyze_partially_run_workload.py) | Console output (analysis) | [`05_analyze_partially_run_workload.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/05_analyze_partially_run_workload.py) |
+| [`07b_create_results_without_flask.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/07b_create_results_without_flask.py) | [`plots/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/plots), HTML reports | [`07b_create_results_without_flask.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/07b_create_results_without_flask.py) |
 
 ---
 
@@ -539,54 +539,81 @@ The archive includes results for 92 datasets covering:
 
 #### 1. Download and Extract
 
-```bash
-# Download from OPARA (manual download required due to authentication)
-# Then extract:
-unzip full_exp_jan.zip
-```
+```python
+import pandas as pd
+
+# Load workload
+workload = pd.read_csv("OUTPUT_PATH/test/01_workload.csv")
+
+# Load metric results
+accuracy = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/accuracy.csv")
+
+# Load compressed CSV
+metrics = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/full_auc_accuracy.csv.xz")
+
+# Load Parquet predictions
+predictions = pd.read_parquet("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/y_pred_train.csv.xz.parquet")
+```000000
 
 #### 2. Load into OGAL for Analysis
 
 Configure your `.server_access_credentials.cfg` to point to the extracted data:
 
-```ini
-[LOCAL]
-LOCAL_DATASETS_PATH = /path/to/datasets/
-LOCAL_OUTPUT_PATH = /path/to/full_exp_jan/
-```
+```python
+import pandas as pd
+
+# Load workload
+workload = pd.read_csv("OUTPUT_PATH/test/01_workload.csv")
+
+# Load metric results
+accuracy = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/accuracy.csv")
+
+# Load compressed CSV
+metrics = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/full_auc_accuracy.csv.xz")
+
+# Load Parquet predictions
+predictions = pd.read_parquet("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/y_pred_train.csv.xz.parquet")
+```111111
 
 #### 3. Run Evaluation Scripts
 
-The `eva_scripts/` can directly analyze the archived data:
+The [`eva_scripts/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts) can directly analyze the archived data:
 
 ```python
-# Set experiment title to match archive
-# python -m eva_scripts.calculate_leaderboard_rankings --EXP_TITLE full_exp_jan
-
-# The archive structure matches OGAL's output format exactly
 import pandas as pd
 
-# Load completed workload
-done = pd.read_csv("full_exp_jan/05_done_workload.csv")
-print(f"Total completed experiments: {len(done)}")
+# Load workload
+workload = pd.read_csv("OUTPUT_PATH/test/01_workload.csv")
 
-# Load metrics for a specific strategy/dataset combination
-accuracy = pd.read_csv(
-    "full_exp_jan/ALIPY_CORESET_GREEDY/Bioresponse/accuracy.csv.xz"
-)
-print(f"Experiments for this combination: {len(accuracy)}")
-```
+# Load metric results
+accuracy = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/accuracy.csv")
+
+# Load compressed CSV
+metrics = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/full_auc_accuracy.csv.xz")
+
+# Load Parquet predictions
+predictions = pd.read_parquet("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/y_pred_train.csv.xz.parquet")
+```222222
 
 #### 4. Reproduce Paper Figures
 
 The evaluation scripts can regenerate paper figures from the archived data:
 
-```bash
-# After setting OUTPUT_PATH to point to the extracted archive:
-python -m eva_scripts.basic_metrics_correlation --EXP_TITLE full_exp_jan
-python -m eva_scripts.calculate_leaderboard_rankings --EXP_TITLE full_exp_jan
-python -m eva_scripts.runtime --EXP_TITLE full_exp_jan
-```
+```python
+import pandas as pd
+
+# Load workload
+workload = pd.read_csv("OUTPUT_PATH/test/01_workload.csv")
+
+# Load metric results
+accuracy = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/accuracy.csv")
+
+# Load compressed CSV
+metrics = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/full_auc_accuracy.csv.xz")
+
+# Load Parquet predictions
+predictions = pd.read_parquet("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/y_pred_train.csv.xz.parquet")
+```333333
 
 ### File Size Considerations
 

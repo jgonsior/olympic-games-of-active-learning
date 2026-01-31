@@ -19,15 +19,15 @@ Each experiment has a unique identity defined by the combination of hyperparamet
 
 Additionally, each run has a unique `EXP_UNIQUE_ID` integer assigned during workload creation.
 
-(source: `01_create_workload.py::_generate_exp_param_grid`, lines 40-98)
+(source: [`01_create_workload.py::_generate_exp_param_grid`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/01_create_workload.py#L40-L98), lines 40-98)
 
 ### 1.2 Where Run Identity is Stored
 
 | Location | Format | Source |
 |----------|--------|--------|
-| `01_workload.csv` | CSV with all hyperparameter columns | `01_create_workload.py` |
-| `05_done_workload.csv` | Subset of completed runs | `framework_runners/base_runner.py` |
-| `EXP_UNIQUE_ID` column | Integer primary key in all metric files | `metrics/base_metric.py` |
+| `01_workload.csv` | CSV with all hyperparameter columns | [`01_create_workload.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/01_create_workload.py) |
+| `05_done_workload.csv` | Subset of completed runs | [`framework_runners/base_runner.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/base_runner.py) |
+| `EXP_UNIQUE_ID` column | Integer primary key in all metric files | [`metrics/base_metric.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/base_metric.py) |
 
 ### 1.3 Computing Run Identity in Code
 
@@ -75,7 +75,7 @@ Every valid results bundle MUST contain:
 OGAL does not have formal schema versioning. Compatibility is maintained by:
 
 1. **Column consistency**: Metric files must have `EXP_UNIQUE_ID` as first column
-2. **Enum consistency**: Strategy/Dataset/Model values must match `resources/data_types.py`
+2. **Enum consistency**: Strategy/Dataset/Model values must match [`resources/data_types.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py)
 3. **Path consistency**: Files must follow `<STRATEGY_NAME>/<DATASET_NAME>/<metric>.csv.xz`
 
 **Proposed Schema Version**: Include in `00_config.yaml`:
@@ -188,7 +188,7 @@ python -m scripts.merge_two_workloads \
     --SECOND_MERGE_PATH /path/to/new_experiment
 ```
 
-(source: `scripts/merge_two_workloads.py`)
+(source: [`scripts/merge_two_workloads.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/merge_two_workloads.py))
 
 !!! warning "Merge Precautions"
     - Ensure no duplicate `EXP_UNIQUE_ID` values
@@ -215,22 +215,11 @@ PROVENANCE:
 
 ### 4.1 Validator Script
 
-Use `scripts/validate_results_schema.py` to verify data integrity:
+Use [`scripts/validate_results_schema.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/validate_results_schema.py) to verify data integrity:
 
-```bash
-# Basic validation
-python scripts/validate_results_schema.py --results_path /path/to/results
-
-# Compare with existing data
-python scripts/validate_results_schema.py \
-    --results_path /path/to/new_results \
-    --compare_with /path/to/existing_results
-
-# Strict mode (fail on warnings)
-python scripts/validate_results_schema.py \
-    --results_path /path/to/results \
-    --strict
-```
+```yaml
+SCHEMA_VERSION: "1.0"  # Add this field for future compatibility
+```000000
 
 ### 4.2 What the Validator Checks
 
@@ -253,32 +242,9 @@ python scripts/validate_results_schema.py \
 
 **Example Output:**
 
-```
-=== OGAL Results Schema Validator ===
-Results path: /path/to/results
-
-[CHECK] Required files...
-  ✓ 05_done_workload.csv exists
-  ✓ 00_config.yaml exists
-
-[CHECK] Workload schema...
-  ✓ EXP_UNIQUE_ID column present
-  ✓ All identity columns present
-  ✓ 1,234 unique experiments
-
-[CHECK] Metric files...
-  ✓ 28 strategy directories found
-  ✓ Checking ALIPY_RANDOM/Iris/accuracy.csv.xz... OK
-  ...
-
-[CHECK] Cross-file consistency...
-  ✓ All EXP_UNIQUE_ID values in metrics exist in workload
-
-[CHECK] Duplicate primary keys...
-  ✓ No duplicates found
-
-=== VALIDATION PASSED ===
-```
+```yaml
+SCHEMA_VERSION: "1.0"  # Add this field for future compatibility
+```111111
 
 ---
 
@@ -286,7 +252,7 @@ Results path: /path/to/results
 
 ### 5.1 Before Running New Experiments
 
-1. **Use consistent configuration**: Copy `resources/exp_config.yaml` and modify
+1. **Use consistent configuration**: Copy [`resources/exp_config.yaml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/exp_config.yaml) and modify
 2. **Use separate `EXP_TITLE`**: Never overwrite existing experiment directories
 3. **Document your changes**: Update `00_config.yaml` with provenance info
 
@@ -323,33 +289,25 @@ When sharing results with others:
 |-------|-------|------------|
 | Duplicate `EXP_UNIQUE_ID` | Re-running without clearing | Use fresh workload or filter duplicates |
 | Missing metric files | Early termination or OOM | Check `05_failed_workloads.csv`, rerun |
-| Type mismatch | Corrupted CSV | Run `scripts/find_broken_file.py` |
+| Type mismatch | Corrupted CSV | Run [`scripts/find_broken_file.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/find_broken_file.py) |
 | Enum value not found | Outdated `data_types.py` | Update enums or use numeric values |
 
 ### Recovery Steps
 
 **If validation fails with duplicates:**
 
-```bash
-# Remove duplicate entries
-python -m scripts.remove_duplicated_exp_ids --EXP_TITLE your_experiment
-```
+```yaml
+SCHEMA_VERSION: "1.0"  # Add this field for future compatibility
+```222222
 
 **If metric files are corrupted:**
 
-```bash
-# Find broken files
-python -m scripts.find_broken_file --EXP_TITLE your_experiment
-
-# Fix or remove broken files manually
-```
+```yaml
+SCHEMA_VERSION: "1.0"  # Add this field for future compatibility
+```333333
 
 **If workload is incomplete:**
 
-```bash
-# Identify missing experiments
-python -m scripts.find_missing_exp_ids_in_metric_files --EXP_TITLE your_experiment
-
-# Rerun missing experiments
-python -m scripts.rerun_missing_exp_ids --EXP_TITLE your_experiment
-```
+```yaml
+SCHEMA_VERSION: "1.0"  # Add this field for future compatibility
+```444444

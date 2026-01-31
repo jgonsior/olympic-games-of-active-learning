@@ -1,6 +1,6 @@
 # Utility Scripts & Evaluation Scripts
 
-This document describes the utility scripts in `scripts/` and evaluation scripts in `eva_scripts/`. These scripts support the main pipeline with data processing, bug fixes, and result analysis/visualization.
+This document describes the utility scripts in [`scripts/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts) and evaluation scripts in [`eva_scripts/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts). These scripts support the main pipeline with data processing, bug fixes, and result analysis/visualization.
 
 !!! tip "Canonical Evaluation Guide"
     For a step-by-step guide to running evaluation scripts in the correct order and generating paper figures, see **[Evaluation Pipeline](evaluation_pipeline.md)**.
@@ -11,8 +11,8 @@ The OGAL framework includes two auxiliary script directories:
 
 | Directory | Purpose |
 |-----------|---------|
-| `scripts/` | Data processing, format conversion, bug fixes, and maintenance utilities |
-| `eva_scripts/` | Evaluation, visualization, and analysis for generating paper figures/tables |
+| [`scripts/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts) | Data processing, format conversion, bug fixes, and maintenance utilities |
+| [`eva_scripts/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts) | Evaluation, visualization, and analysis for generating paper figures/tables |
 
 ## Scripts Directory (`scripts/`)
 
@@ -360,7 +360,7 @@ Scripts typically output to subdirectories of `OUTPUT_PATH/<EXP_TITLE>/`:
 
 ## Relationship to Paper Results
 
-The `eva_scripts/` directly produce the figures and tables in the research paper ([arXiv:2506.03817](https://arxiv.org/abs/2506.03817)):
+The [`eva_scripts/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts) directly produce the figures and tables in the research paper ([arXiv:2506.03817](https://arxiv.org/abs/2506.03817)):
 
 ### Paper Figures Mapping
 

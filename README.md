@@ -124,21 +124,21 @@ The study analyzes the impact of each hyperparameter on AL experiment results an
 
 ## Sequential Pipeline
 
-OGAL is a **strictly sequential pipeline**. Each script produces outputs consumed by the next step. The shared configuration (`resources/exp_config.yaml` and `.server_access_credentials.cfg`) is the source of truth for data flow.
+OGAL is a **strictly sequential pipeline**. Each script produces outputs consumed by the next step. The shared configuration ([`resources/exp_config.yaml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/exp_config.yaml) and `.server_access_credentials.cfg`) is the source of truth for data flow.
 
 ### Run Order
 
 | Step | Script | Purpose |
 |------|--------|---------|
-| 0 | `00_download_datasets.py` | Download/prepare datasets from OpenML and Kaggle |
-| 1 | `01_create_workload.py` | Generate experiment workload grid (datasets × strategies × models × seeds) |
-| 2 | `02_run_experiment.py` | Execute AL experiments (supports worker sharding for HPC) |
-| 3 | `03_calculate_dataset_categorizations.py` | Compute per-sample categorizations (hardness metrics) |
-| 4 | `04_calculate_advanced_metrics.py` | Compute derived metrics (AUC, time-lag, distance metrics) |
-| 5 | `05_analyze_partially_run_workload.py` | Analyze completion status and timing statistics |
-| 6 | `07b_create_results_without_flask.py` | Generate final visualizations and result tables |
+| 0 | [`00_download_datasets.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/00_download_datasets.py) | Download/prepare datasets from OpenML and Kaggle |
+| 1 | [`01_create_workload.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/01_create_workload.py) | Generate experiment workload grid (datasets × strategies × models × seeds) |
+| 2 | [`02_run_experiment.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/02_run_experiment.py) | Execute AL experiments (supports worker sharding for HPC) |
+| 3 | [`03_calculate_dataset_categorizations.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/03_calculate_dataset_categorizations.py) | Compute per-sample categorizations (hardness metrics) |
+| 4 | [`04_calculate_advanced_metrics.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/04_calculate_advanced_metrics.py) | Compute derived metrics (AUC, time-lag, distance metrics) |
+| 5 | [`05_analyze_partially_run_workload.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/05_analyze_partially_run_workload.py) | Analyze completion status and timing statistics |
+| 6 | [`07b_create_results_without_flask.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/07b_create_results_without_flask.py) | Generate final visualizations and result tables |
 
-Additionally, `scripts/` and `eva_scripts/` provide utility and evaluation scripts for data processing and paper figure generation.
+Additionally, [`scripts/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts) and [`eva_scripts/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts) provide utility and evaluation scripts for data processing and paper figure generation.
 
 For detailed documentation on each step, see [docs/pipeline.md](docs/pipeline.md).
 
@@ -225,7 +225,7 @@ CODE_PATH=/home/user/al_survey/code
 OUTPUT_PATH=/home/user/al_survey/exp_results
 ```
 
-### Experiment Configuration (`resources/exp_config.yaml`)
+### Experiment Configuration ([`resources/exp_config.yaml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/exp_config.yaml))
 
 Define experiment grids using YAML:
 
@@ -248,20 +248,20 @@ test:
 
 | Directory | Purpose |
 |-----------|---------|
-| `datasets/` | Dataset loaders (OpenML, Kaggle, local) |
-| `framework_runners/` | AL framework adapters (ALiPy, libact, small-text, scikit-activeml) |
-| `optimal_query_strategies/` | Oracle/optimal strategy implementations |
-| `metrics/` | Metric computation (per-cycle and post-hoc) |
-| `resources/` | Configuration files and SLURM templates |
-| `scripts/` | Utility scripts for data processing and fixes |
-| `eva_scripts/` | Evaluation and visualization scripts |
-| `misc/` | Shared utilities (config, logging, helpers) |
+| [`datasets/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/datasets) | Dataset loaders (OpenML, Kaggle, local) |
+| [`framework_runners/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners) | AL framework adapters (ALiPy, libact, small-text, scikit-activeml) |
+| [`optimal_query_strategies/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/optimal_query_strategies) | Oracle/optimal strategy implementations |
+| [`metrics/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics) | Metric computation (per-cycle and post-hoc) |
+| [`resources/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources) | Configuration files and SLURM templates |
+| [`scripts/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts) | Utility scripts for data processing and fixes |
+| [`eva_scripts/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts) | Evaluation and visualization scripts |
+| [`misc/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc) | Shared utilities (config, logging, helpers) |
 
 ### Deprecated Directories
 
 | Directory | Status |
 |-----------|--------|
-| `analyse_results/` | **Deprecated / not used.** Legacy visualization code. |
+| [`analyse_results/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/analyse_results) | **Deprecated / not used.** Legacy visualization code. |
 
 ## Troubleshooting
 
@@ -281,7 +281,7 @@ test:
 
 4. **Experiment not resuming**
    - The framework tracks done/failed workloads automatically
-   - Re-running `01_create_workload.py` will exclude completed experiments
+   - Re-running [`01_create_workload.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/01_create_workload.py) will exclude completed experiments
 
 ### How to Resume Partial Runs
 
