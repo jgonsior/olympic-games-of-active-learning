@@ -35,6 +35,7 @@ nav:
   - HPC Setup: hpc.md
   - Evaluation Pipeline: evaluation_pipeline.md
   - Eva Scripts: eva_scripts.md
+  - Correlations (Paper ↔ Code): correlations_paper_to_code.md
   - Strategy Catalog: strategies.md
   - Results Format: results_format.md
   - Data Enrichment: data_enrichment.md
@@ -66,11 +67,17 @@ markdown_extensions:
           format: !!python/name:mermaid2.fence_mermaid_custom
   - pymdownx.tabbed:
       alternate_style: true
+  - pymdownx.arithmatex:
+      generic: true
   - admonition
   - pymdownx.details
   - tables
   - toc:
       permalink: true
+
+extra_javascript:
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 extra:
   social:

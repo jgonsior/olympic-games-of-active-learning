@@ -4,6 +4,7 @@ This document provides a canonical step-by-step guide from raw experiment output
 
 !!! tip "Related Documentation"
     - **[Eva Scripts Reference](eva_scripts.md)**: Detailed catalog of all evaluation scripts with I/O schemas
+    - **[Correlations (Paper ↔ Code)](correlations_paper_to_code.md)**: Mathematical definitions and code mappings for Pearson, Jaccard, and Kendall tau-b correlations
     - **[Data Enrichment](data_enrichment.md)**: Protocol for adding new results to the shared dataset
     - **[Results Format](results_format.md)**: Output paths, file formats, and schemas
 
