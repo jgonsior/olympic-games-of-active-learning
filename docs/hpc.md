@@ -12,8 +12,8 @@ This document is the **authoritative HPC runbook** for running OGAL experiments 
 
 OGAL is designed for massive parallelization on HPC clusters. The key mechanism is:
 
-1. **Workload partitioning**: `01_create_workload.py` generates a CSV with thousands/millions of experiment configurations
-2. **Worker sharding**: Each SLURM job array task runs `02_run_experiment.py` with a different `WORKER_INDEX`
+1. **Workload partitioning**: [`01_create_workload.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/01_create_workload.py) generates a CSV with thousands/millions of experiment configurations
+2. **Worker sharding**: Each SLURM job array task runs [`02_run_experiment.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/02_run_experiment.py) with a different `WORKER_INDEX`
 3. **Result aggregation**: Results are written to shared storage and tracked in `05_done_workload.csv`
 
 ---
@@ -58,7 +58,7 @@ cat OUTPUT_PATH/smoke_test/05_done_workload.csv
 
 This file configures paths for both local development and HPC execution. The `RUNNING_ENVIRONMENT` CLI flag (`local` or `hpc`) determines which section is used.
 
-(source: `misc/config.py::Config._load_server_setup_from_file`)
+(source: [`misc/config.py::Config._load_server_setup_from_file`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py))
 
 ### Safe Example Configuration
 
@@ -94,7 +94,7 @@ OUTPUT_PATH=/home/user/ogal/exp_results
 
 ### How Paths Are Selected
 
-(source: `misc/config.py::Config._pathes_magic`, lines 204-211)
+(source: [`misc/config.py::Config._pathes_magic`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py#L204-L211), lines 204-211)
 
 ```python
 if self.RUNNING_ENVIRONMENT == "local":
@@ -113,7 +113,7 @@ The `WORKER_INDEX` parameter is the core sharding mechanism that maps parallel w
 
 ### Exact Implementation
 
-(source: `misc/config.py::Config.load_workload`, lines 393-421)
+(source: [`misc/config.py::Config.load_workload`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py#L393-L421), lines 393-421)
 
 ```python
 def load_workload(self) -> None:
@@ -139,13 +139,13 @@ def load_workload(self) -> None:
 
 - `WORKER_INDEX` is **0-indexed** 
 - Each worker reads **exactly one row** from `01_workload.csv`
-- The workload file is **shuffled** during creation to distribute long-running jobs (source: `01_create_workload.py`, line 94)
+- The workload file is **shuffled** during creation to distribute long-running jobs (source: [`01_create_workload.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/01_create_workload.py#L94), line 94)
 
 ### Batching Mechanism
 
 For very large workloads, OGAL supports batching multiple experiments per SLURM array task.
 
-(source: `resources/slurm_templates/slurm_parallel.sh`, lines 20-25)
+(source: [`resources/slurm_templates/slurm_parallel.sh`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/slurm_templates/slurm_parallel.sh#L20-L25), lines 20-25)
 
 ```bash
 # Batching calculation in SLURM template
@@ -175,7 +175,7 @@ done
 
 ### Computing Array Size from Workload
 
-(source: `01_create_workload.py::create_AL_experiment_slurm_files`, lines 321-341)
+(source: [`01_create_workload.py::create_AL_experiment_slurm_files`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/01_create_workload.py#L321-L341), lines 321-341)
 
 The array size is calculated as:
 
@@ -212,9 +212,9 @@ ARRAY_END=$((WORKLOAD_LEN / BATCH_SIZE))
 
 ## Generated SLURM Files
 
-`01_create_workload.py` automatically generates SLURM job scripts.
+[`01_create_workload.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/01_create_workload.py) automatically generates SLURM job scripts.
 
-(source: `01_create_workload.py::create_AL_experiment_slurm_files`, lines 321-348)
+(source: [`01_create_workload.py::create_AL_experiment_slurm_files`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/01_create_workload.py#L321-L348), lines 321-348)
 
 ### 02_slurm.slurm
 
@@ -241,7 +241,7 @@ for ((j = $i ; j < $end ; j++)); do
 done
 ```
 
-(source: `resources/slurm_templates/slurm_parallel.sh`)
+(source: [`resources/slurm_templates/slurm_parallel.sh`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/slurm_templates/slurm_parallel.sh))
 
 ### Key SLURM Configuration Options
 
@@ -257,7 +257,7 @@ done
 
 Each experiment has an additional timeout beyond SLURM wall time:
 
-(source: `resources/slurm_templates/slurm_parallel.sh`, line 24)
+(source: [`resources/slurm_templates/slurm_parallel.sh`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/slurm_templates/slurm_parallel.sh#L24), line 24)
 
 ```bash
 timeout_duration = config.EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT * (config.EXP_GRID_NUM_QUERIES[0] + 1)
@@ -265,7 +265,7 @@ timeout_duration = config.EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT * (config.EX
 
 Where `EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT` defaults to 300 seconds (5 minutes).
 
-(source: `misc/config.py::Config.EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT`)
+(source: [`misc/config.py::Config.EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py))
 
 ---
 
@@ -275,7 +275,7 @@ Where `EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT` defaults to 300 seconds (5 min
 
 OGAL tracks experiment progress via three CSV files:
 
-(source: `misc/config.py::Config`, lines 123-125)
+(source: [`misc/config.py::Config`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py#L123-L125), lines 123-125)
 
 | File | Purpose | Updated By |
 |------|---------|------------|
@@ -285,7 +285,7 @@ OGAL tracks experiment progress via three CSV files:
 
 ### How Completion Is Detected
 
-(source: `framework_runners/base_runner.py::AL_Experiment.run_experiment`, lines 218-229)
+(source: [`framework_runners/base_runner.py::AL_Experiment.run_experiment`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/base_runner.py#L218-L229), lines 218-229)
 
 ```python
 if not error_was_being_raised:
@@ -303,42 +303,51 @@ if not error_was_being_raised:
 
 ### Resume Behavior on Workload Recreation
 
-When `01_create_workload.py` detects existing tracking files, it automatically excludes completed/failed experiments:
+When [`01_create_workload.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/01_create_workload.py) detects existing tracking files, it automatically excludes completed/failed experiments:
 
-(source: `01_create_workload.py::create_workload`, lines 103-223)
+(source: [`01_create_workload.py::create_workload`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/01_create_workload.py#L103-L223), lines 103-223)
 
-```python
-if os.path.isfile(config.OVERALL_DONE_WORKLOAD_PATH):
-    done_workload_df = pd.read_csv(config.OVERALL_DONE_WORKLOAD_PATH)
-    open_workload_df = pd.read_csv(config.WORKLOAD_FILE_PATH)
-    failed_workload_df = pd.read_csv(config.OVERALL_FAILED_WORKLOAD_PATH)
-    
-    # Remove completed experiments
-    open_workload_df = _remove_right_from_left_workload(open_workload_df, done_workload_df)
-    
-    # Remove OOM experiments
-    oom_workload_df = pd.read_csv(config.OVERALL_STARTED_OOM_WORKLOAD_PATH)
-    open_workload_df = _remove_right_from_left_workload(open_workload_df, oom_workload_df)
-```
+```ini
+[HPC]
+SSH_LOGIN=user@login.hpc.example.edu
+WS_PATH=/data/workspace/al_olympics
+DATASETS_PATH=/data/workspace/al_olympics/datasets
+OUTPUT_PATH=/data/workspace/al_olympics/exp_results
+SLURM_MAIL=your.email@example.edu
+SLURM_PROJECT=your_project_account
+CODE_PATH=/data/workspace/al_olympics/code
+PYTHON_PATH=/data/workspace/al_olympics/conda-env/bin/python
+
+[LOCAL]
+DATASETS_PATH=/home/user/ogal/datasets
+CODE_PATH=/home/user/ogal/code
+OUTPUT_PATH=/home/user/ogal/exp_results
+```0
 
 ### Resuming After Partial Run
 
-```bash
-# 1. Re-run workload creation (automatically excludes completed)
-python 01_create_workload.py --EXP_TITLE your_experiment
+```ini
+[HPC]
+SSH_LOGIN=user@login.hpc.example.edu
+WS_PATH=/data/workspace/al_olympics
+DATASETS_PATH=/data/workspace/al_olympics/datasets
+OUTPUT_PATH=/data/workspace/al_olympics/exp_results
+SLURM_MAIL=your.email@example.edu
+SLURM_PROJECT=your_project_account
+CODE_PATH=/data/workspace/al_olympics/code
+PYTHON_PATH=/data/workspace/al_olympics/conda-env/bin/python
 
-# 2. Check remaining workload size
-wc -l OUTPUT_PATH/your_experiment/01_workload.csv
-
-# 3. Submit new jobs for remaining experiments
-sbatch OUTPUT_PATH/your_experiment/02_slurm.slurm
-```
+[LOCAL]
+DATASETS_PATH=/home/user/ogal/datasets
+CODE_PATH=/home/user/ogal/code
+OUTPUT_PATH=/home/user/ogal/exp_results
+```1
 
 ### Rerunning Failed Experiments
 
 Set `RERUN_FAILED_WORKLOADS: true` to include failed experiments in the new workload:
 
-(source: `01_create_workload.py`, lines 186-210)
+(source: [`01_create_workload.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/01_create_workload.py#L186-L210), lines 186-210)
 
 ---
 
@@ -346,27 +355,60 @@ Set `RERUN_FAILED_WORKLOADS: true` to include failed experiments in the new work
 
 ### Small Experiment (< 1000 runs)
 
-```bash
-#SBATCH --array=0-999
-#SBATCH --time=2:00:00
-#SBATCH --mem=4G
-```
+```ini
+[HPC]
+SSH_LOGIN=user@login.hpc.example.edu
+WS_PATH=/data/workspace/al_olympics
+DATASETS_PATH=/data/workspace/al_olympics/datasets
+OUTPUT_PATH=/data/workspace/al_olympics/exp_results
+SLURM_MAIL=your.email@example.edu
+SLURM_PROJECT=your_project_account
+CODE_PATH=/data/workspace/al_olympics/code
+PYTHON_PATH=/data/workspace/al_olympics/conda-env/bin/python
+
+[LOCAL]
+DATASETS_PATH=/home/user/ogal/datasets
+CODE_PATH=/home/user/ogal/code
+OUTPUT_PATH=/home/user/ogal/exp_results
+```2
 
 ### Medium Experiment (1000-100,000 runs)
 
-```bash
-#SBATCH --array=0-999%100    # Limit concurrent jobs to 100
-#SBATCH --time=4:00:00
-#SBATCH --mem=4G
-```
+```ini
+[HPC]
+SSH_LOGIN=user@login.hpc.example.edu
+WS_PATH=/data/workspace/al_olympics
+DATASETS_PATH=/data/workspace/al_olympics/datasets
+OUTPUT_PATH=/data/workspace/al_olympics/exp_results
+SLURM_MAIL=your.email@example.edu
+SLURM_PROJECT=your_project_account
+CODE_PATH=/data/workspace/al_olympics/code
+PYTHON_PATH=/data/workspace/al_olympics/conda-env/bin/python
+
+[LOCAL]
+DATASETS_PATH=/home/user/ogal/datasets
+CODE_PATH=/home/user/ogal/code
+OUTPUT_PATH=/home/user/ogal/exp_results
+```3
 
 ### Large Experiment (> 100,000 runs)
 
-```bash
-#SBATCH --array=0-9999%200   # 10,000 array tasks, max 200 concurrent
-#SBATCH --time=8:00:00
-#SBATCH --mem=8G
-```
+```ini
+[HPC]
+SSH_LOGIN=user@login.hpc.example.edu
+WS_PATH=/data/workspace/al_olympics
+DATASETS_PATH=/data/workspace/al_olympics/datasets
+OUTPUT_PATH=/data/workspace/al_olympics/exp_results
+SLURM_MAIL=your.email@example.edu
+SLURM_PROJECT=your_project_account
+CODE_PATH=/data/workspace/al_olympics/code
+PYTHON_PATH=/data/workspace/al_olympics/conda-env/bin/python
+
+[LOCAL]
+DATASETS_PATH=/home/user/ogal/datasets
+CODE_PATH=/home/user/ogal/code
+OUTPUT_PATH=/home/user/ogal/exp_results
+```4
 
 ---
 
@@ -391,7 +433,7 @@ Set `RERUN_FAILED_WORKLOADS: true` to include failed experiments in the new work
 
 1. **Disk quota exceeded**: Monitor `OUTPUT_PATH` usage; compress old results with `02c_gzip_results.sh.slurm`
 2. **NFS timeout**: Increase SLURM `--time` and retry; use local scratch for intermediate files
-3. **Corrupted CSV files**: Run `scripts/find_broken_file.py` to identify issues
+3. **Corrupted CSV files**: Run [`scripts/find_broken_file.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/find_broken_file.py) to identify issues
 
 ---
 
@@ -403,12 +445,22 @@ Set `RERUN_FAILED_WORKLOADS: true` to include failed experiments in the new work
 
 **Verification:**
 
-```bash
-# On compute node
-srun --pty bash
-ls -la $DATASETS_PATH/Iris.csv
-ls -la $DATASETS_PATH/Iris_split.csv
-```
+```ini
+[HPC]
+SSH_LOGIN=user@login.hpc.example.edu
+WS_PATH=/data/workspace/al_olympics
+DATASETS_PATH=/data/workspace/al_olympics/datasets
+OUTPUT_PATH=/data/workspace/al_olympics/exp_results
+SLURM_MAIL=your.email@example.edu
+SLURM_PROJECT=your_project_account
+CODE_PATH=/data/workspace/al_olympics/code
+PYTHON_PATH=/data/workspace/al_olympics/conda-env/bin/python
+
+[LOCAL]
+DATASETS_PATH=/home/user/ogal/datasets
+CODE_PATH=/home/user/ogal/code
+OUTPUT_PATH=/home/user/ogal/exp_results
+```5
 
 **Code pointer:** Dataset loading occurs in `datasets/__init__.py::load_dataset`
 
@@ -422,11 +474,22 @@ ls -la $DATASETS_PATH/Iris_split.csv
 
 **Verification:**
 
-```bash
-srun --pty bash
-mkdir -p $OUTPUT_PATH/test_write
-touch $OUTPUT_PATH/test_write/test.txt && rm -rf $OUTPUT_PATH/test_write
-```
+```ini
+[HPC]
+SSH_LOGIN=user@login.hpc.example.edu
+WS_PATH=/data/workspace/al_olympics
+DATASETS_PATH=/data/workspace/al_olympics/datasets
+OUTPUT_PATH=/data/workspace/al_olympics/exp_results
+SLURM_MAIL=your.email@example.edu
+SLURM_PROJECT=your_project_account
+CODE_PATH=/data/workspace/al_olympics/code
+PYTHON_PATH=/data/workspace/al_olympics/conda-env/bin/python
+
+[LOCAL]
+DATASETS_PATH=/home/user/ogal/datasets
+CODE_PATH=/home/user/ogal/code
+OUTPUT_PATH=/home/user/ogal/exp_results
+```6
 
 **Code pointer:** Output directory creation in `misc/config.py::Config._pathes_magic` (line 308)
 
@@ -440,21 +503,24 @@ touch $OUTPUT_PATH/test_write/test.txt && rm -rf $OUTPUT_PATH/test_write
 
 **Verification:**
 
-```bash
-# Compare environments
-# On login node:
-which python
-python --version
-pip list | grep pandas
+```ini
+[HPC]
+SSH_LOGIN=user@login.hpc.example.edu
+WS_PATH=/data/workspace/al_olympics
+DATASETS_PATH=/data/workspace/al_olympics/datasets
+OUTPUT_PATH=/data/workspace/al_olympics/exp_results
+SLURM_MAIL=your.email@example.edu
+SLURM_PROJECT=your_project_account
+CODE_PATH=/data/workspace/al_olympics/code
+PYTHON_PATH=/data/workspace/al_olympics/conda-env/bin/python
 
-# On compute node:
-srun --pty bash
-which python
-python --version
-pip list | grep pandas
-```
+[LOCAL]
+DATASETS_PATH=/home/user/ogal/datasets
+CODE_PATH=/home/user/ogal/code
+OUTPUT_PATH=/home/user/ogal/exp_results
+```7
 
-**Code pointer:** Python path set in `resources/slurm_templates/slurm_parallel.sh` via `HPC_PYTHON_PATH`
+**Code pointer:** Python path set in [`resources/slurm_templates/slurm_parallel.sh`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/slurm_templates/slurm_parallel.sh) via `HPC_PYTHON_PATH`
 
 **Resolution:** 
 1. Use absolute path to conda environment Python in `HPC_PYTHON_PATH`
@@ -469,17 +535,29 @@ pip list | grep pandas
 
 **Verification:**
 
-```bash
-# Check for duplicates in done workload
-cut -d',' -f1 OUTPUT_PATH/your_experiment/05_done_workload.csv | sort | uniq -d
-```
+```ini
+[HPC]
+SSH_LOGIN=user@login.hpc.example.edu
+WS_PATH=/data/workspace/al_olympics
+DATASETS_PATH=/data/workspace/al_olympics/datasets
+OUTPUT_PATH=/data/workspace/al_olympics/exp_results
+SLURM_MAIL=your.email@example.edu
+SLURM_PROJECT=your_project_account
+CODE_PATH=/data/workspace/al_olympics/code
+PYTHON_PATH=/data/workspace/al_olympics/conda-env/bin/python
+
+[LOCAL]
+DATASETS_PATH=/home/user/ogal/datasets
+CODE_PATH=/home/user/ogal/code
+OUTPUT_PATH=/home/user/ogal/exp_results
+```8
 
 **Code pointer:** Worker index assignment in `misc/config.py::Config.load_workload` (line 393)
 
 **Resolution:**
 1. Ensure `SLURM_ARRAY_TASK_ID` is unique per task
 2. Check that batching calculation doesn't overlap indices
-3. Run `scripts/remove_duplicated_exp_ids.py` to clean up
+3. Run [`scripts/remove_duplicated_exp_ids.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/remove_duplicated_exp_ids.py) to clean up
 
 ---
 
@@ -489,19 +567,28 @@ cut -d',' -f1 OUTPUT_PATH/your_experiment/05_done_workload.csv | sort | uniq -d
 
 **Verification:**
 
-```bash
-# Check for experiments in done but missing metric files
-python -m scripts.find_missing_exp_ids_in_metric_files --EXP_TITLE your_experiment
+```ini
+[HPC]
+SSH_LOGIN=user@login.hpc.example.edu
+WS_PATH=/data/workspace/al_olympics
+DATASETS_PATH=/data/workspace/al_olympics/datasets
+OUTPUT_PATH=/data/workspace/al_olympics/exp_results
+SLURM_MAIL=your.email@example.edu
+SLURM_PROJECT=your_project_account
+CODE_PATH=/data/workspace/al_olympics/code
+PYTHON_PATH=/data/workspace/al_olympics/conda-env/bin/python
 
-# Find broken CSV files
-python -m scripts.find_broken_file --EXP_TITLE your_experiment
-```
+[LOCAL]
+DATASETS_PATH=/home/user/ogal/datasets
+CODE_PATH=/home/user/ogal/code
+OUTPUT_PATH=/home/user/ogal/exp_results
+```9
 
 **Code pointers:**
 
 - Metric saving: `framework_runners/base_runner.py::AL_Experiment.run_experiment` (lines 220-221)
-- Missing ID detection: `scripts/find_missing_exp_ids_in_metric_files.py`
-- Broken file detection: `scripts/find_broken_file.py`
+- Missing ID detection: [`scripts/find_missing_exp_ids_in_metric_files.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/find_missing_exp_ids_in_metric_files.py)
+- Broken file detection: [`scripts/find_broken_file.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/find_broken_file.py)
 
 **Resolution:**
 1. Identify corrupted files with utility scripts
@@ -516,13 +603,14 @@ python -m scripts.find_broken_file --EXP_TITLE your_experiment
 
 **Verification:**
 
-```bash
-# Check job states
-sacct -j <JOBID> --format=JobID,State,ExitCode,MaxRSS
-
-# Check OOM tracking file
-cat OUTPUT_PATH/your_experiment/05_started_oom_workloads.csv | head
-```
+```python
+if self.RUNNING_ENVIRONMENT == "local":
+    self.OUTPUT_PATH = Path(self.LOCAL_OUTPUT_PATH)
+    self.DATASETS_PATH = Path(self.LOCAL_DATASETS_PATH)
+elif self.RUNNING_ENVIRONMENT == "hpc":
+    self.OUTPUT_PATH = Path(self.HPC_OUTPUT_PATH)
+    self.DATASETS_PATH = Path(self.HPC_DATASETS_PATH)
+```0
 
 **Code pointer:** OOM tracking in `framework_runners/base_runner.py::AL_Experiment.run_experiment` (lines 120-126)
 
@@ -539,20 +627,25 @@ cat OUTPUT_PATH/your_experiment/05_started_oom_workloads.csv | head
 
 **Verification:**
 
-```bash
-# Check for experiments that started but didn't finish
-# (in OOM file but not in done or failed)
-comm -23 <(sort 05_started_oom_workloads.csv) <(sort 05_done_workload.csv) | head
-```
+```python
+if self.RUNNING_ENVIRONMENT == "local":
+    self.OUTPUT_PATH = Path(self.LOCAL_OUTPUT_PATH)
+    self.DATASETS_PATH = Path(self.LOCAL_DATASETS_PATH)
+elif self.RUNNING_ENVIRONMENT == "hpc":
+    self.OUTPUT_PATH = Path(self.HPC_OUTPUT_PATH)
+    self.DATASETS_PATH = Path(self.HPC_DATASETS_PATH)
+```1
 
 **Code pointer:** Runtime limit check in `framework_runners/base_runner.py::AL_Experiment.run_experiment` (lines 193-201)
 
 ```python
-with stopit.ThreadingTimeout(self.config.EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT) as to_ctx_mgr:
-    self.al_cycle(iteration_counter=iteration)
-if to_ctx_mgr.state == to_ctx_mgr.TIMED_OUT:
-    early_stopped_due_to_runtime_limit = True
-```
+if self.RUNNING_ENVIRONMENT == "local":
+    self.OUTPUT_PATH = Path(self.LOCAL_OUTPUT_PATH)
+    self.DATASETS_PATH = Path(self.LOCAL_DATASETS_PATH)
+elif self.RUNNING_ENVIRONMENT == "hpc":
+    self.OUTPUT_PATH = Path(self.HPC_OUTPUT_PATH)
+    self.DATASETS_PATH = Path(self.HPC_DATASETS_PATH)
+```2
 
 **Resolution:**
 1. Increase `EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT` (default: 300s)
@@ -564,51 +657,51 @@ if to_ctx_mgr.state == to_ctx_mgr.TIMED_OUT:
 
 ### Initial Setup
 
-```bash
-# On HPC login node
-cd /data/workspace/al_olympics/code
-
-# Create conda environment
-conda create --prefix /data/workspace/al_olympics/conda-env --file conda-linux-64.lock
-conda activate /data/workspace/al_olympics/conda-env
-poetry install
-```
+```python
+if self.RUNNING_ENVIRONMENT == "local":
+    self.OUTPUT_PATH = Path(self.LOCAL_OUTPUT_PATH)
+    self.DATASETS_PATH = Path(self.LOCAL_DATASETS_PATH)
+elif self.RUNNING_ENVIRONMENT == "hpc":
+    self.OUTPUT_PATH = Path(self.HPC_OUTPUT_PATH)
+    self.DATASETS_PATH = Path(self.HPC_DATASETS_PATH)
+```3
 
 ### Running an Experiment
 
-```bash
-# 1. Create workload (on login node)
-python 01_create_workload.py --EXP_TITLE full_experiment
-
-# 2. Check workload size
-wc -l OUTPUT_PATH/full_experiment/01_workload.csv
-
-# 3. Submit SLURM job array
-sbatch OUTPUT_PATH/full_experiment/02_slurm.slurm
-
-# 4. Monitor progress
-watch -n 60 'wc -l OUTPUT_PATH/full_experiment/05_done_workload.csv'
-```
+```python
+if self.RUNNING_ENVIRONMENT == "local":
+    self.OUTPUT_PATH = Path(self.LOCAL_OUTPUT_PATH)
+    self.DATASETS_PATH = Path(self.LOCAL_DATASETS_PATH)
+elif self.RUNNING_ENVIRONMENT == "hpc":
+    self.OUTPUT_PATH = Path(self.HPC_OUTPUT_PATH)
+    self.DATASETS_PATH = Path(self.HPC_DATASETS_PATH)
+```4
 
 ### Chain Jobs for Long Experiments
 
 For experiments that exceed wall time limits:
 
-```bash
-# Submit initial job
-JOB1=$(sbatch --parsable OUTPUT_PATH/full_experiment/02_slurm.slurm)
-
-# Chain subsequent jobs with dependency
-sbatch --dependency=afterany:$JOB1 OUTPUT_PATH/full_experiment/02_slurm.slurm
-```
+```python
+if self.RUNNING_ENVIRONMENT == "local":
+    self.OUTPUT_PATH = Path(self.LOCAL_OUTPUT_PATH)
+    self.DATASETS_PATH = Path(self.LOCAL_DATASETS_PATH)
+elif self.RUNNING_ENVIRONMENT == "hpc":
+    self.OUTPUT_PATH = Path(self.HPC_OUTPUT_PATH)
+    self.DATASETS_PATH = Path(self.HPC_DATASETS_PATH)
+```5
 
 Alternatively, use the generated chain job script:
 
-```bash
-./OUTPUT_PATH/full_experiment/02b_chain_job.sh
-```
+```python
+if self.RUNNING_ENVIRONMENT == "local":
+    self.OUTPUT_PATH = Path(self.LOCAL_OUTPUT_PATH)
+    self.DATASETS_PATH = Path(self.LOCAL_DATASETS_PATH)
+elif self.RUNNING_ENVIRONMENT == "hpc":
+    self.OUTPUT_PATH = Path(self.HPC_OUTPUT_PATH)
+    self.DATASETS_PATH = Path(self.HPC_DATASETS_PATH)
+```6
 
-(source: `01_create_workload.py::create_AL_experiment_slurm_files`, line 336)
+(source: [`01_create_workload.py::create_AL_experiment_slurm_files`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/01_create_workload.py#L336), line 336)
 
 ---
 
@@ -633,19 +726,18 @@ Some AL strategies are much faster than others. Consider:
 1. Running fast strategies first to get preliminary results
 2. Using `SEPARATE_HPC_LOCAL_WORKLOAD: true` to split workloads
 
-(source: `01_create_workload.py`, lines 282-293)
+(source: [`01_create_workload.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/01_create_workload.py#L282-L293), lines 282-293)
 
 ### Resource Estimation
 
 ```python
-# Estimate total compute time
-workload_size = 1_000_000  # experiments
-avg_time_per_experiment = 60  # seconds
-concurrent_jobs = 200
-
-total_hours = (workload_size * avg_time_per_experiment) / (concurrent_jobs * 3600)
-print(f"Estimated wall time: {total_hours:.1f} hours")
-```
+if self.RUNNING_ENVIRONMENT == "local":
+    self.OUTPUT_PATH = Path(self.LOCAL_OUTPUT_PATH)
+    self.DATASETS_PATH = Path(self.LOCAL_DATASETS_PATH)
+elif self.RUNNING_ENVIRONMENT == "hpc":
+    self.OUTPUT_PATH = Path(self.HPC_OUTPUT_PATH)
+    self.DATASETS_PATH = Path(self.HPC_DATASETS_PATH)
+```7
 
 ---
 
@@ -659,9 +751,11 @@ print(f"Estimated wall time: {total_hours:.1f} hours")
 
 ### Example HPC Invocation
 
-```bash
-python 02_run_experiment.py \
-    --EXP_TITLE my_experiment \
-    --RUNNING_ENVIRONMENT hpc \
-    --WORKER_INDEX $SLURM_ARRAY_TASK_ID
-```
+```python
+if self.RUNNING_ENVIRONMENT == "local":
+    self.OUTPUT_PATH = Path(self.LOCAL_OUTPUT_PATH)
+    self.DATASETS_PATH = Path(self.LOCAL_DATASETS_PATH)
+elif self.RUNNING_ENVIRONMENT == "hpc":
+    self.OUTPUT_PATH = Path(self.HPC_OUTPUT_PATH)
+    self.DATASETS_PATH = Path(self.HPC_DATASETS_PATH)
+```8

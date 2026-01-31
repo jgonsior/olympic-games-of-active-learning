@@ -126,20 +126,20 @@ python 02_run_experiment.py --EXP_TITLE test --WORKER_INDEX 0
 
 | Directory | Purpose |
 |-----------|---------|
-| `datasets/` | Dataset loading utilities (see `datasets/__init__.py`) |
-| `framework_runners/` | AL framework adapters: ALiPy, libact, small-text, scikit-activeml, playground (see `framework_runners/*.py`) |
-| `optimal_query_strategies/` | Oracle strategy implementations (see `optimal_query_strategies/*.py`) |
-| `metrics/` | Metric computation modules (see `metrics/base_metric.py` and `metrics/Standard_ML_Metrics.py`) |
-| `resources/` | Configuration and templates (see `resources/exp_config.yaml`, `resources/data_types.py`) |
-| `scripts/` | Utility, conversion, and maintenance scripts (see `scripts/` directory) |
-| `eva_scripts/` | Evaluation, visualization, and paper figure scripts (see `eva_scripts/` directory) |
-| `misc/` | Shared utilities: config, logging, helpers (see `misc/config.py`, `misc/helpers.py`) |
+| [`datasets/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/datasets) | Dataset loading utilities (see `datasets/__init__.py`) |
+| [`framework_runners/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners) | AL framework adapters: ALiPy, libact, small-text, scikit-activeml, playground (see `framework_runners/*.py`) |
+| [`optimal_query_strategies/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/optimal_query_strategies) | Oracle strategy implementations (see `optimal_query_strategies/*.py`) |
+| [`metrics/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics) | Metric computation modules (see `metrics/base_metric.py` and `metrics/Standard_ML_Metrics.py`) |
+| [`resources/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources) | Configuration and templates (see `resources/exp_config.yaml`, `resources/data_types.py`) |
+| [`scripts/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts) | Utility, conversion, and maintenance scripts (see `scripts/` directory) |
+| [`eva_scripts/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts) | Evaluation, visualization, and paper figure scripts (see `eva_scripts/` directory) |
+| [`misc/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc) | Shared utilities: config, logging, helpers (see `misc/config.py`, `misc/helpers.py`) |
 
 ### Deprecated
 
 | Directory | Status |
 |-----------|--------|
-| `analyse_results/` | **Deprecated / not used.** Use `eva_scripts/` for analysis. See [Evaluation Pipeline](evaluation_pipeline.md). |
+| [`analyse_results/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/analyse_results) | **Deprecated / not used.** Use [`eva_scripts/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts) for analysis. See [Evaluation Pipeline](evaluation_pipeline.md). |
 
 ## License
 
@@ -165,9 +165,9 @@ mkdocs serve
 
 ### Validating Mermaid Rendering
 
-Mermaid diagrams are configured using **Approach B: mkdocs-material's Mermaid support via extra_javascript** in `mkdocs.yml`:
+Mermaid diagrams are configured using **Approach B: mkdocs-material's Mermaid support via extra_javascript** in [`mkdocs.yml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/mkdocs.yml):
 
-1. **Check configuration**: Verify `mkdocs.yml` has:
+1. **Check configuration**: Verify [`mkdocs.yml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/mkdocs.yml) has:
    ```yaml
    markdown_extensions:
      - pymdownx.superfences:
@@ -200,11 +200,11 @@ When reviewing documentation, verify claims about code behavior with source code
 
 | Claim Type | Example | How to Verify |
 |------------|---------|---------------|
-| Default values | "default batch size is 10" | Check `misc/config.py::Config` class attributes or `resources/exp_config.yaml` |
+| Default values | "default batch size is 10" | Check `misc/config.py::Config` class attributes or [`resources/exp_config.yaml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/exp_config.yaml) |
 | Output paths | "Results saved to `OUTPUT_PATH/metrics/`" | Check script that writes the file (e.g., `02_run_experiment.py`) |
 | File formats | "CSV with columns X, Y, Z" | Check actual output generation code or `pandas.to_csv()` calls |
 | Behavior claims | "Automatically resumes from checkpoint" | Check script logic for resume/checkpoint code |
-| Config keys | "`EXP_GRID_DATASET` controls datasets" | Check `resources/data_types.py` enums and `misc/config.py` |
+| Config keys | "`EXP_GRID_DATASET` controls datasets" | Check [`resources/data_types.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py) enums and [`misc/config.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) |
 
 **Marking unverified claims**: If you cannot find source code support, add `TODO(verify):` prefix:
 
@@ -214,7 +214,7 @@ TODO(verify): Default timeout is 300 seconds per query.
 
 **Finding source code**:
 
-- Configuration: `misc/config.py`, `resources/exp_config.yaml`, `resources/data_types.py`
-- Pipeline scripts: `00_download_datasets.py` through `07b_create_results_without_flask.py`
+- Configuration: [`misc/config.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py), [`resources/exp_config.yaml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/exp_config.yaml), [`resources/data_types.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py)
+- Pipeline scripts: [`00_download_datasets.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/00_download_datasets.py) through [`07b_create_results_without_flask.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/07b_create_results_without_flask.py)
 - Output formats: Search for `to_csv()`, `to_parquet()`, file write operations
-- Behavior: Read script main logic and helper functions in `misc/helpers.py`
+- Behavior: Read script main logic and helper functions in [`misc/helpers.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/helpers.py)

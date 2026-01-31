@@ -6,7 +6,7 @@ This document explains how to extend OGAL for your own research, including addin
 
 ### Step 1: Add Dataset Definition
 
-Create an entry in `resources/openml_datasets.yaml` or `resources/kaggle_datasets.yaml`:
+Create an entry in [`resources/openml_datasets.yaml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/openml_datasets.yaml) or [`resources/kaggle_datasets.yaml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/kaggle_datasets.yaml):
 
 **For OpenML datasets:**
 
@@ -62,7 +62,7 @@ train,test,start_points
 
 ### Step 3: Update Enum (Optional)
 
-If using local datasets, they're automatically added to the `DATASET` enum via `extend_enum()` in `datasets/__init__.py`.
+If using local datasets, they're automatically added to the `DATASET` enum via `extend_enum()` in [`datasets/__init__.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/datasets/__init__.py).
 
 ### Step 4: Use in Experiments
 
@@ -83,16 +83,16 @@ OGAL supports multiple AL frameworks (source: `framework_runners/` directory):
 
 | Framework | Runner File |
 |-----------|-------------|
-| ALiPy | `framework_runners/alipy_runner.py` |
-| libact | `framework_runners/libact_runner.py` |
-| small-text | `framework_runners/smalltext_runner.py` |
-| scikit-activeml | `framework_runners/skactiveml_runner.py` |
-| playground | `framework_runners/playground_runner.py` |
-| optimal (oracle) | `framework_runners/optimal_runner.py` |
+| ALiPy | [`framework_runners/alipy_runner.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/alipy_runner.py) |
+| libact | [`framework_runners/libact_runner.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/libact_runner.py) |
+| small-text | [`framework_runners/smalltext_runner.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/smalltext_runner.py) |
+| scikit-activeml | [`framework_runners/skactiveml_runner.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/skactiveml_runner.py) |
+| playground | [`framework_runners/playground_runner.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/playground_runner.py) |
+| optimal (oracle) | [`framework_runners/optimal_runner.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/optimal_runner.py) |
 
 ### Step 2: Add Strategy to Enum
 
-In `resources/data_types.py`:
+In [`resources/data_types.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py):
 
 ```python
 @unique
@@ -103,7 +103,7 @@ class AL_STRATEGY(IntEnum):
 
 ### Step 3: Add Strategy Mapping
 
-In `resources/data_types.py`:
+In [`resources/data_types.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py):
 
 ```python
 al_strategy_to_python_classes_mapping: Dict[AL_STRATEGY, Tuple[Callable, Dict[Any, Any]]] = {
@@ -117,7 +117,7 @@ al_strategy_to_python_classes_mapping: Dict[AL_STRATEGY, Tuple[Callable, Dict[An
 
 ### Step 4: Implement in Runner (if needed)
 
-If using a new framework, create a new runner in `framework_runners/`:
+If using a new framework, create a new runner in [`framework_runners/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners):
 
 ```python
 # framework_runners/my_framework_runner.py
@@ -148,13 +148,11 @@ class MY_FRAMEWORK_AL_Experiment(AL_Experiment):
 
 ### Step 5: Register in 02_run_experiment.py
 
-```python
-# 02_run_experiment.py
-from framework_runners.my_framework_runner import MY_FRAMEWORK_AL_Experiment
-
-if str(config.EXP_STRATEGY.name).startswith("MY_FRAMEWORK"):
-    al_experiment = MY_FRAMEWORK_AL_Experiment(config)
-```
+```yaml
+# resources/kaggle_datasets.yaml
+my_kaggle_dataset:
+  kaggle_name: username/dataset-name
+```0
 
 ---
 
@@ -162,29 +160,21 @@ if str(config.EXP_STRATEGY.name).startswith("MY_FRAMEWORK"):
 
 ### Step 1: Add to Enum
 
-In `resources/data_types.py`:
+In [`resources/data_types.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py):
 
-```python
-@unique
-class LEARNER_MODEL(IntEnum):
-    # ... existing models ...
-    MY_MODEL = 50  # Choose unused ID
-```
+```yaml
+# resources/kaggle_datasets.yaml
+my_kaggle_dataset:
+  kaggle_name: username/dataset-name
+```1
 
 ### Step 2: Add Mapping
 
-```python
-learner_models_to_classes_mapping: Dict[LEARNER_MODEL, Tuple[Callable, Dict[Any, Any]]] = {
-    # ... existing mappings ...
-    LEARNER_MODEL.MY_MODEL: (
-        MyModelClass,  # sklearn-compatible classifier
-        {
-            "param1": "value1",
-            "param2": "value2"
-        }
-    ),
-}
-```
+```yaml
+# resources/kaggle_datasets.yaml
+my_kaggle_dataset:
+  kaggle_name: username/dataset-name
+```2
 
 ### Requirements
 
@@ -200,33 +190,23 @@ The model class must be scikit-learn compatible:
 
 ### Step 1: Create Metric Class
 
-In `metrics/`:
+In [`metrics/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics):
 
-```python
-# metrics/My_New_Metric.py
-from metrics.base_metric import Base_Metric
-
-class My_New_Metric(Base_Metric):
-    metrics = ["my_metric_name"]  # List of metric names to track
-    
-    def post_retraining_of_learner_hook(self, al_experiment):
-        # Compute your metric after each model retraining
-        value = self._compute_metric(al_experiment)
-        self.metric_values["my_metric_name"].append(value)
-    
-    def _compute_metric(self, al_experiment):
-        # Your metric computation logic
-        return some_value
-```
+```yaml
+# resources/kaggle_datasets.yaml
+my_kaggle_dataset:
+  kaggle_name: username/dataset-name
+```3
 
 ### Step 2: Register Metric
 
 Add to experiment YAML:
 
 ```yaml
-my_experiment:
-  METRICS: [Standard_ML_Metrics, My_New_Metric]
-```
+# resources/kaggle_datasets.yaml
+my_kaggle_dataset:
+  kaggle_name: username/dataset-name
+```4
 
 ### Available Hooks
 
@@ -276,7 +256,7 @@ Based on OGAL's experimental design:
 
 - [ ] Save `00_config.yaml` with git commit hash
 - [ ] Document any local modifications to config
-- [ ] Archive the exact `resources/exp_config.yaml` used
+- [ ] Archive the exact [`resources/exp_config.yaml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/exp_config.yaml) used
 
 ### Seeds
 
@@ -317,22 +297,11 @@ The OPARA archive (`full_exp_jan.zip`) contains:
 
 ### Archive Structure
 
-```
-full_exp_jan/
-├── ALIPY_RANDOM/              # Strategy results
-│   ├── Iris/                  # Dataset results
-│   │   ├── accuracy.csv.xz
-│   │   ├── weighted_f1-score.csv.xz
-│   │   ├── full_auc_accuracy.csv.xz
-│   │   └── ...
-│   ├── wine_origin/
-│   └── ...
-├── ALIPY_UNCERTAINTY_LC/
-├── SKACTIVEML_RANDOM/
-├── ... (28 strategies total)
-├── 05_done_workload.csv       # 4.5M+ completed experiments
-└── 05_failed_workloads.csv    # Failed experiments with errors
-```
+```yaml
+# resources/kaggle_datasets.yaml
+my_kaggle_dataset:
+  kaggle_name: username/dataset-name
+```5
 
 ### Integration with OGAL
 
@@ -340,57 +309,37 @@ The archive format matches OGAL's output exactly. To use the archived data:
 
 #### 1. Download and Extract
 
-```bash
-# Download from OPARA portal (requires manual download)
-# Extract selectively (full archive is several TB):
-unzip -q full_exp_jan.zip "full_exp_jan/ALIPY_RANDOM/*" "full_exp_jan/05_*.csv"
-```
+```yaml
+# resources/kaggle_datasets.yaml
+my_kaggle_dataset:
+  kaggle_name: username/dataset-name
+```6
 
 #### 2. Configure OGAL to Point to Archived Data
 
-```ini
-# .server_access_credentials.cfg
-[LOCAL]
-LOCAL_OUTPUT_PATH = /path/to/full_exp_jan/
-```
+```yaml
+# resources/kaggle_datasets.yaml
+my_kaggle_dataset:
+  kaggle_name: username/dataset-name
+```7
 
 #### 3. Run Evaluation Scripts on Archived Data
 
-```bash
-# Regenerate paper leaderboard rankings
-python -m eva_scripts.calculate_leaderboard_rankings --EXP_TITLE full_exp_jan
-
-# Compute metric correlations
-python -m eva_scripts.basic_metrics_correlation --EXP_TITLE full_exp_jan
-
-# Analyze runtime
-python -m eva_scripts.runtime --EXP_TITLE full_exp_jan
-```
+```yaml
+# resources/kaggle_datasets.yaml
+my_kaggle_dataset:
+  kaggle_name: username/dataset-name
+```8
 
 ### Building on the Archived Results
 
 #### Compare New Strategies Against Archive
 
-```python
-import pandas as pd
-
-# Load archived results
-archived_accuracy = pd.read_csv(
-    "full_exp_jan/ALIPY_RANDOM/Iris/full_auc_accuracy.csv.xz"
-)
-
-# Load your new experiment results
-your_results = pd.read_csv(
-    "your_exp/YOUR_NEW_STRATEGY/Iris/full_auc_accuracy.csv.xz"
-)
-
-# Merge on EXP_UNIQUE_ID (matching hyperparameter combinations)
-comparison = archived_accuracy.merge(
-    your_results, 
-    on="EXP_UNIQUE_ID", 
-    suffixes=("_archived", "_new")
-)
-```
+```yaml
+# resources/kaggle_datasets.yaml
+my_kaggle_dataset:
+  kaggle_name: username/dataset-name
+```9
 
 #### Extend with New Datasets
 
@@ -415,31 +364,24 @@ Run OGAL experiments on new datasets using the same hyperparameter grid, then co
 
 | Purpose | File |
 |---------|------|
-| Dataset loading | `datasets/__init__.py` (DATASET enum, loader classes) |
-| AL strategy dispatch | `02_run_experiment.py` (main experiment runner) |
-| Strategy definitions | `resources/data_types.py` (AL_STRATEGY enum, mappings) |
-| Runner base class | `framework_runners/base_runner.py` (AL_Experiment abstract class) |
-| Metric base class | `metrics/base_metric.py` (Base_Metric abstract class) |
-| Configuration | `misc/config.py` (Config class) |
+| Dataset loading | [`datasets/__init__.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/datasets/__init__.py) (DATASET enum, loader classes) |
+| AL strategy dispatch | [`02_run_experiment.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/02_run_experiment.py) (main experiment runner) |
+| Strategy definitions | [`resources/data_types.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py) (AL_STRATEGY enum, mappings) |
+| Runner base class | [`framework_runners/base_runner.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/base_runner.py) (AL_Experiment abstract class) |
+| Metric base class | [`metrics/base_metric.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/base_metric.py) (Base_Metric abstract class) |
+| Configuration | [`misc/config.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) (Config class) |
 
 ### Understanding the AL Loop
 
 The active learning loop is implemented in `framework_runners/base_runner.py::AL_Experiment`:
 
-```
-02_run_experiment.py
-    └── AL_Experiment.run_experiment()
-        └── for iteration in range(total_iterations):
-            └── al_cycle()
-                ├── metric.pre_query_selection_hook()
-                ├── query_AL_strategy()  # Select samples
-                ├── metric.post_query_selection_hook()
-                ├── metric.pre_retraining_of_learner_hook()
-                ├── model.fit()  # Retrain
-                └── metric.post_retraining_of_learner_hook()
-```
+```yaml
+my_local_dataset:
+  enum_id: 200  # Unique integer ID not used by other datasets
+  path: my_local_dataset.csv  # Relative to DATASETS_PATH
+```0
 
-(source: `framework_runners/base_runner.py::AL_Experiment.al_cycle`)
+(source: [`framework_runners/base_runner.py::AL_Experiment.al_cycle`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/base_runner.py))
 
 ---
 
@@ -449,73 +391,40 @@ Here's a complete example of adding a custom uncertainty sampling variant:
 
 ### 1. Add to Enum
 
-```python
-# resources/data_types.py
-class AL_STRATEGY(IntEnum):
-    # ...
-    CUSTOM_UNCERTAINTY_WEIGHTED = 101
-```
+```yaml
+my_local_dataset:
+  enum_id: 200  # Unique integer ID not used by other datasets
+  path: my_local_dataset.csv  # Relative to DATASETS_PATH
+```1
 
 ### 2. Implement Strategy
 
-```python
-# optimal_query_strategies/custom_uncertainty.py
-import numpy as np
-
-class CustomUncertaintyWeighted:
-    def __init__(self, weight_factor=0.5):
-        self.weight_factor = weight_factor
-    
-    def query(self, X, y_pred_proba, unlabeled_idx, batch_size):
-        # Compute uncertainty scores
-        uncertainties = 1 - np.max(y_pred_proba[unlabeled_idx], axis=1)
-        
-        # Weight by sample density (example)
-        from sklearn.neighbors import NearestNeighbors
-        nn = NearestNeighbors(n_neighbors=5)
-        nn.fit(X[unlabeled_idx])
-        distances, _ = nn.kneighbors()
-        densities = 1 / (distances.mean(axis=1) + 1e-6)
-        
-        # Combined score
-        scores = uncertainties * self.weight_factor + densities * (1 - self.weight_factor)
-        
-        # Select top-k
-        top_k_local = np.argsort(scores)[-batch_size:]
-        return [unlabeled_idx[i] for i in top_k_local]
-```
+```yaml
+my_local_dataset:
+  enum_id: 200  # Unique integer ID not used by other datasets
+  path: my_local_dataset.csv  # Relative to DATASETS_PATH
+```2
 
 ### 3. Add Mapping
 
-```python
-# resources/data_types.py
-from optimal_query_strategies.custom_uncertainty import CustomUncertaintyWeighted
-
-al_strategy_to_python_classes_mapping[AL_STRATEGY.CUSTOM_UNCERTAINTY_WEIGHTED] = (
-    CustomUncertaintyWeighted,
-    {"weight_factor": 0.5}
-)
-```
+```yaml
+my_local_dataset:
+  enum_id: 200  # Unique integer ID not used by other datasets
+  path: my_local_dataset.csv  # Relative to DATASETS_PATH
+```3
 
 ### 4. Create Runner Method
 
-```python
-# framework_runners/optimal_runner.py
-def query_AL_strategy(self) -> SampleIndiceList:
-    if isinstance(self.strategy, CustomUncertaintyWeighted):
-        y_pred_proba = self.model.predict_proba(self.local_X_train)
-        return self.strategy.query(
-            X=self.local_X_train,
-            y_pred_proba=y_pred_proba,
-            unlabeled_idx=self.local_train_unlabeled_idx,
-            batch_size=self.config.EXP_BATCH_SIZE
-        )
-```
+```yaml
+my_local_dataset:
+  enum_id: 200  # Unique integer ID not used by other datasets
+  path: my_local_dataset.csv  # Relative to DATASETS_PATH
+```4
 
 ### 5. Use in Experiment
 
 ```yaml
-my_custom_experiment:
-  EXP_GRID_STRATEGY: [CUSTOM_UNCERTAINTY_WEIGHTED, ALIPY_RANDOM]
-  # ...
-```
+my_local_dataset:
+  enum_id: 200  # Unique integer ID not used by other datasets
+  path: my_local_dataset.csv  # Relative to DATASETS_PATH
+```5

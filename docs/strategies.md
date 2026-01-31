@@ -70,7 +70,7 @@ flowchart TD
     E5 --> O1 & O2 & O3
 ```
 
-(source: `resources/data_types.py::AL_STRATEGY`, `al_strategy_to_python_classes_mapping`, `AL_framework_to_classes_mapping`)
+(source: [`resources/data_types.py::AL_STRATEGY`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py), `al_strategy_to_python_classes_mapping`, `AL_framework_to_classes_mapping`)
 
 ---
 
@@ -100,7 +100,7 @@ The following table lists all strategies available in OGAL. Each strategy is ide
 | 65 | `SKACTIVEML_US_ENTROPY` | scikit-activeml | `skactiveml.pool.UncertaintySampling` | Entropy |
 | 66 | `SKACTIVEML_EXPECTED_AVERAGE_PRECISION` | scikit-activeml | `skactiveml.pool.UncertaintySampling` | Expected Average Precision |
 
-(source: `resources/data_types.py::AL_STRATEGY`, lines 131-208; `al_strategy_to_python_classes_mapping`, lines 210-350)
+(source: [`resources/data_types.py::AL_STRATEGY`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py#L131-L208), lines 131-208; `al_strategy_to_python_classes_mapping`, lines 210-350)
 
 ### Committee-Based Strategies
 
@@ -111,7 +111,7 @@ The following table lists all strategies available in OGAL. Each strategy is ide
 | 60 | `SKACTIVEML_QBC` | scikit-activeml | `skactiveml.pool.QueryByCommittee` | Query by Committee |
 | 75 | `SKACTIVEML_QBC_VOTE_ENTROPY` | scikit-activeml | `skactiveml.pool.QueryByCommittee` | Vote Entropy variant |
 
-(source: `resources/data_types.py::al_strategy_to_python_classes_mapping`)
+(source: [`resources/data_types.py::al_strategy_to_python_classes_mapping`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py))
 
 ### Diversity/Density-Based Strategies
 
@@ -130,7 +130,7 @@ The following table lists all strategies available in OGAL. Each strategy is ide
 | 45 | `SMALLTEXT_LIGHTWEIGHTCORESET` | small-text | `small_text.LightweightCoreset` | Lightweight Coreset |
 | 67 | `SKACTIVEML_DWUS` | scikit-activeml | `skactiveml.pool.UncertaintySampling` | Density-Weighted |
 
-(source: `resources/data_types.py::al_strategy_to_python_classes_mapping`)
+(source: [`resources/data_types.py::al_strategy_to_python_classes_mapping`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py))
 
 ### Hybrid/Meta Strategies
 
@@ -147,7 +147,7 @@ The following table lists all strategies available in OGAL. Each strategy is ide
 | 70 | `SKACTIVEML_DAL` | scikit-activeml | `skactiveml.pool.DiscriminativeAL` | Discriminative AL |
 | 74 | `SKACTIVEML_MCPAL` | scikit-activeml | `skactiveml.pool.ProbabilisticAL` | Probabilistic AL |
 
-(source: `resources/data_types.py::al_strategy_to_python_classes_mapping`)
+(source: [`resources/data_types.py::al_strategy_to_python_classes_mapping`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py))
 
 ### Expected Error Reduction Strategies
 
@@ -161,7 +161,7 @@ The following table lists all strategies available in OGAL. Each strategy is ide
 | 57 | `SKACTIVEML_VOI_LABELED` | scikit-activeml | `skactiveml.pool.ValueOfInformationEER` | Value of Information (Labeled) |
 | 58 | `SKACTIVEML_VOI` | scikit-activeml | `skactiveml.pool.ValueOfInformationEER` | Value of Information |
 
-(source: `resources/data_types.py::al_strategy_to_python_classes_mapping`)
+(source: [`resources/data_types.py::al_strategy_to_python_classes_mapping`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py))
 
 ### Query-Specific Strategies
 
@@ -171,7 +171,7 @@ The following table lists all strategies available in OGAL. Each strategy is ide
 | 76 | `SKACTIVEML_QUIRE` | scikit-activeml | `skactiveml.pool.Quire` | QUIRE |
 | 69 | `SKACTIVEML_COST_EMBEDDING` | scikit-activeml | `skactiveml.pool.CostEmbeddingAL` | Cost Embedding AL |
 
-(source: `resources/data_types.py::al_strategy_to_python_classes_mapping`)
+(source: [`resources/data_types.py::al_strategy_to_python_classes_mapping`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py))
 
 ### Advanced Strategies
 
@@ -181,7 +181,7 @@ The following table lists all strategies available in OGAL. Each strategy is ide
 | 26 | `ALIPY_SPAL` | ALiPy | `alipy.query_strategy.QueryInstanceSPAL` | Self-Paced AL (binary only) |
 | 27 | `ALIPY_LAL` | ALiPy | `alipy.query_strategy.QueryInstanceLAL` | Learning Active Learning (binary only, not HPC) |
 
-(source: `resources/data_types.py::al_strategy_to_python_classes_mapping`, `al_strategies_which_only_support_binary_classification`)
+(source: [`resources/data_types.py::al_strategy_to_python_classes_mapping`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py), `al_strategies_which_only_support_binary_classification`)
 
 ### Oracle/Optimal Strategies
 
@@ -194,7 +194,7 @@ These are OGAL-native implementations for oracle baselines:
 | 8 | `OPTIMAL_GREEDY_10` | OPTIMAL | `optimal_query_strategies.greedy_optimal.Greedy_Optimal` | Greedy with 10 pre-selections |
 | 38 | `OPTIMAL_GREEDY_20` | OPTIMAL | `optimal_query_strategies.greedy_optimal.Greedy_Optimal` | Greedy with 20 pre-selections |
 
-(source: `resources/data_types.py::al_strategy_to_python_classes_mapping`)
+(source: [`resources/data_types.py::al_strategy_to_python_classes_mapping`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py))
 
 ---
 
@@ -209,20 +209,20 @@ The following strategies only support binary classification:
 - `ALIPY_BMDR` (Batch Mode Deep Representation)
 - `ALIPY_SPAL` (Self-Paced AL)
 
-(source: `resources/data_types.py::al_strategies_which_only_support_binary_classification`, lines 353-358)
+(source: [`resources/data_types.py::al_strategies_which_only_support_binary_classification`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py#L353-L358), lines 353-358)
 
 ### Strategies Requiring Decision Boundary Model
 
 - `PLAYGROUND_MCM` (Representative Cluster Mean Sampling)
 - `ALIPY_UNCERTAINTY_DTB` (Distance to Boundary)
 
-(source: `resources/data_types.py::al_strategies_which_require_decision_boundary_model`, lines 360-363)
+(source: [`resources/data_types.py::al_strategies_which_require_decision_boundary_model`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py#L360-L363), lines 360-363)
 
 ### Strategies Not Suitable for HPC
 
 - `ALIPY_LAL` (requires interactive training)
 
-(source: `resources/data_types.py::al_strategies_not_suitable_for_hpc`, lines 365-367)
+(source: [`resources/data_types.py::al_strategies_not_suitable_for_hpc`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py#L365-L367), lines 365-367)
 
 ---
 
@@ -279,7 +279,7 @@ class AL_Experiment(ABC):
         pass
 ```
 
-(source: `resources/data_types.py::AL_STRATEGY`, `al_strategy_to_python_classes_mapping`; `framework_runners/base_runner.py::AL_Experiment`)
+(source: [`resources/data_types.py::AL_STRATEGY`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py), `al_strategy_to_python_classes_mapping`; `framework_runners/base_runner.py::AL_Experiment`)
 
 ---
 
@@ -293,7 +293,7 @@ python scripts/export_strategy_catalog.py --format json
 python scripts/export_strategy_catalog.py --format csv
 ```
 
-(source: `scripts/export_strategy_catalog.py`)
+(source: [`scripts/export_strategy_catalog.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/export_strategy_catalog.py))
 
 ---
 

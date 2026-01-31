@@ -105,7 +105,7 @@ flowchart TD
 
 ## Step 0: Download Datasets
 
-**Script:** `00_download_datasets.py`
+**Script:** [`00_download_datasets.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/00_download_datasets.py)
 
 ### Purpose
 
@@ -114,22 +114,22 @@ Downloads and preprocesses datasets from OpenML and Kaggle, creating standardize
 ### Configuration
 
 - Reads dataset definitions from:
-  - `resources/openml_datasets.yaml`
-  - `resources/kaggle_datasets.yaml`
+  - [`resources/openml_datasets.yaml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/openml_datasets.yaml)
+  - [`resources/kaggle_datasets.yaml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/kaggle_datasets.yaml)
 - Output path controlled by `LOCAL_DATASETS_PATH` or `HPC_DATASETS_PATH` in `.server_access_credentials.cfg`
 
 ### Inputs
 
 | Source | Description |
 |--------|-------------|
-| `resources/openml_datasets.yaml` | OpenML dataset IDs and parameters |
-| `resources/kaggle_datasets.yaml` | Kaggle dataset names and parameters |
+| [`resources/openml_datasets.yaml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/openml_datasets.yaml) | OpenML dataset IDs and parameters |
+| [`resources/kaggle_datasets.yaml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/kaggle_datasets.yaml) | Kaggle dataset names and parameters |
 
 ### Outputs
 
 | Path | Format | Description |
 |------|--------|-------------|
-| `DATASETS_PATH/<dataset>.csv` | CSV | Feature matrix with `LABEL_TARGET` column (source: `datasets/__init__.py::load_dataset`) |
+| `DATASETS_PATH/<dataset>.csv` | CSV | Feature matrix with `LABEL_TARGET` column (source: [`datasets/__init__.py::load_dataset`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/datasets/__init__.py)) |
 | `DATASETS_PATH/<dataset>_split.csv` | CSV | Train/test indices and start points |
 | `DATASETS_PATH/<dataset>_distances.csv.gzip` | Gzipped CSV | Pairwise distance matrix (optional) |
 
@@ -149,7 +149,7 @@ python 00_download_datasets.py
 
 ## Step 1: Create Workload
 
-**Script:** `01_create_workload.py`
+**Script:** [`01_create_workload.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/01_create_workload.py)
 
 ### Purpose
 
@@ -164,14 +164,14 @@ Generates the experiment workload by creating the Cartesian product **𝕊 × �
 
 ### Configuration
 
-- Uses `resources/exp_config.yaml` for experiment grid definitions
+- Uses [`resources/exp_config.yaml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/exp_config.yaml) for experiment grid definitions
 - Uses `.server_access_credentials.cfg` for paths
 
 ### Inputs
 
 | Source | Description |
 |--------|-------------|
-| `resources/exp_config.yaml` | Experiment grid definitions |
+| [`resources/exp_config.yaml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/exp_config.yaml) | Experiment grid definitions |
 | `DATASETS_PATH/*.csv` | Available datasets |
 | `DATASETS_PATH/*_split.csv` | Train/test split information |
 
@@ -209,7 +209,7 @@ python 01_create_workload.py --EXP_TITLE test
 
 ### Workload Resume Behavior
 
-If `05_done_workload.csv` exists, the script automatically (source: `01_create_workload.py` lines 105-121):
+If `05_done_workload.csv` exists, the script automatically (source: [`01_create_workload.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/01_create_workload.py#L105-L121) lines 105-121):
 
 1. Loads completed experiment IDs
 2. Excludes them from the new workload
@@ -219,7 +219,7 @@ If `05_done_workload.csv` exists, the script automatically (source: `01_create_w
 
 ## Step 2: Run Experiment
 
-**Script:** `02_run_experiment.py`
+**Script:** [`02_run_experiment.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/02_run_experiment.py)
 
 ### Purpose
 
@@ -250,7 +250,7 @@ Per experiment, organized by strategy and dataset:
 | `OUTPUT_PATH/<STRATEGY>/<DATASET>/query_selection_time.csv` | CSV | Query timing |
 | `OUTPUT_PATH/<STRATEGY>/<DATASET>/y_pred_*.parquet` | Parquet | Predictions per cycle |
 
-Global tracking files (source: `misc/config.py::Config.OVERALL_*_PATH`):
+Global tracking files (source: [`misc/config.py::Config.OVERALL_*_PATH`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py::Config.OVERALL_*_PATH)):
 
 | Path | Description |
 |------|-------------|
@@ -284,7 +284,7 @@ python 02_run_experiment.py --EXP_TITLE test --WORKER_INDEX 0
 
 ## Step 3: Calculate Dataset Categorizations
 
-**Script:** `03_calculate_dataset_categorizations.py`
+**Script:** [`03_calculate_dataset_categorizations.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/03_calculate_dataset_categorizations.py)
 
 ### Purpose
 
@@ -334,7 +334,7 @@ python 03_calculate_dataset_categorizations.py --EXP_TITLE test --EVA_MODE local
 
 ## Step 4: Calculate Advanced Metrics
 
-**Script:** `04_calculate_advanced_metrics.py`
+**Script:** [`04_calculate_advanced_metrics.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/04_calculate_advanced_metrics.py)
 
 ### Purpose
 
@@ -383,7 +383,7 @@ python 04_calculate_advanced_metrics.py --EXP_TITLE test --EVA_MODE local
 
 ## Step 5: Analyze Partially Run Workload
 
-**Script:** `05_analyze_partially_run_workload.py`
+**Script:** [`05_analyze_partially_run_workload.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/05_analyze_partially_run_workload.py)
 
 ### Purpose
 
@@ -415,7 +415,7 @@ python 05_analyze_partially_run_workload.py --EXP_TITLE test
 
 ## Step 6: Generate Results
 
-**Script:** `07b_create_results_without_flask.py`
+**Script:** [`07b_create_results_without_flask.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/07b_create_results_without_flask.py)
 
 ### Purpose
 
@@ -472,18 +472,8 @@ python 02_run_experiment.py --EXP_TITLE test --WORKER_INDEX 0 --LOG_FILE console
 ## Complete Example
 
 ```bash
-# Full pipeline execution for a small test
 python 00_download_datasets.py
-python 01_create_workload.py --EXP_TITLE test
-python 02_run_experiment.py --EXP_TITLE test --WORKER_INDEX 0
-python 02_run_experiment.py --EXP_TITLE test --WORKER_INDEX 1
-# ... repeat for all worker indices, or use parallel/SLURM
-
-python 03_calculate_dataset_categorizations.py --EXP_TITLE test --SAMPLES_CATEGORIZER _ALL --EVA_MODE local
-python 04_calculate_advanced_metrics.py --EXP_TITLE test --COMPUTED_METRICS _ALL --EVA_MODE local
-python 05_analyze_partially_run_workload.py --EXP_TITLE test
-python 07b_create_results_without_flask.py --EXP_TITLE test
-```
+```0
 
 ---
 
@@ -491,7 +481,7 @@ python 07b_create_results_without_flask.py --EXP_TITLE test
 
 Beyond the main pipeline, OGAL includes utility and evaluation scripts in two directories:
 
-### `scripts/` - Utility Scripts
+### [`scripts/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts) - Utility Scripts
 
 These scripts support data processing, format conversion, bug fixes, and experiment recovery:
 
@@ -506,17 +496,10 @@ These scripts support data processing, format conversion, bug fixes, and experim
 **Common workflow after main pipeline:**
 
 ```bash
-# Check for missing experiment IDs
-python -m scripts.find_missing_exp_ids_in_metric_files --EXP_TITLE test
+python 00_download_datasets.py
+```1
 
-# Create dense workload (for large experiments)
-python -m scripts.create_dense_workload --EXP_TITLE test
-
-# Reduce all files to dense subset
-python -m scripts.reduce_to_dense --EXP_TITLE test
-```
-
-### `eva_scripts/` - Evaluation Scripts
+### [`eva_scripts/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts) - Evaluation Scripts
 
 These scripts generate analyses, figures, and tables for the research paper. They analyze the experiment results to produce:
 
@@ -531,17 +514,7 @@ These scripts generate analyses, figures, and tables for the research paper. The
 **Example evaluation workflow:**
 
 ```bash
-# Compute metric correlations
-python -m eva_scripts.basic_metrics_correlation --EXP_TITLE test
-
-# Calculate leaderboard rankings
-python -m eva_scripts.calculate_leaderboard_rankings --EXP_TITLE test
-
-# Generate runtime analysis
-python -m eva_scripts.runtime --EXP_TITLE test
-
-# Analyze hyperparameter influence
-python -m eva_scripts.leaderboard_single_hyperparameter_influence --EXP_TITLE test
-```
+python 00_download_datasets.py
+```2
 
 For complete documentation of all utility and evaluation scripts, see [Scripts Documentation](scripts.md).

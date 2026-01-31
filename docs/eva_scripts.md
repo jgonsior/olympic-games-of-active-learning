@@ -1,6 +1,6 @@
 # Eva Scripts Reference
 
-This document provides a comprehensive catalog of all evaluation scripts in `eva_scripts/`. These scripts generate analyses, figures, and tables for the research paper ([arXiv:2506.03817](https://arxiv.org/abs/2506.03817)).
+This document provides a comprehensive catalog of all evaluation scripts in [`eva_scripts/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts). These scripts generate analyses, figures, and tables for the research paper ([arXiv:2506.03817](https://arxiv.org/abs/2506.03817)).
 
 !!! tip "Canonical Evaluation Guide"
     For a step-by-step guide to running these scripts in the correct order, see **[Evaluation Pipeline](evaluation_pipeline.md)**.
@@ -22,7 +22,7 @@ This document provides a comprehensive catalog of all evaluation scripts in `eva
 | `runtime.py` | Strategy runtime analysis | `query_selection_time.csv` files | `plots/runtime/query_selection_time.parquet` | Runtime bar chart |
 | `learning_curve.py` | Aggregated learning curves | Per-cycle metric CSVs | `plots/single_learning_curve/*.parquet` | Learning curve figures |
 | `single_learning_curve_example.py` | Single dataset learning curve example | `_TS/weighted_f1-score.parquet` | `plots/single_learning_curve/weighted_f1-score.parquet`, `single_exemplary_learning_curve.parquet` | Fig. 2-3 |
-| `redo_plots_for_paper.py` | Re-render publication-quality PDFs | All above parquet files | PDFs in `plots/` subdirectories | All paper figures |
+| `redo_plots_for_paper.py` | Re-render publication-quality PDFs | All above parquet files | PDFs in [`plots/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/plots) subdirectories | All paper figures |
 | `merge_multiple_plots_single_page.py` | Combine heatmaps into single figures | Individual PDFs | Merged PDFs | Combined figures |
 
 ---
@@ -33,14 +33,14 @@ This document provides a comprehensive catalog of all evaluation scripts in `eva
 
 **Purpose:** Computes Pearson correlation matrix between standard ML metrics (accuracy, F1-score variants, precision, recall) to show metric redundancy.
 
-**Source:** `eva_scripts/basic_metrics_correlation.py`
+**Source:** [`eva_scripts/basic_metrics_correlation.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/basic_metrics_correlation.py)
 
 #### Required Inputs
 
 | Input | Path Pattern | Format | Source |
 |-------|-------------|--------|--------|
-| Done workload | `OUTPUT_PATH/<EXP_TITLE>/05_done_workload.csv` | CSV | `02_run_experiment.py` |
-| Per-cycle metrics | `OUTPUT_PATH/<EXP_TITLE>/<STRATEGY>/<DATASET>/*.csv.xz` | Compressed CSV | `02_run_experiment.py` |
+| Done workload | `OUTPUT_PATH/<EXP_TITLE>/05_done_workload.csv` | CSV | [`02_run_experiment.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/02_run_experiment.py) |
+| Per-cycle metrics | `OUTPUT_PATH/<EXP_TITLE>/<STRATEGY>/<DATASET>/*.csv.xz` | Compressed CSV | [`02_run_experiment.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/02_run_experiment.py) |
 
 #### Outputs Produced
 
@@ -54,7 +54,7 @@ This document provides a comprehensive catalog of all evaluation scripts in `eva
 - Uses `config.OUTPUT_PATH`, `config.CORRELATION_TS_PATH`
 - Metrics evaluated: `accuracy`, `weighted_f1-score`, `macro_f1-score`, `weighted_precision`, `weighted_recall`, `macro_precision`, `macro_recall`
 
-(source: `eva_scripts/basic_metrics_correlation.py`, lines 26-35)
+(source: [`eva_scripts/basic_metrics_correlation.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/basic_metrics_correlation.py#L26-L35), lines 26-35)
 
 #### Typical Invocation
 
@@ -66,8 +66,8 @@ python -m eva_scripts.basic_metrics_correlation --EXP_TITLE your_experiment
 
 | Error | Cause | Resolution |
 |-------|-------|------------|
-| `FileNotFoundError: 05_done_workload.csv` | Experiments not completed | Run `02_run_experiment.py` first |
-| `KeyError: 'EXP_UNIQUE_ID'` | Corrupted metric files | Run `scripts/find_broken_file.py` |
+| `FileNotFoundError: 05_done_workload.csv` | Experiments not completed | Run [`02_run_experiment.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/02_run_experiment.py) first |
+| `KeyError: 'EXP_UNIQUE_ID'` | Corrupted metric files | Run [`scripts/find_broken_file.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/find_broken_file.py) |
 
 ---
 
@@ -75,14 +75,14 @@ python -m eva_scripts.basic_metrics_correlation --EXP_TITLE your_experiment
 
 **Purpose:** Computes correlation between different AUC-based aggregation metrics (full_auc, first_5, last_5, ramp_up_auc, plateau_auc, final_value) to determine which aggregations are redundant.
 
-**Source:** `eva_scripts/auc_metric_correlation.py`
+**Source:** [`eva_scripts/auc_metric_correlation.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/auc_metric_correlation.py)
 
 #### Required Inputs
 
 | Input | Path Pattern | Format | Source |
 |-------|-------------|--------|--------|
-| AUC metrics | `OUTPUT_PATH/<EXP_TITLE>/<STRATEGY>/<DATASET>/full_auc_*.csv.xz` | Compressed CSV | `04_calculate_advanced_metrics.py` |
-| Done workload | `OUTPUT_PATH/<EXP_TITLE>/05_done_workload.csv` | CSV | `02_run_experiment.py` |
+| AUC metrics | `OUTPUT_PATH/<EXP_TITLE>/<STRATEGY>/<DATASET>/full_auc_*.csv.xz` | Compressed CSV | [`04_calculate_advanced_metrics.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/04_calculate_advanced_metrics.py) |
+| Done workload | `OUTPUT_PATH/<EXP_TITLE>/05_done_workload.csv` | CSV | [`02_run_experiment.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/02_run_experiment.py) |
 
 #### Outputs Produced
 
@@ -95,7 +95,7 @@ python -m eva_scripts.basic_metrics_correlation --EXP_TITLE your_experiment
 
 - AUC prefixes: `final_value_`, `first_5_`, `full_auc_`, `last_5_`, `ramp_up_auc_`, `plateau_auc_`
 
-(source: `eva_scripts/auc_metric_correlation.py`, lines 42-51)
+(source: [`eva_scripts/auc_metric_correlation.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/auc_metric_correlation.py#L42-L51), lines 42-51)
 
 #### Typical Invocation
 
@@ -109,14 +109,14 @@ python -m eva_scripts.auc_metric_correlation --EXP_TITLE your_experiment
 
 **Purpose:** Computes strategy rankings for each dataset using different ranking methods (rank-based, percentage-based, dataset-normalized percentages) and interpolation strategies (zero, remove, average).
 
-**Source:** `eva_scripts/calculate_leaderboard_rankings.py`
+**Source:** [`eva_scripts/calculate_leaderboard_rankings.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/calculate_leaderboard_rankings.py)
 
 #### Required Inputs
 
 | Input | Path Pattern | Format | Source |
 |-------|-------------|--------|--------|
 | Time series parquet | `OUTPUT_PATH/<EXP_TITLE>/_TS/full_auc_weighted_f1-score.parquet` | Parquet | Created by this script or prior eva_scripts |
-| Done workload | `OUTPUT_PATH/<EXP_TITLE>/05_done_workload.csv` | CSV | `02_run_experiment.py` |
+| Done workload | `OUTPUT_PATH/<EXP_TITLE>/05_done_workload.csv` | CSV | [`02_run_experiment.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/02_run_experiment.py) |
 
 #### Outputs Produced
 
@@ -131,7 +131,7 @@ python -m eva_scripts.auc_metric_correlation --EXP_TITLE your_experiment
 - `grid_type`: `"sparse"`, `"dense"`
 - `interpolation`: `"none"`, `"remove"`, `"zero"`, `"average_of_same_strategy"`
 
-(source: `eva_scripts/calculate_leaderboard_rankings.py`, lines 37-44)
+(source: [`eva_scripts/calculate_leaderboard_rankings.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/calculate_leaderboard_rankings.py#L37-L44), lines 37-44)
 
 #### Typical Invocation
 
@@ -145,7 +145,7 @@ python -m eva_scripts.calculate_leaderboard_rankings --EXP_TITLE your_experiment
 
 **Purpose:** Generates publication-quality final leaderboard heatmaps with strategies ranked by mean rank across all datasets.
 
-**Source:** `eva_scripts/final_leaderboard.py`
+**Source:** [`eva_scripts/final_leaderboard.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/final_leaderboard.py)
 
 #### Required Inputs
 
@@ -166,7 +166,7 @@ python -m eva_scripts.calculate_leaderboard_rankings --EXP_TITLE your_experiment
 - Evaluates multiple AUC prefixes: `full_auc_`, `first_5_`, `last_5_`, `ramp_up_auc_`, `plateau_auc_`, `final_value_`
 - Default metric: `weighted_f1-score`
 
-(source: `eva_scripts/final_leaderboard.py`, lines 63-70)
+(source: [`eva_scripts/final_leaderboard.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/final_leaderboard.py#L63-L70), lines 63-70)
 
 #### Typical Invocation
 
@@ -180,7 +180,7 @@ python -m eva_scripts.final_leaderboard --EXP_TITLE your_experiment
 
 **Purpose:** Analyzes how changing a single hyperparameter affects strategy rankings. Creates intermediate CSV files for Kendall τ analysis.
 
-**Source:** `eva_scripts/leaderboard_single_hyperparameter_influence.py`
+**Source:** [`eva_scripts/leaderboard_single_hyperparameter_influence.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/leaderboard_single_hyperparameter_influence.py)
 
 #### Required Inputs
 
@@ -206,7 +206,7 @@ Evaluated hyperparameters:
 - `EXP_START_POINT`: Initial labeled set indices
 - `auc_metric`: Different AUC aggregations
 
-(source: `eva_scripts/leaderboard_single_hyperparameter_influence.py`, lines 38-46)
+(source: [`eva_scripts/leaderboard_single_hyperparameter_influence.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/leaderboard_single_hyperparameter_influence.py#L38-L46), lines 38-46)
 
 #### Typical Invocation
 
@@ -220,7 +220,7 @@ python -m eva_scripts.leaderboard_single_hyperparameter_influence --EXP_TITLE yo
 
 **Purpose:** Computes Kendall τ correlation between rankings under different hyperparameter settings to produce the orange heatmaps in the paper.
 
-**Source:** `eva_scripts/leaderboard_single_hyperparameter_influence_analyze.py`
+**Source:** [`eva_scripts/leaderboard_single_hyperparameter_influence_analyze.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/leaderboard_single_hyperparameter_influence_analyze.py)
 
 #### Required Inputs
 
@@ -248,7 +248,7 @@ python -m eva_scripts.leaderboard_single_hyperparameter_influence_analyze --EXP_
 
 **Purpose:** Computes Pearson correlation of metric values (e.g., full_auc_weighted_f1-score) across different values of a single hyperparameter. Produces the blue heatmaps in the paper.
 
-**Source:** `eva_scripts/single_hyperparameter_evaluation_metric.py`
+**Source:** [`eva_scripts/single_hyperparameter_evaluation_metric.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/single_hyperparameter_evaluation_metric.py)
 
 #### Required Inputs
 
@@ -267,7 +267,7 @@ python -m eva_scripts.leaderboard_single_hyperparameter_influence_analyze --EXP_
 
 Targets to evaluate: `EXP_STRATEGY`, `EXP_LEARNER_MODEL`, `EXP_BATCH_SIZE`, `EXP_DATASET`, `EXP_TRAIN_TEST_BUCKET_SIZE`, `EXP_START_POINT`
 
-(source: `eva_scripts/single_hyperparameter_evaluation_metric.py`, lines 49-57)
+(source: [`eva_scripts/single_hyperparameter_evaluation_metric.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/single_hyperparameter_evaluation_metric.py#L49-L57), lines 49-57)
 
 #### Typical Invocation
 
@@ -281,7 +281,7 @@ python -m eva_scripts.single_hyperparameter_evaluation_metric --EXP_TITLE your_e
 
 **Purpose:** Computes Jaccard similarity of queried sample indices across different hyperparameter values. Produces the green heatmaps in the paper showing which strategies query similar samples.
 
-**Source:** `eva_scripts/single_hyperparameter_evaluation_indices.py`
+**Source:** [`eva_scripts/single_hyperparameter_evaluation_indices.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/single_hyperparameter_evaluation_indices.py)
 
 #### Required Inputs
 
@@ -307,14 +307,14 @@ python -m eva_scripts.single_hyperparameter_evaluation_indices --EXP_TITLE your_
 
 **Purpose:** Analyzes and visualizes query selection runtime across all strategies. Produces the runtime bar chart in the paper.
 
-**Source:** `eva_scripts/runtime.py`
+**Source:** [`eva_scripts/runtime.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/runtime.py)
 
 #### Required Inputs
 
 | Input | Path Pattern | Format | Source |
 |-------|-------------|--------|--------|
-| Query selection time | `OUTPUT_PATH/<EXP_TITLE>/<STRATEGY>/<DATASET>/query_selection_time.csv.xz` | Compressed CSV | `02_run_experiment.py` |
-| Done workload | `OUTPUT_PATH/<EXP_TITLE>/05_done_workload.csv` | CSV | `02_run_experiment.py` |
+| Query selection time | `OUTPUT_PATH/<EXP_TITLE>/<STRATEGY>/<DATASET>/query_selection_time.csv.xz` | Compressed CSV | [`02_run_experiment.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/02_run_experiment.py) |
+| Done workload | `OUTPUT_PATH/<EXP_TITLE>/05_done_workload.csv` | CSV | [`02_run_experiment.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/02_run_experiment.py) |
 
 #### Outputs Produced
 
@@ -327,7 +327,7 @@ python -m eva_scripts.single_hyperparameter_evaluation_indices --EXP_TITLE your_
 
 - Missing strategies are filled with `config.EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT` (default: 300s)
 
-(source: `eva_scripts/runtime.py`, lines 136-142)
+(source: [`eva_scripts/runtime.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/runtime.py#L136-L142), lines 136-142)
 
 #### Typical Invocation
 
@@ -341,13 +341,13 @@ python -m eva_scripts.runtime --EXP_TITLE your_experiment
 
 **Purpose:** Generates aggregated learning curves showing metric progression across AL cycles for all strategies.
 
-**Source:** `eva_scripts/learning_curve.py`
+**Source:** [`eva_scripts/learning_curve.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/learning_curve.py)
 
 #### Required Inputs
 
 | Input | Path Pattern | Format | Source |
 |-------|-------------|--------|--------|
-| Per-cycle metrics | `OUTPUT_PATH/<EXP_TITLE>/<STRATEGY>/<DATASET>/weighted_f1-score.csv.xz` | Compressed CSV | `02_run_experiment.py` |
+| Per-cycle metrics | `OUTPUT_PATH/<EXP_TITLE>/<STRATEGY>/<DATASET>/weighted_f1-score.csv.xz` | Compressed CSV | [`02_run_experiment.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/02_run_experiment.py) |
 
 #### Outputs Produced
 
@@ -367,7 +367,7 @@ python -m eva_scripts.learning_curve --EXP_TITLE your_experiment
 
 **Purpose:** Generates a single illustrative learning curve example and an exemplary abstract learning curve (Fig. 2-3 in paper) showing Strategy A/B/C comparison.
 
-**Source:** `eva_scripts/single_learning_curve_example.py`
+**Source:** [`eva_scripts/single_learning_curve_example.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/single_learning_curve_example.py)
 
 #### Required Inputs
 
@@ -382,13 +382,13 @@ python -m eva_scripts.learning_curve --EXP_TITLE your_experiment
 | Real learning curve | `OUTPUT_PATH/<EXP_TITLE>/plots/single_learning_curve/weighted_f1-score.parquet` | Parquet | Actual strategy comparison |
 | Exemplary curve | `OUTPUT_PATH/<EXP_TITLE>/plots/single_learning_curve/single_exemplary_learning_curve.parquet` | Parquet | Abstract illustration |
 
-(source: `eva_scripts/single_learning_curve_example.py`, lines 58-65)
+(source: [`eva_scripts/single_learning_curve_example.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/single_learning_curve_example.py#L58-L65), lines 58-65)
 
 #### Typical Invocation
 
 ```bash
-python -m eva_scripts.single_learning_curve_example --EXP_TITLE your_experiment
-```
+python -m eva_scripts.auc_metric_correlation --EXP_TITLE your_experiment
+```0
 
 ---
 
@@ -396,7 +396,7 @@ python -m eva_scripts.single_learning_curve_example --EXP_TITLE your_experiment
 
 **Purpose:** Re-renders all intermediate Parquet files into publication-quality PDFs with correct fonts, colors, and styling for the research paper.
 
-**Source:** `eva_scripts/redo_plots_for_paper.py`
+**Source:** [`eva_scripts/redo_plots_for_paper.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/redo_plots_for_paper.py)
 
 #### Required Inputs
 
@@ -412,7 +412,7 @@ All Parquet files from previous eva_scripts:
 | Single hyperparameter | `plots/single_hyperparameter/*/*.parquet` |
 | Kendall heatmaps | `plots/leaderboard_single_hyperparameter_influence/*_kendall.parquet` |
 
-(source: `eva_scripts/redo_plots_for_paper.py`, lines 35-75)
+(source: [`eva_scripts/redo_plots_for_paper.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/redo_plots_for_paper.py#L35-L75), lines 35-75)
 
 #### Outputs Produced
 
@@ -421,8 +421,8 @@ Publication-ready PDFs with same names as input Parquets, in same directories.
 #### Typical Invocation
 
 ```bash
-python -m eva_scripts.redo_plots_for_paper --EXP_TITLE your_experiment
-```
+python -m eva_scripts.auc_metric_correlation --EXP_TITLE your_experiment
+```1
 
 ---
 
@@ -430,13 +430,13 @@ python -m eva_scripts.redo_plots_for_paper --EXP_TITLE your_experiment
 
 **Purpose:** Combines related heatmaps (metric, indices, kendall) into single-page figures for the paper.
 
-**Source:** `eva_scripts/merge_multiple_plots_single_page.py`
+**Source:** [`eva_scripts/merge_multiple_plots_single_page.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/merge_multiple_plots_single_page.py)
 
 #### Typical Invocation
 
 ```bash
-python -m eva_scripts.merge_multiple_plots_single_page --EXP_TITLE your_experiment
-```
+python -m eva_scripts.auc_metric_correlation --EXP_TITLE your_experiment
+```2
 
 ---
 
@@ -446,7 +446,7 @@ python -m eva_scripts.merge_multiple_plots_single_page --EXP_TITLE your_experime
 
 **Purpose:** Computes and displays dataset statistics.
 
-**Source:** `eva_scripts/dataset_stats.py`
+**Source:** [`eva_scripts/dataset_stats.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/dataset_stats.py)
 
 ---
 
@@ -454,7 +454,7 @@ python -m eva_scripts.merge_multiple_plots_single_page --EXP_TITLE your_experime
 
 **Purpose:** Calculates the dataset-dependent threshold for distinguishing ramp-up vs plateau phase based on random strategy performance.
 
-**Source:** `eva_scripts/calculate_dataset_dependend_random_ramp_slope.py`
+**Source:** [`eva_scripts/calculate_dataset_dependend_random_ramp_slope.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/calculate_dataset_dependend_random_ramp_slope.py)
 
 #### Outputs Produced
 
@@ -468,7 +468,7 @@ python -m eva_scripts.merge_multiple_plots_single_page --EXP_TITLE your_experime
 
 **Purpose:** Statistical analysis of leaderboard rankings stability.
 
-**Source:** `eva_scripts/analyze_leaderboard_rankings.py`
+**Source:** [`eva_scripts/analyze_leaderboard_rankings.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/analyze_leaderboard_rankings.py)
 
 ---
 
@@ -476,7 +476,7 @@ python -m eva_scripts.merge_multiple_plots_single_page --EXP_TITLE your_experime
 
 **Purpose:** Computes leaderboard rankings under different scenario constraints (minimal hyperparameter grids, dataset subsets).
 
-**Source:** `eva_scripts/leaderboard_scenarios.py`
+**Source:** [`eva_scripts/leaderboard_scenarios.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/leaderboard_scenarios.py)
 
 #### Key Configuration
 
@@ -488,7 +488,7 @@ Scenarios: `dataset_scenario`, `start_point_scenario`, `adv_start_scenario`, `mi
 
 **Purpose:** Analyzes how many hyperparameter combinations are needed to achieve stable leaderboard rankings (RQ2 analysis).
 
-**Source:** `eva_scripts/workload_reduction.py`
+**Source:** [`eva_scripts/workload_reduction.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/workload_reduction.py)
 
 ---
 
@@ -496,7 +496,7 @@ Scenarios: `dataset_scenario`, `start_point_scenario`, `adv_start_scenario`, `mi
 
 **Purpose:** Identifies redundant AL strategies based on queried sample similarity. **Note:** Deprecated, functionality merged into `single_hyperparameter_evaluation_indices.py`.
 
-**Source:** `eva_scripts/similar_strategies.py`
+**Source:** [`eva_scripts/similar_strategies.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/similar_strategies.py)
 
 ---
 
@@ -504,7 +504,7 @@ Scenarios: `dataset_scenario`, `start_point_scenario`, `adv_start_scenario`, `mi
 
 **Purpose:** Analyzes correlation between implementations of the same strategy in different frameworks.
 
-**Source:** `eva_scripts/strateg_framework_correlation.py`
+**Source:** [`eva_scripts/strateg_framework_correlation.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/strateg_framework_correlation.py)
 
 ---
 
@@ -512,7 +512,7 @@ Scenarios: `dataset_scenario`, `start_point_scenario`, `adv_start_scenario`, `mi
 
 **Purpose:** Analysis and visualization for real-world scenario constraints.
 
-**Source:** `eva_scripts/real_world_scenarios_corrs.py`, `eva_scripts/real_world_scenarios_plots.py`
+**Source:** [`eva_scripts/real_world_scenarios_corrs.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/real_world_scenarios_corrs.py), [`eva_scripts/real_world_scenarios_plots.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/real_world_scenarios_plots.py)
 
 ---
 
@@ -520,53 +520,15 @@ Scenarios: `dataset_scenario`, `start_point_scenario`, `adv_start_scenario`, `mi
 
 The eva_scripts form a dependency chain. Run them in this order:
 
-```mermaid
-flowchart TD
-    subgraph Stage1["Data Preparation"]
-        S1[basic_metrics_correlation.py]
-        S2[auc_metric_correlation.py]
-        S3[runtime.py]
-        S4[learning_curve.py]
-    end
-    
-    subgraph Stage2["Leaderboard Analysis"]
-        S5[calculate_leaderboard_rankings.py]
-        S6[final_leaderboard.py]
-        S7[leaderboard_single_hyperparameter_influence.py]
-        S8[leaderboard_single_hyperparameter_influence_analyze.py]
-    end
-    
-    subgraph Stage3["Single Hyperparameter"]
-        S9[single_hyperparameter_evaluation_metric.py]
-        S10[single_hyperparameter_evaluation_indices.py]
-        S11[single_learning_curve_example.py]
-    end
-    
-    subgraph Stage4["Publication"]
-        S12[redo_plots_for_paper.py]
-        S13[merge_multiple_plots_single_page.py]
-    end
-    
-    S1 --> S12
-    S2 --> S12
-    S3 --> S12
-    S4 --> S11
-    S5 --> S6
-    S5 --> S7
-    S7 --> S8
-    S8 --> S12
-    S9 --> S12
-    S10 --> S12
-    S11 --> S12
-    S6 --> S12
-    S12 --> S13
-```
+```bash
+python -m eva_scripts.auc_metric_correlation --EXP_TITLE your_experiment
+```3
 
 ---
 
 ## Time Series Data Format
 
-Most eva_scripts rely on time series Parquet files in `OUTPUT_PATH/<EXP_TITLE>/_TS/`. These are created on-demand by `create_fingerprint_joined_timeseries_csv_files()` in `misc/helpers.py`.
+Most eva_scripts rely on time series Parquet files in `OUTPUT_PATH/<EXP_TITLE>/_TS/`. These are created on-demand by `create_fingerprint_joined_timeseries_csv_files()` in [`misc/helpers.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/helpers.py).
 
 ### Time Series Schema
 
@@ -582,7 +544,7 @@ Most eva_scripts rely on time series Parquet files in `OUTPUT_PATH/<EXP_TITLE>/_
 | `EXP_UNIQUE_ID_ix` | str | Composite key: `{EXP_UNIQUE_ID}_{ix}` |
 | `metric_value` | float | Metric value at this cycle |
 
-(source: `misc/helpers.py::create_fingerprint_joined_timeseries_csv_files`, lines 200-267)
+(source: [`misc/helpers.py::create_fingerprint_joined_timeseries_csv_files`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/helpers.py#L200-L267), lines 200-267)
 
 ---
 
@@ -593,16 +555,14 @@ Most eva_scripts rely on time series Parquet files in `OUTPUT_PATH/<EXP_TITLE>/_
 If a script reports missing `.parquet` files, the time series haven't been created yet:
 
 ```bash
-# The script will auto-create them, but this requires completed experiments
-# Verify experiments are complete first:
-wc -l OUTPUT_PATH/<EXP_TITLE>/05_done_workload.csv
-```
+python -m eva_scripts.auc_metric_correlation --EXP_TITLE your_experiment
+```4
 
 ### Memory Errors
 
 Large experiments may exhaust memory during correlation computation:
 
-1. Use `scripts/reduce_to_dense.py` to create a smaller subset
+1. Use [`scripts/reduce_to_dense.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/reduce_to_dense.py) to create a smaller subset
 2. Run on HPC with sufficient memory allocation
 
 ### Slow Parquet Creation

@@ -11,7 +11,7 @@ OGAL computes per-sample characteristics for each dataset that help explain:
 - Which samples are most informative for AL strategies
 - How sample properties relate to strategy performance
 
-These categorizations are computed **automatically** by `03_calculate_dataset_categorizations.py` and stored as compressed NumPy arrays.
+These categorizations are computed **automatically** by [`03_calculate_dataset_categorizations.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/03_calculate_dataset_categorizations.py) and stored as compressed NumPy arrays.
 
 ---
 
@@ -30,7 +30,7 @@ These categorizations are computed **automatically** by `03_calculate_dataset_ca
 
 ### Script
 
-**Source:** `03_calculate_dataset_categorizations.py`
+**Source:** [`03_calculate_dataset_categorizations.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/03_calculate_dataset_categorizations.py)
 
 ### Invocation
 
@@ -48,7 +48,7 @@ python 03_calculate_dataset_categorizations.py --EXP_TITLE your_experiment \
     --SAMPLES_CATEGORIZER _ALL --EVA_MODE slurm
 ```
 
-(source: `03_calculate_dataset_categorizations.py`, lines 27-47)
+(source: [`03_calculate_dataset_categorizations.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/03_calculate_dataset_categorizations.py#L27-L47), lines 27-47)
 
 ### Core Function
 
@@ -69,7 +69,7 @@ def categorize_samples(self, dataset: DATASET) -> None:
     np.savez_compressed(samples_categorization_path, samples_categorization=samples_categorization)
 ```
 
-(source: `metrics/computed/base_samples_categorizer.py::Base_Samples_Categorizer.categorize_samples`, lines 48-67)
+(source: [`metrics/computed/base_samples_categorizer.py::Base_Samples_Categorizer.categorize_samples`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/computed/base_samples_categorizer.py#L48-L67), lines 48-67)
 
 ---
 
@@ -96,7 +96,7 @@ def categorize_samples(self, dataset: DATASET) -> None:
 | 13 | `CLOSENESS_TO_SAMPLES_OF_SAME_CLASS` | Mean distance to all same-class samples | `(n_samples,)` |
 | 14 | `CLOSENESS_TO_SAMPLES_OF_OTHER_CLASS` | Mean distance to all different-class samples | `(n_samples,)` |
 
-(source: `resources/data_types.py::SAMPLES_CATEGORIZER`, lines 512-528)
+(source: [`resources/data_types.py::SAMPLES_CATEGORIZER`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py#L512-L528), lines 512-528)
 
 ---
 
@@ -110,7 +110,7 @@ Counts how many times each sample is misclassified across AL cycles and repetiti
 
 **Use case:** Identify consistently hard-to-classify samples.
 
-(source: `metrics/computed/base_samples_categorizer.py::COUNT_WRONG_CLASSIFICATIONS`)
+(source: [`metrics/computed/base_samples_categorizer.py::COUNT_WRONG_CLASSIFICATIONS`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/computed/base_samples_categorizer.py))
 
 ### CLOSENESS_TO_DECISION_BOUNDARY
 
@@ -120,7 +120,7 @@ Measures distance to the model's decision hyperplane.
 
 **Use case:** Uncertainty-based strategies often query boundary samples.
 
-(source: `metrics/computed/base_samples_categorizer.py::CLOSENESS_TO_DECISION_BOUNDARY`)
+(source: [`metrics/computed/base_samples_categorizer.py::CLOSENESS_TO_DECISION_BOUNDARY`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/computed/base_samples_categorizer.py))
 
 ### REGION_DENSITY
 
@@ -130,7 +130,7 @@ Local density computed via k-NN distance aggregation.
 
 **Use case:** Density-weighted strategies prefer dense regions.
 
-(source: `metrics/computed/base_samples_categorizer.py::REGION_DENSITY`)
+(source: [`metrics/computed/base_samples_categorizer.py::REGION_DENSITY`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/computed/base_samples_categorizer.py))
 
 ### MELTING_POT_REGION
 
@@ -140,7 +140,7 @@ Measures class mixing in local neighborhood.
 
 **Use case:** Identifies boundary regions between classes.
 
-(source: `metrics/computed/base_samples_categorizer.py::MELTING_POT_REGION`)
+(source: [`metrics/computed/base_samples_categorizer.py::MELTING_POT_REGION`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/computed/base_samples_categorizer.py))
 
 ### OUTLIERNESS
 
@@ -150,7 +150,7 @@ Anomaly score from Isolation Forest.
 
 **Use case:** Identify samples that are unlike the training distribution.
 
-(source: `metrics/computed/base_samples_categorizer.py::OUTLIERNESS`)
+(source: [`metrics/computed/base_samples_categorizer.py::OUTLIERNESS`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/computed/base_samples_categorizer.py))
 
 ### CLOSENESS_TO_CLUSTER_CENTER
 
@@ -160,7 +160,7 @@ Distance to assigned cluster centroid.
 
 **Use case:** Diversity strategies may prefer cluster representatives.
 
-(source: `metrics/computed/base_samples_categorizer.py::CLOSENESS_TO_CLUSTER_CENTER`)
+(source: [`metrics/computed/base_samples_categorizer.py::CLOSENESS_TO_CLUSTER_CENTER`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/computed/base_samples_categorizer.py))
 
 ---
 
@@ -196,7 +196,7 @@ print(categorization.shape)  # (150,) for Iris
 print(categorization[:10])   # First 10 samples' wrong classification counts
 ```
 
-(source: `metrics/computed/base_samples_categorizer.py::Base_Samples_Categorizer.categorize_samples`, lines 64-66)
+(source: [`metrics/computed/base_samples_categorizer.py::Base_Samples_Categorizer.categorize_samples`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/computed/base_samples_categorizer.py#L64-L66), lines 64-66)
 
 ---
 
@@ -204,14 +204,14 @@ print(categorization[:10])   # First 10 samples' wrong classification counts
 
 | Producer | Artifact | Consumer | Purpose |
 |----------|----------|----------|---------|
-| `02_run_experiment.py` | `y_pred_*.parquet` | `COUNT_WRONG_CLASSIFICATIONS` | Prediction aggregation |
-| `02_run_experiment.py` | `selected_indices.csv.xz` | `INCLUDED_IN_OPTIMAL_STRATEGY` | Optimal solution comparison |
+| [`02_run_experiment.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/02_run_experiment.py) | `y_pred_*.parquet` | `COUNT_WRONG_CLASSIFICATIONS` | Prediction aggregation |
+| [`02_run_experiment.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/02_run_experiment.py) | `selected_indices.csv.xz` | `INCLUDED_IN_OPTIMAL_STRATEGY` | Optimal solution comparison |
 | Dataset files | `<dataset>.csv` | All categorizers | Feature vectors |
 | Dataset files | `<dataset>_distances.csv.gzip.parquet` | Distance-based categorizers | Precomputed distances |
-| `03_calculate_dataset_categorizations.py` | `_<CATEGORIZER>/<DATASET>.npz` | Eva scripts | Sample-level analysis |
+| [`03_calculate_dataset_categorizations.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/03_calculate_dataset_categorizations.py) | `_<CATEGORIZER>/<DATASET>.npz` | Eva scripts | Sample-level analysis |
 | `_<CATEGORIZER>/<DATASET>.npz` | Per-sample arrays | `eva_scripts/*.py` | Correlation studies |
 
-(source: `03_calculate_dataset_categorizations.py`, `metrics/computed/base_samples_categorizer.py`)
+(source: [`03_calculate_dataset_categorizations.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/03_calculate_dataset_categorizations.py), `metrics/computed/base_samples_categorizer.py`)
 
 ---
 
@@ -279,9 +279,9 @@ Some categorizers use precomputed pairwise distances:
 
 **Location:** `DATASETS_PATH/<dataset>_distances.csv.gzip.parquet`
 
-**Computed by:** `00_download_datasets.py` (when `DATASETS_COMPUTE_DISTANCES=True`)
+**Computed by:** [`00_download_datasets.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/00_download_datasets.py) (when `DATASETS_COMPUTE_DISTANCES=True`)
 
-(source: `misc/config.py::Config.DATASETS_COMPUTE_DISTANCES`, `misc/config.py::Config.DATASETS_DISTANCES_APPENDIX`)
+(source: [`misc/config.py::Config.DATASETS_COMPUTE_DISTANCES`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py), `misc/config.py::Config.DATASETS_DISTANCES_APPENDIX`)
 
 ---
 
@@ -298,7 +298,7 @@ if not self.config.OVERWRITE_EXISTING_METRIC_FILES and samples_categorization_pa
     return
 ```
 
-(source: `metrics/computed/base_samples_categorizer.py::Base_Samples_Categorizer.categorize_samples`, lines 53-55)
+(source: [`metrics/computed/base_samples_categorizer.py::Base_Samples_Categorizer.categorize_samples`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/computed/base_samples_categorizer.py#L53-L55), lines 53-55)
 
 ---
 

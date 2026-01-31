@@ -14,7 +14,7 @@ Each experiment has a unique identity defined by the combination of hyperparamet
 
 Additionally, each run has a unique `EXP_UNIQUE_ID` integer assigned during workload creation.
 
-(source: `01_create_workload.py::_generate_exp_param_grid`, lines 40-98)
+(source: [`01_create_workload.py::_generate_exp_param_grid`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/01_create_workload.py#L40-L98), lines 40-98)
 
 ### Fields
 
@@ -72,7 +72,7 @@ OGAL uses integer enums for all categorical values. This provides:
 | 60 | `SKACTIVEML_QBC` | scikit-activeml | Query by Committee |
 | ... | ... | ... | ... |
 
-(source: `resources/data_types.py::AL_STRATEGY`, lines 131-208)
+(source: [`resources/data_types.py::AL_STRATEGY`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py#L131-L208), lines 131-208)
 
 ### DATASET Enum
 
@@ -86,7 +86,7 @@ OGAL uses integer enums for all categorical values. This provides:
 
 **Note:** Datasets are dynamically extended from `resources/local_datasets.yaml` if additional local datasets are defined.
 
-(source: `datasets/__init__.py::DATASET`; `misc/config.py::Config._load_exp_yaml`, lines 358-367)
+(source: [`datasets/__init__.py::DATASET`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/datasets/__init__.py); `misc/config.py::Config._load_exp_yaml`, lines 358-367)
 
 ### LEARNER_MODEL Enum
 
@@ -100,7 +100,7 @@ OGAL uses integer enums for all categorical values. This provides:
 | 8 | `MLP` | `MLPClassifier` | `hidden_layer_sizes=(100,)` |
 | ... | ... | ... | ... |
 
-(source: `resources/data_types.py::LEARNER_MODEL`, lines 370-384; `learner_models_to_classes_mapping`, lines 389-467)
+(source: [`resources/data_types.py::LEARNER_MODEL`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py#L370-L384), lines 370-384; `learner_models_to_classes_mapping`, lines 389-467)
 
 ### COMPUTED_METRIC Enum
 
@@ -116,7 +116,7 @@ OGAL uses integer enums for all categorical values. This provides:
 | 6 | `DATASET_CATEGORIZATION` | Per-sample characteristics |
 | 7 | `TIMELAG_METRIC` | Time-lagged correlations |
 
-(source: `resources/data_types.py::COMPUTED_METRIC`, lines 491-499)
+(source: [`resources/data_types.py::COMPUTED_METRIC`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py#L491-L499), lines 491-499)
 
 ### SAMPLES_CATEGORIZER Enum
 
@@ -139,7 +139,7 @@ OGAL uses integer enums for all categorical values. This provides:
 | 13 | `CLOSENESS_TO_SAMPLES_OF_SAME_CLASS` | Same-class distance |
 | 14 | `CLOSENESS_TO_SAMPLES_OF_OTHER_CLASS` | Other-class distance |
 
-(source: `resources/data_types.py::SAMPLES_CATEGORIZER`, lines 512-528)
+(source: [`resources/data_types.py::SAMPLES_CATEGORIZER`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py#L512-L528), lines 512-528)
 
 ---
 
@@ -199,13 +199,13 @@ EXP_UNIQUE_ID,EXP_DATASET,EXP_STRATEGY,EXP_LEARNER_MODEL,EXP_BATCH_SIZE,EXP_RAND
 - `selected_indices.csv.xz` - Queried sample indices (list per cell)
 - `query_selection_time.csv.xz` - Query timing in seconds
 
-(source: `metrics/Standard_ML_Metrics.py`, `metrics/Selected_Indices.py`, `metrics/Timing_Metrics.py`)
+(source: [`metrics/Standard_ML_Metrics.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/Standard_ML_Metrics.py), `metrics/Selected_Indices.py`, `metrics/Timing_Metrics.py`)
 
 ### Derived Metric File
 
 **Location:** `OUTPUT_PATH/<EXP_TITLE>/<STRATEGY>/<DATASET>/<prefix>_<metric>.csv.xz`
 
-**Source:** `04_calculate_advanced_metrics.py`
+**Source:** [`04_calculate_advanced_metrics.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/04_calculate_advanced_metrics.py)
 
 | Column | Type | Description |
 |--------|------|-------------|
@@ -220,7 +220,7 @@ EXP_UNIQUE_ID,EXP_DATASET,EXP_STRATEGY,EXP_LEARNER_MODEL,EXP_BATCH_SIZE,EXP_RAND
 - `last_5_` - Mean of last 5 cycles
 - `final_value_` - Last cycle value
 
-(source: `metrics/computed/STANDARD_AUC.py`)
+(source: [`metrics/computed/STANDARD_AUC.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/computed/STANDARD_AUC.py))
 
 ### Completion Tracking Files
 
@@ -228,7 +228,7 @@ EXP_UNIQUE_ID,EXP_DATASET,EXP_STRATEGY,EXP_LEARNER_MODEL,EXP_BATCH_SIZE,EXP_RAND
 
 Same schema as `01_workload.csv` - rows are appended on successful completion.
 
-(source: `misc/config.py::Config.OVERALL_DONE_WORKLOAD_PATH`)
+(source: [`misc/config.py::Config.OVERALL_DONE_WORKLOAD_PATH`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py))
 
 **Failed workload:** `OUTPUT_PATH/<EXP_TITLE>/05_failed_workloads.csv`
 
@@ -237,13 +237,13 @@ Same schema as `01_workload.csv` - rows are appended on successful completion.
 | (All workload columns) | ... | Same as `01_workload.csv` |
 | `error` | str | Exception type that caused failure |
 
-(source: `misc/config.py::Config.OVERALL_FAILED_WORKLOAD_PATH`)
+(source: [`misc/config.py::Config.OVERALL_FAILED_WORKLOAD_PATH`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py))
 
 **OOM workload:** `OUTPUT_PATH/<EXP_TITLE>/05_started_oom_workloads.csv`
 
 Same schema as `01_workload.csv` - rows written before experiment starts, removed on success.
 
-(source: `misc/config.py::Config.OVERALL_STARTED_OOM_WORKLOAD_PATH`)
+(source: [`misc/config.py::Config.OVERALL_STARTED_OOM_WORKLOAD_PATH`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py))
 
 ---
 
@@ -281,7 +281,7 @@ Per-sample characteristics computed for each dataset.
 
 **Shape:** `(num_samples,)` or `(num_samples, num_features)` depending on categorizer
 
-(source: `metrics/computed/base_samples_categorizer.py`, lines 48-67)
+(source: [`metrics/computed/base_samples_categorizer.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/computed/base_samples_categorizer.py#L48-L67), lines 48-67)
 
 ---
 
@@ -305,7 +305,7 @@ for strategy in AL_STRATEGY:
     print(f"{strategy.value}: {strategy.name}")
 ```
 
-(source: `resources/data_types.py::AL_STRATEGY`)
+(source: [`resources/data_types.py::AL_STRATEGY`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py))
 
 ### Dataset Mapping
 
@@ -319,7 +319,7 @@ dataset_name = DATASET(3).name  # e.g., "Iris"
 dataset_id = DATASET["Iris"].value
 ```
 
-(source: `datasets/__init__.py::DATASET`)
+(source: [`datasets/__init__.py::DATASET`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/datasets/__init__.py))
 
 ### Learner Model Mapping
 
@@ -331,7 +331,7 @@ model_class, params = learner_models_to_classes_mapping[LEARNER_MODEL.RF]
 # model_class = RandomForestClassifier, params = {"n_jobs": cpu_count()}
 ```
 
-(source: `resources/data_types.py::learner_models_to_classes_mapping`, lines 389-467)
+(source: [`resources/data_types.py::learner_models_to_classes_mapping`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py#L389-L467), lines 389-467)
 
 ---
 

@@ -5,7 +5,7 @@ Why automatic categorizations:
 - Support downstream grouping, robustness, and similarity analyses at scale.
 
 Where computed:
-- Workload creation: `03_calculate_dataset_categorizations.py` generates workloads for categorizers and runs them.
+- Workload creation: [`03_calculate_dataset_categorizations.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/03_calculate_dataset_categorizations.py) generates workloads for categorizers and runs them.
 - Per-sample computation: `metrics/computed/base_samples_categorizer.py::Base_Samples_Categorizer.categorize_samples` saves NPZ files `_/<CATEGORIZER>/<DATASET>.npz`.
 - Per-batch aggregation: `metrics/computed/DATASET_CATEGORIZATION.py::DATASET_CATEGORIZATION.compute_metrics` loads NPZ categorizations and produces `<STRATEGY>/<DATASET>/<CATEGORIZER>.csv.xz`.
 
@@ -18,6 +18,6 @@ Downstream usage:
 - Advanced metrics (`04_calculate_advanced_metrics.py`) can be extended to incorporate categorizations for meta-features.
 
 Code pointers:
-- Workload + execution switch: `03_calculate_dataset_categorizations.py`, lines 27-59.
-- NPZ write path: `metrics/computed/base_samples_categorizer.py`, lines 48-67.
-- NPZ consumption and CSV generation: `metrics/computed/DATASET_CATEGORIZATION.py`, lines 17-73.
+- Workload + execution switch: [`03_calculate_dataset_categorizations.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/03_calculate_dataset_categorizations.py), lines 27-59.
+- NPZ write path: [`metrics/computed/base_samples_categorizer.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/computed/base_samples_categorizer.py), lines 48-67.
+- NPZ consumption and CSV generation: [`metrics/computed/DATASET_CATEGORIZATION.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/computed/DATASET_CATEGORIZATION.py), lines 17-73.

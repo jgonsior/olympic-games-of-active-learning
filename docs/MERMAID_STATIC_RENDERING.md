@@ -16,7 +16,7 @@ The original issue was that Mermaid diagrams were not displaying in GitHub Pages
    - Python script that scans markdown files for mermaid code blocks
    - Extracts diagram code and renders to SVG using `mmdc` (mermaid-cli)
    - Generates reproducible filenames with content-based hashing
-   - Saves SVG files to `docs/images/mermaid/`
+   - Saves SVG files to [`docs/images/mermaid/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/docs/images/mermaid)
 
 2. **Puppeteer Configuration** (`puppeteer-config.json`)
    - Configures Puppeteer to run in no-sandbox mode
