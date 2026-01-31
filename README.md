@@ -213,14 +213,14 @@ If you use OGAL in your research, please cite both the paper and the repository:
 ```bibtex
 @article{gonsior2025ogal,
   title={{Olympic Games of Active Learning: A Large-Scale Empirical Study of Active Learning Strategies}},
-  author={Gonsior, Julius},
+  author={Gonsior, Julius and Rie{\ss}, Tim and Reusch, Anja and Hartmann, Claudio and Thiele, Maik and Lehner, Wolfgang},
   journal={arXiv preprint arXiv:2506.03817},
   year={2025},
   url={https://arxiv.org/abs/2506.03817}
 }
 
 @software{ogal2025code,
-  author = {Gonsior, Julius},
+  author = {Gonsior, Julius and Rie{\ss}, Tim and Reusch, Anja and Hartmann, Claudio and Thiele, Maik and Lehner, Wolfgang},
   title = {{OGAL}: Olympic Games of Active Learning - Code Repository},
   year = {2025},
   publisher = {GitHub},
