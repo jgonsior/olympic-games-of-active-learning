@@ -46,6 +46,20 @@ See the **[Strategy Catalog](https://jgonsior.github.io/olympic-games-of-active-
 
 ---
 
+## Core Concepts
+
+Understand OGAL's internal architecture and design:
+
+| Concept | Description |
+|---------|-------------|
+| **[Architecture](https://jgonsior.github.io/olympic-games-of-active-learning/architecture/)** | System design, core abstractions, failure recovery, HPC parallelism |
+| **[Configuration](https://jgonsior.github.io/olympic-games-of-active-learning/configuration/)** | Config files, data flow, environment setup |
+| **[Data Model](https://jgonsior.github.io/olympic-games-of-active-learning/data_model/)** | Run identity, workload schema, result schemas, enum definitions |
+| **[Dataset Metadata](https://jgonsior.github.io/olympic-games-of-active-learning/dataset_metadata/)** | Auto-computed per-sample categorizations |
+| **[Utilities](https://jgonsior.github.io/olympic-games-of-active-learning/utilities/)** | Helper modules and scripts catalog |
+
+---
+
 ## Key Documentation Links
 
 | Document | Purpose |
