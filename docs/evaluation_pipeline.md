@@ -2,6 +2,11 @@
 
 This document provides a canonical step-by-step guide from raw experiment outputs to final plots/tables. This is the authoritative reference for reproducing and interpreting analysis results.
 
+!!! tip "Related Documentation"
+    - **[Eva Scripts Reference](eva_scripts.md)**: Detailed catalog of all evaluation scripts with I/O schemas
+    - **[Data Enrichment](data_enrichment.md)**: Protocol for adding new results to the shared dataset
+    - **[Results Format](results_format.md)**: Output paths, file formats, and schemas
+
 ## Pipeline Overview
 
 The evaluation pipeline transforms raw experiment results into interpretable outputs:

@@ -139,9 +139,9 @@ def check_workload_schema(results_path: Path) -> Tuple[ValidationResult, Optiona
         result.add_info("All required columns present")
 
     # Check identity columns
-    identity_cols_present = set(IDENTITY_COLUMNS) - set(df.columns)
-    if identity_cols_present:
-        result.add_error(f"Missing identity columns: {identity_cols_present}")
+    missing_identity_cols = set(IDENTITY_COLUMNS) - set(df.columns)
+    if missing_identity_cols:
+        result.add_error(f"Missing identity columns: {missing_identity_cols}")
     else:
         result.add_info("All identity columns present")
 

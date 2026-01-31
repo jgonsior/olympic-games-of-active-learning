@@ -500,7 +500,7 @@ Scenarios: `dataset_scenario`, `start_point_scenario`, `adv_start_scenario`, `mi
 
 ---
 
-### strateg_framework_correlation.py
+### strategy_framework_correlation.py
 
 **Purpose:** Analyzes correlation between implementations of the same strategy in different frameworks.
 

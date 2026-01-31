@@ -296,7 +296,7 @@ def load_metric_file(
     base_path = Path(output_path) / strategy / dataset
 
     # Try different file extensions
-    for ext in [".csv.xz", ".csv", ".csv.xz.parquet"]:
+    for ext in [".csv.xz", ".csv", ".parquet"]:
         filepath = base_path / f"{metric}{ext}"
         if filepath.exists():
             try:
