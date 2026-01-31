@@ -64,7 +64,7 @@ markdown_extensions:
       custom_fences:
         - name: mermaid
           class: mermaid
-          format: !!python/name:mermaid2.fence_mermaid_custom
+          format: !!python/name:mermaid2.fence_mermaid
   - pymdownx.tabbed:
       alternate_style: true
   - pymdownx.arithmatex:
@@ -76,7 +76,7 @@ markdown_extensions:
       permalink: true
 
 extra_javascript:
-  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - javascripts/mathjax.js
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 extra:

@@ -165,19 +165,19 @@ mkdocs serve
 
 ### Validating Mermaid Rendering
 
-Mermaid diagrams are configured using **Approach B: mkdocs-material's Mermaid support via extra_javascript** in [`mkdocs.yml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/mkdocs.yml):
+Mermaid diagrams are configured using the **mkdocs-mermaid2-plugin** in [`mkdocs.yml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/mkdocs.yml):
 
 1. **Check configuration**: Verify [`mkdocs.yml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/mkdocs.yml) has:
    ```yaml
+   plugins:
+     - mermaid2
+   
    markdown_extensions:
      - pymdownx.superfences:
          custom_fences:
            - name: mermaid
              class: mermaid
-             format: !!python/name:pymdownx.superfences.fence_div_format
-   
-   extra_javascript:
-     - https://unpkg.com/mermaid@10/dist/mermaid.min.js
+             format: !!python/name:mermaid2.fence_mermaid
    ```
 
 2. **Test locally**: Run `mkdocs serve` and check that diagrams render as flowcharts/graphs (not raw text)
