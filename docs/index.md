@@ -41,7 +41,9 @@ The framework evaluates:
 | [Pipeline](pipeline.md) | Step-by-step guide to the sequential experiment pipeline |
 | [HPC Setup](hpc.md) | **HPC Runbook** - Running experiments on HPC clusters with SLURM |
 | [Evaluation Pipeline](evaluation_pipeline.md) | **Canonical evaluation guide** - From raw outputs to paper figures |
+| [Eva Scripts](eva_scripts.md) | **Detailed catalog** - All evaluation scripts with I/O schemas |
 | [Results Format](results_format.md) | Output paths, file formats, and result schemas |
+| [Data Enrichment](data_enrichment.md) | **Protocol** - Adding new results safely and reproducibly |
 | [Configuration](configuration.md) | Shared configuration system explained |
 | [Reproducing the Paper](reproducing_paper.md) | Complete workflow to reproduce OPARA archive results |
 | [Scripts & Evaluation](scripts.md) | Utility scripts and evaluation analysis scripts |
