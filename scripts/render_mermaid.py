@@ -160,9 +160,9 @@ def main():
     print("Pre-rendering Mermaid Diagrams to SVG")
     print("=" * 70)
     
-    # Find all markdown files with mermaid diagrams
+    # Find all markdown files with mermaid diagrams (recursively)
     markdown_files = []
-    for md_file in docs_dir.glob("*.md"):
+    for md_file in docs_dir.glob("**/*.md"):
         content = md_file.read_text()
         if "```mermaid" in content:
             markdown_files.append(md_file)
