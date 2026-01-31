@@ -553,7 +553,7 @@ metrics = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/full_auc_accuracy.csv.
 
 # Load Parquet predictions
 predictions = pd.read_parquet("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/y_pred_train.csv.xz.parquet")
-```000000
+```
 
 #### 2. Load into OGAL for Analysis
 
@@ -573,7 +573,7 @@ metrics = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/full_auc_accuracy.csv.
 
 # Load Parquet predictions
 predictions = pd.read_parquet("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/y_pred_train.csv.xz.parquet")
-```111111
+```
 
 #### 3. Run Evaluation Scripts
 
@@ -593,7 +593,7 @@ metrics = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/full_auc_accuracy.csv.
 
 # Load Parquet predictions
 predictions = pd.read_parquet("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/y_pred_train.csv.xz.parquet")
-```222222
+```
 
 #### 4. Reproduce Paper Figures
 
@@ -613,7 +613,7 @@ metrics = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/full_auc_accuracy.csv.
 
 # Load Parquet predictions
 predictions = pd.read_parquet("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/y_pred_train.csv.xz.parquet")
-```333333
+```
 
 ### File Size Considerations
 

@@ -390,8 +390,8 @@ python -m eva_scripts.learning_curve --EXP_TITLE your_experiment
 #### Typical Invocation
 
 ```bash
-python -m eva_scripts.auc_metric_correlation --EXP_TITLE your_experiment
-```000000
+python -m eva_scripts.single_learning_curve_example --EXP_TITLE your_experiment
+```
 
 ---
 
@@ -424,8 +424,8 @@ Publication-ready PDFs with same names as input Parquets, in same directories.
 #### Typical Invocation
 
 ```bash
-python -m eva_scripts.auc_metric_correlation --EXP_TITLE your_experiment
-```111111
+python -m eva_scripts.redo_plots_for_paper --EXP_TITLE your_experiment
+```
 
 ---
 
@@ -438,8 +438,8 @@ python -m eva_scripts.auc_metric_correlation --EXP_TITLE your_experiment
 #### Typical Invocation
 
 ```bash
-python -m eva_scripts.auc_metric_correlation --EXP_TITLE your_experiment
-```222222
+python -m eva_scripts.merge_multiple_plots_single_page --EXP_TITLE your_experiment
+```
 
 ---
 
@@ -524,8 +524,22 @@ Scenarios: `dataset_scenario`, `start_point_scenario`, `adv_start_scenario`, `mi
 The eva_scripts form a dependency chain. Run them in this order:
 
 ```bash
-python -m eva_scripts.auc_metric_correlation --EXP_TITLE your_experiment
-```333333
+# 1. Basic metrics correlation
+python -m eva_scripts.basic_metrics_correlation --EXP_TITLE your_experiment
+
+# 2. Calculate leaderboard rankings
+python -m eva_scripts.calculate_leaderboard_rankings --EXP_TITLE your_experiment
+
+# 3. Final leaderboard
+python -m eva_scripts.final_leaderboard --EXP_TITLE your_experiment
+
+# 4. (Optional) Single hyperparameter analysis
+python -m eva_scripts.single_hyperparameter_evaluation_metric --EXP_TITLE your_experiment
+python -m eva_scripts.single_hyperparameter_evaluation_indices --EXP_TITLE your_experiment
+
+# 5. (Optional) Publication-ready plots
+python -m eva_scripts.redo_plots_for_paper --EXP_TITLE your_experiment
+```
 
 ---
 
@@ -558,8 +572,9 @@ Most eva_scripts rely on time series Parquet files in `OUTPUT_PATH/<EXP_TITLE>/_
 If a script reports missing `.parquet` files, the time series haven't been created yet:
 
 ```bash
-python -m eva_scripts.auc_metric_correlation --EXP_TITLE your_experiment
-```444444
+# Generate time series from raw CSVs
+python -m eva_scripts.learning_curve --EXP_TITLE your_experiment
+```
 
 ### Memory Errors
 
