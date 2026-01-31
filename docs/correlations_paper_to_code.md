@@ -22,28 +22,42 @@ Each correlation type answers a fundamentally different research question and us
 
 ## Summary Table
 
-| Paper Term | Mathematical Definition | What It Measures | OGAL Input Artifact | OGAL Output Artifact | Code Pointer |
-|------------|-------------------------|------------------|---------------------|----------------------|--------------|
-| **Metric-based correlation (Pearson)** | Pearson's $r$ on paired metric vectors | Linear relationship between performance metrics across configurations | Time series parquets (`_TS/*.parquet`) with metric values per configuration | Correlation matrices (`plots/AUC/*.parquet`, `plots/basic_metrics/*.parquet`) | [`eva_scripts/workload_reduction.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/workload_reduction.py) (scipy.stats.pearsonr) |
-| **Queried samples-based correlation (Jaccard)** | Jaccard similarity $J = \frac{\|Q_1 \cap Q_2\|}{\|Q_1 \cup Q_2\|}$ aggregated across AL iterations | Sample selection agreement between strategies | `selected_indices.parquet` with queried sample IDs per iteration | Jaccard similarity heatmaps (`plots/single_hyperparameter/*/single_indice_*.parquet`) | [`eva_scripts/single_hyperparameter_evaluation_indices.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/single_hyperparameter_evaluation_indices.py#L260) |
-| **Leaderboard ranking invariance (Kendall tau-b)** | Kendall's $\tau_b$ on strategy ranking vectors | Agreement in strategy ordering between evaluation approaches | Rank matrices from leaderboards (`plots/final_leaderboard/rank_*.parquet`) | Kendall tau values and bootstrap distributions | [`eva_scripts/leaderboard_c6_rebuttal.py::kendall_tau_b_from_orders`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/leaderboard_c6_rebuttal.py#L93-L100) |
+| Paper Term (Section) | Mathematical Core | What It Measures | Input: Vectors/Matrices | Output: Heatmap Color | Code Pointer |
+|----------------------|-------------------|------------------|-------------------------|----------------------|--------------|
+| **Metric-based heatmaps** (IV-B1) | Pearson $r$ on result vectors $V_b(M)$ | How metric outcomes change when varying a single hyperparameter | Vectors of aggregated metric values per hyperparameter combination | **Blue** heatmap showing $r$ correlation matrix | [`eva_scripts/workload_reduction.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/workload_reduction.py), [`eva_scripts/basic_metrics_correlation.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/basic_metrics_correlation.py) |
+| **Queried samples-based heatmaps** (IV-B2) | Jaccard $J$ on query sets $\widehat{Q}$ | Agreement in which samples are selected for labeling | Vectors of concatenated queried sample sets $\widehat{Q} = \bigcup Q^i$ | **Green** heatmap showing $1 - \bar{J}$ (normalized distance) | [`eva_scripts/single_hyperparameter_evaluation_indices.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/single_hyperparameter_evaluation_indices.py#L260) |
+| **Leaderboard ranking invariance** (IV-B3) | Kendall $\tau_b$ on final ranking vectors $FR$ | Agreement in strategy orderings across datasets | Leaderboard cells $LC$ aggregated to final rankings $FR$ | **Orange** heatmap showing $\tau_b$ rank correlation | [`eva_scripts/leaderboard_c6_rebuttal.py::kendall_tau_b_from_orders`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/leaderboard_c6_rebuttal.py#L93-L100) |
 
 ---
 
 ## 1. Metric-based Correlation (Pearson)
 
+**Paper reference:** Section IV-B1 "Metric-based heatmaps"
+
 ### Paper Definition
 
-Metric-based correlation quantifies the linear relationship between two performance metrics (e.g., accuracy vs. F1-score, or full AUC vs. final value). Given two metric vectors $\mathbf{X} = (x_1, x_2, \ldots, x_n)$ and $\mathbf{Y} = (y_1, y_2, \ldots, y_n)$ measured across $n$ configurations, Pearson's correlation coefficient is:
+Metric-based correlation quantifies how similar the outcomes of two AL experiments are when only a single hyperparameter is changed. The paper uses **Pearson correlation coefficient $r$** to compare metric result vectors.
+
+For a given hyperparameter (e.g., batch size $\mathbb{B} = [b_1, \ldots, b_K]$), construct result vectors $V_{b_i}$ for each hyperparameter value $b_i$. Each vector contains aggregated metric values $M$ across all other fixed hyperparameters:
 
 $$
-r = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum_{i=1}^{n} (x_i - \bar{x})^2} \sqrt{\sum_{i=1}^{n} (y_i - \bar{y})^2}}
+V_{b_1}(M) = \begin{bmatrix} M_{b_1 1} \\ M_{b_1 2} \\ \vdots \end{bmatrix}, \quad 
+V_{b_2}(M) = \begin{bmatrix} M_{b_2 1} \\ M_{b_2 2} \\ \vdots \end{bmatrix}
 $$
 
-where $\bar{x}$ and $\bar{y}$ are the sample means. The coefficient $r \in [-1, 1]$ indicates:
-- $r = 1$: perfect positive linear correlation
-- $r = 0$: no linear correlation
-- $r = -1$: perfect negative linear correlation
+where $M_{b_i j}$ denotes the metric result for the $j$-th hyperparameter combination with hyperparameter value $b_i$.
+
+**Heatmap construction:** For all pairs of hyperparameter values, compute the Pearson correlation matrix:
+
+$$
+\begin{bmatrix}
+r(V_{b_1}(M), V_{b_1}(M)) & \cdots & r(V_{b_1}(M), V_{b_K}(M)) \\
+\vdots & \ddots & \vdots \\
+r(V_{b_K}(M), V_{b_1}(M)) & \cdots & r(V_{b_K}(M), V_{b_K}(M))
+\end{bmatrix}
+$$
+
+**Interpretation:** High correlation values (close to 1) indicate that changing the hyperparameter has minimal effect on AL outcomes. Low values indicate strong influence of the hyperparameter.
 
 ### Visual Aid
 
@@ -89,36 +103,59 @@ python -m eva_scripts.workload_reduction --EXP_TITLE your_experiment
 
 ## 2. Queried Samples-based Correlation (Jaccard Similarity)
 
+**Paper reference:** Section IV-B2 "Queried samples-based heatmaps"
+
 ### Paper Definition
 
-Queried samples-based correlation measures the agreement between two active learning strategies in terms of which samples they select for labeling. For two strategies $S_1$ and $S_2$ at iteration $t$, let $Q_1^{(t)}$ and $Q_2^{(t)}$ be the sets of sample indices queried by each strategy. The Jaccard similarity coefficient at iteration $t$ is:
+Queried samples-based correlation focuses on which samples are selected for labeling, rather than the metric results. It uses the **Jaccard index $J$** to measure similarity between queried sample sets.
+
+**Step 1: Construct query vectors.** For each hyperparameter value $b_i$, create a vector of concatenated queried sample sets across all AL cycles ($c$ iterations):
 
 $$
-J(Q_1^{(t)}, Q_2^{(t)}) = \frac{|Q_1^{(t)} \cap Q_2^{(t)}|}{|Q_1^{(t)} \cup Q_2^{(t)}|}
+V_{b_1}(Q) = \begin{bmatrix} 
+\widehat{Q_{b_1 1}} = \bigcup_{i=0}^{c} Q_{b_1 1}^i \\
+\widehat{Q_{b_1 2}} = \bigcup_{i=0}^{c} Q_{b_1 2}^i \\
+\vdots
+\end{bmatrix}, \quad
+V_{b_2}(Q) = \begin{bmatrix}
+\widehat{Q_{b_2 1}} = \bigcup_{i=0}^{c} Q_{b_2 1}^i \\
+\widehat{Q_{b_2 2}} = \bigcup_{i=0}^{c} Q_{b_2 2}^i \\
+\vdots
+\end{bmatrix}
 $$
 
-where:
-- $|Q_1^{(t)} \cap Q_2^{(t)}|$ is the number of samples selected by both strategies
-- $|Q_1^{(t)} \cup Q_2^{(t)}|$ is the total number of unique samples selected by either strategy
-- $J \in [0, 1]$, where $J = 1$ means identical sample selection, $J = 0$ means no overlap
+where $Q^i$ represents the set of samples queried at AL iteration $i$, and $\widehat{Q}$ is the union across all iterations.
 
-**Aggregation across iterations:** To obtain a single similarity score across all $T$ active learning iterations, OGAL computes the mean Jaccard similarity:
+**Step 2: Compute pairwise Jaccard similarities.** For a pair of hyperparameter values $b_1$ and $b_2$, compute the Jaccard vector:
 
 $$
-J_{\text{avg}} = \frac{1}{T} \sum_{t=1}^{T} J(Q_1^{(t)}, Q_2^{(t)})
+V_{J_{b_1 b_2}} = \begin{bmatrix}
+J(\widehat{Q_{b_1 1}}, \widehat{Q_{b_2 1}}) \\
+J(\widehat{Q_{b_1 2}}, \widehat{Q_{b_2 2}}) \\
+\vdots
+\end{bmatrix}
 $$
 
-**Note on terminology:** In OGAL code, Jaccard similarity is sometimes referred to as a "distance" when converted via $d = 1 - J$, but the canonical paper definition uses similarity directly.
+**Step 3: Aggregate to heatmap.** Sum the Jaccard vector and divide by its length, then subtract from 1 for consistency with metric-based heatmaps (so 1 = identical):
+
+$$
+\begin{bmatrix}
+1 - \frac{\sum_{j \in V_{J_{b_1 b_1}}} j}{|V_{J_{b_1 b_1}}|} = 1 & \cdots & 1 - \frac{\sum_{j \in V_{J_{b_1 b_K}}} j}{|V_{J_{b_1 b_K}}|} \\
+\vdots & \ddots & \vdots \\
+1 - \frac{\sum_{j \in V_{J_{b_K b_1}}} j}{|V_{J_{b_K b_1}}|} & \cdots & 1 - \frac{\sum_{j \in V_{J_{b_K b_K}}} j}{|V_{J_{b_K b_K}}|} = 1
+\end{bmatrix}
+$$
+
+**Note:** The paper uses **green color** for queried samples-based heatmaps. The Jaccard index proved more robust than rank correlation measures (Kendall tau, Spearman) due to high fluctuations in AL cycles.
 
 ### Visual Aid
 
 ```mermaid
 flowchart TD
-    A[AL Iteration 1<br/>Q1={1,3,5}, Q2={1,2,5}] --> D[Jaccard per iteration]
-    B[AL Iteration 2<br/>Q1={2,4,6}, Q2={2,4,7}] --> D
-    C[AL Iteration T<br/>Q1={...}, Q2={...}] --> D
-    D --> E[Mean Jaccard<br/>Javg = mean of all J values]
-    E --> F[Similarity ∈ [0, 1]]
+    A[AL Iteration 0..c<br/>Queried sets Q] --> B[Concatenate per config<br/>Q̂ = ⋃ Q^i]
+    B --> C[Pairwise Jaccard<br/>J for each config pair]
+    C --> D[Aggregate & normalize<br/>1 - mean similarity]
+    D --> E[Green heatmap<br/>1 = identical queries]
 ```
 
 ### Code Mapping
@@ -157,45 +194,52 @@ python -m eva_scripts.single_hyperparameter_evaluation_indices --EXP_TITLE your_
 
 ## 3. Leaderboard Ranking Invariance (Kendall tau-b)
 
+**Paper reference:** Section IV-B3 "Leaderboard ranking invariance-based heatmaps"
+
 ### Paper Definition
 
-Leaderboard ranking invariance measures whether different evaluation metrics (e.g., full AUC vs. final value) produce the same strategy rankings. Given a leaderboard rank matrix $R \in \mathbb{R}^{D \times S}$ where $D$ is the number of datasets and $S$ is the number of strategies, each cell $R_{d,s}$ contains the rank of strategy $s$ on dataset $d$.
+Leaderboard ranking invariance compares the rankings of AL strategies under different hyperparameter values. This approach focuses on whether different evaluation choices (e.g., metrics, batch sizes) produce consistent strategy orderings.
 
-**Step 1: Compute final ranking vector.** For each strategy, compute its mean rank across all datasets:
+**Step 1: Construct leaderboard.** Fix all hyperparameters except one. For each strategy $\mathcal{S}_i$ and dataset $D_j$, compute the leaderboard cell average over all configurations:
 
 $$
-\text{FR}_s = \frac{1}{D} \sum_{d=1}^{D} R_{d,s}
+LC_{\mathcal{S}_i D_j} = \frac{\sum_{M_k \in V_{D_i \mathcal{S}_j}(M)} (M_k)}{|V_{D_i \mathcal{S}_j}|}
 $$
 
-Sort strategies by $\text{FR}_s$ (ascending) to obtain a **ranking vector** (ordered list of strategy names).
+This creates a leaderboard matrix with rows = datasets, columns = strategies, cells = average metric values.
 
-**Step 2: Compute Kendall tau-b.** Given two ranking vectors from different metrics, Kendall's tau-b measures rank correlation by counting concordant and discordant pairs:
+**Step 2: Compute final ranking vector.** For each strategy, average its performance across all datasets:
+
+$$
+FR = \frac{\sum_{D_i \in \mathbb{D}} LC_{\mathcal{S}_1 D_i}}{|\mathbb{D}|}
+$$
+
+Sort strategies by $FR$ to obtain an ordered **ranking vector** (list of strategy names in order of performance).
+
+**Step 3: Correlation between rankings.** To compare two leaderboards (e.g., from different hyperparameter values), compute the **two-sided Kendall's tau-b rank correlation test**:
 
 $$
 \tau_b = \frac{n_c - n_d}{\sqrt{(n_0 - n_1)(n_0 - n_2)}}
 $$
 
-where:
-- $n_c$ = number of concordant pairs (same relative order in both rankings)
-- $n_d$ = number of discordant pairs (opposite relative order)
-- $n_0 = \frac{n(n-1)}{2}$ (total pairs)
-- $n_1, n_2$ adjust for ties
+where $n_c$ = concordant pairs, $n_d$ = discordant pairs, $n_0 = \frac{n(n-1)}{2}$, and $n_1, n_2$ adjust for ties.
 
-The coefficient $\tau_b \in [-1, 1]$ indicates:
-- $\tau_b = 1$: perfect agreement (identical rankings)
-- $\tau_b = 0$: no agreement
-- $\tau_b = -1$: perfect disagreement (reversed rankings)
+**Important notes from the paper:**
+- Uses **ranks** instead of absolute metric values to handle cross-dataset comparability
+- **Orange color** for leaderboard ranking invariance heatmaps
+- Interpolates missing results with 0 (worst outcome) to handle sparse grids
+- Kendall tau-b is robust to outliers and ranking distribution differences
 
 ### Visual Aid
 
 ```mermaid
 flowchart TD
-    A[Leaderboard Matrix R<br/>rows=datasets, cols=strategies] --> B[Aggregate to ranking vector FR<br/>mean rank per strategy]
-    B --> C1[Ranking Vector 1<br/>from full AUC]
-    B --> C2[Ranking Vector 2<br/>from final value]
-    C1 --> D[Kendall tau-b correlation]
+    A[Leaderboard cells LC<br/>per strategy × dataset] --> B[Final ranking FR<br/>mean across datasets]
+    B --> C1[Ranking vector 1<br/>hyperparameter value b₁]
+    B --> C2[Ranking vector 2<br/>hyperparameter value b₂]
+    C1 --> D[Kendall tau-b test]
     C2 --> D
-    D --> E[Rank agreement τb ∈ [-1, 1]]
+    D --> E[Orange heatmap<br/>τb ∈ [-1, 1]]
 ```
 
 ### Code Mapping
