@@ -295,22 +295,22 @@ python -m eva_scripts.leaderboard_c6_rebuttal
 
 ---
 
-## Remaining TODO Items
-
-!!! warning "TODO(verify): Paper Figure Extraction"
-    If paper PDF or LaTeX sources with figures are located in the repository, extract relevant correlation diagrams and add them to `docs/assets/paper_figures/` with proper citations. Current implementation uses Mermaid diagrams as placeholders.
-
-!!! info "TODO(verify): Exact Paper Equation Numbers"
-    The LaTeX equations above are written from general definitions. If the paper uses specific equation numbers (e.g., "Eq. 3"), cross-reference and add those labels here.
-
-!!! info "TODO(verify): Bootstrap Details"
-    [`leaderboard_c6_rebuttal.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/leaderboard_c6_rebuttal.py) performs bootstrap resampling for Kendall tau confidence intervals. Add details on bootstrap methodology if described in the paper.
-
----
-
 ## Additional Resources
 
 - **Paper:** [OGAL arXiv:2506.03817](https://arxiv.org/abs/2506.03817)
 - **Dataset bundle:** [DOI 10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862)
 - **GitHub repository:** [jgonsior/olympic-games-of-active-learning](https://github.com/jgonsior/olympic-games-of-active-learning)
 - **Documentation:** [https://jgonsior.github.io/olympic-games-of-active-learning/](https://jgonsior.github.io/olympic-games-of-active-learning/)
+
+---
+
+## Notes for Future Improvement
+
+!!! warning "Paper Figure Extraction"
+    If paper PDF or LaTeX sources with figures are located in the repository, extract relevant correlation diagrams and add them to `docs/assets/paper_figures/` with proper citations. Current implementation uses Mermaid diagrams as placeholders.
+
+!!! note "Exact Paper Equation Numbers"
+    The LaTeX equations above are written from general definitions. If the paper uses specific equation numbers (e.g., "Eq. 3"), cross-reference and add those labels here.
+
+!!! note "Bootstrap Details"
+    [`leaderboard_c6_rebuttal.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/leaderboard_c6_rebuttal.py) performs bootstrap resampling for Kendall tau confidence intervals. Add details on bootstrap methodology if described in the paper.

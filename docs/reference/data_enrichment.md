@@ -138,7 +138,8 @@ This will report any overlapping `EXP_UNIQUE_ID` values or duplicate hyperparame
 After validation, generate derived artifacts:
 
 ```bash
-# Set EXP_TITLE to your new results directory name
+# Set paths
+export OGAL_OUTPUT=/path/to/results
 export NEW_EXP_TITLE="your_new_experiment"
 
 # Step 3: Calculate dataset categorizations
@@ -157,6 +158,9 @@ python 04_calculate_advanced_metrics.py \
 python 05_analyze_partially_run_workload.py --EXP_TITLE $NEW_EXP_TITLE
 ```
 
+!!! tip "Sanity check"
+    After each step, verify output files exist in `${OGAL_OUTPUT}/${NEW_EXP_TITLE}/`.
+
 ### Step 3.5: Merge Into Combined Dataset
 
 **Option A: Separate Output Roots (Recommended)**
@@ -164,7 +168,7 @@ python 05_analyze_partially_run_workload.py --EXP_TITLE $NEW_EXP_TITLE
 Keep results in separate directories with distinct `EXP_TITLE`:
 
 ```
-OUTPUT_PATH/
+${OGAL_OUTPUT}/
 ├── original_experiment/     # Existing results
 │   └── ...
 ├── new_experiment/          # Your new results
@@ -185,7 +189,7 @@ Use the merge script to combine workloads:
 ```bash
 python -m scripts.merge_two_workloads \
     --EXP_TITLE original_experiment \
-    --SECOND_MERGE_PATH /path/to/new_experiment
+    --SECOND_MERGE_PATH ${OGAL_OUTPUT}/new_experiment
 ```
 
 (source: [`scripts/merge_two_workloads.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/merge_two_workloads.py))
