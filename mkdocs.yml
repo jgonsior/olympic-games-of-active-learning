@@ -33,20 +33,20 @@ nav:
   - Home: index.md
   - Pipeline: pipeline.md
   - HPC Setup: hpc.md
-  - Concepts:
-    - Architecture: architecture.md
-    - Configuration: configuration.md
-    - Data Model: data_model.md
-    - Dataset Metadata: dataset_metadata.md
-    - Utilities: utilities.md
   - Evaluation Pipeline: evaluation_pipeline.md
   - Eva Scripts: eva_scripts.md
   - Strategy Catalog: strategies.md
   - Results Format: results_format.md
   - Data Enrichment: data_enrichment.md
+  - Dataset Value: dataset_value.md
+  - Research Opportunities: research_opportunities.md
+  - Concepts:
+    - Architecture Rationale: concepts/architecture_rationale.md
+    - Configuration Spine: concepts/configuration_spine.md
+    - Data Model & Enums: concepts/data_model_and_enums.md
+    - Dataset Metadata & Auto Enums: concepts/dataset_metadata_and_auto_enums.md
+    - Utilities & Misc: concepts/utilities_and_misc.md
   - Frameworks: frameworks.md
-  - Reproducing the Paper: reproducing_paper.md
-  - Scripts & Evaluation: scripts.md
   - Research Reuse: research_reuse.md
   - Contributing: contributing.md
 
