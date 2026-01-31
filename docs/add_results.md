@@ -43,14 +43,20 @@ For full pipeline details, see [Runbook](reference/runbook.md).
 Before sharing or merging, validate your results:
 
 ```bash
+# Define OGAL_OUTPUT (or use your configured OUTPUT_PATH)
+export OGAL_OUTPUT=/path/to/results
+
 # Check schema compliance
-python scripts/validate_results_schema.py --results_path OUTPUT_PATH/my_new_experiment
+python scripts/validate_results_schema.py --results_path ${OGAL_OUTPUT}/my_new_experiment
 
 # Check for duplicates against existing data
 python scripts/validate_results_schema.py \
-    --results_path OUTPUT_PATH/my_new_experiment \
-    --compare_with OUTPUT_PATH/full_exp_jan
+    --results_path ${OGAL_OUTPUT}/my_new_experiment \
+    --compare_with ${OGAL_OUTPUT}/full_exp_jan
 ```
+
+!!! tip "Sanity check"
+    If validation fails with "missing columns", see [Results Schema](reference/results_schema.md) for required fields.
 
 ### Required Files
 
@@ -101,8 +107,11 @@ python -m eva_scripts.final_leaderboard --EXP_TITLE my_new_experiment
 ```bash
 python -m scripts.merge_two_workloads \
     --EXP_TITLE full_exp_jan \
-    --SECOND_MERGE_PATH OUTPUT_PATH/my_new_experiment
+    --SECOND_MERGE_PATH ${OGAL_OUTPUT}/my_new_experiment
 ```
+
+!!! tip "Sanity check"
+    After merging, verify `05_done_workload.csv` contains entries from both experiments.
 
 ---
 

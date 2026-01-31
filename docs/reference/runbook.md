@@ -18,34 +18,65 @@ This is the canonical guide for running OGAL experiments, from local sanity test
 
 === "Local (single experiment)"
 
+    **Goal:** Verify your setup by running a minimal test.
+
+    **Run:**
+
     ```bash
     # 1. Setup environment
     conda create --name al_olympics_env --file conda-linux-64.lock
     conda activate al_olympics_env
     poetry install
 
-    # 2. Create a minimal test workload
+    # 2. Define output path (reused in all commands)
+    export OGAL_OUTPUT=/path/to/results
+
+    # 3. Create a minimal test workload
     python 01_create_workload.py --EXP_TITLE smoke_test
 
-    # 3. Run one experiment
+    # 4. Run one experiment
     python 02_run_experiment.py --EXP_TITLE smoke_test --WORKER_INDEX 0
 
-    # 4. Verify output
-    ls OUTPUT_PATH/smoke_test/
+    # 5. Verify output
+    ls ${OGAL_OUTPUT}/smoke_test/
     ```
 
+    **You should see:**
+
+    | Artifact | Location |
+    |----------|----------|
+    | Completed log | `${OGAL_OUTPUT}/smoke_test/05_done_workload.csv` |
+    | Metric files | `${OGAL_OUTPUT}/smoke_test/<STRATEGY>/<DATASET>/accuracy.csv` |
+
+    !!! tip "Sanity check"
+        If `05_done_workload.csv` is empty, check `05_failed_workloads.csv` for errors.
+
 === "HPC (SLURM array)"
+
+    **Goal:** Submit experiments to a SLURM cluster.
+
+    **Run:**
 
     ```bash
     # 1. Create workload (generates SLURM script)
     python 01_create_workload.py --EXP_TITLE full_run
 
     # 2. Submit SLURM job array
-    sbatch OUTPUT_PATH/full_run/02_slurm.slurm
+    sbatch ${OGAL_OUTPUT}/full_run/02_slurm.slurm
 
     # 3. Monitor progress
-    watch -n 60 'wc -l OUTPUT_PATH/full_run/05_done_workload.csv'
+    watch -n 60 'wc -l ${OGAL_OUTPUT}/full_run/05_done_workload.csv'
     ```
+
+    **You should see:**
+
+    | Artifact | Description |
+    |----------|-------------|
+    | Growing `05_done_workload.csv` | Line count increases as jobs complete |
+    | SLURM logs | Job output in your configured log directory |
+
+    !!! tip "Sanity check"
+        Run `squeue -u $USER` to verify jobs are queued or running.
 
 ---
 
@@ -163,14 +194,17 @@ Executes a single AL experiment based on the `WORKER_INDEX` parameter.
 
     ```bash
     # Use the generated parallel runner
-    python OUTPUT_PATH/my_experiment/02b_run_bash_parallel.py
+    python ${OGAL_OUTPUT}/my_experiment/02b_run_bash_parallel.py
     ```
 
 === "HPC (SLURM)"
 
     ```bash
-    sbatch OUTPUT_PATH/my_experiment/02_slurm.slurm
+    sbatch ${OGAL_OUTPUT}/my_experiment/02_slurm.slurm
     ```
+
+!!! tip "Sanity check"
+    After running, check `05_done_workload.csv` for completed experiments and `05_failed_workloads.csv` for any errors.
 
 ??? info "How WORKER_INDEX Works"
     - `WORKER_INDEX` is **0-indexed**
@@ -217,7 +251,7 @@ The array size is computed from workload length:
 
 ```bash
 # Get workload length
-WORKLOAD_LEN=$(wc -l < OUTPUT_PATH/experiment/01_workload.csv)
+WORKLOAD_LEN=$(wc -l < ${OGAL_OUTPUT}/experiment/01_workload.csv)
 WORKLOAD_LEN=$((WORKLOAD_LEN - 1))  # Subtract header
 
 # Calculate array end (with batching)
@@ -256,8 +290,11 @@ When you re-run `01_create_workload.py`, it automatically excludes completed exp
 python 01_create_workload.py --EXP_TITLE my_experiment
 
 # Resubmit to finish remaining
-sbatch OUTPUT_PATH/my_experiment/02_slurm.slurm
+sbatch ${OGAL_OUTPUT}/my_experiment/02_slurm.slurm
 ```
+
+!!! tip "Sanity check"
+    Compare `wc -l 01_workload.csv` before and after regeneration. The new count should be smaller.
 
 ### Rerun Failed Experiments
 

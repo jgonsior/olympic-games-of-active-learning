@@ -85,26 +85,53 @@ The paper ([arXiv:2506.03817](https://arxiv.org/abs/2506.03817)) defines an AL e
 
 ## Quick Start: Analyze Without Rerunning
 
+**Goal:** Generate a strategy leaderboard from pre-computed results—no experiments needed.
+
+**Inputs:**
+
+| Input | Source |
+|-------|--------|
+| Archived results (ZIP) | [DOI:10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862) |
+
+??? note "Convenience link (may change)"
+    Direct download (not guaranteed stable):
+    ```
+    https://opara.zih.tu-dresden.de/xmlui/bitstream/handle/123456789/5678/full_exp_jan.zip
+    ```
+
+**Run:**
+
 ```bash
-# 1. Download archived results
-wget https://opara.zih.tu-dresden.de/xmlui/bitstream/handle/123456789/5678/full_exp_jan.zip
+# 1. Download and extract archived results
+wget <URL_FROM_DOI_LANDING_PAGE>
 unzip full_exp_jan.zip -d /path/to/results/
 
-# 2. Setup OGAL
+# 2. Setup OGAL environment
 conda create --name ogal --file conda-linux-64.lock
 conda activate ogal
 poetry install
 
-# 3. Configure paths
+# 3. Configure paths (define OGAL_OUTPUT once)
+export OGAL_OUTPUT=/path/to/results
 cat > .server_access_credentials.cfg << EOF
 [LOCAL]
-OUTPUT_PATH=/path/to/results
+OUTPUT_PATH=${OGAL_OUTPUT}
 DATASETS_PATH=/path/to/datasets
 EOF
 
 # 4. Generate leaderboard from archived data
 python -m eva_scripts.final_leaderboard --EXP_TITLE full_exp_jan
 ```
+
+**You should see:**
+
+| Artifact | Location |
+|----------|----------|
+| Leaderboard heatmap | `plots/final_leaderboard/rank_sparse_zero_full_auc_weighted_f1-score.jpg` |
+| Leaderboard data | `plots/final_leaderboard/rank_sparse_zero_full_auc_weighted_f1-score.parquet` |
+
+!!! tip "Sanity check"
+    If the leaderboard files do not appear, see [Reference → Eva Scripts Catalog → final_leaderboard.py](reference/eva_scripts_catalog.md#final_leaderboardpy).
 
 See [Analyze the Dataset](analyze_dataset.md) for research starter analyses.
 

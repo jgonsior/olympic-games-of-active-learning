@@ -322,18 +322,22 @@ Used for large prediction arrays:
 
 ```python
 import pandas as pd
+import os
+
+# Define output path once
+OGAL_OUTPUT = os.environ.get("OGAL_OUTPUT", "/path/to/results")
 
 # Load workload
-workload = pd.read_csv("OUTPUT_PATH/test/01_workload.csv")
+workload = pd.read_csv(f"{OGAL_OUTPUT}/test/01_workload.csv")
 
 # Load metric results
-accuracy = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/accuracy.csv")
+accuracy = pd.read_csv(f"{OGAL_OUTPUT}/test/ALIPY_RANDOM/Iris/accuracy.csv")
 
 # Load compressed CSV
-metrics = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/full_auc_accuracy.csv.xz")
+metrics = pd.read_csv(f"{OGAL_OUTPUT}/test/ALIPY_RANDOM/Iris/full_auc_accuracy.csv.xz")
 
 # Load Parquet predictions
-predictions = pd.read_parquet("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/y_pred_train.csv.xz.parquet")
+predictions = pd.read_parquet(f"{OGAL_OUTPUT}/test/ALIPY_RANDOM/Iris/y_pred_train.csv.xz.parquet")
 ```
 
 ---
@@ -398,12 +402,15 @@ aggregated = df.groupby(['EXP_DATASET', 'EXP_STRATEGY', 'EXP_LEARNER_MODEL'])['m
 ```python
 import pandas as pd
 from pathlib import Path
+import os
+
+OGAL_OUTPUT = os.environ.get("OGAL_OUTPUT", "/path/to/results")
 
 # Load completed workload
-done = pd.read_csv("OUTPUT_PATH/test/05_done_workload.csv")
+done = pd.read_csv(f"{OGAL_OUTPUT}/test/05_done_workload.csv")
 
 # Load a metric file
-accuracy = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/accuracy.csv")
+accuracy = pd.read_csv(f"{OGAL_OUTPUT}/test/ALIPY_RANDOM/Iris/accuracy.csv")
 
 # Join on EXP_UNIQUE_ID
 merged = done.merge(accuracy, on="EXP_UNIQUE_ID")
@@ -427,9 +434,13 @@ summary = merged.groupby("EXP_STRATEGY")["final_accuracy"].agg(["mean", "std"])
 ### Checking for Missing Results
 
 ```python
+import os
+
+OGAL_OUTPUT = os.environ.get("OGAL_OUTPUT", "/path/to/results")
+
 # Compare expected vs completed
-workload = pd.read_csv("OUTPUT_PATH/test/01_workload.csv")
-done = pd.read_csv("OUTPUT_PATH/test/05_done_workload.csv")
+workload = pd.read_csv(f"{OGAL_OUTPUT}/test/01_workload.csv")
+done = pd.read_csv(f"{OGAL_OUTPUT}/test/05_done_workload.csv")
 
 expected_ids = set(workload["EXP_UNIQUE_ID"])
 completed_ids = set(done["EXP_UNIQUE_ID"])
@@ -443,8 +454,11 @@ print(f"Missing: {len(missing_ids)} / {len(expected_ids)}")
 ```python
 from pathlib import Path
 import pandas as pd
+import os
 
-results_dir = Path("OUTPUT_PATH/test")
+OGAL_OUTPUT = os.environ.get("OGAL_OUTPUT", "/path/to/results")
+
+results_dir = Path(f"{OGAL_OUTPUT}/test")
 broken_files = []
 
 for csv_file in results_dir.glob("**/*.csv"):
@@ -539,80 +553,52 @@ The archive includes results for 92 datasets covering:
 
 #### 1. Download and Extract
 
-```python
-import pandas as pd
+**Canonical source:** [DOI:10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862)
 
-# Load workload
-workload = pd.read_csv("OUTPUT_PATH/test/01_workload.csv")
+??? note "Convenience link (may change)"
+    Direct download (not guaranteed stable):
+    ```
+    https://opara.zih.tu-dresden.de/xmlui/bitstream/handle/123456789/5678/full_exp_jan.zip
+    ```
 
-# Load metric results
-accuracy = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/accuracy.csv")
+```bash
+# Download from DOI landing page
+wget <URL_FROM_DOI_LANDING_PAGE>
 
-# Load compressed CSV
-metrics = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/full_auc_accuracy.csv.xz")
-
-# Load Parquet predictions
-predictions = pd.read_parquet("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/y_pred_train.csv.xz.parquet")
+# Extract to results directory
+export OGAL_OUTPUT=/path/to/results
+unzip full_exp_jan.zip -d ${OGAL_OUTPUT}/
 ```
 
 #### 2. Load into OGAL for Analysis
 
 Configure your `.server_access_credentials.cfg` to point to the extracted data:
 
-```python
-import pandas as pd
-
-# Load workload
-workload = pd.read_csv("OUTPUT_PATH/test/01_workload.csv")
-
-# Load metric results
-accuracy = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/accuracy.csv")
-
-# Load compressed CSV
-metrics = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/full_auc_accuracy.csv.xz")
-
-# Load Parquet predictions
-predictions = pd.read_parquet("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/y_pred_train.csv.xz.parquet")
+```ini
+[LOCAL]
+OUTPUT_PATH=/path/to/results
+DATASETS_PATH=/path/to/datasets
 ```
 
 #### 3. Run Evaluation Scripts
 
 The [`eva_scripts/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts) can directly analyze the archived data:
 
-```python
-import pandas as pd
+```bash
+# Generate leaderboard from archived results
+python -m eva_scripts.final_leaderboard --EXP_TITLE full_exp_jan
 
-# Load workload
-workload = pd.read_csv("OUTPUT_PATH/test/01_workload.csv")
-
-# Load metric results
-accuracy = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/accuracy.csv")
-
-# Load compressed CSV
-metrics = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/full_auc_accuracy.csv.xz")
-
-# Load Parquet predictions
-predictions = pd.read_parquet("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/y_pred_train.csv.xz.parquet")
+# Compute metric correlations
+python -m eva_scripts.basic_metrics_correlation --EXP_TITLE full_exp_jan
 ```
 
 #### 4. Reproduce Paper Figures
 
 The evaluation scripts can regenerate paper figures from the archived data:
 
-```python
-import pandas as pd
-
-# Load workload
-workload = pd.read_csv("OUTPUT_PATH/test/01_workload.csv")
-
-# Load metric results
-accuracy = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/accuracy.csv")
-
-# Load compressed CSV
-metrics = pd.read_csv("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/full_auc_accuracy.csv.xz")
-
-# Load Parquet predictions
-predictions = pd.read_parquet("OUTPUT_PATH/test/ALIPY_RANDOM/Iris/y_pred_train.csv.xz.parquet")
+```bash
+# Generate publication-ready plots
+python -m eva_scripts.redo_plots_for_paper --EXP_TITLE full_exp_jan
 ```
 
 ### File Size Considerations
