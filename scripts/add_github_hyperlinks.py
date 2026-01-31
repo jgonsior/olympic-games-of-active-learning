@@ -49,14 +49,16 @@ def process_source_citation(match: re.Match) -> str:
     (source: `misc/config.py`, lines 171-176)
     or
     (source: `misc/config.py::Config`)
+    or
+    (source: design rationale inferred from `misc/config.py::Config`)
     
     Returns the replacement text with hyperlink.
     """
-    prefix = match.group(1)  # "(source: "
+    prefix = match.group(1)  # "(source: " or "(source: design rationale inferred from "
     file_path = match.group(2)  # "misc/config.py"
     class_func = match.group(3)  # "::Config.__init__" or None
     lines_text = match.group(4)  # ", lines 171-176" or None
-    suffix = match.group(5)  # ")" or "; ..." 
+    suffix = match.group(5)  # ")" or "; " or ","
     
     # Parse line numbers if present
     start_line = None
@@ -158,7 +160,7 @@ def process_markdown_file(file_path: Path, repo_root: Path, dry_run: bool = Fals
     # (source: `misc/config.py::Config`)
     # Also handle multiple references in one source line
     source_pattern = re.compile(
-        r'(\(source:\s+)`([^`]+?)(::[\w.]+)?`(,?\s*lines?\s+\d+(?:-\d+)?)?([);,])',
+        r'(\(source:\s+)(?:.*?from\s+)?`([^`]+?)(::[\w.]+)?`(,?\s*lines?\s+\d+(?:-\d+)?)?([);,])',
         re.IGNORECASE
     )
     
@@ -179,25 +181,46 @@ def process_markdown_file(file_path: Path, repo_root: Path, dry_run: bool = Fals
     # Pattern 2: Inline file references (only if not already hyperlinked)
     # `misc/config.py` or `00_download_datasets.py`
     # But NOT inside hyperlinks or source citations
-    inline_pattern = re.compile(r'(?<!\[)`([^`\n]+?)`(?!\])')
+    # More specific pattern to match actual file paths
+    inline_pattern = re.compile(r'(?<!\[)`([\w/]+\.(?:py|yaml|yml|cfg|md|txt|toml|json|sh)(?:::[\w.]+)?)`(?!\])')
     
     def inline_replacer(m):
         nonlocal inline_refs
-        # Skip if this is part of a source citation we already processed
-        # or if already a hyperlink
         full_match = m.group(0)
+        file_ref = m.group(1)
         
-        # Check if we're inside a markdown link
+        # Check if we're inside a markdown link URL
         start_pos = m.start()
         # Look back to see if we're in a link
-        lookback = content[max(0, start_pos-100):start_pos]
-        if '(' in lookback and lookback.rfind('(') > lookback.rfind(')'):
+        lookback = content[max(0, start_pos-200):start_pos]
+        
+        # Skip if inside a URL (contains ](http or ](https
+        if '](http' in lookback[-50:] or '](https' in lookback[-50:]:
             return full_match
         
-        result = process_inline_file_reference(m, repo_root)
-        if result != full_match:
-            inline_refs += 1
-        return result
+        # Skip if in a code block placeholder
+        if 'CODE_BLOCK_PLACEHOLDER' in lookback[-50:]:
+            return full_match
+        
+        # Parse file path and class/function
+        if '::' in file_ref:
+            parts = file_ref.split('::', 1)
+            file_path = parts[0]
+            class_func = '::' + parts[1]
+        else:
+            file_path = file_ref
+            class_func = ''
+        
+        # Check if file exists in repository
+        full_path = repo_root / file_path.rstrip('/')
+        if not full_path.exists():
+            return full_match  # Return unchanged if file doesn't exist
+        
+        # Generate GitHub URL
+        github_url = get_github_url(file_path.rstrip('/'))
+        
+        inline_refs += 1
+        return f"[`{file_ref}`]({github_url})"
     
     content = inline_pattern.sub(inline_replacer, content)
     

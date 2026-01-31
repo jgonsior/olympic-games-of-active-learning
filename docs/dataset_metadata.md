@@ -52,7 +52,7 @@ python 03_calculate_dataset_categorizations.py --EXP_TITLE your_experiment \
 
 ### Core Function
 
-**Source:** `metrics/computed/base_samples_categorizer.py::Base_Samples_Categorizer.categorize_samples`
+**Source:** [`metrics/computed/base_samples_categorizer.py::Base_Samples_Categorizer.categorize_samples`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/computed/base_samples_categorizer.py)
 
 ```python
 def categorize_samples(self, dataset: DATASET) -> None:
@@ -77,7 +77,7 @@ def categorize_samples(self, dataset: DATASET) -> None:
 
 ### SAMPLES_CATEGORIZER Enum
 
-**Source:** `resources/data_types.py::SAMPLES_CATEGORIZER`
+**Source:** [`resources/data_types.py::SAMPLES_CATEGORIZER`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py)
 
 | ID | Name | Description | Output Shape |
 |---:|------|-------------|--------------|
@@ -211,7 +211,7 @@ print(categorization[:10])   # First 10 samples' wrong classification counts
 | [`03_calculate_dataset_categorizations.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/03_calculate_dataset_categorizations.py) | `_<CATEGORIZER>/<DATASET>.npz` | Eva scripts | Sample-level analysis |
 | `_<CATEGORIZER>/<DATASET>.npz` | Per-sample arrays | `eva_scripts/*.py` | Correlation studies |
 
-(source: [`03_calculate_dataset_categorizations.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/03_calculate_dataset_categorizations.py), `metrics/computed/base_samples_categorizer.py`)
+(source: [`03_calculate_dataset_categorizations.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/03_calculate_dataset_categorizations.py), [`metrics/computed/base_samples_categorizer.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/computed/base_samples_categorizer.py))
 
 ---
 
@@ -281,7 +281,7 @@ Some categorizers use precomputed pairwise distances:
 
 **Computed by:** [`00_download_datasets.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/00_download_datasets.py) (when `DATASETS_COMPUTE_DISTANCES=True`)
 
-(source: [`misc/config.py::Config.DATASETS_COMPUTE_DISTANCES`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py), `misc/config.py::Config.DATASETS_DISTANCES_APPENDIX`)
+(source: [`misc/config.py::Config.DATASETS_COMPUTE_DISTANCES`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py), [`misc/config.py::Config.DATASETS_DISTANCES_APPENDIX`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py))
 
 ---
 

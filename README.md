@@ -124,7 +124,7 @@ The study analyzes the impact of each hyperparameter on AL experiment results an
 
 ## Sequential Pipeline
 
-OGAL is a **strictly sequential pipeline**. Each script produces outputs consumed by the next step. The shared configuration (`resources/exp_config.yaml` and `.server_access_credentials.cfg`) is the source of truth for data flow.
+OGAL is a **strictly sequential pipeline**. Each script produces outputs consumed by the next step. The shared configuration ([`resources/exp_config.yaml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/exp_config.yaml) and `.server_access_credentials.cfg`) is the source of truth for data flow.
 
 ### Run Order
 
@@ -225,7 +225,7 @@ CODE_PATH=/home/user/al_survey/code
 OUTPUT_PATH=/home/user/al_survey/exp_results
 ```
 
-### Experiment Configuration (`resources/exp_config.yaml`)
+### Experiment Configuration ([`resources/exp_config.yaml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/exp_config.yaml))
 
 Define experiment grids using YAML:
 

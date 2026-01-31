@@ -269,7 +269,7 @@ python 02_run_experiment.py --EXP_TITLE test --WORKER_INDEX 0
 
 ### Runtime Limits
 
-- `EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT`: Per-query timeout (default: 300s; source: `misc/config.py::Config.EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT`)
+- `EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT`: Per-query timeout (default: 300s; source: [`misc/config.py::Config.EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py))
 - Experiments exceeding this limit are early-stopped
 
 ### Common Failures
@@ -473,7 +473,7 @@ python 02_run_experiment.py --EXP_TITLE test --WORKER_INDEX 0 --LOG_FILE console
 
 ```bash
 python 00_download_datasets.py
-```0
+```000000
 
 ---
 
@@ -497,7 +497,7 @@ These scripts support data processing, format conversion, bug fixes, and experim
 
 ```bash
 python 00_download_datasets.py
-```1
+```111111
 
 ### [`eva_scripts/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts) - Evaluation Scripts
 
@@ -515,6 +515,6 @@ These scripts generate analyses, figures, and tables for the research paper. The
 
 ```bash
 python 00_download_datasets.py
-```2
+```222222
 
 For complete documentation of all utility and evaluation scripts, see [Scripts Documentation](scripts.md).

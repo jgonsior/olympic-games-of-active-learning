@@ -388,7 +388,7 @@ python -m eva_scripts.learning_curve --EXP_TITLE your_experiment
 
 ```bash
 python -m eva_scripts.auc_metric_correlation --EXP_TITLE your_experiment
-```0
+```000000
 
 ---
 
@@ -422,7 +422,7 @@ Publication-ready PDFs with same names as input Parquets, in same directories.
 
 ```bash
 python -m eva_scripts.auc_metric_correlation --EXP_TITLE your_experiment
-```1
+```111111
 
 ---
 
@@ -436,7 +436,7 @@ python -m eva_scripts.auc_metric_correlation --EXP_TITLE your_experiment
 
 ```bash
 python -m eva_scripts.auc_metric_correlation --EXP_TITLE your_experiment
-```2
+```222222
 
 ---
 
@@ -522,7 +522,7 @@ The eva_scripts form a dependency chain. Run them in this order:
 
 ```bash
 python -m eva_scripts.auc_metric_correlation --EXP_TITLE your_experiment
-```3
+```333333
 
 ---
 
@@ -556,7 +556,7 @@ If a script reports missing `.parquet` files, the time series haven't been creat
 
 ```bash
 python -m eva_scripts.auc_metric_correlation --EXP_TITLE your_experiment
-```4
+```444444
 
 ### Memory Errors
 

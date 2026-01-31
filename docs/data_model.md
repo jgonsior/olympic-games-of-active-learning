@@ -30,7 +30,7 @@ Additionally, each run has a unique `EXP_UNIQUE_ID` integer assigned during work
 | `EXP_RANDOM_SEED` | int | Random seed | Config-defined |
 | `EXP_NUM_QUERIES` | int | Number of AL cycles | Config-defined |
 
-(source: `misc/config.py::Config` class attributes, lines 65-82)
+(source: [`misc/config.py::Config`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) class attributes, lines 65-82)
 
 ### Why `EXP_UNIQUE_ID`?
 
@@ -58,7 +58,7 @@ OGAL uses integer enums for all categorical values. This provides:
 
 ### AL_STRATEGY Enum
 
-**Source:** `resources/data_types.py::AL_STRATEGY`
+**Source:** [`resources/data_types.py::AL_STRATEGY`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py)
 
 | ID | Name | Framework | Description |
 |---:|------|-----------|-------------|
@@ -76,7 +76,7 @@ OGAL uses integer enums for all categorical values. This provides:
 
 ### DATASET Enum
 
-**Source:** `datasets/__init__.py::DATASET`
+**Source:** [`datasets/__init__.py::DATASET`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/datasets/__init__.py)
 
 | ID | Name | Source |
 |---:|------|--------|
@@ -86,11 +86,11 @@ OGAL uses integer enums for all categorical values. This provides:
 
 **Note:** Datasets are dynamically extended from `resources/local_datasets.yaml` if additional local datasets are defined.
 
-(source: [`datasets/__init__.py::DATASET`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/datasets/__init__.py); `misc/config.py::Config._load_exp_yaml`, lines 358-367)
+(source: [`datasets/__init__.py::DATASET`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/datasets/__init__.py); [`misc/config.py::Config._load_exp_yaml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py), lines 358-367)
 
 ### LEARNER_MODEL Enum
 
-**Source:** `resources/data_types.py::LEARNER_MODEL`
+**Source:** [`resources/data_types.py::LEARNER_MODEL`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py)
 
 | ID | Name | Class | Parameters |
 |---:|------|-------|------------|
@@ -104,7 +104,7 @@ OGAL uses integer enums for all categorical values. This provides:
 
 ### COMPUTED_METRIC Enum
 
-**Source:** `resources/data_types.py::COMPUTED_METRIC`
+**Source:** [`resources/data_types.py::COMPUTED_METRIC`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py)
 
 | ID | Name | Description |
 |---:|------|-------------|
@@ -120,7 +120,7 @@ OGAL uses integer enums for all categorical values. This provides:
 
 ### SAMPLES_CATEGORIZER Enum
 
-**Source:** `resources/data_types.py::SAMPLES_CATEGORIZER`
+**Source:** [`resources/data_types.py::SAMPLES_CATEGORIZER`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py)
 
 | ID | Name | Description |
 |---:|------|-------------|
@@ -147,7 +147,7 @@ OGAL uses integer enums for all categorical values. This provides:
 
 The workload CSV (`01_workload.csv`) defines all experiments to run.
 
-**Source:** `01_create_workload.py::_generate_exp_param_grid`
+**Source:** [`01_create_workload.py::_generate_exp_param_grid`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/01_create_workload.py)
 
 ### Schema
 
@@ -180,7 +180,7 @@ EXP_UNIQUE_ID,EXP_DATASET,EXP_STRATEGY,EXP_LEARNER_MODEL,EXP_BATCH_SIZE,EXP_RAND
 
 **Location:** `OUTPUT_PATH/<EXP_TITLE>/<STRATEGY>/<DATASET>/<metric>.csv.xz`
 
-**Source:** `metrics/base_metric.py::Base_Metric.save_metrics`
+**Source:** [`metrics/base_metric.py::Base_Metric.save_metrics`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/base_metric.py)
 
 | Column | Type | Description |
 |--------|------|-------------|
@@ -199,7 +199,7 @@ EXP_UNIQUE_ID,EXP_DATASET,EXP_STRATEGY,EXP_LEARNER_MODEL,EXP_BATCH_SIZE,EXP_RAND
 - `selected_indices.csv.xz` - Queried sample indices (list per cell)
 - `query_selection_time.csv.xz` - Query timing in seconds
 
-(source: [`metrics/Standard_ML_Metrics.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/Standard_ML_Metrics.py), `metrics/Selected_Indices.py`, `metrics/Timing_Metrics.py`)
+(source: [`metrics/Standard_ML_Metrics.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/Standard_ML_Metrics.py), [`metrics/Selected_Indices.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/Selected_Indices.py), [`metrics/Timing_Metrics.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/Timing_Metrics.py))
 
 ### Derived Metric File
 
@@ -253,7 +253,7 @@ Eva scripts create consolidated time series files for correlation analysis.
 
 **Location:** `OUTPUT_PATH/<EXP_TITLE>/_TS/<metric>.parquet`
 
-**Source:** `misc/helpers.py::create_fingerprint_joined_timeseries_csv_files`
+**Source:** [`misc/helpers.py::create_fingerprint_joined_timeseries_csv_files`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/helpers.py)
 
 | Column | Type | Description |
 |--------|------|-------------|
@@ -275,7 +275,7 @@ Per-sample characteristics computed for each dataset.
 
 **Location:** `OUTPUT_PATH/<EXP_TITLE>/_<CATEGORIZER>/<DATASET>.npz`
 
-**Source:** `metrics/computed/base_samples_categorizer.py::Base_Samples_Categorizer.categorize_samples`
+**Source:** [`metrics/computed/base_samples_categorizer.py::Base_Samples_Categorizer.categorize_samples`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/computed/base_samples_categorizer.py)
 
 **Format:** NumPy compressed array with key `samples_categorization`
 

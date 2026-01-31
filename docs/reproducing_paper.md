@@ -341,7 +341,7 @@ EXP_GRID_STRATEGY:
   - SKACTIVEML_DAL
   - SKACTIVEML_QBC_VOTE_ENTROPY
   - SKACTIVEML_QUIRE
-```0
+```000000
 
 #### 5c. Analyze Workload Completion
 
@@ -387,7 +387,7 @@ EXP_GRID_STRATEGY:
   - SKACTIVEML_DAL
   - SKACTIVEML_QBC_VOTE_ENTROPY
   - SKACTIVEML_QUIRE
-```1
+```111111
 
 ---
 
@@ -439,7 +439,7 @@ EXP_GRID_STRATEGY:
   - SKACTIVEML_DAL
   - SKACTIVEML_QBC_VOTE_ENTROPY
   - SKACTIVEML_QUIRE
-```2
+```222222
 
 ### Hyperparameter Influence Analysis
 
@@ -485,7 +485,7 @@ EXP_GRID_STRATEGY:
   - SKACTIVEML_DAL
   - SKACTIVEML_QBC_VOTE_ENTROPY
   - SKACTIVEML_QUIRE
-```3
+```333333
 
 ### Leaderboard Scenarios
 
@@ -531,7 +531,7 @@ EXP_GRID_STRATEGY:
   - SKACTIVEML_DAL
   - SKACTIVEML_QBC_VOTE_ENTROPY
   - SKACTIVEML_QUIRE
-```4
+```444444
 
 ### Dataset-Dependent Analysis
 
@@ -577,7 +577,7 @@ EXP_GRID_STRATEGY:
   - SKACTIVEML_DAL
   - SKACTIVEML_QBC_VOTE_ENTROPY
   - SKACTIVEML_QUIRE
-```5
+```555555
 
 ### Workload Reduction Analysis
 
@@ -625,13 +625,13 @@ EXP_GRID_STRATEGY:
   - SKACTIVEML_DAL
   - SKACTIVEML_QBC_VOTE_ENTROPY
   - SKACTIVEML_QUIRE
-```6
+```666666
 
 ---
 
 ## Complete Command Sequence
 
-Here is the complete command sequence used to generate the OPARA archive (as reflected in `test.sh`):
+Here is the complete command sequence used to generate the OPARA archive (as reflected in [`test.sh`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/test.sh)):
 
 ```yaml
 EXP_GRID_STRATEGY:
@@ -675,7 +675,7 @@ EXP_GRID_STRATEGY:
   - SKACTIVEML_DAL
   - SKACTIVEML_QBC_VOTE_ENTROPY
   - SKACTIVEML_QUIRE
-```7
+```777777
 
 ---
 
@@ -781,7 +781,7 @@ EXP_GRID_STRATEGY:
   - SKACTIVEML_DAL
   - SKACTIVEML_QBC_VOTE_ENTROPY
   - SKACTIVEML_QUIRE
-```8
+```888888
 
 ---
 
@@ -831,7 +831,7 @@ EXP_GRID_STRATEGY:
   - SKACTIVEML_DAL
   - SKACTIVEML_QBC_VOTE_ENTROPY
   - SKACTIVEML_QUIRE
-```9
+```999999
 
 ### OOM Issues
 
@@ -862,7 +862,7 @@ EXP_GRID_LEARNER_MODEL: [MLP, RBF_SVM, RF]
 # Train/test split buckets (𝕋 in paper - 5 different splits)
 # Note: [0-4] is OGAL shorthand syntax that expands to [0, 1, 2, 3, 4]
 EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0-4]
-```0
+```000000
 
 ### Data Validation
 
@@ -893,7 +893,7 @@ EXP_GRID_LEARNER_MODEL: [MLP, RBF_SVM, RF]
 # Train/test split buckets (𝕋 in paper - 5 different splits)
 # Note: [0-4] is OGAL shorthand syntax that expands to [0, 1, 2, 3, 4]
 EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0-4]
-```1
+```111111
 
 ---
 
@@ -930,7 +930,7 @@ EXP_GRID_LEARNER_MODEL: [MLP, RBF_SVM, RF]
 # Train/test split buckets (𝕋 in paper - 5 different splits)
 # Note: [0-4] is OGAL shorthand syntax that expands to [0, 1, 2, 3, 4]
 EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0-4]
-```2
+```222222
 
 Then run:
 
@@ -961,7 +961,7 @@ EXP_GRID_LEARNER_MODEL: [MLP, RBF_SVM, RF]
 # Train/test split buckets (𝕋 in paper - 5 different splits)
 # Note: [0-4] is OGAL shorthand syntax that expands to [0, 1, 2, 3, 4]
 EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0-4]
-```3
+```333333
 
 ### Using Archived Results
 
@@ -994,7 +994,7 @@ EXP_GRID_LEARNER_MODEL: [MLP, RBF_SVM, RF]
 # Train/test split buckets (𝕋 in paper - 5 different splits)
 # Note: [0-4] is OGAL shorthand syntax that expands to [0, 1, 2, 3, 4]
 EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0-4]
-```4
+```444444
 
 ---
 

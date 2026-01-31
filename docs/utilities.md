@@ -174,7 +174,7 @@ The [`scripts/`](https://github.com/jgonsior/olympic-games-of-active-learning/bl
 | `reduce_to_dense.py` | Filter results to dense workload | Before analysis on subset |
 | `merge_two_workloads.py` | Combine workloads from different experiments | Merging experiment results |
 
-(source: [`scripts/create_dense_workload.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/create_dense_workload.py), `scripts/merge_two_workloads.py`)
+(source: [`scripts/create_dense_workload.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/create_dense_workload.py), [`scripts/merge_two_workloads.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/merge_two_workloads.py))
 
 #### Data Conversion
 
@@ -244,7 +244,7 @@ The [`scripts/`](https://github.com/jgonsior/olympic-games-of-active-learning/bl
 | `create_gaussian.py` | Generate Gaussian test dataset | Testing |
 | `create_xor.py` | Generate XOR test dataset | Testing |
 
-(source: [`scripts/create_gaussian.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/create_gaussian.py), `scripts/create_xor.py`)
+(source: [`scripts/create_gaussian.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/create_gaussian.py), [`scripts/create_xor.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/create_xor.py))
 
 ---
 

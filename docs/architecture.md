@@ -16,7 +16,7 @@ OGAL is architected around five primary goals:
 | **Shared Dataset Enrichment** | Add new results to existing datasets safely | Schema contracts, validation, provenance tracking |
 | **Unified API** | Single interface across AL frameworks | Framework adapters with consistent protocol |
 
-(source: design rationale inferred from `misc/config.py::Config`, `01_create_workload.py`, `framework_runners/base_runner.py::AL_Experiment`)
+(source: [`misc/config.py::Config`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py), [`01_create_workload.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/01_create_workload.py), [`framework_runners/base_runner.py::AL_Experiment`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/base_runner.py))
 
 ---
 
@@ -88,7 +88,7 @@ flowchart TD
 
 The `Config` class is the central configuration spine that governs all data flow.
 
-**Source:** `misc/config.py::Config`
+**Source:** [`misc/config.py::Config`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py)
 
 **Key responsibilities:**
 - Load configuration from multiple sources (CLI, INI, YAML)
@@ -103,13 +103,13 @@ The `Config` class is the central configuration spine that governs all data flow
 4. Workload row (when `WORKER_INDEX` provided)
 5. Default values
 
-(source: [`misc/config.py::Config.__init__`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py#L171-L176), lines 171-176; `misc/config.py::Config._setup_everything`, lines 182-202)
+(source: [`misc/config.py::Config.__init__`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py#L171-L176), lines 171-176; [`misc/config.py::Config._setup_everything`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py), lines 182-202)
 
 ### 2. Workload/Grid Generation
 
 The workload system converts a hyperparameter grid into a shardable CSV.
 
-**Source:** `01_create_workload.py::_generate_exp_param_grid`
+**Source:** [`01_create_workload.py::_generate_exp_param_grid`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/01_create_workload.py)
 
 **Process:**
 1. Read `EXP_GRID_*` parameters from config
@@ -136,7 +136,7 @@ The workload system converts a hyperparameter grid into a shardable CSV.
 
 Each worker processes a single row from the workload CSV.
 
-**Source:** [`02_run_experiment.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/02_run_experiment.py), `misc/config.py::Config.load_workload`
+**Source:** [`02_run_experiment.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/02_run_experiment.py), [`misc/config.py::Config.load_workload`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py)
 
 **Mechanism:**
 1. `WORKER_INDEX` selects row from `01_workload.csv`
@@ -167,7 +167,7 @@ workload = workload_df.iloc[0].to_dict()
 
 Each AL framework has an adapter that implements the unified experiment interface.
 
-**Base class:** `framework_runners/base_runner.py::AL_Experiment`
+**Base class:** [`framework_runners/base_runner.py::AL_Experiment`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/base_runner.py)
 
 | Adapter | Source | Framework |
 |---------|--------|-----------|
@@ -198,7 +198,7 @@ Each AL framework has an adapter that implements the unified experiment interfac
 
 Metrics are recorded per AL cycle and saved to compressed CSV files.
 
-**Source:** `metrics/base_metric.py::Base_Metric`
+**Source:** [`metrics/base_metric.py::Base_Metric`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/base_metric.py)
 
 **Output structure:**
 ```
@@ -232,7 +232,7 @@ After raw experiments complete, derived metrics are computed:
 | 4 | [`04_calculate_advanced_metrics.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/04_calculate_advanced_metrics.py) | AUC, time-lag, distance metrics | `full_auc_*.csv.xz`, etc. |
 | 5 | [`05_analyze_partially_run_workload.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/05_analyze_partially_run_workload.py) | Completion analysis | Statistics |
 
-(source: [`03_calculate_dataset_categorizations.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/03_calculate_dataset_categorizations.py), `04_calculate_advanced_metrics.py`)
+(source: [`03_calculate_dataset_categorizations.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/03_calculate_dataset_categorizations.py), [`04_calculate_advanced_metrics.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/04_calculate_advanced_metrics.py))
 
 ### 7. Eva Scripts Integration
 
@@ -246,7 +246,7 @@ Evaluation scripts consume raw and derived outputs to produce final artifacts.
 - Create time series parquets in `_TS/`
 - Generate plots in [`plots/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/plots)
 
-(source: [`eva_scripts/*.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/*.py), `misc/helpers.py::create_fingerprint_joined_timeseries_csv_files`)
+(source: [`eva_scripts/*.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts/*.py), [`misc/helpers.py::create_fingerprint_joined_timeseries_csv_files`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/helpers.py))
 
 ---
 
@@ -258,11 +258,11 @@ OGAL is designed for safe resumption of interrupted experiments.
 
 | File | Purpose | Source |
 |------|---------|--------|
-| `05_done_workload.csv` | Successfully completed experiments | `framework_runners/base_runner.py::AL_Experiment.run_experiment` |
-| `05_failed_workloads.csv` | Experiments that raised exceptions | `framework_runners/base_runner.py::AL_Experiment.run_experiment` |
-| `05_started_oom_workloads.csv` | Experiments presumed killed by OOM | `framework_runners/base_runner.py::AL_Experiment.run_experiment` |
+| `05_done_workload.csv` | Successfully completed experiments | [`framework_runners/base_runner.py::AL_Experiment.run_experiment`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/base_runner.py) |
+| `05_failed_workloads.csv` | Experiments that raised exceptions | [`framework_runners/base_runner.py::AL_Experiment.run_experiment`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/base_runner.py) |
+| `05_started_oom_workloads.csv` | Experiments presumed killed by OOM | [`framework_runners/base_runner.py::AL_Experiment.run_experiment`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/base_runner.py) |
 
-(source: [`misc/config.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py#L123-L125), lines 123-125; `framework_runners/base_runner.py`)
+(source: [`misc/config.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py#L123-L125), lines 123-125; [`framework_runners/base_runner.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/base_runner.py))
 
 ### OOM Detection Mechanism
 
@@ -303,7 +303,7 @@ This ensures:
 | Metric file writing | Configurable | `OVERWRITE_EXISTING_METRIC_FILES` flag |
 | Dataset categorization | Yes | Checks `samples_categorization_path.exists()` |
 
-(source: [`misc/config.py::Config.OVERWRITE_EXISTING_METRIC_FILES`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py); `metrics/computed/base_samples_categorizer.py::Base_Samples_Categorizer.categorize_samples`, lines 48-58)
+(source: [`misc/config.py::Config.OVERWRITE_EXISTING_METRIC_FILES`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py); [`metrics/computed/base_samples_categorizer.py::Base_Samples_Categorizer.categorize_samples`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/computed/base_samples_categorizer.py), lines 48-58)
 
 ---
 

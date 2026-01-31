@@ -347,7 +347,7 @@ python 03_calculate_dataset_categorizations.py \
     --EXP_TITLE your_experiment \
     --SAMPLES_CATEGORIZER _ALL \
     --EVA_MODE local
-```0
+```000000
 
 **Required Inputs:**
 
@@ -375,7 +375,7 @@ python 03_calculate_dataset_categorizations.py \
     --EXP_TITLE your_experiment \
     --SAMPLES_CATEGORIZER _ALL \
     --EVA_MODE local
-```1
+```111111
 
 **Required Inputs:**
 
@@ -405,7 +405,7 @@ python 03_calculate_dataset_categorizations.py \
     --EXP_TITLE your_experiment \
     --SAMPLES_CATEGORIZER _ALL \
     --EVA_MODE local
-```2
+```222222
 
 **Outputs:**
 
@@ -431,7 +431,7 @@ python 03_calculate_dataset_categorizations.py \
     --EXP_TITLE your_experiment \
     --SAMPLES_CATEGORIZER _ALL \
     --EVA_MODE local
-```3
+```333333
 
 **Outputs:**
 
@@ -456,7 +456,7 @@ python 03_calculate_dataset_categorizations.py \
     --EXP_TITLE your_experiment \
     --SAMPLES_CATEGORIZER _ALL \
     --EVA_MODE local
-```4
+```444444
 
 **Outputs:**
 
@@ -489,7 +489,7 @@ python 03_calculate_dataset_categorizations.py \
     --EXP_TITLE your_experiment \
     --SAMPLES_CATEGORIZER _ALL \
     --EVA_MODE local
-```5
+```555555
 
 ### Required Inputs
 
@@ -529,7 +529,7 @@ python 03_calculate_dataset_categorizations.py \
     --EXP_TITLE your_experiment \
     --SAMPLES_CATEGORIZER _ALL \
     --EVA_MODE local
-```6
+```666666
 
 Combines related heatmaps into single-page figures for the paper.
 
@@ -602,7 +602,7 @@ python 03_calculate_dataset_categorizations.py \
     --EXP_TITLE your_experiment \
     --SAMPLES_CATEGORIZER _ALL \
     --EVA_MODE local
-```7
+```777777
 
 ---
 
@@ -622,7 +622,7 @@ python 03_calculate_dataset_categorizations.py \
     --EXP_TITLE your_experiment \
     --SAMPLES_CATEGORIZER _ALL \
     --EVA_MODE local
-```8
+```888888
 
 ---
 

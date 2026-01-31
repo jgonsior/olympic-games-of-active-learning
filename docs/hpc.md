@@ -158,8 +158,8 @@ done
 
 | Parameter | Description | Default | Source |
 |-----------|-------------|---------|--------|
-| `SLURM_ITERATIONS_PER_BATCH` | Experiments per array task | 100 | `misc/config.py::Config.SLURM_ITERATIONS_PER_BATCH` |
-| `SLURM_OFFSET` | Starting array index offset | 0 | `misc/config.py::Config.SLURM_OFFSET` |
+| `SLURM_ITERATIONS_PER_BATCH` | Experiments per array task | 100 | [`misc/config.py::Config.SLURM_ITERATIONS_PER_BATCH`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) |
+| `SLURM_OFFSET` | Starting array index offset | 0 | [`misc/config.py::Config.SLURM_OFFSET`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) |
 
 **Example with batching (100 per batch):**
 
@@ -247,11 +247,11 @@ done
 
 | Option | Description | Default | Source |
 |--------|-------------|---------|--------|
-| `SLURM_TIME_LIMIT` | Wall time limit | "1:59:59" | `misc/config.py::Config.SLURM_TIME_LIMIT` |
-| `SLURM_NR_THREADS` | CPUs per task | 1 | `misc/config.py::Config.SLURM_NR_THREADS` |
-| `SLURM_MEMORY` | Memory per CPU (MB) | 2210 | `misc/config.py::Config.SLURM_MEMORY` |
-| `SLURM_ITERATIONS_PER_BATCH` | Experiments per array task | 100 | `misc/config.py::Config.SLURM_ITERATIONS_PER_BATCH` |
-| `SLURM_OFFSET` | Starting index offset | 0 | `misc/config.py::Config.SLURM_OFFSET` |
+| `SLURM_TIME_LIMIT` | Wall time limit | "1:59:59" | [`misc/config.py::Config.SLURM_TIME_LIMIT`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) |
+| `SLURM_NR_THREADS` | CPUs per task | 1 | [`misc/config.py::Config.SLURM_NR_THREADS`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) |
+| `SLURM_MEMORY` | Memory per CPU (MB) | 2210 | [`misc/config.py::Config.SLURM_MEMORY`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) |
+| `SLURM_ITERATIONS_PER_BATCH` | Experiments per array task | 100 | [`misc/config.py::Config.SLURM_ITERATIONS_PER_BATCH`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) |
+| `SLURM_OFFSET` | Starting index offset | 0 | [`misc/config.py::Config.SLURM_OFFSET`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) |
 
 ### Per-Experiment Timeout
 
@@ -279,9 +279,9 @@ OGAL tracks experiment progress via three CSV files:
 
 | File | Purpose | Updated By |
 |------|---------|------------|
-| `05_done_workload.csv` | Successfully completed experiments | `framework_runners/base_runner.py::AL_Experiment.run_experiment` (line 224-229) |
-| `05_failed_workloads.csv` | Failed experiments with error type | `framework_runners/base_runner.py::AL_Experiment.run_experiment` (line 211-217) |
-| `05_started_oom_workloads.csv` | Experiments started but presumed OOM | `framework_runners/base_runner.py::AL_Experiment.run_experiment` (line 120-126) |
+| `05_done_workload.csv` | Successfully completed experiments | [`framework_runners/base_runner.py::AL_Experiment.run_experiment`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/base_runner.py) (line 224-229) |
+| `05_failed_workloads.csv` | Failed experiments with error type | [`framework_runners/base_runner.py::AL_Experiment.run_experiment`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/base_runner.py) (line 211-217) |
+| `05_started_oom_workloads.csv` | Experiments started but presumed OOM | [`framework_runners/base_runner.py::AL_Experiment.run_experiment`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/base_runner.py) (line 120-126) |
 
 ### How Completion Is Detected
 
@@ -322,7 +322,7 @@ PYTHON_PATH=/data/workspace/al_olympics/conda-env/bin/python
 DATASETS_PATH=/home/user/ogal/datasets
 CODE_PATH=/home/user/ogal/code
 OUTPUT_PATH=/home/user/ogal/exp_results
-```0
+```000000
 
 ### Resuming After Partial Run
 
@@ -341,7 +341,7 @@ PYTHON_PATH=/data/workspace/al_olympics/conda-env/bin/python
 DATASETS_PATH=/home/user/ogal/datasets
 CODE_PATH=/home/user/ogal/code
 OUTPUT_PATH=/home/user/ogal/exp_results
-```1
+```111111
 
 ### Rerunning Failed Experiments
 
@@ -370,7 +370,7 @@ PYTHON_PATH=/data/workspace/al_olympics/conda-env/bin/python
 DATASETS_PATH=/home/user/ogal/datasets
 CODE_PATH=/home/user/ogal/code
 OUTPUT_PATH=/home/user/ogal/exp_results
-```2
+```222222
 
 ### Medium Experiment (1000-100,000 runs)
 
@@ -389,7 +389,7 @@ PYTHON_PATH=/data/workspace/al_olympics/conda-env/bin/python
 DATASETS_PATH=/home/user/ogal/datasets
 CODE_PATH=/home/user/ogal/code
 OUTPUT_PATH=/home/user/ogal/exp_results
-```3
+```333333
 
 ### Large Experiment (> 100,000 runs)
 
@@ -408,7 +408,7 @@ PYTHON_PATH=/data/workspace/al_olympics/conda-env/bin/python
 DATASETS_PATH=/home/user/ogal/datasets
 CODE_PATH=/home/user/ogal/code
 OUTPUT_PATH=/home/user/ogal/exp_results
-```4
+```444444
 
 ---
 
@@ -460,9 +460,9 @@ PYTHON_PATH=/data/workspace/al_olympics/conda-env/bin/python
 DATASETS_PATH=/home/user/ogal/datasets
 CODE_PATH=/home/user/ogal/code
 OUTPUT_PATH=/home/user/ogal/exp_results
-```5
+```555555
 
-**Code pointer:** Dataset loading occurs in `datasets/__init__.py::load_dataset`
+**Code pointer:** Dataset loading occurs in [`datasets/__init__.py::load_dataset`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/datasets/__init__.py)
 
 **Resolution:** Ensure `DATASETS_PATH` in `.server_access_credentials.cfg` is accessible from compute nodes (not just login node).
 
@@ -489,9 +489,9 @@ PYTHON_PATH=/data/workspace/al_olympics/conda-env/bin/python
 DATASETS_PATH=/home/user/ogal/datasets
 CODE_PATH=/home/user/ogal/code
 OUTPUT_PATH=/home/user/ogal/exp_results
-```6
+```666666
 
-**Code pointer:** Output directory creation in `misc/config.py::Config._pathes_magic` (line 308)
+**Code pointer:** Output directory creation in [`misc/config.py::Config._pathes_magic`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) (line 308)
 
 **Resolution:** Ensure write permissions on `OUTPUT_PATH` from compute nodes.
 
@@ -518,7 +518,7 @@ PYTHON_PATH=/data/workspace/al_olympics/conda-env/bin/python
 DATASETS_PATH=/home/user/ogal/datasets
 CODE_PATH=/home/user/ogal/code
 OUTPUT_PATH=/home/user/ogal/exp_results
-```7
+```777777
 
 **Code pointer:** Python path set in [`resources/slurm_templates/slurm_parallel.sh`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/slurm_templates/slurm_parallel.sh) via `HPC_PYTHON_PATH`
 
@@ -550,9 +550,9 @@ PYTHON_PATH=/data/workspace/al_olympics/conda-env/bin/python
 DATASETS_PATH=/home/user/ogal/datasets
 CODE_PATH=/home/user/ogal/code
 OUTPUT_PATH=/home/user/ogal/exp_results
-```8
+```888888
 
-**Code pointer:** Worker index assignment in `misc/config.py::Config.load_workload` (line 393)
+**Code pointer:** Worker index assignment in [`misc/config.py::Config.load_workload`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) (line 393)
 
 **Resolution:**
 1. Ensure `SLURM_ARRAY_TASK_ID` is unique per task
@@ -582,11 +582,11 @@ PYTHON_PATH=/data/workspace/al_olympics/conda-env/bin/python
 DATASETS_PATH=/home/user/ogal/datasets
 CODE_PATH=/home/user/ogal/code
 OUTPUT_PATH=/home/user/ogal/exp_results
-```9
+```999999
 
 **Code pointers:**
 
-- Metric saving: `framework_runners/base_runner.py::AL_Experiment.run_experiment` (lines 220-221)
+- Metric saving: [`framework_runners/base_runner.py::AL_Experiment.run_experiment`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/base_runner.py) (lines 220-221)
 - Missing ID detection: [`scripts/find_missing_exp_ids_in_metric_files.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/find_missing_exp_ids_in_metric_files.py)
 - Broken file detection: [`scripts/find_broken_file.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts/find_broken_file.py)
 
@@ -610,9 +610,9 @@ if self.RUNNING_ENVIRONMENT == "local":
 elif self.RUNNING_ENVIRONMENT == "hpc":
     self.OUTPUT_PATH = Path(self.HPC_OUTPUT_PATH)
     self.DATASETS_PATH = Path(self.HPC_DATASETS_PATH)
-```0
+```000000
 
-**Code pointer:** OOM tracking in `framework_runners/base_runner.py::AL_Experiment.run_experiment` (lines 120-126)
+**Code pointer:** OOM tracking in [`framework_runners/base_runner.py::AL_Experiment.run_experiment`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/base_runner.py) (lines 120-126)
 
 **Resolution:**
 1. Increase `SLURM_MEMORY` in config or SLURM script
@@ -634,9 +634,9 @@ if self.RUNNING_ENVIRONMENT == "local":
 elif self.RUNNING_ENVIRONMENT == "hpc":
     self.OUTPUT_PATH = Path(self.HPC_OUTPUT_PATH)
     self.DATASETS_PATH = Path(self.HPC_DATASETS_PATH)
-```1
+```111111
 
-**Code pointer:** Runtime limit check in `framework_runners/base_runner.py::AL_Experiment.run_experiment` (lines 193-201)
+**Code pointer:** Runtime limit check in [`framework_runners/base_runner.py::AL_Experiment.run_experiment`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/base_runner.py) (lines 193-201)
 
 ```python
 if self.RUNNING_ENVIRONMENT == "local":
@@ -645,7 +645,7 @@ if self.RUNNING_ENVIRONMENT == "local":
 elif self.RUNNING_ENVIRONMENT == "hpc":
     self.OUTPUT_PATH = Path(self.HPC_OUTPUT_PATH)
     self.DATASETS_PATH = Path(self.HPC_DATASETS_PATH)
-```2
+```222222
 
 **Resolution:**
 1. Increase `EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT` (default: 300s)
@@ -664,7 +664,7 @@ if self.RUNNING_ENVIRONMENT == "local":
 elif self.RUNNING_ENVIRONMENT == "hpc":
     self.OUTPUT_PATH = Path(self.HPC_OUTPUT_PATH)
     self.DATASETS_PATH = Path(self.HPC_DATASETS_PATH)
-```3
+```333333
 
 ### Running an Experiment
 
@@ -675,7 +675,7 @@ if self.RUNNING_ENVIRONMENT == "local":
 elif self.RUNNING_ENVIRONMENT == "hpc":
     self.OUTPUT_PATH = Path(self.HPC_OUTPUT_PATH)
     self.DATASETS_PATH = Path(self.HPC_DATASETS_PATH)
-```4
+```444444
 
 ### Chain Jobs for Long Experiments
 
@@ -688,7 +688,7 @@ if self.RUNNING_ENVIRONMENT == "local":
 elif self.RUNNING_ENVIRONMENT == "hpc":
     self.OUTPUT_PATH = Path(self.HPC_OUTPUT_PATH)
     self.DATASETS_PATH = Path(self.HPC_DATASETS_PATH)
-```5
+```555555
 
 Alternatively, use the generated chain job script:
 
@@ -699,7 +699,7 @@ if self.RUNNING_ENVIRONMENT == "local":
 elif self.RUNNING_ENVIRONMENT == "hpc":
     self.OUTPUT_PATH = Path(self.HPC_OUTPUT_PATH)
     self.DATASETS_PATH = Path(self.HPC_DATASETS_PATH)
-```6
+```666666
 
 (source: [`01_create_workload.py::create_AL_experiment_slurm_files`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/01_create_workload.py#L336), line 336)
 
@@ -737,7 +737,7 @@ if self.RUNNING_ENVIRONMENT == "local":
 elif self.RUNNING_ENVIRONMENT == "hpc":
     self.OUTPUT_PATH = Path(self.HPC_OUTPUT_PATH)
     self.DATASETS_PATH = Path(self.HPC_DATASETS_PATH)
-```7
+```777777
 
 ---
 
@@ -745,9 +745,9 @@ elif self.RUNNING_ENVIRONMENT == "hpc":
 
 | Option | Description | Default | Source |
 |--------|-------------|---------|--------|
-| `RUNNING_ENVIRONMENT` | Set to "hpc" on cluster | "local" | `misc/config.py::Config.RUNNING_ENVIRONMENT` |
-| `BASH_PARALLEL_RUNNERS` | Parallel workers for local execution | 10 | `misc/config.py::Config.BASH_PARALLEL_RUNNERS` |
-| `SEPARATE_HPC_LOCAL_WORKLOAD` | Split strategies unsuitable for HPC | false | `misc/config.py::Config.SEPARATE_HPC_LOCAL_WORKLOAD` |
+| `RUNNING_ENVIRONMENT` | Set to "hpc" on cluster | "local" | [`misc/config.py::Config.RUNNING_ENVIRONMENT`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) |
+| `BASH_PARALLEL_RUNNERS` | Parallel workers for local execution | 10 | [`misc/config.py::Config.BASH_PARALLEL_RUNNERS`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) |
+| `SEPARATE_HPC_LOCAL_WORKLOAD` | Split strategies unsuitable for HPC | false | [`misc/config.py::Config.SEPARATE_HPC_LOCAL_WORKLOAD`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) |
 
 ### Example HPC Invocation
 
@@ -758,4 +758,4 @@ if self.RUNNING_ENVIRONMENT == "local":
 elif self.RUNNING_ENVIRONMENT == "hpc":
     self.OUTPUT_PATH = Path(self.HPC_OUTPUT_PATH)
     self.DATASETS_PATH = Path(self.HPC_DATASETS_PATH)
-```8
+```888888

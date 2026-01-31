@@ -192,7 +192,7 @@ poetry update
 
 # Regenerate conda lock files (requires conda-lock)
 conda-lock --file environment.yml --platform linux-64 --platform osx-64 --platform osx-arm64 --platform win-64
-```0
+```000000
 
 ### Imports
 
@@ -207,7 +207,7 @@ poetry update
 
 # Regenerate conda lock files (requires conda-lock)
 conda-lock --file environment.yml --platform linux-64 --platform osx-64 --platform osx-arm64 --platform win-64
-```1
+```111111
 
 ---
 
@@ -233,7 +233,7 @@ poetry update
 
 # Regenerate conda lock files (requires conda-lock)
 conda-lock --file environment.yml --platform linux-64 --platform osx-64 --platform osx-arm64 --platform win-64
-```2
+```222222
 
 ---
 
@@ -254,7 +254,7 @@ poetry update
 
 # Regenerate conda lock files (requires conda-lock)
 conda-lock --file environment.yml --platform linux-64 --platform osx-64 --platform osx-arm64 --platform win-64
-```3
+```333333
 
 ### Testing Configuration Changes
 
@@ -264,7 +264,7 @@ poetry update
 
 # Regenerate conda lock files (requires conda-lock)
 conda-lock --file environment.yml --platform linux-64 --platform osx-64 --platform osx-arm64 --platform win-64
-```4
+```444444
 
 ### Profiling Performance
 
@@ -274,7 +274,7 @@ poetry update
 
 # Regenerate conda lock files (requires conda-lock)
 conda-lock --file environment.yml --platform linux-64 --platform osx-64 --platform osx-arm64 --platform win-64
-```5
+```555555
 
 ---
 
@@ -296,7 +296,7 @@ poetry update
 
 # Regenerate conda lock files (requires conda-lock)
 conda-lock --file environment.yml --platform linux-64 --platform osx-64 --platform osx-arm64 --platform win-64
-```6
+```666666
 Paste full traceback here
 ```bash
 # Update Poetry dependencies
@@ -304,7 +304,7 @@ poetry update
 
 # Regenerate conda lock files (requires conda-lock)
 conda-lock --file environment.yml --platform linux-64 --platform osx-64 --platform osx-arm64 --platform win-64
-```7
+```777777
 
 ---
 

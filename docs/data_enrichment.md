@@ -219,7 +219,7 @@ Use [`scripts/validate_results_schema.py`](https://github.com/jgonsior/olympic-g
 
 ```yaml
 SCHEMA_VERSION: "1.0"  # Add this field for future compatibility
-```0
+```000000
 
 ### 4.2 What the Validator Checks
 
@@ -244,7 +244,7 @@ SCHEMA_VERSION: "1.0"  # Add this field for future compatibility
 
 ```yaml
 SCHEMA_VERSION: "1.0"  # Add this field for future compatibility
-```1
+```111111
 
 ---
 
@@ -298,16 +298,16 @@ When sharing results with others:
 
 ```yaml
 SCHEMA_VERSION: "1.0"  # Add this field for future compatibility
-```2
+```222222
 
 **If metric files are corrupted:**
 
 ```yaml
 SCHEMA_VERSION: "1.0"  # Add this field for future compatibility
-```3
+```333333
 
 **If workload is incomplete:**
 
 ```yaml
 SCHEMA_VERSION: "1.0"  # Add this field for future compatibility
-```4
+```444444

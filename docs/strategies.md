@@ -228,7 +228,7 @@ The following strategies only support binary classification:
 
 ## Using Strategies in Config
 
-To use a strategy in your experiment configuration (`resources/exp_config.yaml`):
+To use a strategy in your experiment configuration ([`resources/exp_config.yaml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/exp_config.yaml)):
 
 ```yaml
 my_experiment:
@@ -279,7 +279,7 @@ class AL_Experiment(ABC):
         pass
 ```
 
-(source: [`resources/data_types.py::AL_STRATEGY`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py), `al_strategy_to_python_classes_mapping`; `framework_runners/base_runner.py::AL_Experiment`)
+(source: [`resources/data_types.py::AL_STRATEGY`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py), `al_strategy_to_python_classes_mapping`; [`framework_runners/base_runner.py::AL_Experiment`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners/base_runner.py))
 
 ---
 
