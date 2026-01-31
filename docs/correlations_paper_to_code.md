@@ -65,7 +65,7 @@ $$
 flowchart LR
     A[Metric Vector 1<br/>X = full_auc values] --> C[Pearson r]
     B[Metric Vector 2<br/>Y = final_value] --> C
-    C --> D[Correlation coefficient<br/>r ∈ [-1, 1]]
+    C --> D["Correlation coefficient<br/>r ∈ [−1, 1]"]
 ```
 
 ### Code Mapping
@@ -239,7 +239,7 @@ flowchart TD
     B --> C2[Ranking vector 2<br/>hyperparameter value b₂]
     C1 --> D[Kendall tau-b test]
     C2 --> D
-    D --> E[Orange heatmap<br/>τb ∈ [-1, 1]]
+    D --> E["Orange heatmap<br/>τb ∈ [−1, 1]"]
 ```
 
 ### Code Mapping
