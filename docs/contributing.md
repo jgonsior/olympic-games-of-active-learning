@@ -186,13 +186,22 @@ olympic-games-of-active-learning/
 
 Use Google-style docstrings:
 
-```bash
-# Update Poetry dependencies
-poetry update
-
-# Regenerate conda lock files (requires conda-lock)
-conda-lock --file environment.yml --platform linux-64 --platform osx-64 --platform osx-arm64 --platform win-64
-```000000
+```python
+def calculate_metric(predictions: np.ndarray, labels: np.ndarray) -> float:
+    """Calculate the weighted F1 score.
+    
+    Args:
+        predictions: Model predictions array.
+        labels: Ground truth labels.
+    
+    Returns:
+        Weighted F1 score between 0 and 1.
+    
+    Raises:
+        ValueError: If arrays have mismatched lengths.
+    """
+    return f1_score(labels, predictions, average='weighted')
+```
 
 ### Imports
 
@@ -201,13 +210,20 @@ Order imports as:
 2. Third-party packages
 3. Local modules
 
-```bash
-# Update Poetry dependencies
-poetry update
+```python
+# Standard library
+import os
+from pathlib import Path
 
-# Regenerate conda lock files (requires conda-lock)
-conda-lock --file environment.yml --platform linux-64 --platform osx-64 --platform osx-arm64 --platform win-64
-```111111
+# Third-party
+import numpy as np
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+
+# Local
+from misc.config import Config
+from resources.data_types import AL_STRATEGY
+```
 
 ---
 
@@ -227,13 +243,25 @@ Before submitting a PR:
 
 ### PR Template
 
-```bash
-# Update Poetry dependencies
-poetry update
+```markdown
+## Description
 
-# Regenerate conda lock files (requires conda-lock)
-conda-lock --file environment.yml --platform linux-64 --platform osx-64 --platform osx-arm64 --platform win-64
-```222222
+Brief summary of changes.
+
+## Changes Made
+
+- Change 1
+- Change 2
+
+## Testing
+
+How did you test these changes?
+
+## Checklist
+
+- [ ] Tests pass
+- [ ] Documentation updated
+```
 
 ---
 
@@ -249,32 +277,34 @@ conda-lock --file environment.yml --platform linux-64 --platform osx-64 --platfo
 ### Debugging Experiments
 
 ```bash
-# Update Poetry dependencies
-poetry update
+# Run a single experiment with verbose output
+python 02_run_experiment.py --EXP_TITLE test_debug --WORKER_INDEX 0 --verbose
 
-# Regenerate conda lock files (requires conda-lock)
-conda-lock --file environment.yml --platform linux-64 --platform osx-64 --platform osx-arm64 --platform win-64
-```333333
+# Check experiment logs
+cat ${OGAL_OUTPUT}/test_debug/logs/worker_0.log
+```
 
 ### Testing Configuration Changes
 
 ```bash
-# Update Poetry dependencies
-poetry update
+# Validate config syntax
+python -c "from misc.config import Config; Config()"
 
-# Regenerate conda lock files (requires conda-lock)
-conda-lock --file environment.yml --platform linux-64 --platform osx-64 --platform osx-arm64 --platform win-64
-```444444
+# Run smoke test with new config
+python 01_create_workload.py --EXP_TITLE config_test
+python 02_run_experiment.py --EXP_TITLE config_test --WORKER_INDEX 0
+```
 
 ### Profiling Performance
 
 ```bash
-# Update Poetry dependencies
-poetry update
+# Profile memory usage
+python -m memory_profiler 02_run_experiment.py --EXP_TITLE profile_test --WORKER_INDEX 0
 
-# Regenerate conda lock files (requires conda-lock)
-conda-lock --file environment.yml --platform linux-64 --platform osx-64 --platform osx-arm64 --platform win-64
-```555555
+# Profile CPU time
+python -m cProfile -o profile.prof 02_run_experiment.py --EXP_TITLE profile_test --WORKER_INDEX 0
+python -c "import pstats; pstats.Stats('profile.prof').sort_stats('cumtime').print_stats(20)"
+```
 
 ---
 
@@ -290,21 +320,28 @@ When reporting bugs, include:
 
 ### Bug Report Template
 
-```bash
-# Update Poetry dependencies
-poetry update
+```markdown
+**Environment:**
+- OS: [e.g., Ubuntu 22.04]
+- Python version: [e.g., 3.11.4]
+- Conda environment: [e.g., al_olympics_env from conda-linux-64.lock]
 
-# Regenerate conda lock files (requires conda-lock)
-conda-lock --file environment.yml --platform linux-64 --platform osx-64 --platform osx-arm64 --platform win-64
-```666666
+**Command:**
+```
+python 02_run_experiment.py --EXP_TITLE my_test --WORKER_INDEX 0
+```
+
+**Error:**
+```
 Paste full traceback here
-```bash
-# Update Poetry dependencies
-poetry update
+```
 
-# Regenerate conda lock files (requires conda-lock)
-conda-lock --file environment.yml --platform linux-64 --platform osx-64 --platform osx-arm64 --platform win-64
-```777777
+**Expected behavior:**
+Describe what should have happened.
+
+**Configuration:**
+Relevant config excerpts (sanitize any credentials).
+```
 
 ---
 
