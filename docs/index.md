@@ -1,220 +1,148 @@
-# OGAL Documentation
+# Start Here
 
-> **Note**: This documentation was generated with the assistance of GitHub Copilot (Claude AI) based on analysis of the codebase, research paper ([arXiv:2506.03817](https://arxiv.org/abs/2506.03817)), and archived data ([DOI:10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862)). While efforts were made to ensure accuracy, users should verify critical details against the source code and paper.
+**OGAL (Olympic Games of Active Learning)** is the largest Active Learning benchmarking study to date, with **4.6 million hyperparameter combinations** already computed and archived.
 
-Welcome to the **Olympic Games of Active Learning (OGAL)** documentation. This framework provides a comprehensive benchmarking system for evaluating Active Learning query strategies at scale.
-
-## What is OGAL?
-
-OGAL is a large-scale experimental framework designed to systematically evaluate Active Learning (AL) strategies. As described in the research paper ([arXiv:2506.03817](https://arxiv.org/abs/2506.03817)), AL is rarely used in real-world applications due to complexity and lack of trust in its effectiveness. This framework addresses these challenges by:
-
-- Compiling a **hyperparameter grid of 4.6+ million combinations**
-- Recording performance across the **largest conducted AL study to date**
-- Analyzing the **impact of each hyperparameter** on experiment results
-
-### Paper Terminology
-
-The paper defines an AL experiment as **E = (𝒮, D, 𝒯, ℐ, M, b, c, ℒ)** — a combination of hyperparameters:
-
-| Symbol | Term | OGAL Parameter |
-|--------|------|----------------|
-| 𝔻 | Dataset | `EXP_GRID_DATASET` |
-| 𝕊 | AL Strategy (Query Strategy) | `EXP_GRID_STRATEGY` |
-| 𝕃 | Learner Model | `EXP_GRID_LEARNER_MODEL` |
-| 𝔹 | Batch Size | `EXP_GRID_BATCH_SIZE` |
-| 𝕋 | Train-Test-Split | `EXP_GRID_TRAIN_TEST_BUCKET_SIZE` |
-| 𝕀 | Initial Start Set | `EXP_GRID_START_POINT` |
-| c | AL Cycles | `EXP_GRID_NUM_QUERIES` |
-
-The framework evaluates:
-
-- **28 AL strategies (𝕊)** from 5 frameworks (ALiPy, libact, small-text, scikit-activeml, playground)
-- **92 datasets (𝔻)** from OpenML, Kaggle, and UCI
-- **3 learner models (𝕃)**: Random Forest, MLP, SVM
-- **6 batch sizes (𝔹)**: 1, 5, 10, 20, 50, 100
-- **5 train-test splits (𝕋) × 20 start sets (𝕀)** per dataset
-
-## Quick Links
-
-| Document | Description |
-|----------|-------------|
-| [Pipeline](pipeline.md) | Step-by-step guide to the sequential experiment pipeline |
-| [HPC Setup](hpc.md) | **HPC Runbook** - Running experiments on HPC clusters with SLURM |
-| [Evaluation Pipeline](evaluation_pipeline.md) | **Canonical evaluation guide** - From raw outputs to paper figures |
-| [Eva Scripts](eva_scripts.md) | **Detailed catalog** - All evaluation scripts with I/O schemas |
-| [Results Format](results_format.md) | Output paths, file formats, and result schemas |
-| [Data Enrichment](data_enrichment.md) | **Protocol** - Adding new results safely and reproducibly |
-| [Reproducing the Paper](reproducing_paper.md) | Complete workflow to reproduce OPARA archive results |
-| [Scripts & Evaluation](scripts.md) | Utility scripts and evaluation analysis scripts |
-| [Research Reuse](research_reuse.md) | Extending the framework for your research |
-| [Contributing](contributing.md) | Development setup and contribution guidelines |
-
-## Core Concepts
-
-| Document | Description |
-|----------|-------------|
-| [Architecture](architecture.md) | System design, core abstractions, failure recovery, HPC parallelism |
-| [Configuration](configuration.md) | Config files, data flow, environment setup |
-| [Data Model](data_model.md) | Run identity, workload schema, result schemas, enum definitions |
-| [Dataset Metadata](dataset_metadata.md) | Auto-computed per-sample categorizations |
-| [Utilities](utilities.md) | Helper modules and scripts catalog |
-
-## Paper & Archived Artifacts
-
-| Resource | Link |
-|----------|------|
-| **Research Paper** | [arXiv:2506.03817](https://arxiv.org/abs/2506.03817) - "Survey of Active Learning Hyperparameters" |
-| GitHub Repository | [jgonsior/olympic-games-of-active-learning](https://github.com/jgonsior/olympic-games-of-active-learning) |
-| Archived Data (DOI) | [10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862) - Raw experiment results |
-| **Reproduction Guide** | [Reproducing the Paper](reproducing_paper.md) - Complete workflow to regenerate results |
-
-### Paper Abstract
-
-> Annotating data is a time-consuming and costly task, but it is inherently required for supervised machine learning. Active Learning (AL) is an established method that minimizes human labeling effort by iteratively selecting the most informative unlabeled samples for expert annotation. Despite being known for decades, AL is still rarely used in real-world applications due to complexity and lack of trust in its effectiveness. We hypothesize that both reasons share the same culprit: **the large hyperparameter space of AL**. This mostly unexplored hyperparameter space often leads to misleading and irreproducible AL experiment results.
-
-The DOI reference (OPARA-862) provides the raw experiment results (~terabytes of data) for long-term preservation and reproducibility. See [Reproducing the Paper](reproducing_paper.md) for the exact configuration (`full_exp_jan`) used to generate these results.
-
-## Pipeline Overview
-
-OGAL follows a strict sequential execution order (source: root directory structure):
-
-```mermaid
-flowchart TD
-    A[00_download_datasets.py] --> B[01_create_workload.py]
-    B --> C[02_run_experiment.py]
-    C --> D[03_calculate_dataset_categorizations.py]
-    D --> E[04_calculate_advanced_metrics.py]
-    E --> F[05_analyze_partially_run_workload.py]
-    F --> G[07b_create_results_without_flask.py]
-    
-    subgraph Config
-        CFG1[.server_access_credentials.cfg]
-        CFG2[resources/exp_config.yaml]
-    end
-    
-    subgraph Auxiliary["Auxiliary Scripts"]
-        S1[scripts/]
-        S2[eva_scripts/]
-    end
-    
-    CFG1 --> A
-    CFG2 --> B
-    G --> S1
-    G --> S2
-```
-
-See [Pipeline Documentation](pipeline.md) for complete details on each step.
-
-## Quickstart
-
-```bash
-# 1. Setup environment
-conda create --name al_olympics_env --file conda-linux-64.lock
-conda activate al_olympics_env
-poetry install
-
-# 2. Configure paths (create .server_access_credentials.cfg)
-
-# 3. Create and run a small test workload
-python 01_create_workload.py --EXP_TITLE test
-python 02_run_experiment.py --EXP_TITLE test --WORKER_INDEX 0
-```
-
-## Repository Structure
-
-### Active Code
-
-| Directory | Purpose |
-|-----------|---------|
-| [`datasets/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/datasets) | Dataset loading utilities (see [`datasets/__init__.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/datasets/__init__.py)) |
-| [`framework_runners/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/framework_runners) | AL framework adapters: ALiPy, libact, small-text, scikit-activeml, playground (see `framework_runners/*.py`) |
-| [`optimal_query_strategies/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/optimal_query_strategies) | Oracle strategy implementations (see `optimal_query_strategies/*.py`) |
-| [`metrics/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics) | Metric computation modules (see [`metrics/base_metric.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/base_metric.py) and [`metrics/Standard_ML_Metrics.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/metrics/Standard_ML_Metrics.py)) |
-| [`resources/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources) | Configuration and templates (see [`resources/exp_config.yaml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/exp_config.yaml), [`resources/data_types.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py)) |
-| [`scripts/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts) | Utility, conversion, and maintenance scripts (see `scripts/` directory) |
-| [`eva_scripts/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts) | Evaluation, visualization, and paper figure scripts (see `eva_scripts/` directory) |
-| [`misc/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc) | Shared utilities: config, logging, helpers (see [`misc/config.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py), [`misc/helpers.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/helpers.py)) |
-
-### Deprecated
-
-| Directory | Status |
-|-----------|--------|
-| [`analyse_results/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/analyse_results) | **Deprecated / not used.** Use [`eva_scripts/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts) for analysis. See [Evaluation Pipeline](evaluation_pipeline.md). |
-
-## License
-
-AGPL-3.0. See [LICENSE](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/LICENSE) for details.
+!!! success "Skip 3.6 million CPU hours"
+    The complete experiment results are archived at **[DOI:10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862)**. You can analyze this data without rerunning experiments.
 
 ---
 
-## Documentation QA Checklist
+## What Do You Want to Do?
 
-This section helps maintain documentation quality and accuracy.
+<div class="grid cards" markdown>
 
-### Building Docs Locally
+-   :material-magnify-scan:{ .lg .middle } **Analyze the Dataset**
+
+    ---
+
+    Use the published 4.6M experiment results for your own research — stopping criteria, meta-learning, strategy recommendations.
+
+    [:octicons-arrow-right-24: Analyze the dataset](analyze_dataset.md)
+
+-   :material-plus-circle:{ .lg .middle } **Add Your Results**
+
+    ---
+
+    Contribute new experiments (strategies, datasets, learners) to the shared benchmark.
+
+    [:octicons-arrow-right-24: Add your results](add_results.md)
+
+-   :material-cog:{ .lg .middle } **Run the Benchmark**
+
+    ---
+
+    Execute experiments locally or at HPC scale with SLURM.
+
+    [:octicons-arrow-right-24: Reference → Runbook](reference/runbook.md)
+
+</div>
+
+---
+
+## The OPARA Dataset
+
+| Fact | Value |
+|------|-------|
+| **Experiments** | 4.6+ million hyperparameter combinations |
+| **AL Strategies** | 28 from 5 frameworks (ALiPy, libact, small-text, scikit-activeml, playground) |
+| **Datasets** | 92 classification tasks |
+| **Learners** | Random Forest, MLP, SVM |
+| **Compute invested** | ~3.6 million CPU hours |
+| **Archive** | [DOI:10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862) |
+| **Paper** | [arXiv:2506.03817](https://arxiv.org/abs/2506.03817) |
+
+### What's in the Archive
+
+```
+full_exp_jan/
+├── <STRATEGY>/<DATASET>/
+│   ├── accuracy.csv.xz           # Per-cycle accuracy
+│   ├── weighted_f1-score.csv.xz  # Per-cycle F1
+│   ├── selected_indices.csv.xz   # Queried sample indices
+│   ├── full_auc_*.csv.xz         # Aggregated AUC metrics
+│   └── ...
+├── 05_done_workload.csv          # 4.6M completed experiments
+└── 01_workload.csv               # Full hyperparameter grid
+```
+
+---
+
+## Paper Terminology
+
+The paper ([arXiv:2506.03817](https://arxiv.org/abs/2506.03817)) defines an AL experiment as **E = (𝒮, D, 𝒯, ℐ, M, b, c, ℒ)**:
+
+| Symbol | Term | Values in Archive |
+|--------|------|-------------------|
+| 𝕊 | AL Strategy | 28 strategies |
+| 𝔻 | Dataset | 92 datasets |
+| 𝕃 | Learner Model | RF, MLP, SVM |
+| 𝔹 | Batch Size | 1, 5, 10, 20, 50, 100 |
+| 𝕋 | Train-Test Split | 5 splits per dataset |
+| 𝕀 | Initial Start Set | 20 start sets per split |
+| c | AL Cycles | 100 iterations |
+
+---
+
+## Quick Start: Analyze Without Rerunning
 
 ```bash
-# Install MkDocs and dependencies
-pip install mkdocs-material
+# 1. Download archived results
+wget https://opara.zih.tu-dresden.de/xmlui/bitstream/handle/123456789/5678/full_exp_jan.zip
+unzip full_exp_jan.zip -d /path/to/results/
 
-# Serve docs locally (with live reload)
-mkdocs serve
+# 2. Setup OGAL
+conda create --name ogal --file conda-linux-64.lock
+conda activate ogal
+poetry install
 
-# Open browser to http://127.0.0.1:8000
+# 3. Configure paths
+cat > .server_access_credentials.cfg << EOF
+[LOCAL]
+OUTPUT_PATH=/path/to/results
+DATASETS_PATH=/path/to/datasets
+EOF
+
+# 4. Generate leaderboard from archived data
+python -m eva_scripts.final_leaderboard --EXP_TITLE full_exp_jan
 ```
 
-### Validating Mermaid Rendering
+See [Analyze the Dataset](analyze_dataset.md) for research starter analyses.
 
-Mermaid diagrams are configured using the **mkdocs-mermaid2-plugin** in [`mkdocs.yml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/mkdocs.yml):
+---
 
-1. **Check configuration**: Verify [`mkdocs.yml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/mkdocs.yml) has:
-   ```yaml
-   plugins:
-     - mermaid2
-   
-   markdown_extensions:
-     - pymdownx.superfences:
-         custom_fences:
-           - name: mermaid
-             class: mermaid
-             format: !!python/name:mermaid2.fence_mermaid
-   ```
+## Deprecated
 
-2. **Test locally**: Run `mkdocs serve` and check that diagrams render as flowcharts/graphs (not raw text)
+!!! warning "analyse_results/"
+    The `analyse_results/` directory is **deprecated**. Use `eva_scripts/` for all analysis.
 
-3. **Valid syntax**: Mermaid blocks must use triple-backtick fences with `mermaid` language:
-   ````markdown
-   ```mermaid
-   flowchart TD
-       A --> B
-   ```
-   ````
+---
 
-### Spotting Stale or Unsafe Claims
+## Navigation
 
-When reviewing documentation, verify claims about code behavior with source code:
+| Section | Purpose |
+|---------|---------|
+| [Analyze the Dataset](analyze_dataset.md) | Research using archived data |
+| [Add Your Results](add_results.md) | Contribute new experiments |
+| [Reference](reference/runbook.md) | Pipeline, HPC, schemas, catalogs |
+| [Contributing](contributing.md) | Development setup |
 
-**Code pointer format**: `(source: path/to/file.py::ClassName.method_name)` or `(see path/to/file.py)`
+---
 
-**Red flags requiring verification**:
+## Docs Maintenance
 
-| Claim Type | Example | How to Verify |
-|------------|---------|---------------|
-| Default values | "default batch size is 10" | Check [`misc/config.py::Config`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) class attributes or [`resources/exp_config.yaml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/exp_config.yaml) |
-| Output paths | "Results saved to `OUTPUT_PATH/metrics/`" | Check script that writes the file (e.g., [`02_run_experiment.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/02_run_experiment.py)) |
-| File formats | "CSV with columns X, Y, Z" | Check actual output generation code or `pandas.to_csv()` calls |
-| Behavior claims | "Automatically resumes from checkpoint" | Check script logic for resume/checkpoint code |
-| Config keys | "`EXP_GRID_DATASET` controls datasets" | Check [`resources/data_types.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py) enums and [`misc/config.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py) |
+??? info "Where should new information go?"
+    
+    | Content Type | Location |
+    |--------------|----------|
+    | Research workflows with existing data | [Analyze the Dataset](analyze_dataset.md) |
+    | Adding new experiments/strategies | [Add Your Results](add_results.md) |
+    | Pipeline details, HPC, schemas | [Reference](reference/runbook.md) |
+    | Script I/O specifications | [Reference → Eva Scripts](reference/eva_scripts_catalog.md) |
+    | Mathematical definitions | [Reference → Correlations](reference/correlations_paper_to_code.md) |
 
-**Marking unverified claims**: If you cannot find source code support, add `TODO(verify):` prefix:
-
-```markdown
-TODO(verify): Default timeout is 300 seconds per query.
-```
-
-**Finding source code**:
-
-- Configuration: [`misc/config.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/config.py), [`resources/exp_config.yaml`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/exp_config.yaml), [`resources/data_types.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py)
-- Pipeline scripts: [`00_download_datasets.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/00_download_datasets.py) through [`07b_create_results_without_flask.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/07b_create_results_without_flask.py)
-- Output formats: Search for `to_csv()`, `to_parquet()`, file write operations
-- Behavior: Read script main logic and helper functions in [`misc/helpers.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/misc/helpers.py)
+??? info "Building docs locally"
+    ```bash
+    pip install mkdocs-material mkdocs-mermaid2-plugin
+    mkdocs serve
+    # Open http://127.0.0.1:8000
+    ```

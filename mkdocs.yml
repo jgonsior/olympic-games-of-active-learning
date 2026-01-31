@@ -30,25 +30,24 @@ theme:
         name: Switch to light mode
 
 nav:
-  - Home: index.md
-  - Pipeline: pipeline.md
-  - HPC Setup: hpc.md
-  - Evaluation Pipeline: evaluation_pipeline.md
-  - Eva Scripts: eva_scripts.md
-  - Correlations (Paper ↔ Code): correlations_paper_to_code.md
-  - Strategy Catalog: strategies.md
-  - Results Format: results_format.md
-  - Data Enrichment: data_enrichment.md
-  - Dataset Value: dataset_value.md
-  - Research Opportunities: research_opportunities.md
-  - Concepts:
-    - Architecture Rationale: concepts/architecture_rationale.md
-    - Configuration Spine: concepts/configuration_spine.md
-    - Data Model & Enums: concepts/data_model_and_enums.md
-    - Dataset Metadata & Auto Enums: concepts/dataset_metadata_and_auto_enums.md
-    - Utilities & Misc: concepts/utilities_and_misc.md
-  - Frameworks: frameworks.md
-  - Research Reuse: research_reuse.md
+  - Start here: index.md
+  - Analyze the dataset: analyze_dataset.md
+  - Add your results: add_results.md
+  - Reference:
+    - Runbook: reference/runbook.md
+    - Eva Scripts Catalog: reference/eva_scripts_catalog.md
+    - Correlations (Paper ↔ Code): reference/correlations_paper_to_code.md
+    - Results Schema: reference/results_schema.md
+    - Strategy Catalog: reference/strategy_catalog.md
+    - Frameworks: reference/frameworks.md
+    - Data Enrichment: reference/data_enrichment.md
+    - Research Reuse: reference/research_reuse.md
+    - Concepts:
+      - Architecture Rationale: reference/concepts/architecture_rationale.md
+      - Configuration Spine: reference/concepts/configuration_spine.md
+      - Data Model & Enums: reference/concepts/data_model_and_enums.md
+      - Dataset Metadata & Auto Enums: reference/concepts/dataset_metadata_and_auto_enums.md
+      - Utilities & Misc: reference/concepts/utilities_and_misc.md
   - Contributing: contributing.md
 
 plugins:
