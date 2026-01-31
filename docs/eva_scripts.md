@@ -5,6 +5,9 @@ This document provides a comprehensive catalog of all evaluation scripts in [`ev
 !!! tip "Canonical Evaluation Guide"
     For a step-by-step guide to running these scripts in the correct order, see **[Evaluation Pipeline](evaluation_pipeline.md)**.
 
+!!! info "Mathematical Definitions"
+    For detailed explanations of correlation metrics (Pearson, Jaccard, Kendall tau-b) with LaTeX formulas and code mappings, see **[Correlations (Paper ↔ Code)](correlations_paper_to_code.md)**.
+
 ---
 
 ## Script Catalog Overview
