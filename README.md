@@ -14,14 +14,14 @@
 ### Why OGAL?
 - Unified multi-framework AL benchmarking runner with a single API and consistent protocol for 50+ strategies (see [`resources/exp_config.yaml`](resources/exp_config.yaml)).
 - Shared archived experimental dataset [OPARA-862](https://doi.org/10.25532/OPARA-862) that can be reused and extended via the documented enrichment protocol.
-- [`eva_scripts/`](docs/eva_scripts.md) as the analysis API to turn raw runs into derived artifacts and plots.
+- [`eva_scripts/`](https://jgonsior.github.io/olympic-games-of-active-learning/reference/eva_scripts_catalog/) as the analysis API to turn raw runs into derived artifacts and plots.
 - **Compute saved:** Reproducing the full hyperparameter grid from scratch costs **~3.6 million CPU hours** (paper: [arXiv:2506.03817](https://arxiv.org/abs/2506.03817)).
 
 ### What's inside the dataset?
-- Preview: [Dataset value](docs/dataset_value.md) · [Data enrichment](docs/data_enrichment.md) · [Eva scripts](docs/eva_scripts.md)
+- Preview: [Data enrichment](https://jgonsior.github.io/olympic-games-of-active-learning/reference/data_enrichment/) · [Eva scripts](https://jgonsior.github.io/olympic-games-of-active-learning/reference/eva_scripts_catalog/)
 
 ### Research opportunities
-- See [Research opportunities](docs/research_opportunities.md) for concrete analyses enabled by the archived data and eva scripts.
+- See [Research Reuse](https://jgonsior.github.io/olympic-games-of-active-learning/reference/research_reuse/) for concrete analyses enabled by the archived data and eva scripts.
 
 ---
 
@@ -46,7 +46,7 @@ my_experiment:
   # OGAL handles framework dispatch internally
 ```
 
-See the **[Strategy Catalog](https://jgonsior.github.io/olympic-games-of-active-learning/strategies/)** for all 50+ available strategies.
+See the **[Strategy Catalog](https://jgonsior.github.io/olympic-games-of-active-learning/reference/strategy_catalog/)** for all 50+ available strategies.
 
 ---
 
@@ -56,11 +56,11 @@ Understand OGAL's internal architecture and design:
 
 | Concept | Description |
 |---------|-------------|
-| **[Architecture](https://jgonsior.github.io/olympic-games-of-active-learning/architecture/)** | System design, core abstractions, failure recovery, HPC parallelism |
-| **[Configuration](https://jgonsior.github.io/olympic-games-of-active-learning/configuration/)** | Config files, data flow, environment setup |
-| **[Data Model](https://jgonsior.github.io/olympic-games-of-active-learning/data_model/)** | Run identity, workload schema, result schemas, enum definitions |
-| **[Dataset Metadata](https://jgonsior.github.io/olympic-games-of-active-learning/dataset_metadata/)** | Auto-computed per-sample categorizations |
-| **[Utilities](https://jgonsior.github.io/olympic-games-of-active-learning/utilities/)** | Helper modules and scripts catalog |
+| **[Architecture](https://jgonsior.github.io/olympic-games-of-active-learning/reference/concepts/architecture_rationale/)** | System design, core abstractions, failure recovery, HPC parallelism |
+| **[Configuration](https://jgonsior.github.io/olympic-games-of-active-learning/reference/concepts/configuration_spine/)** | Config files, data flow, environment setup |
+| **[Data Model](https://jgonsior.github.io/olympic-games-of-active-learning/reference/concepts/data_model_and_enums/)** | Run identity, workload schema, result schemas, enum definitions |
+| **[Dataset Metadata](https://jgonsior.github.io/olympic-games-of-active-learning/reference/concepts/dataset_metadata_and_auto_enums/)** | Auto-computed per-sample categorizations |
+| **[Utilities](https://jgonsior.github.io/olympic-games-of-active-learning/reference/concepts/utilities_and_misc/)** | Helper modules and scripts catalog |
 
 ---
 
@@ -68,10 +68,10 @@ Understand OGAL's internal architecture and design:
 
 | Document | Purpose |
 |----------|---------|
-| 📋 **[Strategy Catalog](https://jgonsior.github.io/olympic-games-of-active-learning/strategies/)** | Complete list of all AL strategies (strategy-first reference) |
-| 📈 **[Eva Scripts](https://jgonsior.github.io/olympic-games-of-active-learning/eva_scripts/)** | Analyze experiment results and generate paper figures |
-| ➕ **[Data Enrichment](https://jgonsior.github.io/olympic-games-of-active-learning/data_enrichment/)** | Protocol for adding new results to the shared dataset |
-| 🖥️ **[HPC Runbook](https://jgonsior.github.io/olympic-games-of-active-learning/hpc/)** | Running large-scale experiments on SLURM clusters |
+| 📋 **[Strategy Catalog](https://jgonsior.github.io/olympic-games-of-active-learning/reference/strategy_catalog/)** | Complete list of all AL strategies (strategy-first reference) |
+| 📈 **[Eva Scripts](https://jgonsior.github.io/olympic-games-of-active-learning/reference/eva_scripts_catalog/)** | Analyze experiment results and generate paper figures |
+| ➕ **[Data Enrichment](https://jgonsior.github.io/olympic-games-of-active-learning/reference/data_enrichment/)** | Protocol for adding new results to the shared dataset |
+| 🖥️ **[HPC Runbook](https://jgonsior.github.io/olympic-games-of-active-learning/reference/runbook/)** | Running large-scale experiments on SLURM clusters |
 | 📦 **[DOI:10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862)** | Archived experiment results (terabytes of raw data) |
 
 ---
@@ -118,7 +118,7 @@ The study analyzes the impact of each hyperparameter on AL experiment results an
 | `SKACTIVEML_MC_EER_LOG_LOSS` | Expected Error | scikit-activeml |
 | `PLAYGROUND_KCENTER_GREEDY` | Diversity | Playground |
 
-➡️ **[See all 50+ strategies in the Strategy Catalog](https://jgonsior.github.io/olympic-games-of-active-learning/strategies/)**
+➡️ **[See all 50+ strategies in the Strategy Catalog](https://jgonsior.github.io/olympic-games-of-active-learning/reference/strategy_catalog/)**
 
 ---
 
@@ -140,7 +140,7 @@ OGAL is a **strictly sequential pipeline**. Each script produces outputs consume
 
 Additionally, [`scripts/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/scripts) and [`eva_scripts/`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/eva_scripts) provide utility and evaluation scripts for data processing and paper figure generation.
 
-For detailed documentation on each step, see [docs/pipeline.md](docs/pipeline.md).
+For detailed documentation on each step, see [Runbook](https://jgonsior.github.io/olympic-games-of-active-learning/reference/runbook/).
 
 ## Quickstart: Local Sanity Run
 
@@ -327,4 +327,4 @@ This project is licensed under the **GNU Affero General Public License v3.0 (AGP
 
 ## Contributing
 
-See [docs/contributing.md](docs/contributing.md) for development setup and contribution guidelines.
+See [Contributing](https://jgonsior.github.io/olympic-games-of-active-learning/contributing/) for development setup and contribution guidelines.
