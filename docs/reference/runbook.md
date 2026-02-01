@@ -326,7 +326,7 @@ python 05_analyze_partially_run_workload.py --EXP_TITLE my_experiment
 python 07b_create_results_without_flask.py --EXP_TITLE my_experiment
 ```
 
-For full evaluation and paper figure generation, see [Analysis &amp; Dataset](../analyze_dataset.md).
+For full evaluation and paper figure generation, see [Analysis &amp; Dataset](../analyze_opara.md).
 
 ---
 

@@ -4,7 +4,7 @@ This document defines the strict protocol for adding new experiment results to t
 
 !!! warning "Before You Begin"
     - Read [Results Format](results_schema.md) to understand the output schema
-    - Read [Evaluation Pipeline](../analyze_dataset.md) to understand the processing chain
+    - Read [Evaluation Pipeline](../analyze_opara.md) to understand the processing chain
     - Ensure your experiments use the same schema version as existing data
 
 ---

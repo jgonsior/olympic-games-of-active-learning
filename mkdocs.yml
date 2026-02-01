@@ -31,23 +31,21 @@ theme:
 
 nav:
   - Start here: index.md
-  - Analyze the dataset: analyze_dataset.md
-  - Add your results: add_results.md
+  - Analyze OPARA: analyze_opara.md
+  - Add results: add_results.md
   - Reference:
     - Runbook: reference/runbook.md
-    - Eva Scripts Catalog: reference/eva_scripts_catalog.md
-    - Correlations (Paper ↔ Code): reference/correlations_paper_to_code.md
-    - Results Schema: reference/results_schema.md
+    - Eva Scripts: reference/eva_scripts_catalog.md
     - Strategy Catalog: reference/strategy_catalog.md
+    - Results Schema: reference/results_schema.md
+    - Correlations (Paper ↔ Code): reference/correlations_paper_to_code.md
     - Frameworks: reference/frameworks.md
-    - Data Enrichment: reference/data_enrichment.md
-    - Research Reuse: reference/research_reuse.md
     - Concepts:
-      - Architecture Rationale: reference/concepts/architecture_rationale.md
-      - Configuration Spine: reference/concepts/configuration_spine.md
-      - Data Model & Enums: reference/concepts/data_model_and_enums.md
-      - Dataset Metadata & Auto Enums: reference/concepts/dataset_metadata_and_auto_enums.md
-      - Utilities & Misc: reference/concepts/utilities_and_misc.md
+      - Architecture: reference/concepts/architecture_rationale.md
+      - Configuration: reference/concepts/configuration_spine.md
+      - Data Model: reference/concepts/data_model_and_enums.md
+      - Dataset Metadata: reference/concepts/dataset_metadata_and_auto_enums.md
+      - Utilities: reference/concepts/utilities_and_misc.md
   - Contributing: contributing.md
 
 plugins:

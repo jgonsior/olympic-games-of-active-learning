@@ -5,7 +5,7 @@ This document describes the output directory structure, file formats, and result
 !!! tip "Related Documentation"
     - **[Eva Scripts](eva_scripts_catalog.md)**: Detailed catalog of evaluation scripts and their I/O
     - **[Data Enrichment](data_enrichment.md)**: Protocol for adding new results
-    - **[Evaluation Pipeline](../analyze_dataset.md)**: How raw outputs become final figures
+    - **[Evaluation Pipeline](../analyze_opara.md)**: How raw outputs become final figures
 
 ---
 
