@@ -36,16 +36,10 @@ nav:
   - Reference:
     - Runbook: reference/runbook.md
     - Eva Scripts: reference/eva_scripts_catalog.md
-    - Strategy Catalog: reference/strategy_catalog.md
+    - Strategy overview: reference/strategy_overview.md
     - Results Schema: reference/results_schema.md
     - Correlations (Paper ↔ Code): reference/correlations_paper_to_code.md
     - Frameworks: reference/frameworks.md
-    - Concepts:
-      - Architecture: reference/concepts/architecture_rationale.md
-      - Configuration: reference/concepts/configuration_spine.md
-      - Data Model: reference/concepts/data_model_and_enums.md
-      - Dataset Metadata: reference/concepts/dataset_metadata_and_auto_enums.md
-      - Utilities: reference/concepts/utilities_and_misc.md
   - Contributing: contributing.md
 
 plugins:

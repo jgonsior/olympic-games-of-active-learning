@@ -1,28 +1,28 @@
 # Start Here
 
-**OGAL** = largest Active Learning benchmark: **4.6M experiments** archived at [DOI:10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862).
+**OGAL** = 4.6M archived Active Learning experiments: [DOI:10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862).
 
 ---
 
-## What Do You Want to Do?
+## Pick your path
 
 <div class="grid cards" markdown>
 
--   :material-magnify-scan:{ .lg .middle } **Analyze OPARA Data**
+-   :material-magnify-scan:{ .lg .middle } **Analyze OPARA**
 
-    Use 4.6M pre-computed results for your research.
+    Use the archived 4.6M results.
 
     [:octicons-arrow-right-24: Analyze OPARA](analyze_opara.md)
 
--   :material-plus-circle:{ .lg .middle } **Add Your Results**
+-   :material-plus-circle:{ .lg .middle } **Add results**
 
-    Contribute new experiments to the benchmark.
+    Contribute new experiments.
 
     [:octicons-arrow-right-24: Add results](add_results.md)
 
--   :material-cog:{ .lg .middle } **Run Experiments**
+-   :material-cog:{ .lg .middle } **Runbook**
 
-    Execute locally or on HPC/SLURM.
+    Minimal guide to run OGAL.
 
     [:octicons-arrow-right-24: Runbook](reference/runbook.md)
 
@@ -30,10 +30,9 @@
 
 ---
 
-## 5-Minute Win
+## 5-minute win (leaderboard)
 
 ```bash
-# Setup + generate leaderboard from archived data
 conda create --name ogal --file conda-linux-64.lock && conda activate ogal && poetry install
 wget <URL_FROM_DOI> && unzip full_exp_jan.zip -d /path/to/results/
 python -m eva_scripts.final_leaderboard --EXP_TITLE full_exp_jan

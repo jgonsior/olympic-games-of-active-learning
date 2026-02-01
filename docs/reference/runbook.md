@@ -1,6 +1,6 @@
 # Runbook
 
-This is the canonical guide for running OGAL experiments, from local sanity tests to HPC-scale deployments.
+Canonical steps to run OGAL locally or on HPC.
 
 !!! abstract "What you'll accomplish"
     - Run a complete AL experiment pipeline on a single machine
