@@ -126,8 +126,11 @@ In [`resources/data_types.py`](https://github.com/jgonsior/olympic-games-of-acti
 ```python
 class AL_STRATEGY(IntEnum):
     # ... existing strategies ...
-    MY_NEW_STRATEGY = 100  # Choose unused ID
+    MY_NEW_STRATEGY = 100  # Choose an unused ID (check max existing ID first)
 ```
+
+!!! tip "Finding an unused ID"
+    Check the current maximum: `max(s.value for s in AL_STRATEGY)`
 
 ### 2. Add Strategy Mapping
 
