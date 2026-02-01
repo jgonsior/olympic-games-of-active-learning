@@ -1,42 +1,44 @@
-# Welcome to OGAL
+# Choose Your Path
 
-**OGAL** (Olympic Games of Active Learning) is the largest Active Learning benchmark: **4.6M experiments** archived at [DOI:10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862).
+**OGAL** = 4.6M Active Learning experiments archived at [DOI:10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862).
 
----
-
-## Who Are You?
-
-Choose the path that best describes your goal:
+Pick the question that matches your goal:
 
 <div class="grid cards" markdown>
 
--   :material-chart-line:{ .lg .middle } **"I want to analyze the dataset for my research"**
+-   :material-chart-line:{ .lg .middle } **"I want to analyze the published dataset for my own research"**
 
-    Load the 4.6M pre-computed results and use them directly in your own research—no need to run experiments yourself.
+    Mine the 4.6M pre-computed results—no experiments needed.
 
-    [:octicons-arrow-right-24: Analyze the Dataset](personas/analyze_dataset.md)
+    [:octicons-arrow-right-24: Analyze OPARA](personas/analyze_dataset.md)
 
--   :material-file-document-check:{ .lg .middle } **"I want to reproduce the paper results"**
+-   :material-file-document-check:{ .lg .middle } **"I want to understand how the paper's results were computed"**
 
-    Understand how the figures, tables, and conclusions in the paper were computed. Run the exact same evaluation scripts.
+    Run the exact scripts that produce the paper's figures and tables.
 
-    [:octicons-arrow-right-24: Reproduce Paper Results](personas/reproduce_paper.md)
+    [:octicons-arrow-right-24: Reproduce the Paper](personas/reproduce_paper.md)
 
--   :material-code-tags:{ .lg .middle } **"I want to understand the complete codebase"**
+-   :material-plus-box:{ .lg .middle } **"I want to extend the dataset with new strategies/hyperparameters"**
 
-    Dive deep into the architecture, data model, and design decisions. Understand every script and module.
-
-    [:octicons-arrow-right-24: Understand the Codebase](personas/understand_codebase.md)
-
--   :material-plus-box:{ .lg .middle } **"I want to extend the benchmark"**
-
-    Add new AL strategies, datasets, learner models, or hyperparameters. Contribute back to the shared dataset.
+    Add your experiments and integrate them with the shared benchmark.
 
     [:octicons-arrow-right-24: Extend the Benchmark](personas/extend_benchmark.md)
 
--   :material-lightbulb:{ .lg .middle } **"I'm looking for research ideas"**
+-   :material-server:{ .lg .middle } **"I want to recompute the entire dataset from scratch"**
 
-    Explore open questions, unexplored corners of the dataset, and potential research directions.
+    Run millions of experiments on HPC/SLURM, handle failures, resume.
+
+    [:octicons-arrow-right-24: Run from Scratch](personas/run_from_scratch.md)
+
+-   :material-code-tags:{ .lg .middle } **"I want deep codebase understanding"**
+
+    Architecture, data model, design rationale—all in one place.
+
+    [:octicons-arrow-right-24: Architecture & Design](personas/understand_codebase.md)
+
+-   :material-lightbulb:{ .lg .middle } **"I want research ideas"**
+
+    Open questions and unexplored directions using OGAL data.
 
     [:octicons-arrow-right-24: Research Ideas](personas/research_ideas.md)
 
@@ -44,34 +46,17 @@ Choose the path that best describes your goal:
 
 ---
 
-## Quick Reference
-
-| Goal | Page |
-|------|------|
-| Load and analyze the 4.6M archived results | [Analyze the Dataset](personas/analyze_dataset.md) |
-| Reproduce paper figures and tables | [Reproduce Paper Results](personas/reproduce_paper.md) |
-| Understand architecture and design | [Understand the Codebase](personas/understand_codebase.md) |
-| Add new strategies/datasets/models | [Extend the Benchmark](personas/extend_benchmark.md) |
-| Find research opportunities | [Research Ideas](personas/research_ideas.md) |
-| Run experiments locally or on HPC | [Runbook](reference/runbook.md) |
-| Development and contribution guidelines | [Contributing](contributing.md) |
-
----
-
 ## 5-Minute Win
 
 ```bash
-# Setup + generate leaderboard from archived data
+# Setup + leaderboard from archived data
 conda create --name ogal --file conda-linux-64.lock && conda activate ogal && poetry install
 wget <URL_FROM_DOI> && unzip full_exp_jan.zip -d /path/to/results/
 python -m eva_scripts.final_leaderboard --EXP_TITLE full_exp_jan
-# → plots/final_leaderboard/rank_sparse_zero_full_auc_weighted_f1-score.parquet
 ```
 
 ---
 
 ## Links
 
-- 📄 [**Paper (arXiv:2506.03817)**](https://arxiv.org/abs/2506.03817) — Methodology and findings
-- 📦 [**Archived data (DOI:10.25532/OPARA-862)**](https://doi.org/10.25532/OPARA-862) — 4.6M experiment results
-- 💻 [**GitHub Repository**](https://github.com/jgonsior/olympic-games-of-active-learning)
+📄 [Paper](https://arxiv.org/abs/2506.03817) ・ 📦 [Dataset (DOI)](https://doi.org/10.25532/OPARA-862) ・ 💻 [GitHub](https://github.com/jgonsior/olympic-games-of-active-learning)
