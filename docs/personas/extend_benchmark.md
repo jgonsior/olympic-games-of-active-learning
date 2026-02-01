@@ -88,7 +88,7 @@ python -m eva_scripts.final_leaderboard --EXP_TITLE my_experiment
 
 ---
 
-## Keep Results Separate (Recommended)
+## Comparing Results
 
 Run evaluation scripts separately, then compare:
 

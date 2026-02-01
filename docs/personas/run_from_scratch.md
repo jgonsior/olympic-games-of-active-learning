@@ -71,15 +71,15 @@ Create `.server_access_credentials.cfg`:
 ```ini
 [HPC]
 SSH_LOGIN=user@login.hpc.example.edu
-DATASETS_PATH=/data/workspace/ogal/datasets
-OUTPUT_PATH=/data/workspace/ogal/exp_results
+DATASETS_PATH=/path/to/datasets          # Customize to your environment
+OUTPUT_PATH=/path/to/exp_results          # Customize to your environment
 SLURM_MAIL=your.email@example.edu
 SLURM_PROJECT=your_project_account
-PYTHON_PATH=/data/workspace/ogal/conda-env/bin/python
+PYTHON_PATH=/path/to/conda-env/bin/python # Customize to your environment
 
 [LOCAL]
-DATASETS_PATH=/home/user/ogal/datasets
-OUTPUT_PATH=/home/user/ogal/exp_results
+DATASETS_PATH=/path/to/datasets
+OUTPUT_PATH=/path/to/exp_results
 ```
 
 ---

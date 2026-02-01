@@ -62,7 +62,11 @@ print(AL_STRATEGY.ALIPY_RANDOM.value)  # 7
 
 ### AL_Experiment (`framework_runners/base_runner.py`)
 
-Abstract base class for framework adapters with the main AL loop.
+Abstract base class for framework adapters. Key methods:
+
+- `get_AL_strategy()` — Initialize the strategy
+- `query_AL_strategy()` → indices — Select samples to query
+- `al_cycle()` — Main loop: query → update → retrain → record
 
 ---
 

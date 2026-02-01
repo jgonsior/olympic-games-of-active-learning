@@ -38,7 +38,7 @@ nav:
   - Research Ideas: personas/research_ideas.md
   - Reference:
     - Correlations (Paper ↔ Code): reference/correlations_paper_to_code.md
-    - Eva Scripts Index: reference/eva_scripts_catalog.md
+    - Eva Scripts Catalog: reference/eva_scripts_catalog.md
   - Contributing: contributing.md
 
 plugins:
