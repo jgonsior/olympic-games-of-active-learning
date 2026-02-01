@@ -21,9 +21,20 @@ flowchart LR
 
 ---
 
-## 1. Run Your Experiments
+## Run Identity (Primary Key)
 
-Follow the standard pipeline:
+Each experiment is uniquely identified by:
+
+```
+(EXP_DATASET, EXP_STRATEGY, EXP_LEARNER_MODEL, EXP_BATCH_SIZE, 
+ EXP_START_POINT, EXP_TRAIN_TEST_BUCKET_SIZE, EXP_RANDOM_SEED)
+```
+
+Plus a unique `EXP_UNIQUE_ID` integer assigned during workload creation.
+
+---
+
+## 1. Run Your Experiments
 
 ```bash
 # Create workload with your configuration
@@ -40,10 +51,7 @@ For full pipeline details, see [Runbook](reference/runbook.md).
 
 ## 2. Validate Results Schema
 
-Before sharing or merging, validate your results:
-
 ```bash
-# Define OGAL_OUTPUT (or use your configured OUTPUT_PATH)
 export OGAL_OUTPUT=/path/to/results
 
 # Check schema compliance
@@ -55,9 +63,6 @@ python scripts/validate_results_schema.py \
     --compare_with ${OGAL_OUTPUT}/full_exp_jan
 ```
 
-!!! tip "Sanity check"
-    If validation fails with "missing columns", see [Results Schema](reference/results_schema.md) for required fields.
-
 ### Required Files
 
 | File | Must Have |
@@ -65,6 +70,8 @@ python scripts/validate_results_schema.py \
 | `05_done_workload.csv` | All identity fields + `EXP_UNIQUE_ID` |
 | `<STRATEGY>/<DATASET>/accuracy.csv.xz` | `EXP_UNIQUE_ID` + cycle columns |
 | `<STRATEGY>/<DATASET>/weighted_f1-score.csv.xz` | Same schema |
+
+See [Results Schema](reference/results_schema.md) for complete field definitions.
 
 ---
 
@@ -92,8 +99,6 @@ python 04_calculate_advanced_metrics.py \
 
 ### Option A: Keep Separate (Recommended)
 
-Run evaluation scripts independently and compare:
-
 ```bash
 python -m eva_scripts.final_leaderboard --EXP_TITLE full_exp_jan
 python -m eva_scripts.final_leaderboard --EXP_TITLE my_new_experiment
@@ -110,37 +115,43 @@ python -m scripts.merge_two_workloads \
     --SECOND_MERGE_PATH ${OGAL_OUTPUT}/my_new_experiment
 ```
 
-!!! tip "Sanity check"
-    After merging, verify `05_done_workload.csv` contains entries from both experiments.
-
 ---
 
-## Adding New Strategies/Datasets
+## Worked Example: Adding a New Strategy
 
-For extending OGAL with new components:
+### 1. Add to Enum
 
-| To Add | See |
-|--------|-----|
-| New AL strategy | [Research Reuse Guide](reference/research_reuse.md#adding-a-new-al-strategy) |
-| New dataset | [Research Reuse Guide](reference/research_reuse.md#adding-a-new-dataset) |
-| New learner model | [Research Reuse Guide](reference/research_reuse.md#adding-a-new-learner-model) |
-| New metric | [Research Reuse Guide](reference/research_reuse.md#adding-a-new-metric) |
+In [`resources/data_types.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/resources/data_types.py):
 
----
-
-## Run Identity (Primary Key)
-
-Each experiment is uniquely identified by:
-
-```
-(EXP_DATASET, EXP_STRATEGY, EXP_LEARNER_MODEL, EXP_BATCH_SIZE, 
- EXP_START_POINT, EXP_TRAIN_TEST_BUCKET_SIZE, EXP_RANDOM_SEED)
+```python
+class AL_STRATEGY(IntEnum):
+    # ... existing strategies ...
+    MY_NEW_STRATEGY = 100  # Choose unused ID
 ```
 
-Plus a unique `EXP_UNIQUE_ID` integer.
+### 2. Add Strategy Mapping
 
----
+```python
+al_strategy_to_python_classes_mapping[AL_STRATEGY.MY_NEW_STRATEGY] = (
+    MyStrategyClass,
+    {"param": "value"}  # Default parameters
+)
+```
 
-## Detailed Protocol
+### 3. Use in Experiment
 
-For the complete data enrichment protocol including provenance tracking and troubleshooting, see [Data Enrichment Reference](reference/data_enrichment.md).
+```yaml
+# resources/exp_config.yaml
+my_experiment:
+  EXP_GRID_STRATEGY:
+    - ALIPY_RANDOM
+    - MY_NEW_STRATEGY
+```
+
+### 4. Run and Validate
+
+```bash
+python 01_create_workload.py --EXP_TITLE my_experiment
+python 02_run_experiment.py --EXP_TITLE my_experiment --WORKER_INDEX 0
+python scripts/validate_results_schema.py --results_path ${OGAL_OUTPUT}/my_experiment
+```

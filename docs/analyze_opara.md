@@ -1,4 +1,4 @@
-# Analyze the Dataset
+# Analyze OPARA
 
 Use the published OPARA dataset (4.6M experiments) for your own research — without rerunning anything.
 

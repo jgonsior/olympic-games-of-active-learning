@@ -31,7 +31,7 @@ theme:
 
 nav:
   - Start here: index.md
-  - Analyze dataset: analyze_dataset.md
+  - Analyze OPARA: analyze_opara.md
   - Add results: add_results.md
   - Reference:
     - Runbook: reference/runbook.md
@@ -40,8 +40,6 @@ nav:
     - Results Schema: reference/results_schema.md
     - Correlations (Paper ↔ Code): reference/correlations_paper_to_code.md
     - Frameworks: reference/frameworks.md
-    - Data Enrichment: reference/data_enrichment.md
-    - Research Reuse: reference/research_reuse.md
     - Concepts:
       - Architecture: reference/concepts/architecture_rationale.md
       - Configuration: reference/concepts/configuration_spine.md
