@@ -92,5 +92,4 @@ python -m eva_scripts.learning_curve --EXP_TITLE full_exp_jan
 ## Cross-References
 
 - [Correlations: Paper ↔ Code](correlations_paper_to_code.md) — Mathematical definitions
-- [Results Schema](results_schema.md) — Output file formats
-- [Analyze the Dataset](../analyze_opara.md) — Research tutorials
+- [Analyze OPARA](../personas/analyze_dataset.md) — Research tutorials
