@@ -10,7 +10,6 @@ theme:
     - navigation.instant
     - navigation.tracking
     - navigation.sections
-    - navigation.expand
     - navigation.top
     - search.suggest
     - search.highlight
@@ -30,17 +29,16 @@ theme:
         name: Switch to light mode
 
 nav:
-  - Start here: index.md
-  - Analyze OPARA: analyze_opara.md
-  - Add results: add_results.md
+  - Choose Your Path: index.md
+  - Analyze OPARA: personas/analyze_dataset.md
+  - Reproduce the Paper: personas/reproduce_paper.md
+  - Extend the Benchmark: personas/extend_benchmark.md
+  - Run from Scratch: personas/run_from_scratch.md
+  - Architecture & Design: personas/understand_codebase.md
+  - Research Ideas: personas/research_ideas.md
   - Reference:
     - Correlations (Paper ↔ Code): reference/correlations_paper_to_code.md
-    - Runbook: reference/runbook.md
-    - Eva Scripts: reference/eva_scripts_catalog.md
-    - Results Schema: reference/results_schema.md
-    - Strategy Catalog: reference/strategy_catalog.md
-    - Frameworks: reference/frameworks.md
-    - Architecture in 10 Minutes: reference/concepts/architecture_in_10_minutes.md
+    - Eva Scripts Catalog: reference/eva_scripts_catalog.md
   - Contributing: contributing.md
 
 plugins:
