@@ -4,6 +4,27 @@ Evaluation scripts in [`eva_scripts/`](https://github.com/jgonsior/olympic-games
 
 ---
 
+## Script Catalog Overview
+
+| Script | Purpose | Required Inputs | Outputs | Paper Reference |
+|--------|---------|-----------------|---------|-----------------|
+| `basic_metrics_correlation.py` | Correlation matrix of standard ML metrics | Per-cycle metric CSVs, `05_done_workload.csv` | `plots/basic_metrics/Standard Metrics.parquet` | Metric comparison |
+| `auc_metric_correlation.py` | Correlation of AUC-based aggregation metrics | AUC metric files (`full_auc_*.csv.xz`) | `plots/AUC/auc_*.parquet` | Aggregation comparison |
+| `calculate_leaderboard_rankings.py` | Strategy rankings across datasets | Time series parquets in `_TS/` | `plots/final_leaderboard/*.parquet`, `plots/leaderboard_invariances/*.csv` | Leaderboard tables |
+| `final_leaderboard.py` | Publication-quality final leaderboard heatmaps | `_TS/*.parquet` | `plots/final_leaderboard/rank_*.parquet`, `*.jpg` | Main results |
+| `leaderboard_single_hyperparameter_influence.py` | Impact of single hyperparameter on leaderboard | `_TS/*.parquet` | `plots/leaderboard_single_hyperparameter_influence/*.csv` | RQ1 analysis |
+| `leaderboard_single_hyperparameter_influence_analyze.py` | Kendall τ analysis of hyperparameter influence | Above CSV files | `plots/leaderboard_single_hyperparameter_influence/*_kendall.parquet` | RQ1 heatmaps |
+| `single_hyperparameter_evaluation_metric.py` | Correlation of metrics across hyperparameter values | `_TS/*.parquet` | `plots/single_hyperparameter/*/single_hyper_*.parquet` | Blue heatmaps |
+| `single_hyperparameter_evaluation_indices.py` | Jaccard similarity of queried samples | `_TS/selected_indices.parquet` | `plots/single_hyperparameter/*/single_indice_*.parquet` | Green heatmaps |
+| `runtime.py` | Strategy runtime analysis | `query_selection_time.csv` files | `plots/runtime/query_selection_time.parquet` | Runtime bar chart |
+| `learning_curve.py` | Aggregated learning curves | Per-cycle metric CSVs | `plots/single_learning_curve/*.parquet` | Learning curve figures |
+| `single_learning_curve_example.py` | Single dataset learning curve example | `_TS/weighted_f1-score.parquet` | `plots/single_learning_curve/weighted_f1-score.parquet`, `single_exemplary_learning_curve.parquet` | Fig. 2-3 |
+| `redo_plots_for_paper.py` | Re-render publication-quality PDFs | All above parquet files | PDFs in `plots/` subdirectories | All paper figures |
+| `merge_multiple_plots_single_page.py` | Combine heatmaps into single figures | Individual PDFs | Merged PDFs | Combined figures |
+| `dataset_stats.py` | Dataset statistics | None | Console output | Dataset table |
+
+---
+
 ## Canonical Recipes
 
 ### 1. Generate Leaderboard
@@ -44,27 +65,6 @@ python -m eva_scripts.leaderboard_single_hyperparameter_influence_analyze --EXP_
 ```bash
 python -m eva_scripts.redo_plots_for_paper --EXP_TITLE full_exp_jan
 ```
-
----
-
-## Script Index
-
-| Script | Purpose | Outputs |
-|--------|---------|---------|
-| `basic_metrics_correlation.py` | Metric correlation matrix | `plots/basic_metrics/*.parquet` |
-| `auc_metric_correlation.py` | AUC aggregation correlation | `plots/AUC/*.parquet` |
-| `calculate_leaderboard_rankings.py` | Strategy rankings | `plots/final_leaderboard/*.parquet` |
-| `final_leaderboard.py` | Leaderboard heatmaps | `plots/final_leaderboard/*.jpg` |
-| `learning_curve.py` | Time series generation | `_TS/*.parquet` |
-| `single_learning_curve_example.py` | Learning curve figures | `plots/single_learning_curve/*.parquet` |
-| `runtime.py` | Runtime analysis | `plots/runtime/*.parquet` |
-| `single_hyperparameter_evaluation_metric.py` | Pearson correlations | `plots/single_hyperparameter/*/single_hyper_*.parquet` |
-| `single_hyperparameter_evaluation_indices.py` | Jaccard similarities | `plots/single_hyperparameter/*/single_indice_*.parquet` |
-| `leaderboard_single_hyperparameter_influence.py` | Hyperparameter rankings | `plots/leaderboard_single_hyperparameter_influence/*.csv` |
-| `leaderboard_single_hyperparameter_influence_analyze.py` | Kendall τ analysis | `plots/leaderboard_single_hyperparameter_influence/*_kendall.parquet` |
-| `redo_plots_for_paper.py` | Publication PDFs | PDFs in `plots/` |
-| `merge_multiple_plots_single_page.py` | Combined figures | Merged PDFs |
-| `dataset_stats.py` | Dataset statistics | Console output |
 
 ---
 
