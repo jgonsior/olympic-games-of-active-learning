@@ -1,6 +1,6 @@
 # Analyze OPARA
 
-**You want to mine the 4.6M pre-computed experiment results for your own research—no experiments needed.**
+**Mine the 4.6M pre-computed experiment results — no experiments needed.**
 
 ---
 
@@ -116,6 +116,6 @@ print(merged.head())
 
 | Goal | Page |
 |------|------|
-| Reproduce paper figures | [Reproduce the Paper](reproduce_paper.md) |
+| Reproduce paper figures / Run experiments | [Reproduce & Run](reproduce_and_run.md) |
 | Research ideas from the data | [Research Ideas](research_ideas.md) |
 | Understand correlation metrics | [Correlations: Paper ↔ Code](../reference/correlations_paper_to_code.md) |
