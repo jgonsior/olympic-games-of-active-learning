@@ -12,11 +12,11 @@ Pick the question that matches your goal:
 
     [:octicons-arrow-right-24: Analyze OPARA](personas/analyze_dataset.md)
 
--   :material-file-document-check:{ .lg .middle } **"I want to understand how the paper's results were computed"**
+-   :material-file-document-check:{ .lg .middle } **"I want to reproduce the paper or run experiments from scratch"**
 
-    Run the exact scripts that produce the paper's figures and tables.
+    Run the exact scripts for the paper's figures, or recompute on HPC/SLURM.
 
-    [:octicons-arrow-right-24: Reproduce the Paper](personas/reproduce_paper.md)
+    [:octicons-arrow-right-24: Reproduce & Run](personas/reproduce_and_run.md)
 
 -   :material-plus-box:{ .lg .middle } **"I want to extend the dataset with new strategies/hyperparameters"**
 
@@ -24,15 +24,9 @@ Pick the question that matches your goal:
 
     [:octicons-arrow-right-24: Extend the Benchmark](personas/extend_benchmark.md)
 
--   :material-server:{ .lg .middle } **"I want to recompute the entire dataset from scratch"**
+-   :material-server:{ .lg .middle } **"I want deep codebase understanding"**
 
-    Run millions of experiments on HPC/SLURM, handle failures, resume.
-
-    [:octicons-arrow-right-24: Run from Scratch](personas/run_from_scratch.md)
-
--   :material-code-tags:{ .lg .middle } **"I want deep codebase understanding"**
-
-    Architecture, data model, design rationale—all in one place.
+    Architecture, data model, full data flow — all in one place.
 
     [:octicons-arrow-right-24: Architecture & Design](personas/understand_codebase.md)
 

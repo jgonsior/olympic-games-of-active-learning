@@ -31,9 +31,8 @@ theme:
 nav:
   - Choose Your Path: index.md
   - Analyze OPARA: personas/analyze_dataset.md
-  - Reproduce the Paper: personas/reproduce_paper.md
+  - Reproduce & Run: personas/reproduce_and_run.md
   - Extend the Benchmark: personas/extend_benchmark.md
-  - Run from Scratch: personas/run_from_scratch.md
   - Architecture & Design: personas/understand_codebase.md
   - Research Ideas: personas/research_ideas.md
   - Reference:

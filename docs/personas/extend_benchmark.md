@@ -103,6 +103,6 @@ python -m eva_scripts.final_leaderboard --EXP_TITLE my_experiment
 
 | Goal | Page |
 |------|------|
-| Run at HPC scale | [Run from Scratch](run_from_scratch.md) |
+| Run at HPC scale / Reproduce paper | [Reproduce & Run](reproduce_and_run.md) |
 | Understand the architecture | [Architecture & Design](understand_codebase.md) |
 | Development guidelines | [Contributing](../contributing.md) |
