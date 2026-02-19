@@ -6,18 +6,16 @@
 
 ## What You Can Add
 
-| Extension | Difficulty | Time |
-|-----------|------------|------|
-| New hyperparameter values | Easy | Minutes |
-| New dataset | Easy | 30 min |
-| New learner model | Medium | 1 hour |
-| New AL strategy | Medium | 1-2 hours |
+| Extension | Difficulty |
+|-----------|------------|
+| New hyperparameter values | Easy |
+| New dataset | Easy |
+| New learner model | Medium |
+| New AL strategy | Medium |
 
 ---
 
-## Quick Wins
-
-### Add a New Batch Size
+## Add a New Batch Size
 
 ```yaml
 # resources/exp_config.yaml
@@ -81,8 +79,11 @@ python scripts/validate_results_schema.py --results_path ${OGAL_OUTPUT}/my_exper
 python 03_calculate_dataset_categorizations.py --EXP_TITLE my_experiment --SAMPLES_CATEGORIZER _ALL --EVA_MODE local
 python 04_calculate_advanced_metrics.py --EXP_TITLE my_experiment --COMPUTED_METRICS _ALL --EVA_MODE local
 
-# Generate leaderboard
-python -m eva_scripts.learning_curve --EXP_TITLE my_experiment
+# Run prerequisite scripts
+python scripts/convert_y_pred_to_parquet.py --EXP_TITLE my_experiment
+python -m eva_scripts.calculate_dataset_dependend_random_ramp_slope --EXP_TITLE my_experiment
+
+# Generate leaderboard (auto-generates _TS/*.parquet if missing)
 python -m eva_scripts.final_leaderboard --EXP_TITLE my_experiment
 ```
 

@@ -32,6 +32,7 @@
 
     python 01_create_workload.py --EXP_TITLE smoke_test
     python 02_run_experiment.py --EXP_TITLE smoke_test --WORKER_INDEX 0
+    # Note: 02_run_experiment.py outputs .csv files; compress to .csv.xz afterwards
     ls ${OGAL_OUTPUT}/smoke_test/05_done_workload.csv
     ```
 
@@ -54,12 +55,15 @@ flowchart LR
     CFG["exp_config.yaml"] --> WL["01_create_workload.py"]
     WL --> CSV["01_workload.csv"]
     CSV --> RUN["02_run_experiment.py"]
-    RUN --> RAW["Per-cycle CSVs (.csv.xz)"]
-    RAW --> CAT["03_calculate_dataset_categorizations.py"]
-    RAW --> ADV["04_calculate_advanced_metrics.py"]
-    CAT --> TS["_TS/*.parquet"]
-    ADV --> TS
-    TS --> EVA["eva_scripts/*"]
+    RUN --> RAW["Per-cycle CSVs (.csv)"]
+    RAW --> CONV["compress to .csv.xz"]
+    CONV --> XZ["Per-cycle CSVs (.csv.xz)"]
+    XZ --> CAT["03_calculate_dataset_categorizations.py"]
+    XZ --> ADV["04_calculate_advanced_metrics.py"]
+    CAT --> PREP["Prerequisites (convert_y_pred_to_parquet, etc.)"]
+    ADV --> PREP
+    PREP --> EVA["eva_scripts/*"]
+    EVA -->|"auto-generate if missing"| TS["_TS/*.parquet"]
     EVA --> PLOTS["plots/*.parquet + PDFs"]
 ```
 
@@ -68,31 +72,40 @@ flowchart LR
 | Step | Script | Input | Output |
 |------|--------|-------|--------|
 | 1 | `01_create_workload.py` | `resources/exp_config.yaml` | `01_workload.csv` (Cartesian product of hyperparameters) |
-| 2 | `02_run_experiment.py` | `01_workload.csv` row (by `WORKER_INDEX`) | `{STRATEGY}/{DATASET}/*.csv.xz` (per-cycle metrics) |
+| 2 | `02_run_experiment.py` | `01_workload.csv` row (by `WORKER_INDEX`) | `{STRATEGY}/{DATASET}/*.csv` (per-cycle metrics, uncompressed) |
+| 2b | Compress results | `*.csv` | `*.csv.xz` (compressed per-cycle metrics) |
 | 3 | `03_calculate_dataset_categorizations.py` | Dataset CSVs | `{DATASET}/{categorizer}.parquet` (14 sample-level categorizers) |
 | 4 | `04_calculate_advanced_metrics.py` | Per-cycle CSVs | `{STRATEGY}/{DATASET}/{metric}.csv.xz` (AUC, distance, etc.) |
-| 5 | `eva_scripts/learning_curve.py` | Per-cycle CSVs | `_TS/*.parquet` (sorted time series) |
-| 6 | `eva_scripts/*` | `_TS/*.parquet` | `plots/*` (leaderboards, heatmaps, PDFs) |
+| 5 | Prerequisite scripts (`convert_y_pred_to_parquet.py`, `calculate_dataset_dependend_random_ramp_slope.py`) | Per-cycle CSVs, parquets | Converted parquets, slope data |
+| 6 | `eva_scripts/*` | Per-cycle CSVs, parquets | `_TS/*.parquet` (auto-generated if missing), `plots/*` (leaderboards, heatmaps, PDFs) |
 
 ---
 
-## Post-Processing (Steps 3–5)
+## Post-Processing (Steps 3–6)
 
-After experiments complete (step 2), run post-processing to compute derived metrics and build the time series files that all evaluation scripts need:
+After experiments complete (step 2), compress the raw CSV results and run post-processing:
 
 ```bash
+# Step 2b: Compress raw CSV results to .csv.xz
+# (02_run_experiment.py outputs .csv files that must be compressed)
+xz ${OGAL_OUTPUT}/my_experiment/*/*/**.csv
+
 # Step 3: Compute sample-level dataset categorizations
 python 03_calculate_dataset_categorizations.py --EXP_TITLE my_experiment --SAMPLES_CATEGORIZER _ALL --EVA_MODE local
 
 # Step 4: Compute advanced metrics (AUC, distances, class distributions, etc.)
 python 04_calculate_advanced_metrics.py --EXP_TITLE my_experiment --COMPUTED_METRICS _ALL --EVA_MODE local
 
-# Step 5: Build time series parquets (required by most eva_scripts)
-python -m eva_scripts.learning_curve --EXP_TITLE my_experiment
+# Step 5: Run prerequisite conversion scripts
+python scripts/convert_y_pred_to_parquet.py --EXP_TITLE my_experiment
+python -m eva_scripts.calculate_dataset_dependend_random_ramp_slope --EXP_TITLE my_experiment
 
-# Step 5b: Build leaderboard rankings
+# Step 6: Build leaderboard rankings
 python -m eva_scripts.calculate_leaderboard_rankings --EXP_TITLE my_experiment
 ```
+
+!!! info "_TS/*.parquet files are generated automatically"
+    The `_TS/*.parquet` time series files are **not** created by a single dedicated script. Instead, multiple evaluation scripts in `eva_scripts/` automatically generate the `_TS/*.parquet` files they need if they are missing. For example, `final_leaderboard.py`, `runtime.py`, `single_hyperparameter_evaluation_metric.py`, and others each check for the required `_TS/*.parquet` files and create them on the fly.
 
 ---
 
@@ -119,7 +132,7 @@ python -m eva_scripts.final_leaderboard --EXP_TITLE full_exp_jan
 ### Additional Figures
 
 ```bash
-# Learning curves (Figure 2)
+# Example learning curve plot (Figure 2)
 python -m eva_scripts.single_learning_curve_example --EXP_TITLE full_exp_jan
 
 # Runtime analysis (Figure 7)
@@ -197,8 +210,8 @@ sbatch ${OGAL_OUTPUT}/my_experiment/02_slurm.slurm
 | `FileNotFoundError` for datasets | Check `DATASETS_PATH` in `.server_access_credentials.cfg` |
 | Jobs killed (OOM) | Increase `SLURM_MEMORY`; check `05_started_oom_workloads.csv` |
 | Experiments not completing | Increase `EXP_QUERY_SELECTION_RUNTIME_SECONDS_LIMIT` |
-| Missing `_TS/*.parquet` | Run `python -m eva_scripts.learning_curve` first |
-| Memory errors in evaluation | Use `scripts/reduce_to_dense.py` for a smaller subset |
+| Missing `_TS/*.parquet` | These are auto-generated by evaluation scripts when missing. Ensure steps 2–5 completed successfully and that `.csv.xz` files exist. |
+| Incomplete experiment grid | Use `scripts/reduce_to_dense.py` to remove results where the full hyperparameter grid is incomplete, creating a dense grid from sparse experimental results |
 
 ### Fix Scripts (only needed if something breaks)
 
@@ -238,7 +251,7 @@ These scripts in `scripts/` are **not part of the normal pipeline** — they exi
     | `scripts/remove_dataset_results.py` | Delete results for specific datasets |
     | `scripts/remove_duplicated_exp_ids.py` | Drop duplicate experiment entries |
     | `scripts/remove_lbfgs_mlp_results.py` | Remove LBFGS/MLP learner results |
-    | `scripts/reduce_to_dense.py` | Keep only dense workload experiments in all files |
+    | `scripts/reduce_to_dense.py` | Remove results where the full hyperparameter grid is incomplete, creating a dense grid from sparse experimental results |
 
 ??? info "Re-run Scripts (retry failed work)"
 

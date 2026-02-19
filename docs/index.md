@@ -40,7 +40,7 @@ Pick the question that matches your goal:
 
 ---
 
-## 5-Minute Win
+## Getting Started
 
 ```bash
 # Setup + leaderboard from archived data
