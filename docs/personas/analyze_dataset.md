@@ -4,7 +4,7 @@
 
 ---
 
-## 10-Minute First Win
+## Getting Started
 
 ### 1. Get the Data
 
