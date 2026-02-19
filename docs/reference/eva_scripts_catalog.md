@@ -197,7 +197,7 @@ python -m eva_scripts.redo_plots_for_paper --EXP_TITLE full_exp_jan
 
 ## Cross-References
 
-- [Architecture & Design](../personas/understand_codebase.md) — Detailed data flow and file dependencies
+- [Reproduce & Run](../personas/reproduce_and_run.md) — Detailed data flow, architecture, and file dependencies
 - [Correlations: Paper ↔ Code](correlations_paper_to_code.md) — Mathematical definitions
 - [Analyze OPARA](../personas/analyze_dataset.md) — Research tutorials
 - [Reproduce & Run](../personas/reproduce_and_run.md) — Full pipeline including fix scripts
