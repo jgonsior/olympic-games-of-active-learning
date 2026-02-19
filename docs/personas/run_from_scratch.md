@@ -1,14 +1,6 @@
 # Run from Scratch (HPC)
 
-**You want to recompute the entire dataset from scratch—millions of experiments on HPC/SLURM, with resumability and failure handling.**
-
----
-
-## What You'll Accomplish
-
-- Run a complete AL experiment pipeline
-- Scale to millions of experiments on HPC clusters
-- Handle failures, resume, and track progress
+**Recompute the entire dataset from scratch — millions of experiments on HPC/SLURM with resumability.**
 
 ---
 
@@ -17,28 +9,19 @@
 === "Local (verify setup)"
 
     ```bash
-    # Setup
     conda create --name ogal --file conda-linux-64.lock && conda activate ogal && poetry install
     export OGAL_OUTPUT=/path/to/results
 
-    # Create and run one experiment
     python 01_create_workload.py --EXP_TITLE smoke_test
     python 02_run_experiment.py --EXP_TITLE smoke_test --WORKER_INDEX 0
-
-    # Verify
     ls ${OGAL_OUTPUT}/smoke_test/05_done_workload.csv
     ```
 
 === "HPC (SLURM)"
 
     ```bash
-    # Create workload (generates SLURM script)
     python 01_create_workload.py --EXP_TITLE full_run
-
-    # Submit to cluster
     sbatch ${OGAL_OUTPUT}/full_run/02_slurm.slurm
-
-    # Monitor
     watch -n 60 'wc -l ${OGAL_OUTPUT}/full_run/05_done_workload.csv'
     ```
 
@@ -48,11 +31,11 @@
 
 ```mermaid
 flowchart LR
-    A[01_create_workload.py] --> B[01_workload.csv]
-    B --> C[02_run_experiment.py]
-    C --> D[05_done_workload.csv]
-    D --> E[03/04 Post-processing]
-    E --> F[eva_scripts/*]
+    A["01_create_workload.py"] --> B["01_workload.csv"]
+    B --> C["02_run_experiment.py"]
+    C --> D["05_done_workload.csv"]
+    D --> E["03/04 Post-processing"]
+    E --> F["eva_scripts/*"]
 ```
 
 | Script | What It Does |

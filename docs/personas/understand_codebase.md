@@ -1,6 +1,6 @@
 # Architecture & Design
 
-**Deep dive into OGAL's architecture, data model, and design rationale.**
+**OGAL's pipeline, data model, and design rationale at a glance.**
 
 ---
 
@@ -8,13 +8,13 @@
 
 ```mermaid
 flowchart LR
-    CFG[Config] --> GRID[01_create_workload.py]
-    GRID --> WL[01_workload.csv]
-    WL --> RUN[02_run_experiment.py]
-    RUN --> RAW[Raw CSVs]
-    RAW --> POST[03/04 Post-process]
-    POST --> EVA[eva_scripts/*]
-    EVA --> ART[Plots/Parquet]
+    CFG["Config"] --> GRID["01_create_workload.py"]
+    GRID --> WL["01_workload.csv"]
+    WL --> RUN["02_run_experiment.py"]
+    RUN --> RAW["Raw CSVs"]
+    RAW --> POST["03/04 Post-process"]
+    POST --> EVA["eva_scripts/*"]
+    EVA --> ART["Plots / Parquet"]
 ```
 
 ---

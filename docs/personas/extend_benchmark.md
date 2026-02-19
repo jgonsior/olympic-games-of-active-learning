@@ -1,6 +1,6 @@
 # Extend the Benchmark
 
-**Add your experiments (new strategies/datasets/hyperparameters) and integrate them with the shared benchmark.**
+**Add new strategies, datasets, or hyperparameters and integrate them with the shared benchmark.**
 
 ---
 

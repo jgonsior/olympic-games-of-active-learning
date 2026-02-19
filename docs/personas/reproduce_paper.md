@@ -1,6 +1,6 @@
 # Reproduce the Paper
 
-**You want to run the exact scripts that produce the paper's figures and tables.**
+**Run the exact scripts that produce the paper's figures and tables.**
 
 ---
 

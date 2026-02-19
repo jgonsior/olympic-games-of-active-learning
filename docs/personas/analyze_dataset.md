@@ -1,6 +1,6 @@
 # Analyze OPARA
 
-**You want to mine the 4.6M pre-computed experiment results for your own research—no experiments needed.**
+**Mine the 4.6M pre-computed experiment results — no experiments needed.**
 
 ---
 
