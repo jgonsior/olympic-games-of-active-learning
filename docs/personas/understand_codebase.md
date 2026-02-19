@@ -11,14 +11,17 @@ flowchart LR
     CFG["exp_config.yaml"] --> GRID["01_create_workload.py"]
     GRID --> WL["01_workload.csv"]
     WL --> RUN["02_run_experiment.py"]
-    RUN --> RAW[".csv.xz per-cycle metrics"]
-    RAW --> CAT["03_dataset_categorizations.py"]
-    RAW --> ADV["04_advanced_metrics.py"]
+    RUN --> RAW[".csv per-cycle metrics"]
+    RAW --> COMP["compress to .csv.xz"]
+    COMP --> XZ[".csv.xz per-cycle metrics"]
+    XZ --> CAT["03_dataset_categorizations.py"]
+    XZ --> ADV["04_advanced_metrics.py"]
     CAT --> NPZ[".parquet categorizations"]
-    ADV --> XZ[".csv.xz advanced metrics"]
-    RAW --> LC["eva_scripts/learning_curve.py"]
-    LC --> TS["_TS/*.parquet"]
-    TS --> EVA["eva_scripts/*"]
+    ADV --> ADVXZ[".csv.xz advanced metrics"]
+    XZ --> EVA["eva_scripts/*"]
+    NPZ --> EVA
+    ADVXZ --> EVA
+    EVA -->|"auto-generate if missing"| TS["_TS/*.parquet"]
     EVA --> ART["plots/*.parquet + PDFs"]
 ```
 
@@ -88,7 +91,7 @@ python 02_run_experiment.py --EXP_TITLE my_experiment --WORKER_INDEX 0
 Each worker picks one row from `01_workload.csv` and runs the full AL loop. The framework runner (determined by `EXP_STRATEGY`) handles: initialization → query selection → labeling → model retraining → metric recording, repeated for all AL cycles.
 
 - **Reads:** `01_workload.csv` row at `WORKER_INDEX`, dataset from `DATASETS_PATH`
-- **Produces per experiment** in `{OUTPUT_PATH}/{STRATEGY_NAME}/{DATASET_NAME}/`:
+- **Produces per experiment** in `{OUTPUT_PATH}/{STRATEGY_NAME}/{DATASET_NAME}/` as `.csv` files (which must be compressed to `.csv.xz` afterwards):
 
 | File | Contents |
 |------|----------|
@@ -158,25 +161,44 @@ Computes derived metrics from the raw per-cycle results. These are aggregations 
 | `DATASET_CATEGORIZATION` | Categorization CSVs | Dataset hardness metrics |
 | `TIMELAG_METRIC` | Timelag CSVs | Prediction lag analysis |
 
-### Step 5: Build Time Series (required for most evaluations)
+### Step 5: Prerequisite Scripts
+
+Before running evaluation scripts, run the prerequisite conversion scripts:
 
 ```bash
-python -m eva_scripts.learning_curve --EXP_TITLE my_experiment
+python scripts/convert_y_pred_to_parquet.py --EXP_TITLE my_experiment
+python -m eva_scripts.calculate_dataset_dependend_random_ramp_slope --EXP_TITLE my_experiment
 ```
 
-This is the **critical bridge** between raw experiment data and evaluation scripts. It reads all per-cycle CSVs, joins them with the workload definition, and creates sorted parquet files.
+- **`convert_y_pred_to_parquet.py`** converts y_pred CSV files to parquet format for faster I/O
+- **`calculate_dataset_dependend_random_ramp_slope.py`** computes dataset-dependent random baseline slopes used by the evaluation scripts
+
+### Step 5b: Time Series (`_TS/*.parquet`) — Auto-Generated
+
+The `_TS/*.parquet` time series files are **not** created by a single dedicated script. Instead, multiple evaluation scripts automatically generate the `_TS/*.parquet` files they need if they are missing. These scripts read all per-cycle CSVs, join them with the workload definition, and create sorted parquet files.
+
+The following `eva_scripts` auto-generate `_TS/*.parquet` when missing:
+
+- `final_leaderboard_single_cell_correlation.py`
+- `leaderboard_single_hyperparameter_influence.py`
+- `leaderboard_scenarios.py`
+- `single_hyperparameter_evaluation_metric.py`
+- `single_hyperparameter_evaluation_indices.py`
+- `runtime.py`
+- `auc_metric_correlation.py`
+- `basic_metrics_correlation.py`
+- `learning_curve.py`
+
+Each script checks if the needed `_TS/*.parquet` file exists, and if not, creates it from the raw per-cycle CSVs and workload data.
 
 - **Reads:** Per-cycle CSVs (e.g., `weighted_f1-score.csv.xz`), `05_done_workload.csv`
 - **Produces** in `{OUTPUT_PATH}/_TS/`:
     - `weighted_f1-score.parquet` — Sorted time series with columns: `EXP_DATASET`, `EXP_STRATEGY`, `EXP_BATCH_SIZE`, `EXP_LEARNER_MODEL`, `EXP_TRAIN_TEST_BUCKET_SIZE`, `ix` (cycle), `metric_value`
     - Similar parquets for other metrics as needed
 
-!!! info "Why is this step needed?"
-    Most `eva_scripts` read from `_TS/*.parquet` rather than the raw per-cycle CSVs. The time series parquets are pre-sorted and pre-joined with experiment metadata, making queries much faster. Without running this step, most evaluation scripts will fail with missing file errors.
-
 ### Step 6: Evaluation Scripts
 
-With `_TS/*.parquet` in place, all evaluation scripts can run:
+With prerequisites in place, all evaluation scripts can run (they will auto-generate `_TS/*.parquet` files if missing):
 
 ```bash
 python -m eva_scripts.calculate_leaderboard_rankings --EXP_TITLE my_experiment
@@ -203,7 +225,7 @@ See [Eva Scripts Catalog](../reference/eva_scripts_catalog.md) for the full list
 ├── 05_failed_workloads.csv                  # Step 2: failed experiments
 ├── 05_started_oom_workloads.csv             # Step 2: OOM-killed experiments
 │
-├── {STRATEGY}/{DATASET}/                    # Step 2: raw per-cycle metrics
+├── {STRATEGY}/{DATASET}/                    # Step 2: raw per-cycle metrics (.csv, compress to .csv.xz)
 │   ├── accuracy.csv.xz
 │   ├── weighted_f1-score.csv.xz
 │   ├── macro_f1-score.csv.xz
@@ -225,7 +247,7 @@ See [Eva Scripts Catalog](../reference/eva_scripts_catalog.md) for the full list
 │   ├── REGION_DENSITY.parquet
 │   └── ...
 │
-├── _TS/                                     # Step 5: time series
+├── _TS/                                     # Auto-generated by eva_scripts
 │   ├── weighted_f1-score.parquet
 │   └── ...
 │
