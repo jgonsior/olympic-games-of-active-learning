@@ -349,6 +349,14 @@ V_{b_i}(M) = \begin{bmatrix} M_{b_i 1} \\ M_{b_i 2} \\ \vdots \end{bmatrix}
 \text{Heatmap cell} = r\!\bigl(V_{b_i}(M),\; V_{b_j}(M)\bigr)
 $$
 
+The Pearson correlation coefficient is defined as:
+
+$$
+r(X, Y) = \frac{\sum_{i=1}^{n}(X_i - \bar{X})(Y_i - \bar{Y})}{\sqrt{\sum_{i=1}^{n}(X_i - \bar{X})^2 \;\sum_{i=1}^{n}(Y_i - \bar{Y})^2}}
+$$
+
+Computed via `np.corrcoef` in `single_hyperparameter_evaluation_metric.py`.
+
 ### Queried Samples (Jaccard $J$, §IV-B2)
 
 Union each experiment's per-cycle queried sets into $\widehat{Q}$, then compute pairwise Jaccard similarity. The heatmap shows $1 - \bar{J}$ (so 1 = identical queries).
@@ -359,6 +367,8 @@ $$
 J(A,B) = \frac{\lvert A \cap B \rvert}{\lvert A \cup B \rvert}
 $$
 
+$J$ ranges from 0 (disjoint sets) to 1 (identical sets). Computed in `single_hyperparameter_evaluation_indices.py`.
+
 ### Ranking Invariance (Kendall $\tau_b$, §IV-B3)
 
 Build a leaderboard (strategies × datasets), average to get a ranking vector per hyperparameter value, then compare rankings with Kendall $\tau_b$.
@@ -367,7 +377,14 @@ $$
 \tau_b = \frac{n_c - n_d}{\sqrt{(n_0 - n_1)(n_0 - n_2)}}
 $$
 
-where $n_c$ = concordant pairs, $n_d$ = discordant pairs.
+where:
+
+- $n_c$ = concordant pairs, $n_d$ = discordant pairs
+- $n_0 = n(n-1)/2$
+- $n_1 = \sum_k t_k(t_k-1)/2$ (ties in $X$)
+- $n_2 = \sum_l u_l(u_l-1)/2$ (ties in $Y$)
+
+$\tau_b$ ranges from −1 (reversed rankings) to +1 (identical rankings). Computed via `scipy.stats.kendalltau` in `leaderboard_single_hyperparameter_influence.py`.
 
 ### Terminology Cross-Reference
 
