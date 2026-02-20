@@ -12,6 +12,9 @@ All experiments are defined by the combination of hyperparameters specified in `
 
 All entities (strategies, learner models, frameworks, metrics, etc.) are stored as Python `IntEnum` values. This means every strategy, dataset, and model has a unique integer ID used throughout the CSV result files:
 
+!!! warning "Dataset IDs are calculated at runtime"
+    Unlike strategies and learner models which have fixed enum IDs in `resources/data_types.py`, **dataset IDs are assigned dynamically at runtime**. The `DATASET` enum is populated by reading `resources/kaggle_datasets.yaml` first, then `resources/openml_datasets.yaml`, and assigning sequential integer IDs based on the order the datasets appear in these YAML files (see [`datasets/__init__.py`](https://github.com/jgonsior/olympic-games-of-active-learning/blob/main/datasets/__init__.py)). If you add a new dataset or change the order in a YAML file, the IDs for all subsequent datasets will shift. Keep this in mind when interpreting `EXP_DATASET` values in result files.
+
 ```python
 from resources.data_types import AL_STRATEGY, LEARNER_MODEL, AL_FRAMEWORK
 
@@ -187,5 +190,4 @@ python -m eva_scripts.final_leaderboard --EXP_TITLE my_experiment
 | Goal | Page |
 |------|------|
 | Run at HPC scale / Reproduce paper | [Reproduce & Run](reproduce_and_run.md) |
-| Understand correlations | [Correlations: Paper ↔ Code](../reference/correlations_paper_to_code.md) |
 | Development guidelines | [Contributing](../contributing.md) |

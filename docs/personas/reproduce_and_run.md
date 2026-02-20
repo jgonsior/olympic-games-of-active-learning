@@ -230,6 +230,158 @@ print("Top 5 strategies (avg rank):", lb.mean(axis=0).sort_values().head(5))
 
 ---
 
+## Complete Eva Scripts Index
+
+### Core Analysis Scripts
+
+| Script | Reads | Produces | Description |
+|--------|-------|----------|-------------|
+| `learning_curve.py` | Per-cycle CSVs, `05_done_workload.csv` | `plots/single_learning_curve/*.parquet`, PDF | Generates an example learning curve plot for illustration. Auto-generates `_TS/*.parquet` if missing (as do most other eva_scripts). |
+| `calculate_leaderboard_rankings.py` | `_TS/*.parquet` | Ranking parquets (multiple interpolation modes) | Generates strategy rankings across datasets using different metrics and interpolation methods. |
+| `final_leaderboard.py` | `_TS/*.parquet`, ranking data | `plots/final_leaderboard/*.parquet` | Main leaderboard generation — ranks strategies and produces the paper's Table 1. |
+| `runtime.py` | `query_selection_time.csv.xz` | `plots/runtime/query_selection_time.parquet` | Analyzes and plots query selection time distributions per strategy. |
+
+### Correlation & Hyperparameter Analysis Scripts
+
+| Script | Reads | Produces | Description |
+|--------|-------|----------|-------------|
+| `basic_metrics_correlation.py` | Per-cycle CSVs (accuracy, F1, etc.) | `plots/basic_metrics/Standard Metrics.parquet` | Pearson correlation matrix between standard ML metrics. |
+| `auc_metric_correlation.py` | AUC metric parquets | `plots/AUC/auc_*.parquet` | Pearson correlation between AUC-based aggregation metrics. |
+| `single_hyperparameter_evaluation_metric.py` | `_TS/*.parquet` | `plots/single_hyperparameter/*/` (Blue heatmaps) | Metric-based (Pearson) correlation — how metric outcomes change when varying one hyperparameter. |
+| `single_hyperparameter_evaluation_indices.py` | `selected_indices.parquet` | `plots/single_hyperparameter/*/` (Green heatmaps) | Jaccard similarity of queried samples — do strategies select the same samples under different hyperparameters? |
+| `leaderboard_single_hyperparameter_influence.py` | `_TS/*.parquet` | Single hyperparameter influence parquets | Kendall τ ranking invariance — how much does changing one hyperparameter affect strategy ordering? |
+| `leaderboard_single_hyperparameter_influence_analyze.py` | Rankings CSV | Influence plots | Plots and analyzes the hyperparameter influence data. |
+| `workload_reduction.py` | `_TS/*.parquet`, dense workload | Correlation/reduction stats | Analyzes how much the workload can be reduced while maintaining result quality. |
+| `similar_strategies.py` | `selected_indices.parquet` | Jaccard correlation heatmaps | Strategy similarity via selected indices — which strategies behave most alike? |
+| `strateg_framework_correlation.py` | Strategy metrics | Framework correlation plot | Cross-framework correlation analysis. |
+
+### Leaderboard Variant Scripts
+
+| Script | Reads | Produces | Description |
+|--------|-------|----------|-------------|
+| `leaderboard_scenarios.py` | Scenario metrics | Scenario rankings | Ranks strategies under different real-world scenarios (dataset type, start point, hyperparameter variations). |
+| `leaderboard_c6_rebuttal.py` | Metric files | Kendall tau correlations, PDFs | Rebuttal analysis with bootstrap confidence intervals for ranking stability. |
+| `final_leaderboard_single_cell_correlation.py` | Leaderboard parquets | Correlation stats, plots | Cell-wise correlation analysis within the leaderboard matrix. |
+| `analyze_leaderboard_rankings.py` | `plots/leaderboard_invariances/leaderboard_types.csv` | Heatmap correlations | Correlates different leaderboard construction methods. |
+
+### Learning Curve & Example Scripts
+
+| Script | Reads | Produces | Description |
+|--------|-------|----------|-------------|
+| `single_learning_curve_example.py` | Sample data | Line plot | Example visualization of a single learning curve. |
+| `single_learning_curve_example_auc.py` | Sample data | Line plot with AUC | Example learning curve with AUC annotation. |
+
+### Dataset & Metric Analysis Scripts
+
+| Script | Reads | Produces | Description |
+|--------|-------|----------|-------------|
+| `calc_cycle_duration_parquets.py` | Metric CSVs, `05_done_workload.csv` | Threshold plots, duration analysis | Analyzes learning cycle durations and computes duration thresholds. |
+| `calculate_dataset_dependend_random_ramp_slope.py` | Selected indices time series | Leaderboard rankings CSV | Computes dataset-dependent random baseline slopes. |
+| `dataset_stats.py` | — | — | Dataset statistics (placeholder). |
+
+### Scenario & Real-World Analysis Scripts
+
+| Script | Reads | Produces | Description |
+|--------|-------|----------|-------------|
+| `real_world_scenarios_corrs.py` | Scenario metrics CSV | Decomposed correlations | Real-world scenario correlation decomposition. |
+| `real_world_scenarios_plots.py` | Scenario data | Scatter/correlation plots | Plots for real-world scenario analysis. |
+
+### Publication & Output Scripts
+
+| Script | Reads | Produces | Description |
+|--------|-------|----------|-------------|
+| `redo_plots_for_paper.py` | All parquet files | Combined ranking plots (PDFs) | Regenerates all publication-ready plots at once. |
+| `merge_multiple_plots_single_page.py` | Plot parquets | Merged PDF | Merges multiple parquet-based plots into a single multi-page PDF. |
+
+### Important Utility Scripts (`scripts/`)
+
+??? info "Data Preparation Scripts"
+
+    | Script | Description |
+    |--------|-------------|
+    | `scripts/create_dense_workload.py` | Generate a dense workload (all dataset × strategy combinations). |
+    | `scripts/create_new_extended_dense_workload.py` | Extended version of the dense workload. |
+    | `scripts/create_gaussian.py` | Generate synthetic Gaussian datasets (balanced/unbalanced). |
+    | `scripts/create_xor.py` | Download XOR datasets from the LAL project. |
+    | `scripts/create_auc_selected_ts.py` | Create AUC time series from selected indices data. |
+    | `scripts/reduce_to_dense.py` | Remove results where the full hyperparameter grid is incomplete, creating a dense grid from sparse experimental results. |
+
+??? info "Conversion Scripts"
+
+    | Script | Description |
+    |--------|-------------|
+    | `scripts/convert_metrics_csvs_to_exp_id_csvs.py` | Reorganize metric CSVs indexed by experiment ID. |
+    | `scripts/convert_dataset_distances_to_parqet.py` | Convert dataset distance CSV files to parquet format. |
+    | `scripts/convert_y_pred_to_parquet.py` | Convert y_pred CSV files to parquet format (with timeout handling). |
+
+??? info "Validation Scripts"
+
+    | Script | Description |
+    |--------|-------------|
+    | `scripts/validate_results_schema.py` | Verify that result file formats match the expected schema. |
+    | `scripts/check_if_exp_ids_are_present.py` | Verify all experiment IDs exist in all metric files. |
+    | `scripts/find_missing_exp_ids_in_metric_files.py` | Find experiments that are missing from metric CSV files. |
+    | `scripts/find_broken_file.py` | Identify corrupted or malformed metric CSV files. |
+    | `scripts/exp_results_data_format_test.py` | Test that result CSV generation and format is correct. |
+
+??? info "Export & Documentation Scripts"
+
+    | Script | Description |
+    |--------|-------------|
+    | `scripts/export_strategy_catalog.py` | Export all AL strategies to JSON/CSV/Markdown with framework info. |
+    | `scripts/add_github_hyperlinks.py` | Convert file references to GitHub hyperlinks in markdown. |
+    | `scripts/render_mermaid.py` | Pre-render Mermaid diagrams to SVG for static fallback. |
+    | `scripts/single_learning_curve.py` | Generate a single example learning curve visualization. |
+
+---
+
+## Correlation Metrics (Paper ↔ Code)
+
+Three correlation metrics from the OGAL paper ([arXiv:2506.03817](https://arxiv.org/abs/2506.03817)) and their code implementations:
+
+### Metric-based (Pearson $r$, §IV-B1)
+
+For each value of a hyperparameter (e.g., batch size $b_i$), build a result vector $V_{b_i}(M)$ of aggregated metric values. Then compute the pairwise Pearson correlation matrix. High $r$ ≈ hyperparameter has little effect.
+
+$$
+V_{b_i}(M) = \begin{bmatrix} M_{b_i 1} \\ M_{b_i 2} \\ \vdots \end{bmatrix}
+\qquad
+\text{Heatmap cell} = r\!\bigl(V_{b_i}(M),\; V_{b_j}(M)\bigr)
+$$
+
+### Queried Samples (Jaccard $J$, §IV-B2)
+
+Union each experiment's per-cycle queried sets into $\widehat{Q}$, then compute pairwise Jaccard similarity. The heatmap shows $1 - \bar{J}$ (so 1 = identical queries).
+
+$$
+\widehat{Q} = \bigcup_{i=0}^{c} Q^i
+\qquad
+J(A,B) = \frac{\lvert A \cap B \rvert}{\lvert A \cup B \rvert}
+$$
+
+### Ranking Invariance (Kendall $\tau_b$, §IV-B3)
+
+Build a leaderboard (strategies × datasets), average to get a ranking vector per hyperparameter value, then compare rankings with Kendall $\tau_b$.
+
+$$
+\tau_b = \frac{n_c - n_d}{\sqrt{(n_0 - n_1)(n_0 - n_2)}}
+$$
+
+where $n_c$ = concordant pairs, $n_d$ = discordant pairs.
+
+### Terminology Cross-Reference
+
+| Paper Term | Code Alias | File Pattern |
+|------------|-----------|--------------|
+| Full mean AUC | `full_auc` | `full_auc_*.parquet` |
+| Ramp-up AUC | `ramp_up_auc` | `ramp_up_auc_*.parquet` |
+| Plateau AUC | `plateau_auc` | `plateau_auc_*.parquet` |
+| Final value | `final_value` | `final_value_*.parquet` |
+| Queried sample sets | `selected_indices` | `selected_indices.csv.xz` |
+| Weighted F1-score | `weighted_f1-score` | `weighted_f1-score.parquet` |
+
+---
+
 ## HPC Configuration
 
 Create `.server_access_credentials.cfg`:
@@ -493,7 +645,7 @@ Generates a standalone HTML file with interactive result visualizations (AUC tab
 
 ## Deep Dive
 
-- For mathematical definitions of the three correlation types, see [Correlations: Paper ↔ Code](../reference/correlations_paper_to_code.md).
+- For mathematical definitions of the three correlation types, see [Correlation Metrics](#correlation-metrics-paper-code) above.
 - For details on all enums and how to extend the benchmark, see [Extend the Benchmark](extend_benchmark.md).
 
 ---
