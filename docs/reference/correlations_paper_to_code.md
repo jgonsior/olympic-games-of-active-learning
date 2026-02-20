@@ -13,7 +13,7 @@ Three correlation metrics from the OGAL paper ([arXiv:2506.03817](https://arxiv.
 |-------------|----------|---------------|--------|
 | **Pearson** $r$ (§IV-B1) | Do metric outcomes change with a hyperparameter? | **Blue** | `workload_reduction.py`, `basic_metrics_correlation.py` |
 | **Jaccard** $J$ (§IV-B2) | Do strategies select the same samples? | **Green** | `single_hyperparameter_evaluation_indices.py` |
-| **Kendall** $\tau_b$ (§IV-B3) | Do strategy rankings stay the same? | **Orange** | `leaderboard_c6_rebuttal.py` |
+| **Kendall** $\tau_b$ (§IV-B3) | Do strategy rankings stay the same? | **Orange** | `leaderboard_single_hyperparameter_influence.py`, `leaderboard_single_hyperparameter_influence_analyze.py` |
 
 ---
 
@@ -96,7 +96,8 @@ flowchart TD
 **Run:**
 
 ```bash
-python -m eva_scripts.leaderboard_c6_rebuttal
+python -m eva_scripts.leaderboard_single_hyperparameter_influence --EXP_TITLE your_experiment
+python -m eva_scripts.leaderboard_single_hyperparameter_influence_analyze --EXP_TITLE your_experiment
 ```
 
 **Requires:** `plots/final_leaderboard/rank_*.parquet` (from `final_leaderboard.py`)

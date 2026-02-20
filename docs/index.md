@@ -24,12 +24,6 @@ Pick the question that matches your goal:
 
     [:octicons-arrow-right-24: Extend the Benchmark](personas/extend_benchmark.md)
 
--   :material-server:{ .lg .middle } **"I want deep codebase understanding"**
-
-    Architecture, data model, full data flow — all in one place.
-
-    [:octicons-arrow-right-24: Architecture & Design](personas/understand_codebase.md)
-
 -   :material-lightbulb:{ .lg .middle } **"I want research ideas"**
 
     Open questions and unexplored directions using OGAL data.

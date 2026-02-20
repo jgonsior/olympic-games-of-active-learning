@@ -51,7 +51,7 @@
 ## Full Pipeline
 
 ```mermaid
-flowchart LR
+flowchart TD
     CFG["exp_config.yaml"] --> WL["01_create_workload.py"]
     WL --> CSV["01_workload.csv"]
     CSV --> RUN["02_run_experiment.py"]
@@ -78,6 +78,74 @@ flowchart LR
 | 4 | `04_calculate_advanced_metrics.py` | Per-cycle CSVs | `{STRATEGY}/{DATASET}/{metric}.csv.xz` (AUC, distance, etc.) |
 | 5 | Prerequisite scripts (`convert_y_pred_to_parquet.py`, `calculate_dataset_dependend_random_ramp_slope.py`) | Per-cycle CSVs, parquets | Converted parquets, slope data |
 | 6 | `eva_scripts/*` | Per-cycle CSVs, parquets | `_TS/*.parquet` (auto-generated if missing), `plots/*` (leaderboards, heatmaps, PDFs) |
+
+??? info "Step 0: Download Datasets"
+
+    ```bash
+    python 00_download_datasets.py
+    ```
+
+    - **Reads:** `resources/openml_datasets.yaml`, `resources/kaggle_datasets.yaml`
+    - **Produces:** Dataset CSV files in `DATASETS_PATH`
+    - **Also computes:** Cosine distance matrices for datasets (used later by distance metrics)
+
+??? info "Step 2: Per-experiment output files"
+
+    Each worker picks one row from `01_workload.csv` and runs the full AL loop. The framework runner (determined by `EXP_STRATEGY`) handles: initialization → query selection → labeling → model retraining → metric recording, repeated for all AL cycles.
+
+    Output files per experiment in `{OUTPUT_PATH}/{STRATEGY_NAME}/{DATASET_NAME}/` (as `.csv`, then compressed to `.csv.xz`):
+
+    | File | Contents |
+    |------|----------|
+    | `accuracy.csv.xz` | Per-cycle accuracy values |
+    | `weighted_f1-score.csv.xz` | Per-cycle weighted F1 scores |
+    | `macro_f1-score.csv.xz` | Per-cycle macro F1 scores |
+    | `weighted_precision.csv.xz` | Per-cycle weighted precision |
+    | `macro_precision.csv.xz` | Per-cycle macro precision |
+    | `weighted_recall.csv.xz` | Per-cycle weighted recall |
+    | `macro_recall.csv.xz` | Per-cycle macro recall |
+    | `query_selection_time.csv.xz` | Time taken per query selection |
+    | `learner_training_time.csv.xz` | Time taken per model retraining |
+    | `selected_indices.csv.xz` | Which sample indices were queried |
+    | `y_pred_train.csv.xz` | Model predictions on training set |
+    | `y_pred_test.csv.xz` | Model predictions on test set |
+
+    Each CSV has one row per experiment (`EXP_UNIQUE_ID`) with columns for each AL cycle iteration.
+
+??? info "Step 3: Dataset categorizations (14 categorizers)"
+
+    Computes sample-level features for each dataset, characterizing how "hard" or "interesting" each sample is:
+
+    | Categorizer | What It Measures |
+    |------------|------------------|
+    | `COUNT_WRONG_CLASSIFICATIONS` | How often a sample is misclassified |
+    | `SWITCHES_CLASS_OFTEN` | How often predicted class changes across AL cycles |
+    | `CLOSENESS_TO_DECISION_BOUNDARY` | Distance to the nearest decision boundary |
+    | `REGION_DENSITY` | Local density of samples |
+    | `MELTING_POT_REGION` | Mixed-class region indicator |
+    | `INCLUDED_IN_OPTIMAL_STRATEGY` | Whether the sample is in the optimal query set |
+    | `CLOSENESS_TO_SAMPLES_OF_SAME_CLASS_kNN` | kNN distance to same-class samples |
+    | `CLOSENESS_TO_SAMPLES_OF_OTHER_CLASS_kNN` | kNN distance to other-class samples |
+    | `CLOSENESS_TO_CLUSTER_CENTER` | Distance to cluster centers |
+    | `IMPROVES_ACCURACY_BY` | Accuracy improvement from labeling this sample |
+    | `AVERAGE_UNCERTAINTY` | Mean model uncertainty for this sample |
+    | `OUTLIERNESS` | Outlier score |
+    | `CLOSENESS_TO_SAMPLES_OF_SAME_CLASS` | Non-kNN same-class distance |
+    | `CLOSENESS_TO_SAMPLES_OF_OTHER_CLASS` | Non-kNN other-class distance |
+
+??? info "Step 4: Advanced metrics (7 metric types)"
+
+    Computes derived metrics from the raw per-cycle results — aggregations that summarize how each experiment performed:
+
+    | Computed Metric | Output Files | Description |
+    |----------------|--------------|-------------|
+    | `STANDARD_AUC` | `full_auc_{base_metric}.csv.xz`, `ramp_up_auc_{base_metric}.csv.xz`, `plateau_auc_{base_metric}.csv.xz`, `final_value_{base_metric}.csv.xz`, `first_5_{base_metric}.csv.xz`, `last_5_{base_metric}.csv.xz` | AUC-based aggregations of the learning curve for each base metric |
+    | `DISTANCE_METRICS` | Distance metric CSVs | Sample distance and similarity measures |
+    | `MISMATCH_TRAIN_TEST` | Mismatch CSVs | Train/test distribution divergence |
+    | `CLASS_DISTRIBUTIONS` | Class distribution CSVs | Per-cycle class balance changes |
+    | `METRIC_DROP` | Metric drop CSVs | Performance drop analysis |
+    | `DATASET_CATEGORIZATION` | Categorization CSVs | Dataset hardness metrics |
+    | `TIMELAG_METRIC` | Timelag CSVs | Prediction lag analysis |
 
 ---
 
@@ -273,10 +341,160 @@ These scripts in `scripts/` are **not part of the normal pipeline** — they exi
 
 ---
 
+## Design Goals
+
+| Goal | How |
+|------|-----|
+| **HPC-scale** | Each experiment independent; `WORKER_INDEX` selects one row from `01_workload.csv` |
+| **Resumable** | `05_done_workload.csv` tracks completed experiments; re-running `01_create_workload.py` skips them |
+| **Deterministic** | Fixed seeds; Cartesian product workload ensures full coverage |
+| **Framework-agnostic** | Unified runner adapts 5+ AL frameworks (ALiPy, libact, small-text, scikit-activeml, playground) |
+
+---
+
+## Configuration
+
+All configuration flows through `misc/config.py`, which loads settings from multiple sources in this priority order:
+
+1. `.server_access_credentials.cfg` — paths and HPC settings (`DATASETS_PATH`, `OUTPUT_PATH`, `SLURM_*`)
+2. `resources/exp_config.yaml` — experiment grid definitions (`EXP_GRID_*` parameters)
+3. CLI arguments — override any setting at runtime
+4. Workload row — during execution, `02_run_experiment.py` loads one row from `01_workload.csv`
+
+### Key Path Variables
+
+| Config Variable | Default | Resolves To |
+|----------------|---------|-------------|
+| `OUTPUT_PATH` | From `.server_access_credentials.cfg` | `{OUTPUT_PATH}/{EXP_TITLE}/` |
+| `CORRELATION_TS_PATH` | `_TS` | `{OUTPUT_PATH}/_TS/` |
+| `EXP_ID_METRIC_CSV_FOLDER_PATH` | `metrics` | `{OUTPUT_PATH}/metrics/` |
+| `OVERALL_DONE_WORKLOAD_PATH` | `05_done_workload.csv` | `{OUTPUT_PATH}/05_done_workload.csv` |
+
+---
+
+## Files After Each Step
+
+```
+{OUTPUT_PATH}/{EXP_TITLE}/
+├── 01_workload.csv                          # Step 1: experiment queue
+├── 05_done_workload.csv                     # Step 2: tracking file (appended)
+├── 05_failed_workloads.csv                  # Step 2: failed experiments
+├── 05_started_oom_workloads.csv             # Step 2: OOM-killed experiments
+│
+├── {STRATEGY}/{DATASET}/                    # Step 2: raw per-cycle metrics (.csv, compress to .csv.xz)
+│   ├── accuracy.csv.xz
+│   ├── weighted_f1-score.csv.xz
+│   ├── macro_f1-score.csv.xz
+│   ├── query_selection_time.csv.xz
+│   ├── selected_indices.csv.xz
+│   ├── y_pred_train.csv.xz
+│   ├── y_pred_test.csv.xz
+│   └── ...
+│
+├── {STRATEGY}/{DATASET}/                    # Step 4: advanced metrics
+│   ├── full_auc_weighted_f1-score.csv.xz
+│   ├── ramp_up_auc_weighted_f1-score.csv.xz
+│   ├── plateau_auc_weighted_f1-score.csv.xz
+│   ├── final_value_weighted_f1-score.csv.xz
+│   └── ...
+│
+├── {DATASET}/                               # Step 3: categorizations
+│   ├── COUNT_WRONG_CLASSIFICATIONS.parquet
+│   ├── REGION_DENSITY.parquet
+│   └── ...
+│
+├── _TS/                                     # Auto-generated by eva_scripts
+│   ├── weighted_f1-score.parquet
+│   └── ...
+│
+└── plots/                                   # Step 6: evaluation outputs
+    ├── final_leaderboard/
+    ├── single_hyperparameter/
+    ├── runtime/
+    └── ...
+```
+
+---
+
+## Directory Map
+
+```
+olympic-games-of-active-learning/
+├── 00_download_datasets.py         # Dataset acquisition from OpenML/Kaggle
+├── 01_create_workload.py           # Workload generation (hyperparameter grid)
+├── 02_run_experiment.py            # Experiment execution (one per worker)
+├── 03_calculate_dataset_categorizations.py  # Sample-level features
+├── 04_calculate_advanced_metrics.py         # Derived metrics (AUC, etc.)
+├── 05_analyze_partially_run_workload.py     # Progress monitoring
+├── 07b_create_results_without_flask.py      # Standalone HTML visualization
+├── framework_runners/              # AL framework adapters
+│   ├── base_runner.py              # Abstract base class (AL loop)
+│   ├── alipy_runner.py             # ALiPy strategies
+│   ├── libact_runner.py            # libact strategies
+│   ├── smalltext_runner.py         # small-text strategies
+│   ├── skactiveml_runner.py        # scikit-activeml strategies
+│   ├── playground_runner.py        # Custom strategies
+│   └── optimal_runner.py           # Oracle strategies
+├── metrics/                        # Metric recording during experiments
+│   ├── Standard_ML_Metrics.py      # accuracy, F1, precision, recall
+│   ├── Timing_Metrics.py           # query_selection_time, learner_training_time
+│   ├── Selected_Indices.py         # selected sample indices
+│   └── Predicted_Samples.py        # y_pred_train, y_pred_test
+├── resources/
+│   ├── data_types.py               # ALL enums (AL_STRATEGY, COMPUTED_METRIC, etc.)
+│   ├── exp_config.yaml             # Experiment grid definitions
+│   └── openml_datasets.yaml        # OpenML dataset configurations
+├── misc/config.py                  # Central configuration
+├── eva_scripts/                    # Evaluation & plotting scripts
+└── scripts/                        # Utility, fix, and maintenance scripts
+```
+
+---
+
+## Key Abstractions
+
+### AL_Experiment (`framework_runners/base_runner.py`)
+
+Abstract base class for framework adapters. Key methods:
+
+- `get_AL_strategy()` — Initialize the strategy
+- `query_AL_strategy()` → indices — Select samples to query
+- `al_cycle()` — Main loop: query → update → retrain → record metrics
+
+### Monitoring (`05_analyze_partially_run_workload.py`)
+
+Analyzes progress of a partially completed experiment run:
+
+- Groups completed experiments by dataset/strategy/model/hyperparameters
+- Calculates mean query selection time per combination
+- Identifies which parameter combinations are missing
+
+### Visualization (`07b_create_results_without_flask.py`)
+
+Generates a standalone HTML file with interactive result visualizations (AUC tables, learning curves, runtime plots) without requiring a Flask server.
+
+---
+
+## "I Want to..." Quick Reference
+
+| Goal | Where |
+|------|-------|
+| Change experiment grid | `resources/exp_config.yaml` |
+| Change paths | `.server_access_credentials.cfg` |
+| Add new strategy | `resources/data_types.py` (enum + mapping) |
+| Add new dataset | `resources/openml_datasets.yaml` |
+| Add new metric | `metrics/` extending `Base_Metric` |
+| Generate leaderboards | `eva_scripts/final_leaderboard.py` |
+| Monitor progress | `05_analyze_partially_run_workload.py` |
+| Build standalone HTML results | `07b_create_results_without_flask.py` |
+| Fix broken result files | See [Fix Scripts](#fix-scripts-only-needed-if-something-breaks) |
+
+---
+
 ## Deep Dive
 
 - For mathematical definitions of the three correlation types, see [Correlations: Paper ↔ Code](../reference/correlations_paper_to_code.md).
-- For complete data flow and architecture details, see [Architecture & Design](understand_codebase.md).
+- For details on all enums and how to extend the benchmark, see [Extend the Benchmark](extend_benchmark.md).
 
 ---
 
@@ -286,4 +504,3 @@ These scripts in `scripts/` are **not part of the normal pipeline** — they exi
 |------|------|
 | Extend with new strategies/datasets | [Extend the Benchmark](extend_benchmark.md) |
 | Analyze results | [Analyze OPARA](analyze_dataset.md) |
-| Understand the architecture | [Architecture & Design](understand_codebase.md) |

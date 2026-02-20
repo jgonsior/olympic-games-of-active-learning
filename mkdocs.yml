@@ -33,7 +33,6 @@ nav:
   - Analyze OPARA: personas/analyze_dataset.md
   - Reproduce & Run: personas/reproduce_and_run.md
   - Extend the Benchmark: personas/extend_benchmark.md
-  - Architecture & Design: personas/understand_codebase.md
   - Research Ideas: personas/research_ideas.md
   - Reference:
     - Correlations (Paper ↔ Code): reference/correlations_paper_to_code.md
@@ -62,6 +61,9 @@ markdown_extensions:
   - tables
   - attr_list
   - md_in_html
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - toc:
       permalink: true
 
