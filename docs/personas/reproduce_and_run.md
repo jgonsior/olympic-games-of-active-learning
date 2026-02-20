@@ -306,7 +306,7 @@ print("Top 5 strategies (avg rank):", lb.mean(axis=0).sort_values().head(5))
     | `scripts/create_auc_selected_ts.py` | Create AUC time series from selected indices data. |
     | `scripts/reduce_to_dense.py` | Remove results where the full hyperparameter grid is incomplete, creating a dense grid from sparse experimental results. |
 
-??? info "Conversion Scripts (scripts/)"
+??? info "Conversion Scripts"
 
     | Script | Description |
     |--------|-------------|
@@ -314,7 +314,7 @@ print("Top 5 strategies (avg rank):", lb.mean(axis=0).sort_values().head(5))
     | `scripts/convert_dataset_distances_to_parqet.py` | Convert dataset distance CSV files to parquet format. |
     | `scripts/convert_y_pred_to_parquet.py` | Convert y_pred CSV files to parquet format (with timeout handling). |
 
-??? info "Validation Scripts (scripts/)"
+??? info "Validation Scripts"
 
     | Script | Description |
     |--------|-------------|
@@ -324,7 +324,7 @@ print("Top 5 strategies (avg rank):", lb.mean(axis=0).sort_values().head(5))
     | `scripts/find_broken_file.py` | Identify corrupted or malformed metric CSV files. |
     | `scripts/exp_results_data_format_test.py` | Test that result CSV generation and format is correct. |
 
-??? info "Export & Documentation Scripts (scripts/)"
+??? info "Export & Documentation Scripts"
 
     | Script | Description |
     |--------|-------------|
