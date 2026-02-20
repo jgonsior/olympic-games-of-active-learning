@@ -34,9 +34,6 @@ nav:
   - Reproduce & Run: personas/reproduce_and_run.md
   - Extend the Benchmark: personas/extend_benchmark.md
   - Research Ideas: personas/research_ideas.md
-  - Reference:
-    - Correlations (Paper ↔ Code): reference/correlations_paper_to_code.md
-    - Eva Scripts Catalog: reference/eva_scripts_catalog.md
   - Contributing: contributing.md
 
 plugins:
