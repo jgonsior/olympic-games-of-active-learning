@@ -158,6 +158,8 @@ V_{b_i}(M) = \begin{bmatrix} M_{b_i 1} \\ M_{b_i 2} \\ \vdots \end{bmatrix}
 \text{Heatmap cell} = r\!\bigl(V_{b_i}(M),\; V_{b_j}(M)\bigr)
 $$
 
+**Data flow:** Per-strategy/dataset `.csv.xz` files (e.g., `full_auc_weighted_f1-score.csv.xz`) are joined with `05_done_workload.csv` to attach hyperparameter columns, then written to `_TS/{metric}.parquet`. For a chosen hyperparameter, experiments are grouped by its value and matched on all remaining hyperparameters (a shared "fingerprint"). `np.corrcoef` computes pairwise Pearson $r$ between the matched metric vectors — one vector per hyperparameter value — producing the blue heatmap.
+
 ### Queried Samples (Jaccard $J$)
 
 Union each experiment's per-cycle queried sets into $\widehat{Q}$, then compute pairwise Jaccard similarity. The heatmap shows $1 - \bar{J}$ (so 1 = identical queries).
@@ -168,6 +170,8 @@ $$
 J(A,B) = \frac{\lvert A \cap B \rvert}{\lvert A \cup B \rvert}
 $$
 
+**Data flow:** `selected_indices.csv.xz` files store per-cycle queried sample indices. These are union-aggregated across cycles and joined with workload metadata into `_TS/selected_indices.parquet`. For a chosen hyperparameter, matched experiment pairs (same fingerprint on the remaining hyperparameters) have their index sets compared via $|A \cap B| / |A \cup B|$, averaged across all matched pairs to fill the green heatmap.
+
 ### Ranking Invariance (Kendall $\tau_b$)
 
 Build a leaderboard (strategies × datasets), average to get a ranking vector per hyperparameter value, then compare rankings with Kendall $\tau_b$.
@@ -177,6 +181,8 @@ $$
 $$
 
 where $n_c$ = concordant pairs, $n_d$ = discordant pairs.
+
+**Data flow:** The same `_TS/{metric}.parquet` files as above are grouped by dataset and strategy, then averaged and rank-transformed to produce a leaderboard ranking vector for each hyperparameter value. `scipy.stats.kendalltau` compares these ranking vectors pairwise, yielding the orange heatmap.
 
 ### Terminology Cross-Reference
 
