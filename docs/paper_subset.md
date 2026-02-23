@@ -10,7 +10,7 @@ The paper's main experiment grid is defined as `full_exp_jan` in `resources/exp_
 
 | Dimension | Values | Count |
 |-----------|--------|-------|
-| Strategies | 28 (subset of 76) | 28 |
+| Strategies | 28 (subset of the full `AL_STRATEGY` enum) | 28 |
 | Datasets | 92 | 92 |
 | Learner models | RF, RBF_SVM, MLP | 3 |
 | Batch sizes | 1, 5, 10, 20, 50, 100 | 6 |

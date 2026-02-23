@@ -1,6 +1,7 @@
 # Run at HPC Scale
 
 Submit thousands of experiments to a SLURM cluster.
+The paper-scale run (`full_exp_jan`) comprises ~4.6 M experiments (~3.6 M CPU hours) and requires an HPC cluster with SLURM.
 
 ---
 

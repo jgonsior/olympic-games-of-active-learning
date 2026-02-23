@@ -1,6 +1,6 @@
 # Strategy Catalog
 
-OGAL benchmarks **76 active learning strategies** across 6 AL frameworks.
+OGAL benchmarks active learning strategies across multiple AL frameworks.
 
 ---
 
@@ -26,7 +26,7 @@ from resources.data_types import AL_STRATEGY
 AL_STRATEGY.ALIPY_RANDOM          # 1 — Random sampling
 AL_STRATEGY.ALIPY_UNCERTAINTY_LC  # 2 — Uncertainty (Least Confident)
 AL_STRATEGY.ALIPY_CORESET_GREEDY  # 4 — CoreSet Greedy
-# ... 76 total
+# ... see AL_STRATEGY enum for the full list
 ```
 
 ---

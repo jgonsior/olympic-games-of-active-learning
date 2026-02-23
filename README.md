@@ -8,7 +8,7 @@
 ## Why OGAL?
 
 - **4.6M pre-computed experiments** — skip ~3.6 million CPU hours of compute
-- **Unified API** for 50+ AL strategies across 5 frameworks (ALiPy, libact, small-text, scikit-activeml, playground)
+- **Unified API** across multiple AL frameworks (ALiPy, libact, small-text, scikit-activeml, Playground) plus OGAL-native baselines
 - **Consistent protocol** — same splits, seeds, and output schema for all strategies
 - **Reusable dataset** archived at [DOI:10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862)
 - **Ready-to-use analysis scripts** (`eva_scripts/`) for leaderboards, correlations, and paper figures
@@ -46,9 +46,9 @@ python 01_create_workload.py --EXP_TITLE test && python 02_run_experiment.py --E
 ## Reproducing the paper run (`full_exp_jan`)
 
 > **Compute scale:** The paper run covers ~4.6 M experiments (~3.6 M CPU hours on HPC).
-> Running it on a laptop is not feasible.  To verify the pipeline locally, use the `test`
-> config (completes in minutes); see the full instructions in the
-> [documentation](https://jgonsior.github.io/olympic-games-of-active-learning/personas/reproduce_and_run/#reproducing-the-paper-run-full_exp_jan).
+> Running it on a laptop is not feasible.  For a local sanity check, use the `test`
+> config (completes in minutes).  For the full experiment grid, strategy list, and
+> evaluation scripts, see [Paper subset](https://jgonsior.github.io/olympic-games-of-active-learning/paper_subset/).
 
 The paper results come from config **`full_exp_jan`** in `resources/exp_config.yaml`.
 **The archived results are already on OPARA** (downloaded above) — re-running from scratch
@@ -75,7 +75,7 @@ python -m eva_scripts.calculate_dataset_dependend_random_ramp_slope --EXP_TITLE 
 python -m eva_scripts.final_leaderboard --EXP_TITLE full_exp_jan
 ```
 
-For a **laptop-feasible smoke test**, replace `full_exp_jan` with `test`
+For a **local sanity check**, replace `full_exp_jan` with `test`
 (2 datasets, 4 strategies, seconds per experiment).
 
 ## Links

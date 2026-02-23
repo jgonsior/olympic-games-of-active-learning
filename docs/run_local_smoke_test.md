@@ -1,7 +1,8 @@
 # Run a Local Smoke Test
 
-Your first successful OGAL run in ~7 steps. Uses the built-in `test` config
+A quick sanity check — not a paper reproduction. Uses the built-in `test` config
 (2 datasets, 4 strategies — finishes in minutes).
+To reproduce the paper results, download the [OPARA archive](use_opara_archive.md) instead.
 
 ---
 

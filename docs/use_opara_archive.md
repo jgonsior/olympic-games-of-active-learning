@@ -87,6 +87,9 @@ cp .server_access_credentials.cfg.example .server_access_credentials.cfg
 python -m eva_scripts.final_leaderboard --EXP_TITLE full_exp_jan
 ```
 
+The paper uses config **`full_exp_jan`** — see [Paper subset](paper_subset.md) for
+the full experiment grid and evaluation scripts.
+
 See [Results format](results_format.md) for the output schema and [Evaluation scripts](evaluation_scripts.md) for the full list of analysis scripts.
 
 !!! tip "If OPARA migrates"
