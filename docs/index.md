@@ -39,7 +39,10 @@ Pick the question that matches your goal:
 ```bash
 # Setup + leaderboard from archived data
 conda create --name ogal --file conda-linux-64.lock && conda activate ogal && poetry install
-wget <URL_FROM_DOI> && unzip full_exp_jan.zip -d /path/to/results/
+# Download the main archive (DOI: 10.25532/OPARA-862 — landing page is canonical)
+wget -c -O full_exp_jan.zip \
+  "https://opara.zih.tu-dresden.de/bitstreams/38951489-5076-4544-a99b-c20dddfc2c6b/download"
+unzip full_exp_jan.zip -d /path/to/results/full_exp_jan
 python -m eva_scripts.final_leaderboard --EXP_TITLE full_exp_jan
 ```
 

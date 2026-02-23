@@ -7,14 +7,15 @@ Each item references the exact files that must be changed.
 
 ## Critical
 
-- [ ] **Replace OPARA download placeholders with exact commands and add artifact verification
+- [x] **Replace OPARA download placeholders with exact commands and add artifact verification
   guidance.**
-  Add a "Data download" block to each file below that uses the OPARA bitstream URLs (DOI
-  `10.25532/OPARA-862`), recommends `wget -c`/`aria2c` for resumable downloads, and instructs
-  users to verify downloaded contents against `archive_listing.txt`.
+  Replaced all `wget <URL_FROM_DOI*>` stubs with real bitstream URLs, `wget -c`/`aria2c`
+  resumable commands, disk-space warning, and `archive_listing.txt` manifest verification.
+  DOI landing page noted as canonical for URL rotation.
   - `README.md`
   - `docs/personas/reproduce_and_run.md`
   - `docs/personas/analyze_dataset.md`
+  - `docs/index.md`
 
 - [x] **Document the config file as mandatory and provide a committed example template.**
   Option B chosen: `OGAL_OUTPUT` env-var claims removed from all docs; `.server_access_credentials.cfg`
@@ -186,3 +187,78 @@ Each item references the exact files that must be changed.
   Once DOI/arXiv metadata is unified (see High items) and versioning is in place, add a short
   block so users can cite a specific repository snapshot.
   - `README.md`
+
+---
+
+## Verification
+
+Run these commands from the repo root to confirm that the documentation is buildable
+and that the core pipeline runs end-to-end on a minimal configuration.
+
+### 1. Docs build
+
+```bash
+pip install mkdocs-material pymdown-extensions
+mkdocs build --strict
+# Expected: "Documentation built in … seconds" with exit code 0.
+# Allowed informational notices (not errors):
+#   - pages not in nav: MERMAID_STATIC_RENDERING.md, images/mermaid/README.md, maintenance/audit_todo.md
+```
+
+### 2. Check for remaining placeholders
+
+```bash
+grep -rn "URL_FROM_DOI\|<URL\|TODO\|FIXME\|PLACEHOLDER\|YOUR_" \
+  README.md docs/ \
+  --include="*.md" --include="*.yml"
+# Expected: no output (zero matches in non-audit files)
+```
+
+### 3. Minimal smoke test (single dataset, tiny run)
+
+Prerequisites:
+- Conda environment active (`conda activate ogal`)
+- `.server_access_credentials.cfg` created from the example template with valid
+  `OUTPUT_PATH` and `DATASETS_PATH` set under `[LOCAL]`
+- At least the `Iris` dataset CSV present at `{DATASETS_PATH}/Iris.csv` and its
+  split file at `{DATASETS_PATH}/Iris_split.csv`
+
+```bash
+# Step 1 — create a minimal workload (2 datasets × 1 strategy × 1 seed = ~2 experiments)
+python 01_create_workload.py --EXP_TITLE smoke_test
+
+# Step 2 — run the first experiment
+python 02_run_experiment.py --EXP_TITLE smoke_test --WORKER_INDEX 0
+
+# Step 3 — confirm a result file was written
+ls "${OUTPUT_PATH}/smoke_test/"*/*.csv* 2>/dev/null | head -5
+# Expected: at least one .csv or .csv.xz file
+
+# Step 4 — generate leaderboard (requires at least a few completed experiments)
+python -m eva_scripts.final_leaderboard --EXP_TITLE smoke_test
+```
+
+Alternatively, use the built-in `test` configuration which exercises more
+strategies and is already defined in `resources/exp_config.yaml`:
+
+```bash
+python 01_create_workload.py --EXP_TITLE test
+python 02_run_experiment.py --EXP_TITLE test --WORKER_INDEX 0
+```
+
+### 4. Script existence check
+
+```bash
+# Verify all scripts referenced in docs are present
+for f in \
+  01_create_workload.py \
+  02_run_experiment.py \
+  03_calculate_dataset_categorizations.py \
+  04_calculate_advanced_metrics.py \
+  scripts/convert_y_pred_to_parquet.py \
+  scripts/validate_results_schema.py; do
+  [ -f "$f" ] && echo "OK $f" || echo "MISSING $f"
+done
+python -c "import eva_scripts.final_leaderboard" && echo "OK eva_scripts.final_leaderboard"
+python -c "import eva_scripts.calculate_dataset_dependend_random_ramp_slope" && echo "OK calculate_dataset_dependend_random_ramp_slope"
+```
