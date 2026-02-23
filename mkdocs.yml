@@ -29,16 +29,26 @@ theme:
         name: Switch to light mode
 
 nav:
-  - Choose Your Path: index.md
-  - Analyze OPARA: personas/analyze_dataset.md
-  - Reproduce & Run: personas/reproduce_and_run.md
-  - Extend the Benchmark: personas/extend_benchmark.md
-  - Research Ideas: personas/research_ideas.md
+  - Home: index.md
+  - Getting Started:
+    - Overview: getting_started.md
+    - Use released OPARA archive (recommended): use_opara_archive.md
+    - Run a local smoke test (from scratch, minimal): run_local_smoke_test.md
+    - Run at HPC scale (optional / advanced): run_hpc.md
   - Reference:
     - Pipeline: pipeline.md
     - Configuration: configuration.md
-    - Results Format: results_format.md
-  - Contributing: contributing.md
+    - Datasets & provenance: datasets_and_provenance.md
+    - Splits & start sets: splits_and_start_sets.md
+    - Results format: results_format.md
+    - Evaluation scripts: evaluation_scripts.md
+    - Strategy catalog: strategy_catalog.md
+    - Paper subset: paper_subset.md
+  - Extend OGAL: personas/extend_benchmark.md
+  - Legacy / Deep Dives:
+    - Analyze OPARA (legacy): personas/analyze_dataset.md
+    - Reproduce & Run (legacy): personas/reproduce_and_run.md
+    - Research Ideas (legacy): personas/research_ideas.md
 
 plugins:
   - search

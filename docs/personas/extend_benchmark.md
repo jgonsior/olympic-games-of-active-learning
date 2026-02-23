@@ -1,3 +1,6 @@
+!!! info "Legacy page"
+    This page is a deep dive from an earlier docs structure. **Start at [Home](../index.md) / [Getting Started](../getting_started.md)** for the recommended entry points.
+
 # Extend the Benchmark
 
 **Add new strategies, datasets, or hyperparameters and integrate them with the shared benchmark.**
@@ -18,7 +21,7 @@ All entities (strategies, learner models, frameworks, metrics, etc.) are stored 
 ```python
 from resources.data_types import AL_STRATEGY, LEARNER_MODEL, AL_FRAMEWORK
 
-# Strategies — 76 active learning strategies across 6 frameworks
+# Strategies — see AL_STRATEGY enum for the full list
 AL_STRATEGY.ALIPY_RANDOM          # = 1  (paper: "Random")
 AL_STRATEGY.ALIPY_UNCERTAINTY_LC  # = 2  (paper: "Uncertainty (LC)")
 AL_STRATEGY.ALIPY_CORESET_GREEDY  # = 4  (paper: "CoreSet Greedy")
@@ -210,4 +213,3 @@ python -m eva_scripts.final_leaderboard --EXP_TITLE my_experiment
 | Goal | Page |
 |------|------|
 | Run at HPC scale / Reproduce paper | [Reproduce & Run](reproduce_and_run.md) |
-| Development guidelines | [Contributing](../contributing.md) |

@@ -1,3 +1,6 @@
+!!! info "Legacy page"
+    This page is a deep dive from an earlier docs structure. **Start at [Home](../index.md) / [Getting Started](../getting_started.md)** for the recommended entry points.
+
 # Reproduce the Paper & Run from Scratch
 
 **Run the exact scripts that produce the paper's figures and tables, or recompute the entire dataset from scratch on HPC/SLURM.**
@@ -6,81 +9,11 @@
 
 ## Quick Start
 
-=== "Reproduce from OPARA archive"
-
-    Download the pre-computed results from [DOI:10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862) and run the evaluation scripts directly:
-
-    ```bash
-    # Setup
-    git clone https://github.com/jgonsior/olympic-games-of-active-learning.git
-    cd olympic-games-of-active-learning
-    conda create --name ogal --file conda-linux-64.lock && conda activate ogal && poetry install
-
-    # Download released results from OPARA (DOI: 10.25532/OPARA-862)
-    # Canonical landing page: https://doi.org/10.25532/OPARA-862
-    # If OPARA migrates, retrieve updated bitstream URLs from that page.
-
-    # File manifest (~184 MB) — use to verify the extracted archive
-    wget -c -O archive_listing.txt \
-      "https://opara.zih.tu-dresden.de/bitstreams/0f4dcc0e-4ba7-4b51-b3ed-778bbbd0c945/download"
-
-    # Main archive (~320 GB) — use -c to resume if interrupted
-    wget -c -O full_exp_jan.zip \
-      "https://opara.zih.tu-dresden.de/bitstreams/38951489-5076-4544-a99b-c20dddfc2c6b/download"
-    # aria2c alternative for multi-connection download:
-    # aria2c -c -o full_exp_jan.zip \
-    #   "https://opara.zih.tu-dresden.de/bitstreams/38951489-5076-4544-a99b-c20dddfc2c6b/download"
-
-    # Unpack — ensure ~320 GB free disk space
-    export RESULTS_DIR=/path/to/results
-    unzip full_exp_jan.zip -d "${RESULTS_DIR}/full_exp_jan"
-
-    # Verify: archive_listing.txt must exist and should match extracted files
-    ls archive_listing.txt
-    # diff <(sort archive_listing.txt) <(find "${RESULTS_DIR}/full_exp_jan" -type f | sort)
-
-    # Configure local paths so OGAL can find the data.
-    # Copy the committed template and set OUTPUT_PATH under [LOCAL] to your results directory.
-    # Use the same path you will assign to RESULTS_DIR below.
-    # This file is gitignored — never commit the filled-in version.
-    cp .server_access_credentials.cfg.example .server_access_credentials.cfg
-    # Edit .server_access_credentials.cfg: set OUTPUT_PATH = /absolute/path/to/results under [LOCAL].
-    # Then use that same path for RESULTS_DIR when running unzip below.
-    ```
-
-=== "Run locally (verify setup)"
-
-    Run a small smoke test before going to HPC scale.
-
-    **Prerequisites:** a local config file is required.  The config file tells OGAL
-    where to write results and where to find datasets.
-
-    ```bash
-    conda create --name ogal --file conda-linux-64.lock && conda activate ogal && poetry install
-
-    # Copy the committed template and fill in your local absolute paths.
-    # This file is gitignored — never commit the filled-in version.
-    cp .server_access_credentials.cfg.example .server_access_credentials.cfg
-    # Edit .server_access_credentials.cfg: set OUTPUT_PATH and DATASETS_PATH
-    # under [LOCAL] to real absolute paths on your machine.
-
-    python 01_create_workload.py --EXP_TITLE smoke_test
-    python 02_run_experiment.py --EXP_TITLE smoke_test --WORKER_INDEX 0
-    # Note: 02_run_experiment.py outputs .csv files; compress to .csv.xz afterwards
-    ```
-
-=== "HPC (SLURM)"
-
-    Run millions of experiments on an HPC cluster.  See the **Configuration** section below
-    for the required `[HPC]` keys in `.server_access_credentials.cfg`.
-    Set `RESULTS_DIR` to the `OUTPUT_PATH` value from the `[HPC]` section of your config file.
-
-    ```bash
-    RESULTS_DIR=/absolute/path/to/results  # OUTPUT_PATH from [HPC] in .server_access_credentials.cfg
-    python 01_create_workload.py --EXP_TITLE full_run
-    sbatch ${RESULTS_DIR}/full_run/02_slurm.slurm
-    watch -n 60 'wc -l ${RESULTS_DIR}/full_run/05_done_workload.csv'
-    ```
+| Goal | Canonical page |
+|------|---------------|
+| Download pre-computed results | [Use released OPARA archive](../use_opara_archive.md) |
+| Run a small local test | [Run a local smoke test](../run_local_smoke_test.md) |
+| Submit to HPC/SLURM | [Run at HPC scale](../run_hpc.md) |
 
 ---
 

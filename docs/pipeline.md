@@ -1,8 +1,13 @@
 # Pipeline
 
+!!! abstract "When do I need this?"
+    Read this page to understand **what each script does**, what files it
+    produces, and how the stages connect.  For hands-on tutorials, start with
+    [Run a local smoke test](run_local_smoke_test.md) or
+    [Run at HPC scale](run_hpc.md).
+
 End-to-end workflow for running OGAL experiments — from dataset preparation through
-result analysis.  See [Reproduce & Run](personas/reproduce_and_run.md) for the full
-command-line reference and [Configuration](configuration.md) for all config keys.
+result analysis.
 
 ---
 
@@ -50,20 +55,18 @@ resources/exp_config.yaml
 
 ### Step 0 — Prepare datasets (one-time)
 
-```bash
-python 00_download_datasets.py
-```
+**Script:** `00_download_datasets.py`
 
 Downloads datasets from OpenML/Kaggle, generates train/test splits
-(`{dataset}_split.csv`), and computes cosine distance matrices.  This step is
-only needed if you are regenerating the dataset files from scratch; the OPARA
-archive already contains all pre-computed splits.
+(`{dataset}_split.csv`), and computes cosine distance matrices.  Only needed if
+you are regenerating dataset files from scratch; the OPARA archive already
+contains all pre-computed splits.
+
+See [Datasets & provenance](datasets_and_provenance.md) for credential setup.
 
 ### Step 1 — Generate workload
 
-```bash
-python 01_create_workload.py --EXP_TITLE <name>
-```
+**Script:** `01_create_workload.py --EXP_TITLE <name>`
 
 Reads the named config block from `resources/exp_config.yaml` and produces:
 
@@ -74,13 +77,7 @@ Reads the named config block from `resources/exp_config.yaml` and produces:
 
 ### Step 2 — Run experiments
 
-```bash
-# Local — one worker at a time
-python 02_run_experiment.py --EXP_TITLE <name> --WORKER_INDEX <i>
-
-# HPC — submit all workers via SLURM
-sbatch {OUTPUT_PATH}/{EXP_TITLE}/02_slurm.slurm
-```
+**Script:** `02_run_experiment.py --EXP_TITLE <name> --WORKER_INDEX <i>`
 
 Each worker:
 
@@ -101,18 +98,11 @@ See [Results format](results_format.md) for the output schema.
 
 ### Step 2b — Compress raw CSVs
 
-```bash
-xz {OUTPUT_PATH}/{EXP_TITLE}/*/*/**.csv
-```
-
-Compresses per-cycle CSV files to `.csv.xz` to reduce disk usage (~10× ratio).
+Compress per-cycle CSV files to `.csv.xz` with `xz` to reduce disk usage (~10× ratio).
 
 ### Step 3 — Dataset categorizations
 
-```bash
-python 03_calculate_dataset_categorizations.py \
-    --EXP_TITLE <name> --SAMPLES_CATEGORIZER _ALL --EVA_MODE local
-```
+**Script:** `03_calculate_dataset_categorizations.py --EXP_TITLE <name> --SAMPLES_CATEGORIZER _ALL --EVA_MODE local`
 
 Computes sample-level hardness features for each dataset
 (region density, class overlap, etc.) and writes `.parquet` files under
@@ -120,29 +110,24 @@ Computes sample-level hardness features for each dataset
 
 ### Step 4 — Advanced metrics
 
-```bash
-python 04_calculate_advanced_metrics.py \
-    --EXP_TITLE <name> --COMPUTED_METRICS _ALL --EVA_MODE local
-```
+**Script:** `04_calculate_advanced_metrics.py --EXP_TITLE <name> --COMPUTED_METRICS _ALL --EVA_MODE local`
 
 Derives aggregated metrics from the per-cycle CSVs (AUC variants, distances, etc.)
 and writes them as `.csv.xz` files next to the per-cycle files.
 
 ### Step 5 — Prerequisite scripts
 
-```bash
-python scripts/convert_y_pred_to_parquet.py --EXP_TITLE <name>
-python -m eva_scripts.calculate_dataset_dependend_random_ramp_slope --EXP_TITLE <name>
-```
+**Scripts:**
+
+- `scripts/convert_y_pred_to_parquet.py --EXP_TITLE <name>`
+- `eva_scripts.calculate_dataset_dependend_random_ramp_slope --EXP_TITLE <name>` (run with `python -m`)
 
 Converts `y_pred_*.csv.xz` files to Parquet and computes the dataset-dependent
 random baseline slope needed for normalised leaderboard rankings.
 
 ### Step 6 — Generate leaderboard
 
-```bash
-python -m eva_scripts.final_leaderboard --EXP_TITLE <name>
-```
+**Script:** `eva_scripts.final_leaderboard --EXP_TITLE <name>` (run with `python -m`)
 
 Produces the strategy-×-dataset rank matrix in
 `{OUTPUT_PATH}/{EXP_TITLE}/plots/final_leaderboard/rank_sparse_zero_full_auc_weighted_f1-score.parquet`.
@@ -164,8 +149,10 @@ Produces the strategy-×-dataset rank matrix in
 
 ---
 
-## Cross-references
+## Related pages
 
+- [Run a local smoke test](run_local_smoke_test.md) — hands-on first run
+- [Run at HPC scale](run_hpc.md) — SLURM submission walkthrough
+- [Use OPARA archive](use_opara_archive.md) — skip to pre-computed results
 - [Configuration](configuration.md) — all config keys and their defaults
 - [Results format](results_format.md) — per-cycle CSV schema and column definitions
-- [Reproduce & Run](personas/reproduce_and_run.md) — full pipeline walkthrough with paper-run commands

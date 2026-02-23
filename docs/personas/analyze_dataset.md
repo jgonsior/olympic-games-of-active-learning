@@ -1,3 +1,6 @@
+!!! info "Legacy page"
+    This page is a deep dive from an earlier docs structure. **Start at [Home](../index.md) / [Getting Started](../getting_started.md)** for the recommended entry points.
+
 # Analyze OPARA
 
 **Mine the 4.6M pre-computed experiment results — no experiments needed.**
@@ -38,45 +41,14 @@ See [Terminology Cross-Reference](#terminology-cross-reference) below for the fu
 
 ### 1. Get the Data
 
-Download the released results archive from OPARA (DOI: [10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862)).
-The DOI landing page at <https://doi.org/10.25532/OPARA-862> is canonical — if OPARA migrates,
-retrieve updated bitstream URLs from there.
-
-```bash
-# File manifest (~184 MB) — use to verify the extracted archive
-wget -c -O archive_listing.txt \
-  "https://opara.zih.tu-dresden.de/bitstreams/0f4dcc0e-4ba7-4b51-b3ed-778bbbd0c945/download"
-
-# Main archive (~320 GB) — ensure ~320 GB free disk space; use -c to resume if interrupted
-wget -c -O full_exp_jan.zip \
-  "https://opara.zih.tu-dresden.de/bitstreams/38951489-5076-4544-a99b-c20dddfc2c6b/download"
-# aria2c alternative for multi-connection download:
-# aria2c -c -o full_exp_jan.zip \
-#   "https://opara.zih.tu-dresden.de/bitstreams/38951489-5076-4544-a99b-c20dddfc2c6b/download"
-
-# Unpack into your results directory
-export RESULTS_DIR=/path/to/results
-unzip full_exp_jan.zip -d "${RESULTS_DIR}/full_exp_jan"
-
-# Verify: archive_listing.txt must exist and should match extracted files
-ls archive_listing.txt
-# diff <(sort archive_listing.txt) <(find "${RESULTS_DIR}/full_exp_jan" -type f | sort)
-```
+Download and extract the released results archive from OPARA — see
+**[Use released OPARA archive](../use_opara_archive.md)** for copy/paste-ready
+download commands, disk-space requirements, and verification steps.
 
 ### 2. Setup Environment
 
-```bash
-git clone https://github.com/jgonsior/olympic-games-of-active-learning.git
-cd olympic-games-of-active-learning
-conda create --name ogal --file conda-linux-64.lock && conda activate ogal && poetry install
-```
-
-### 3. Generate Leaderboard
-
-Output paths are controlled by `OUTPUT_PATH` in the `[LOCAL]` section of
-`.server_access_credentials.cfg` (copied from `.server_access_credentials.cfg.example`).
-The evaluation scripts read this value automatically via `misc/config.py` — no environment
-variable is needed.
+Follow [Getting Started](../getting_started.md) to install the environment and configure local paths.
+Then generate the leaderboard:
 
 ```bash
 python -m eva_scripts.final_leaderboard --EXP_TITLE full_exp_jan

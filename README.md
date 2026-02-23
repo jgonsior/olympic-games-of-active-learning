@@ -8,7 +8,7 @@
 ## Why OGAL?
 
 - **4.6M pre-computed experiments** — skip ~3.6 million CPU hours of compute
-- **Unified API** for 50+ AL strategies across 5 frameworks (ALiPy, libact, small-text, scikit-activeml, playground)
+- **Unified API** across multiple AL frameworks (ALiPy, libact, small-text, scikit-activeml, Playground) plus OGAL-native baselines
 - **Consistent protocol** — same splits, seeds, and output schema for all strategies
 - **Reusable dataset** archived at [DOI:10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862)
 - **Ready-to-use analysis scripts** (`eva_scripts/`) for leaderboards, correlations, and paper figures
@@ -25,32 +25,13 @@ conda create --name ogal --file conda-linux-64.lock && conda activate ogal && po
 cp .server_access_credentials.cfg.example .server_access_credentials.cfg
 # Edit .server_access_credentials.cfg:
 #   Under [LOCAL], set OUTPUT_PATH and DATASETS_PATH to real absolute paths.
-#   Note the OUTPUT_PATH value — you will use the same path for RESULTS_DIR below.
 
-# 3. Download released results from OPARA (DOI: 10.25532/OPARA-862)
-#    The canonical landing page is https://doi.org/10.25532/OPARA-862
-#    Use -c to resume interrupted downloads. Bitstream URLs below are current as of
-#    the dataset release; if OPARA migrates, retrieve updated URLs from the DOI landing page.
-
-#    Step 3a – file manifest (~184 MB, useful for verifying the extracted archive)
-wget -c -O archive_listing.txt \
-  "https://opara.zih.tu-dresden.de/bitstreams/0f4dcc0e-4ba7-4b51-b3ed-778bbbd0c945/download"
-
-#    Step 3b – main archive (~320 GB); aria2c is an alternative for multi-connection downloads
+# 3. Download the released OPARA results (~320 GB) — full instructions:
+#    https://jgonsior.github.io/olympic-games-of-active-learning/use_opara_archive/
+#    Quick version (wget, resumable):
 wget -c -O full_exp_jan.zip \
   "https://opara.zih.tu-dresden.de/bitstreams/38951489-5076-4544-a99b-c20dddfc2c6b/download"
-# aria2c alternative: aria2c -c -o full_exp_jan.zip \
-#   "https://opara.zih.tu-dresden.de/bitstreams/38951489-5076-4544-a99b-c20dddfc2c6b/download"
-
-#    Step 3c – unpack (ensure ~320 GB free disk space before running)
-#    Set RESULTS_DIR to the same value as OUTPUT_PATH in your .server_access_credentials.cfg
-export RESULTS_DIR=/absolute/path/to/results
-unzip full_exp_jan.zip -d "${RESULTS_DIR}/full_exp_jan"
-
-#    Step 3d – verify: archive_listing.txt should exist and list the extracted files
-ls archive_listing.txt   # must be present
-# Compare extracted tree against the manifest:
-# diff <(sort archive_listing.txt) <(find "${RESULTS_DIR}/full_exp_jan" -type f | sort)
+unzip full_exp_jan.zip -d "${RESULTS_DIR}/full_exp_jan"  # RESULTS_DIR = your OUTPUT_PATH
 
 # 4. Analyze pre-computed results
 python -m eva_scripts.final_leaderboard --EXP_TITLE full_exp_jan
@@ -59,48 +40,31 @@ python -m eva_scripts.final_leaderboard --EXP_TITLE full_exp_jan
 python 01_create_workload.py --EXP_TITLE test && python 02_run_experiment.py --EXP_TITLE test --WORKER_INDEX 0
 ```
 
+> **📦 Full OPARA download guide** (both artifacts, aria2c alternative, verification):
+> [Use released OPARA archive](https://jgonsior.github.io/olympic-games-of-active-learning/use_opara_archive/)
+
 ## Reproducing the paper run (`full_exp_jan`)
 
 > **Compute scale:** The paper run covers ~4.6 M experiments (~3.6 M CPU hours on HPC).
-> Running it on a laptop is not feasible.  To verify the pipeline locally, use the `test`
-> config (completes in minutes); see the full instructions in the
-> [documentation](https://jgonsior.github.io/olympic-games-of-active-learning/personas/reproduce_and_run/#reproducing-the-paper-run-full_exp_jan).
+> Running it on a laptop is not feasible.  For a local sanity check, use the `test`
+> config (completes in minutes).  For the full experiment grid, strategy list, and
+> evaluation scripts, see [Paper subset](https://jgonsior.github.io/olympic-games-of-active-learning/paper_subset/).
 
 The paper results come from config **`full_exp_jan`** in `resources/exp_config.yaml`.
 **The archived results are already on OPARA** (downloaded above) — re-running from scratch
-requires an HPC cluster.  For reference, the pipeline commands are:
-
-```bash
-# 1. Generate 4.6 M-row workload
-python 01_create_workload.py --EXP_TITLE full_exp_jan
-
-# 2. Submit to SLURM (HPC only)
-RESULTS_DIR=/absolute/path/to/results
-sbatch ${RESULTS_DIR}/full_exp_jan/02_slurm.slurm
-
-# 2b. Compress raw CSV output
-xz ${RESULTS_DIR}/full_exp_jan/*/*/**.csv
-
-# 3–5. Post-process
-python 03_calculate_dataset_categorizations.py --EXP_TITLE full_exp_jan --SAMPLES_CATEGORIZER _ALL --EVA_MODE local
-python 04_calculate_advanced_metrics.py --EXP_TITLE full_exp_jan --COMPUTED_METRICS _ALL --EVA_MODE local
-python scripts/convert_y_pred_to_parquet.py --EXP_TITLE full_exp_jan
-python -m eva_scripts.calculate_dataset_dependend_random_ramp_slope --EXP_TITLE full_exp_jan
-
-# 6. Build leaderboard (produces paper Table 1)
-python -m eva_scripts.final_leaderboard --EXP_TITLE full_exp_jan
-```
-
-For a **laptop-feasible smoke test**, replace `full_exp_jan` with `test`
-(2 datasets, 4 strategies, seconds per experiment).
+requires an HPC cluster.  See [Pipeline](https://jgonsior.github.io/olympic-games-of-active-learning/pipeline/)
+for the full step-by-step commands.
 
 ## Links
 - 📊 [**Analyze the dataset**](https://jgonsior.github.io/olympic-games-of-active-learning/personas/analyze_dataset/) — Research tutorials
 - 📄 [**Paper (arXiv:2506.03817)**](https://arxiv.org/abs/2506.03817) — Methodology and findings
 - 📦 [**Archived data (DOI)**](https://doi.org/10.25532/OPARA-862) — 4.6M experiment results
-- 🤝 [**Contributing**](https://jgonsior.github.io/olympic-games-of-active-learning/contributing/) — Development guide
 
 ## Citation
+
+See [`CITATION.cff`](CITATION.cff) for machine-readable metadata.
+For the released dataset, cite [DOI:10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862).
+To cite a specific version, include the git commit hash or tag you used.
 
 ```bibtex
 @misc{gonsior2025surveyactivelearninghyperparameters,
@@ -125,4 +89,4 @@ For a **laptop-feasible smoke test**, replace `full_exp_jan` with `test`
 
 ## License
 
-[AGPL-3.0](LICENSE)
+[AGPL-3.0](LICENSE). The `LICENSE` file is authoritative; packaging metadata may be inconsistent.

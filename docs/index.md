@@ -1,53 +1,31 @@
-# Choose Your Path
+# OGAL — Survey of Active Learning Hyperparameters
 
-**OGAL** (Survey of Active Learning Hyperparameters) = 4.6M Active Learning experiments archived at [DOI:10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862).
+**4.6M Active Learning experiments** archived at [DOI:10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862).
 
-Pick the question that matches your goal:
+Choose your path:
 
 <div class="grid cards" markdown>
 
--   :material-chart-line:{ .lg .middle } **"I want to analyze the published dataset for my own research"**
+-   :material-download:{ .lg .middle } **Analyze the OPARA archive**
 
-    Mine the 4.6M pre-computed results—no experiments needed.
+    Download pre-computed results and start exploring — no experiments needed.
 
-    [:octicons-arrow-right-24: Analyze OPARA](personas/analyze_dataset.md)
+    [:octicons-arrow-right-24: Use OPARA archive](use_opara_archive.md)
 
--   :material-file-document-check:{ .lg .middle } **"I want to reproduce the paper or run experiments from scratch"**
+-   :material-play-circle:{ .lg .middle } **Local smoke test**
 
-    Run the exact scripts for the paper's figures, or recompute on HPC/SLURM.
+    Run a tiny experiment end-to-end on your laptop.
 
-    [:octicons-arrow-right-24: Reproduce & Run](personas/reproduce_and_run.md)
+    [:octicons-arrow-right-24: Run locally](run_local_smoke_test.md)
 
--   :material-plus-box:{ .lg .middle } **"I want to extend the dataset with new strategies/hyperparameters"**
+-   :material-server:{ .lg .middle } **HPC scale**
 
-    Add your experiments and integrate them with the shared benchmark.
+    Submit thousands of experiments to a SLURM cluster.
 
-    [:octicons-arrow-right-24: Extend the Benchmark](personas/extend_benchmark.md)
-
--   :material-lightbulb:{ .lg .middle } **"I want research ideas"**
-
-    Open questions and unexplored directions using OGAL data.
-
-    [:octicons-arrow-right-24: Research Ideas](personas/research_ideas.md)
+    [:octicons-arrow-right-24: Run at HPC scale](run_hpc.md)
 
 </div>
 
 ---
-
-## Getting Started
-
-```bash
-# Setup + leaderboard from archived data
-conda create --name ogal --file conda-linux-64.lock && conda activate ogal && poetry install
-# Download the main archive (DOI: 10.25532/OPARA-862 — landing page is canonical)
-wget -c -O full_exp_jan.zip \
-  "https://opara.zih.tu-dresden.de/bitstreams/38951489-5076-4544-a99b-c20dddfc2c6b/download"
-unzip full_exp_jan.zip -d /path/to/results/full_exp_jan
-python -m eva_scripts.final_leaderboard --EXP_TITLE full_exp_jan
-```
-
----
-
-## Links
 
 📄 [Paper](https://arxiv.org/abs/2506.03817) ・ 📦 [Dataset (DOI)](https://doi.org/10.25532/OPARA-862) ・ 💻 [GitHub](https://github.com/jgonsior/olympic-games-of-active-learning)

@@ -1,3 +1,6 @@
+!!! info "Legacy page"
+    This page is a deep dive from an earlier docs structure. **Start at [Home](../index.md) / [Getting Started](../getting_started.md)** for the recommended entry points.
+
 # Research Ideas
 
 **Open questions and unexplored directions using OGAL's 4.6M experiments.**
