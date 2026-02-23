@@ -157,8 +157,12 @@ EXP_GRID_LEARNER_MODEL: [1, 5, 8, 15]  # RF, RBF_SVM, MLP, MY_MODEL
 ## Validate and Post-Process
 
 ```bash
+# RESULTS_DIR must match OUTPUT_PATH in the [LOCAL] section of .server_access_credentials.cfg.
+# Output paths are controlled entirely by that config file — no environment variable is read by OGAL.
+RESULTS_DIR=/absolute/path/to/results  # same value as OUTPUT_PATH in [LOCAL]
+
 # Validate schema
-python scripts/validate_results_schema.py --results_path ${OGAL_OUTPUT}/my_experiment
+python scripts/validate_results_schema.py --results_path ${RESULTS_DIR}/my_experiment
 
 # Post-process
 python 03_calculate_dataset_categorizations.py --EXP_TITLE my_experiment --SAMPLES_CATEGORIZER _ALL --EVA_MODE local

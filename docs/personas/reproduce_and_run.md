@@ -508,7 +508,9 @@ OGAL automatically tracks progress via tracking files:
 
 ```bash
 python 01_create_workload.py --EXP_TITLE my_experiment
-sbatch ${OGAL_OUTPUT}/my_experiment/02_slurm.slurm
+# sbatch uses the SLURM job file written to your HPC OUTPUT_PATH.
+# RESULTS_DIR = OUTPUT_PATH from [HPC] section of .server_access_credentials.cfg
+sbatch ${RESULTS_DIR}/my_experiment/02_slurm.slurm
 ```
 
 ---

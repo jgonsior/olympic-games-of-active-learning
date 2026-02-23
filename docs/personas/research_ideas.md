@@ -25,9 +25,11 @@
 
 ```python
 import pandas as pd
-import os
 
-OGAL_OUTPUT = os.environ.get("OGAL_OUTPUT", "/path/to/results")
+# Set to the OUTPUT_PATH from your .server_access_credentials.cfg [LOCAL] section.
+# OGAL itself reads this value from the config file; this variable is only used here
+# to construct file paths in your analysis script.
+OGAL_OUTPUT = "/path/to/results"
 
 # Load experiments
 done = pd.read_csv(f"{OGAL_OUTPUT}/full_exp_jan/05_done_workload.csv")
