@@ -30,7 +30,7 @@ python 01_create_workload.py --EXP_TITLE test && python 02_run_experiment.py --E
 ## Links
 
 - 📖 [**Documentation**](https://jgonsior.github.io/olympic-games-of-active-learning/) — Start here
-- 📊 [**Analyze the dataset**](https://jgonsior.github.io/olympic-games-of-active-learning/analyze_dataset/) — Research tutorials
+- 📊 [**Analyze the dataset**](https://jgonsior.github.io/olympic-games-of-active-learning/personas/analyze_dataset/) — Research tutorials
 - 📄 [**Paper (arXiv:2506.03817)**](https://arxiv.org/abs/2506.03817) — Methodology and findings
 - 📦 [**Archived data (DOI)**](https://doi.org/10.25532/OPARA-862) — 4.6M experiment results
 - 🤝 [**Contributing**](https://jgonsior.github.io/olympic-games-of-active-learning/contributing/) — Development guide
