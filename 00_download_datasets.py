@@ -13,13 +13,13 @@ from misc.config import Config
 
 config = Config()
 
-# openml_loader = OpenML_Loader(config)
-# openml_loader.load_datasets()
-# kaggle_loader = Kaggle_Loader(config)
-# kaggle_loader.load_datasets()
+openml_loader = OpenML_Loader(config)
+openml_loader.load_datasets()
+kaggle_loader = Kaggle_Loader(config)
+kaggle_loader.load_datasets()
 
-# local_loader = Local_Loader(config)
-# local_loader.load_datasets()
+local_loader = Local_Loader(config)
+local_loader.load_datasets()
 
 # compute distances
 for dataset_csv in list(glob.glob(str(config.DATASETS_PATH) + "/*.csv")):
