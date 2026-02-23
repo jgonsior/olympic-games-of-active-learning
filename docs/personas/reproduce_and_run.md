@@ -39,28 +39,44 @@
     ls archive_listing.txt
     # diff <(sort archive_listing.txt) <(find "${RESULTS_DIR}/full_exp_jan" -type f | sort)
 
-    export OGAL_OUTPUT="${RESULTS_DIR}"
+    # Configure local paths so OGAL can find the data.
+    # Copy the committed template and set OUTPUT_PATH under [LOCAL] to your results directory.
+    # Use the same path you will assign to RESULTS_DIR below.
+    # This file is gitignored — never commit the filled-in version.
+    cp .server_access_credentials.cfg.example .server_access_credentials.cfg
+    # Edit .server_access_credentials.cfg: set OUTPUT_PATH = /absolute/path/to/results under [LOCAL].
+    # Then use that same path for RESULTS_DIR when running unzip below.
     ```
 
 === "Run locally (verify setup)"
 
-    Run a small smoke test before going to HPC scale:
+    Run a small smoke test before going to HPC scale.
+
+    **Prerequisites:** a local config file is required.  The config file tells OGAL
+    where to write results and where to find datasets.
 
     ```bash
     conda create --name ogal --file conda-linux-64.lock && conda activate ogal && poetry install
-    export OGAL_OUTPUT=/path/to/results
+
+    # Copy the committed template and fill in your local absolute paths.
+    # This file is gitignored — never commit the filled-in version.
+    cp .server_access_credentials.cfg.example .server_access_credentials.cfg
+    # Edit .server_access_credentials.cfg: set OUTPUT_PATH and DATASETS_PATH
+    # under [LOCAL] to real absolute paths on your machine.
 
     python 01_create_workload.py --EXP_TITLE smoke_test
     python 02_run_experiment.py --EXP_TITLE smoke_test --WORKER_INDEX 0
     # Note: 02_run_experiment.py outputs .csv files; compress to .csv.xz afterwards
-    ls ${OGAL_OUTPUT}/smoke_test/05_done_workload.csv
     ```
 
 === "HPC (SLURM)"
 
-    Run millions of experiments on an HPC cluster:
+    Run millions of experiments on an HPC cluster.  See the **Configuration** section below
+    for the required `[HPC]` keys in `.server_access_credentials.cfg`.
+    `OGAL_OUTPUT` below is a shell convenience variable set to your HPC `OUTPUT_PATH`.
 
     ```bash
+    export OGAL_OUTPUT=/absolute/path/to/results  # matches OUTPUT_PATH in [HPC] section
     python 01_create_workload.py --EXP_TITLE full_run
     sbatch ${OGAL_OUTPUT}/full_run/02_slurm.slurm
     watch -n 60 'wc -l ${OGAL_OUTPUT}/full_run/05_done_workload.csv'
@@ -171,9 +187,14 @@ flowchart TD
 
 ## Post-Processing (Steps 3–6)
 
-After experiments complete (step 2), compress the raw CSV results and run post-processing:
+After experiments complete (step 2), compress the raw CSV results and run post-processing.
+In the snippets below, `OGAL_OUTPUT` is a shell convenience variable; set it to the
+`OUTPUT_PATH` value from your `.server_access_credentials.cfg` `[LOCAL]` section:
 
 ```bash
+# Set this to the OUTPUT_PATH from your .server_access_credentials.cfg [LOCAL] section
+export OGAL_OUTPUT=/absolute/path/to/results
+
 # Step 2b: Compress raw CSV results to .csv.xz
 # (02_run_experiment.py outputs .csv files that must be compressed)
 xz ${OGAL_OUTPUT}/my_experiment/*/*/**.csv
@@ -419,22 +440,56 @@ $\tau_b$ ranges from −1 (reversed rankings) to +1 (identical rankings). Comput
 
 ---
 
-## HPC Configuration
+## Configuration
 
-Create `.server_access_credentials.cfg`:
+OGAL reads all path and environment settings from `.server_access_credentials.cfg`
+in the repository root.  **This file is required for every local and HPC run.**
+It is listed in `.gitignore` so it is never committed.
+
+Copy the committed template and replace the placeholders with your absolute paths:
+
+```bash
+cp .server_access_credentials.cfg.example .server_access_credentials.cfg
+# Then edit .server_access_credentials.cfg
+```
+
+### Local-only required keys (`[LOCAL]` section)
+
+| Key | Description |
+|-----|-------------|
+| `OUTPUT_PATH` | Absolute path where experiment result directories are written |
+| `DATASETS_PATH` | Absolute path to the directory containing preprocessed dataset CSV files |
+| `CODE_PATH` | *(Optional)* Absolute path to the repository root |
+
+### HPC-only required keys (`[HPC]` section)
+
+These keys are only needed when running with `--RUNNING_ENVIRONMENT hpc`.
+
+| Key | Description |
+|-----|-------------|
+| `SSH_LOGIN` | SSH login for the cluster head node (e.g. `user@login.hpc.example.edu`) |
+| `WS_PATH` | Absolute path to the workspace directory on the cluster file system |
+| `PYTHON_PATH` | Absolute path to the Python interpreter inside the conda environment on HPC |
+| `OUTPUT_PATH` | Result directory on the cluster (may differ from `[LOCAL]` path) |
+| `DATASETS_PATH` | Dataset directory on the cluster (may differ from `[LOCAL]` path) |
+| `SLURM_PROJECT` | SLURM account name / project allocation |
+| `SLURM_MAIL` | Email address for SLURM job notifications |
+
+Full example (also available as `.server_access_credentials.cfg.example` in the repo):
 
 ```ini
-[HPC]
-SSH_LOGIN=user@login.hpc.example.edu
-DATASETS_PATH=/path/to/datasets
-OUTPUT_PATH=/path/to/exp_results
-SLURM_MAIL=your.email@example.edu
-SLURM_PROJECT=your_project_account
-PYTHON_PATH=/path/to/conda-env/bin/python
-
 [LOCAL]
-DATASETS_PATH=/path/to/datasets
-OUTPUT_PATH=/path/to/exp_results
+OUTPUT_PATH  = /absolute/path/to/results
+DATASETS_PATH = /absolute/path/to/datasets
+
+[HPC]
+SSH_LOGIN    = your_login@your.cluster.example.edu
+WS_PATH      = /absolute/path/to/workspace
+PYTHON_PATH  = /absolute/path/to/conda-env/bin/python
+OUTPUT_PATH  = /absolute/path/to/results
+DATASETS_PATH = /absolute/path/to/datasets
+SLURM_PROJECT = your_slurm_project_account
+SLURM_MAIL   = your.email@example.com
 ```
 
 ---
