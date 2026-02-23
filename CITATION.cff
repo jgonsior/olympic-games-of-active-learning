@@ -57,3 +57,26 @@ preferred-citation:
       value: "arXiv:2506.03817"
       description: arXiv preprint
   url: "https://arxiv.org/abs/2506.03817"
+references:
+  - type: data
+    title: "OGAL: Olympic Games of Active Learning -- Dataset"
+    authors:
+      - given-names: Julius
+        family-names: Gonsior
+      - given-names: Tim
+        family-names: Rieß
+      - given-names: Anja
+        family-names: Reusch
+      - given-names: Claudio
+        family-names: Hartmann
+      - given-names: Maik
+        family-names: Thiele
+      - given-names: Wolfgang
+        family-names: Lehner
+    year: 2025
+    publisher:
+      name: OPARA
+    identifiers:
+      - type: doi
+        value: "10.25532/OPARA-862"
+    url: "https://doi.org/10.25532/OPARA-862"

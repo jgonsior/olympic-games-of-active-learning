@@ -46,11 +46,22 @@ lb = pd.read_parquet(f"{RESULTS_DIR}/full_exp_jan/plots/final_leaderboard/rank_s
 ## Citation
 
 ```bibtex
-@article{gonsior2025ogal,
-  title={{Olympic Games of Active Learning}},
-  author={Gonsior, Julius and others},
-  journal={arXiv preprint arXiv:2506.03817},
-  year={2025}
+@misc{gonsior2025ogal,
+  title={{Olympic Games of Active Learning: A Large-Scale Empirical Study of Active Learning Strategies}},
+  author={Gonsior, Julius and Rie{\ss}, Tim and Reusch, Anja and Hartmann, Claudio and Thiele, Maik and Lehner, Wolfgang},
+  year={2025},
+  eprint={2506.03817},
+  archivePrefix={arXiv},
+  primaryClass={cs.LG}
+}
+
+@dataset{gonsior2025ogal_dataset,
+  author={Gonsior, Julius and Rie{\ss}, Tim and Reusch, Anja and Hartmann, Claudio and Thiele, Maik and Lehner, Wolfgang},
+  title={{OGAL: Olympic Games of Active Learning -- Dataset}},
+  year={2025},
+  publisher={OPARA},
+  doi={10.25532/OPARA-862},
+  url={https://doi.org/10.25532/OPARA-862}
 }
 ```
 

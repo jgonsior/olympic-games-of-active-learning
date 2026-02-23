@@ -68,10 +68,13 @@ Each item references the exact files that must be changed.
   No code changes.
   - `docs/personas/reproduce_and_run.md`
 
-- [ ] **Unify project citation metadata across all surfaces.**
-  Verify the canonical paper title, author list, arXiv ID, and OPARA DOI, then update every
-  place they appear so all three sources agree.
-  - `README.md`
+- [x] **Unify project citation metadata across all surfaces.**
+  Aligned `docs/personas/research_ideas.md` with the canonical `README.md` citation:
+  changed `@article` → `@misc`, restored full title and full author list, replaced
+  `journal=` with `eprint`/`archivePrefix`/`primaryClass` fields, and added the
+  missing `@dataset` entry.  Added dataset `references` block to `CITATION.cff`
+  with the OPARA DOI.  `README.md` was already correct and required no changes.
+  - `docs/personas/research_ideas.md`
   - `CITATION.cff`
 
 - [ ] **Fix license metadata mismatch in packaging.**
