@@ -1,6 +1,6 @@
 # Choose Your Path
 
-**OGAL** = 4.6M Active Learning experiments archived at [DOI:10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862).
+**OGAL** (Survey of Active Learning Hyperparameters) = 4.6M Active Learning experiments archived at [DOI:10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862).
 
 Pick the question that matches your goal:
 

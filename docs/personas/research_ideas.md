@@ -58,7 +58,7 @@ lb = pd.read_parquet(f"{RESULTS_DIR}/full_exp_jan/plots/final_leaderboard/rank_s
 
 @dataset{gonsior2025ogal_dataset,
   author={Julius Gonsior and Tim Rie{\ss} and Anja Reusch and Claudio Hartmann and Maik Thiele and Wolfgang Lehner},
-  title={{OGAL: Olympic Games of Active Learning -- Dataset}},
+  title={{OGAL: Survey of Active Learning Hyperparameters -- Dataset}},
   year={2025},
   publisher={OPARA},
   doi={10.25532/OPARA-862},

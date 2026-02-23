@@ -1,5 +1,5 @@
-site_name: OGAL - Olympic Games of Active Learning
-site_description: Documentation for the OGAL Active Learning Benchmarking Framework
+site_name: OGAL - Survey of Active Learning Hyperparameters
+site_description: Documentation for OGAL – Survey of Active Learning Hyperparameters
 site_url: https://jgonsior.github.io/olympic-games-of-active-learning/
 repo_url: https://github.com/jgonsior/olympic-games-of-active-learning
 repo_name: jgonsior/olympic-games-of-active-learning

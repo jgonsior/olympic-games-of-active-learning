@@ -2,7 +2,7 @@
 # Visit https://bit.ly/cffinit to generate yours today!
 
 cff-version: 1.2.0
-title: "OGAL: Olympic Games of Active Learning"
+title: "OGAL: Survey of Active Learning Hyperparameters"
 message: >-
   If you use this software, please cite it using the
   metadata from this file.
@@ -62,7 +62,7 @@ preferred-citation:
   url: "https://arxiv.org/abs/2506.03817"
 references:
   - type: data
-    title: "OGAL: Olympic Games of Active Learning -- Dataset"
+    title: "OGAL: Survey of Active Learning Hyperparameters -- Dataset"
     authors:
       - given-names: Julius
         family-names: Gonsior
