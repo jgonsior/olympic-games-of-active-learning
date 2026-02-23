@@ -51,10 +51,11 @@ Each item references the exact files that must be changed.
   subsection pointing to both source files.
   - `docs/personas/extend_benchmark.md`
 
-- [ ] **Add a canonical "paper reproduction config" section.**
-  Add a dedicated sub-section "Reproducing the paper run: `full_exp_jan`" that maps paper
-  nomenclature to config names, provides exact CLI commands, documents the expected output tree,
-  and gives known runtime expectations.
+- [x] **Add a canonical "paper reproduction config" section.**
+  Added "Reproducing the paper run: `full_exp_jan`" in both `README.md` and
+  `docs/personas/reproduce_and_run.md`.  Includes: config name, compute-scale disclaimer,
+  exact pipeline commands (verified against repo scripts), expected output trees for the
+  `test` (minimal) and `full_exp_jan` (full) runs, and a minimal local subset path.
   - `README.md`
   - `docs/personas/reproduce_and_run.md`
 
