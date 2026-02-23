@@ -16,19 +16,14 @@ Each item references the exact files that must be changed.
   - `docs/personas/reproduce_and_run.md`
   - `docs/personas/analyze_dataset.md`
 
-- [ ] **Make local runs work without a hidden config file — or document the config file as
-  mandatory and provide a committed example template.**
-  Choose one of two remediation paths:
-  - **(A) Implement the `OGAL_OUTPUT` env-var override** that the docs already describe: add an
-    override inside `misc/config.py` so that if `OGAL_OUTPUT` is set it takes precedence over the
-    config file, making the quickstart truthful.
-  - **(B) Remove the `OGAL_OUTPUT` claim from docs** and standardise on the config file by
-    committing a template and updating all setup instructions.
-  Files to change:
+- [x] **Document the config file as mandatory and provide a committed example template.**
+  Option B chosen: `OGAL_OUTPUT` env-var claims removed from all docs; `.server_access_credentials.cfg`
+  is the sole configuration mechanism.  A committed template (`.server_access_credentials.cfg.example`)
+  is now provided and all setup instructions reference it.
+  Files changed:
   - `docs/personas/reproduce_and_run.md`
   - `README.md`
-  - *(create)* `.server_access_credentials.cfg.example`
-  - `misc/config.py` *(required for path A; optional for path B)*
+  - *(created)* `.server_access_credentials.cfg.example`
 
 - [ ] **Restore or replace the "download datasets" entrypoint so the documented pipeline is
   actually executable.**

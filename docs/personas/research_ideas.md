@@ -27,18 +27,16 @@
 import pandas as pd
 
 # Set to the OUTPUT_PATH from your .server_access_credentials.cfg [LOCAL] section.
-# OGAL itself reads this value from the config file; this variable is only used here
-# to construct file paths in your analysis script.
-OGAL_OUTPUT = "/path/to/results"
+RESULTS_DIR = "/path/to/results"
 
 # Load experiments
-done = pd.read_csv(f"{OGAL_OUTPUT}/full_exp_jan/05_done_workload.csv")
+done = pd.read_csv(f"{RESULTS_DIR}/full_exp_jan/05_done_workload.csv")
 
 # Load time series
-ts = pd.read_parquet(f"{OGAL_OUTPUT}/full_exp_jan/_TS/full_auc_weighted_f1-score.parquet")
+ts = pd.read_parquet(f"{RESULTS_DIR}/full_exp_jan/_TS/full_auc_weighted_f1-score.parquet")
 
 # Load leaderboard
-lb = pd.read_parquet(f"{OGAL_OUTPUT}/full_exp_jan/plots/final_leaderboard/rank_sparse_zero_full_auc_weighted_f1-score.parquet")
+lb = pd.read_parquet(f"{RESULTS_DIR}/full_exp_jan/plots/final_leaderboard/rank_sparse_zero_full_auc_weighted_f1-score.parquet")
 
 # Your analysis here...
 ```

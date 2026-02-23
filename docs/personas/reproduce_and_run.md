@@ -73,13 +73,13 @@
 
     Run millions of experiments on an HPC cluster.  See the **Configuration** section below
     for the required `[HPC]` keys in `.server_access_credentials.cfg`.
-    `OGAL_OUTPUT` below is a shell convenience variable set to your HPC `OUTPUT_PATH`.
+    Set `RESULTS_DIR` to the `OUTPUT_PATH` value from the `[HPC]` section of your config file.
 
     ```bash
-    export OGAL_OUTPUT=/absolute/path/to/results  # matches OUTPUT_PATH in [HPC] section
+    RESULTS_DIR=/absolute/path/to/results  # OUTPUT_PATH from [HPC] in .server_access_credentials.cfg
     python 01_create_workload.py --EXP_TITLE full_run
-    sbatch ${OGAL_OUTPUT}/full_run/02_slurm.slurm
-    watch -n 60 'wc -l ${OGAL_OUTPUT}/full_run/05_done_workload.csv'
+    sbatch ${RESULTS_DIR}/full_run/02_slurm.slurm
+    watch -n 60 'wc -l ${RESULTS_DIR}/full_run/05_done_workload.csv'
     ```
 
 ---
@@ -188,16 +188,15 @@ flowchart TD
 ## Post-Processing (Steps 3–6)
 
 After experiments complete (step 2), compress the raw CSV results and run post-processing.
-In the snippets below, `OGAL_OUTPUT` is a shell convenience variable; set it to the
-`OUTPUT_PATH` value from your `.server_access_credentials.cfg` `[LOCAL]` section:
+Set `RESULTS_DIR` to the `OUTPUT_PATH` value from the `[LOCAL]` section of
+`.server_access_credentials.cfg`:
 
 ```bash
-# Set this to the OUTPUT_PATH from your .server_access_credentials.cfg [LOCAL] section
-export OGAL_OUTPUT=/absolute/path/to/results
+RESULTS_DIR=/absolute/path/to/results  # OUTPUT_PATH from [LOCAL] in .server_access_credentials.cfg
 
 # Step 2b: Compress raw CSV results to .csv.xz
 # (02_run_experiment.py outputs .csv files that must be compressed)
-xz ${OGAL_OUTPUT}/my_experiment/*/*/**.csv
+xz ${RESULTS_DIR}/my_experiment/*/*/**.csv
 
 # Step 3: Compute sample-level dataset categorizations
 python 03_calculate_dataset_categorizations.py --EXP_TITLE my_experiment --SAMPLES_CATEGORIZER _ALL --EVA_MODE local
