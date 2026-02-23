@@ -11,44 +11,11 @@
 
 === "Reproduce from OPARA archive"
 
-    Download the pre-computed results from [DOI:10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862) and run the evaluation scripts directly:
+    Follow the **[Use released OPARA archive](../use_opara_archive.md)** guide to
+    download, extract, and verify the pre-computed results, then run:
 
     ```bash
-    # Setup
-    git clone https://github.com/jgonsior/olympic-games-of-active-learning.git
-    cd olympic-games-of-active-learning
-    conda create --name ogal --file conda-linux-64.lock && conda activate ogal && poetry install
-
-    # Download released results from OPARA (DOI: 10.25532/OPARA-862)
-    # Canonical landing page: https://doi.org/10.25532/OPARA-862
-    # If OPARA migrates, retrieve updated bitstream URLs from that page.
-
-    # File manifest (~184 MB) — use to verify the extracted archive
-    wget -c -O archive_listing.txt \
-      "https://opara.zih.tu-dresden.de/bitstreams/0f4dcc0e-4ba7-4b51-b3ed-778bbbd0c945/download"
-
-    # Main archive (~320 GB) — use -c to resume if interrupted
-    wget -c -O full_exp_jan.zip \
-      "https://opara.zih.tu-dresden.de/bitstreams/38951489-5076-4544-a99b-c20dddfc2c6b/download"
-    # aria2c alternative for multi-connection download:
-    # aria2c -c -o full_exp_jan.zip \
-    #   "https://opara.zih.tu-dresden.de/bitstreams/38951489-5076-4544-a99b-c20dddfc2c6b/download"
-
-    # Unpack — ensure ~320 GB free disk space
-    export RESULTS_DIR=/path/to/results
-    unzip full_exp_jan.zip -d "${RESULTS_DIR}/full_exp_jan"
-
-    # Verify: archive_listing.txt must exist and should match extracted files
-    ls archive_listing.txt
-    # diff <(sort archive_listing.txt) <(find "${RESULTS_DIR}/full_exp_jan" -type f | sort)
-
-    # Configure local paths so OGAL can find the data.
-    # Copy the committed template and set OUTPUT_PATH under [LOCAL] to your results directory.
-    # Use the same path you will assign to RESULTS_DIR below.
-    # This file is gitignored — never commit the filled-in version.
-    cp .server_access_credentials.cfg.example .server_access_credentials.cfg
-    # Edit .server_access_credentials.cfg: set OUTPUT_PATH = /absolute/path/to/results under [LOCAL].
-    # Then use that same path for RESULTS_DIR when running unzip below.
+    python -m eva_scripts.final_leaderboard --EXP_TITLE full_exp_jan
     ```
 
 === "Run locally (verify setup)"

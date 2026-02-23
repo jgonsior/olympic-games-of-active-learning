@@ -25,32 +25,13 @@ conda create --name ogal --file conda-linux-64.lock && conda activate ogal && po
 cp .server_access_credentials.cfg.example .server_access_credentials.cfg
 # Edit .server_access_credentials.cfg:
 #   Under [LOCAL], set OUTPUT_PATH and DATASETS_PATH to real absolute paths.
-#   Note the OUTPUT_PATH value — you will use the same path for RESULTS_DIR below.
 
-# 3. Download released results from OPARA (DOI: 10.25532/OPARA-862)
-#    The canonical landing page is https://doi.org/10.25532/OPARA-862
-#    Use -c to resume interrupted downloads. Bitstream URLs below are current as of
-#    the dataset release; if OPARA migrates, retrieve updated URLs from the DOI landing page.
-
-#    Step 3a – file manifest (~184 MB, useful for verifying the extracted archive)
-wget -c -O archive_listing.txt \
-  "https://opara.zih.tu-dresden.de/bitstreams/0f4dcc0e-4ba7-4b51-b3ed-778bbbd0c945/download"
-
-#    Step 3b – main archive (~320 GB); aria2c is an alternative for multi-connection downloads
+# 3. Download the released OPARA results (~320 GB) — full instructions:
+#    https://jgonsior.github.io/olympic-games-of-active-learning/use_opara_archive/
+#    Quick version (wget, resumable):
 wget -c -O full_exp_jan.zip \
   "https://opara.zih.tu-dresden.de/bitstreams/38951489-5076-4544-a99b-c20dddfc2c6b/download"
-# aria2c alternative: aria2c -c -o full_exp_jan.zip \
-#   "https://opara.zih.tu-dresden.de/bitstreams/38951489-5076-4544-a99b-c20dddfc2c6b/download"
-
-#    Step 3c – unpack (ensure ~320 GB free disk space before running)
-#    Set RESULTS_DIR to the same value as OUTPUT_PATH in your .server_access_credentials.cfg
-export RESULTS_DIR=/absolute/path/to/results
-unzip full_exp_jan.zip -d "${RESULTS_DIR}/full_exp_jan"
-
-#    Step 3d – verify: archive_listing.txt should exist and list the extracted files
-ls archive_listing.txt   # must be present
-# Compare extracted tree against the manifest:
-# diff <(sort archive_listing.txt) <(find "${RESULTS_DIR}/full_exp_jan" -type f | sort)
+unzip full_exp_jan.zip -d "${RESULTS_DIR}/full_exp_jan"  # RESULTS_DIR = your OUTPUT_PATH
 
 # 4. Analyze pre-computed results
 python -m eva_scripts.final_leaderboard --EXP_TITLE full_exp_jan
@@ -58,6 +39,9 @@ python -m eva_scripts.final_leaderboard --EXP_TITLE full_exp_jan
 # 5. Or run your own experiment
 python 01_create_workload.py --EXP_TITLE test && python 02_run_experiment.py --EXP_TITLE test --WORKER_INDEX 0
 ```
+
+> **📦 Full OPARA download guide** (both artifacts, aria2c alternative, verification):
+> [Use released OPARA archive](https://jgonsior.github.io/olympic-games-of-active-learning/use_opara_archive/)
 
 ## Reproducing the paper run (`full_exp_jan`)
 
