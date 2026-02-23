@@ -61,8 +61,10 @@ full_exp_jan:
   EXP_GRID_STRATEGY: [1, 2, 4, ...]      # Strategy enum IDs
   EXP_GRID_LEARNER_MODEL: [1, 5, 8]      # Learner model enum IDs (RF, RBF_SVM, MLP)
   EXP_GRID_BATCH_SIZE: [1, 5, 10, 20, 50, 100]  # Paper: "batch size b"
-  EXP_GRID_NR_QUERIES: [3, 5, 10, ...]   # Paper: "number of AL cycles"
-  EXP_GRID_RANDOM_SEED: [1]              # For reproducibility
+  EXP_GRID_NUM_QUERIES: [40]             # Paper: "number of AL cycles"
+  EXP_GRID_START_POINT: [0-19]          # Start-set index (0–19 for 20 start sets)
+  EXP_GRID_RANDOM_SEED: [0]             # For reproducibility
+  EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0-4] # Train/test split index (0–4 for 5 splits)
 ```
 
 The key hyperparameters and their paper notation:
@@ -73,11 +75,25 @@ The key hyperparameters and their paper notation:
 | `EXP_GRID_DATASET` | Dataset $d$ | Dataset used for the experiment |
 | `EXP_GRID_LEARNER_MODEL` | Learner model $m$ | ML classifier used inside the AL loop |
 | `EXP_GRID_BATCH_SIZE` | Batch size $b$ | Number of samples queried per AL cycle |
-| `EXP_GRID_NR_QUERIES` | Number of queries $q$ | Total number of AL cycles |
-| `EXP_GRID_TRAIN_TEST_BUCKET_SIZE` | Train/test split | Train/test split bucket size |
+| `EXP_GRID_NUM_QUERIES` | Number of queries $q$ | Total number of AL cycles |
+| `EXP_GRID_START_POINT` | Start set index | Which pre-generated start set to use (0-indexed) |
+| `EXP_GRID_TRAIN_TEST_BUCKET_SIZE` | Train/test split | Which pre-generated train/test split to use (0-indexed) |
 | `EXP_GRID_RANDOM_SEED` | Random seed | Seed for reproducibility |
 
 Running `01_create_workload.py` computes the Cartesian product of all these parameters, producing one experiment row per combination in `01_workload.csv`.
+
+### Where config keys come from
+
+OGAL loads configuration from two complementary sources:
+
+- **`resources/exp_config.yaml`** — defines named experiment grids.  Each key in the
+  YAML block (e.g. `EXP_GRID_NUM_QUERIES`) maps to an attribute of the `Config` class
+  after the section prefix is stripped.  This is the file to edit when adding or changing
+  a hyperparameter sweep.
+- **`misc/config.py`** — the `Config` class that declares every supported attribute with
+  its type and default value.  It also documents the load order (CLI args override the cfg
+  file which overrides the YAML which overrides built-in defaults).  Any key you put in
+  `exp_config.yaml` must have a matching attribute in `Config` to take effect.
 
 ---
 
@@ -157,8 +173,12 @@ EXP_GRID_LEARNER_MODEL: [1, 5, 8, 15]  # RF, RBF_SVM, MLP, MY_MODEL
 ## Validate and Post-Process
 
 ```bash
+# RESULTS_DIR must match OUTPUT_PATH in the [LOCAL] section of .server_access_credentials.cfg.
+# Output paths are controlled entirely by that config file — no environment variable is read by OGAL.
+RESULTS_DIR=/absolute/path/to/results  # same value as OUTPUT_PATH in [LOCAL]
+
 # Validate schema
-python scripts/validate_results_schema.py --results_path ${OGAL_OUTPUT}/my_experiment
+python scripts/validate_results_schema.py --results_path ${RESULTS_DIR}/my_experiment
 
 # Post-process
 python 03_calculate_dataset_categorizations.py --EXP_TITLE my_experiment --SAMPLES_CATEGORIZER _ALL --EVA_MODE local

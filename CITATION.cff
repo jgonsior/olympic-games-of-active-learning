@@ -2,7 +2,7 @@
 # Visit https://bit.ly/cffinit to generate yours today!
 
 cff-version: 1.2.0
-title: "OGAL: Olympic Games of Active Learning"
+title: "OGAL: Survey of Active Learning Hyperparameters"
 message: >-
   If you use this software, please cite it using the
   metadata from this file.
@@ -50,10 +50,36 @@ preferred-citation:
       family-names: Thiele
     - given-names: Wolfgang
       family-names: Lehner
-  title: "Olympic Games of Active Learning: A Large-Scale Empirical Study of Active Learning Strategies"
+  title: "Survey of Active Learning Hyperparameters: Insights from a Large-Scale Experimental Grid"
   year: 2025
   identifiers:
+    - type: doi
+      value: "10.48550/arXiv.2506.03817"
+      description: arXiv preprint DOI
     - type: other
       value: "arXiv:2506.03817"
       description: arXiv preprint
   url: "https://arxiv.org/abs/2506.03817"
+references:
+  - type: data
+    title: "OGAL: Survey of Active Learning Hyperparameters -- Dataset"
+    authors:
+      - given-names: Julius
+        family-names: Gonsior
+      - given-names: Tim
+        family-names: Rieß
+      - given-names: Anja
+        family-names: Reusch
+      - given-names: Claudio
+        family-names: Hartmann
+      - given-names: Maik
+        family-names: Thiele
+      - given-names: Wolfgang
+        family-names: Lehner
+    year: 2025
+    publisher:
+      name: OPARA
+    identifiers:
+      - type: doi
+        value: "10.25532/OPARA-862"
+    url: "https://doi.org/10.25532/OPARA-862"

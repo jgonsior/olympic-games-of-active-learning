@@ -25,18 +25,18 @@
 
 ```python
 import pandas as pd
-import os
 
-OGAL_OUTPUT = os.environ.get("OGAL_OUTPUT", "/path/to/results")
+# Set to the OUTPUT_PATH from your .server_access_credentials.cfg [LOCAL] section.
+RESULTS_DIR = "/path/to/results"
 
 # Load experiments
-done = pd.read_csv(f"{OGAL_OUTPUT}/full_exp_jan/05_done_workload.csv")
+done = pd.read_csv(f"{RESULTS_DIR}/full_exp_jan/05_done_workload.csv")
 
 # Load time series
-ts = pd.read_parquet(f"{OGAL_OUTPUT}/full_exp_jan/_TS/full_auc_weighted_f1-score.parquet")
+ts = pd.read_parquet(f"{RESULTS_DIR}/full_exp_jan/_TS/full_auc_weighted_f1-score.parquet")
 
 # Load leaderboard
-lb = pd.read_parquet(f"{OGAL_OUTPUT}/full_exp_jan/plots/final_leaderboard/rank_sparse_zero_full_auc_weighted_f1-score.parquet")
+lb = pd.read_parquet(f"{RESULTS_DIR}/full_exp_jan/plots/final_leaderboard/rank_sparse_zero_full_auc_weighted_f1-score.parquet")
 
 # Your analysis here...
 ```
@@ -46,11 +46,23 @@ lb = pd.read_parquet(f"{OGAL_OUTPUT}/full_exp_jan/plots/final_leaderboard/rank_s
 ## Citation
 
 ```bibtex
-@article{gonsior2025ogal,
-  title={{Olympic Games of Active Learning}},
-  author={Gonsior, Julius and others},
-  journal={arXiv preprint arXiv:2506.03817},
-  year={2025}
+@misc{gonsior2025surveyactivelearninghyperparameters,
+  title={{Survey of Active Learning Hyperparameters: Insights from a Large-Scale Experimental Grid}},
+  author={Julius Gonsior and Tim Rie{\ss} and Anja Reusch and Claudio Hartmann and Maik Thiele and Wolfgang Lehner},
+  year={2025},
+  eprint={2506.03817},
+  archivePrefix={arXiv},
+  primaryClass={cs.LG},
+  url={https://arxiv.org/abs/2506.03817}
+}
+
+@dataset{gonsior2025ogal_dataset,
+  author={Julius Gonsior and Tim Rie{\ss} and Anja Reusch and Claudio Hartmann and Maik Thiele and Wolfgang Lehner},
+  title={{OGAL: Survey of Active Learning Hyperparameters -- Dataset}},
+  year={2025},
+  publisher={OPARA},
+  doi={10.25532/OPARA-862},
+  url={https://doi.org/10.25532/OPARA-862}
 }
 ```
 

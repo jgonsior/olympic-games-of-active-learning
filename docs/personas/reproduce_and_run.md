@@ -16,34 +16,221 @@
     cd olympic-games-of-active-learning
     conda create --name ogal --file conda-linux-64.lock && conda activate ogal && poetry install
 
-    # Download and extract data
-    wget <URL_FROM_DOI_LANDING_PAGE>
-    unzip full_exp_jan.zip -d /path/to/results/
-    export OGAL_OUTPUT=/path/to/results
+    # Download released results from OPARA (DOI: 10.25532/OPARA-862)
+    # Canonical landing page: https://doi.org/10.25532/OPARA-862
+    # If OPARA migrates, retrieve updated bitstream URLs from that page.
+
+    # File manifest (~184 MB) — use to verify the extracted archive
+    wget -c -O archive_listing.txt \
+      "https://opara.zih.tu-dresden.de/bitstreams/0f4dcc0e-4ba7-4b51-b3ed-778bbbd0c945/download"
+
+    # Main archive (~320 GB) — use -c to resume if interrupted
+    wget -c -O full_exp_jan.zip \
+      "https://opara.zih.tu-dresden.de/bitstreams/38951489-5076-4544-a99b-c20dddfc2c6b/download"
+    # aria2c alternative for multi-connection download:
+    # aria2c -c -o full_exp_jan.zip \
+    #   "https://opara.zih.tu-dresden.de/bitstreams/38951489-5076-4544-a99b-c20dddfc2c6b/download"
+
+    # Unpack — ensure ~320 GB free disk space
+    export RESULTS_DIR=/path/to/results
+    unzip full_exp_jan.zip -d "${RESULTS_DIR}/full_exp_jan"
+
+    # Verify: archive_listing.txt must exist and should match extracted files
+    ls archive_listing.txt
+    # diff <(sort archive_listing.txt) <(find "${RESULTS_DIR}/full_exp_jan" -type f | sort)
+
+    # Configure local paths so OGAL can find the data.
+    # Copy the committed template and set OUTPUT_PATH under [LOCAL] to your results directory.
+    # Use the same path you will assign to RESULTS_DIR below.
+    # This file is gitignored — never commit the filled-in version.
+    cp .server_access_credentials.cfg.example .server_access_credentials.cfg
+    # Edit .server_access_credentials.cfg: set OUTPUT_PATH = /absolute/path/to/results under [LOCAL].
+    # Then use that same path for RESULTS_DIR when running unzip below.
     ```
 
 === "Run locally (verify setup)"
 
-    Run a small smoke test before going to HPC scale:
+    Run a small smoke test before going to HPC scale.
+
+    **Prerequisites:** a local config file is required.  The config file tells OGAL
+    where to write results and where to find datasets.
 
     ```bash
     conda create --name ogal --file conda-linux-64.lock && conda activate ogal && poetry install
-    export OGAL_OUTPUT=/path/to/results
+
+    # Copy the committed template and fill in your local absolute paths.
+    # This file is gitignored — never commit the filled-in version.
+    cp .server_access_credentials.cfg.example .server_access_credentials.cfg
+    # Edit .server_access_credentials.cfg: set OUTPUT_PATH and DATASETS_PATH
+    # under [LOCAL] to real absolute paths on your machine.
 
     python 01_create_workload.py --EXP_TITLE smoke_test
     python 02_run_experiment.py --EXP_TITLE smoke_test --WORKER_INDEX 0
     # Note: 02_run_experiment.py outputs .csv files; compress to .csv.xz afterwards
-    ls ${OGAL_OUTPUT}/smoke_test/05_done_workload.csv
     ```
 
 === "HPC (SLURM)"
 
-    Run millions of experiments on an HPC cluster:
+    Run millions of experiments on an HPC cluster.  See the **Configuration** section below
+    for the required `[HPC]` keys in `.server_access_credentials.cfg`.
+    Set `RESULTS_DIR` to the `OUTPUT_PATH` value from the `[HPC]` section of your config file.
 
     ```bash
+    RESULTS_DIR=/absolute/path/to/results  # OUTPUT_PATH from [HPC] in .server_access_credentials.cfg
     python 01_create_workload.py --EXP_TITLE full_run
-    sbatch ${OGAL_OUTPUT}/full_run/02_slurm.slurm
-    watch -n 60 'wc -l ${OGAL_OUTPUT}/full_run/05_done_workload.csv'
+    sbatch ${RESULTS_DIR}/full_run/02_slurm.slurm
+    watch -n 60 'wc -l ${RESULTS_DIR}/full_run/05_done_workload.csv'
+    ```
+
+---
+
+## Reproducing the paper run (`full_exp_jan`)
+
+!!! warning "Compute scale"
+    The `full_exp_jan` config covers **92 datasets × 28 active-learning strategies ×
+    3 learner models × 6 batch sizes × 5 train/test splits × 20 start sets × 100
+    AL cycles = ~4.6 M experiments**, requiring roughly **3.6 M CPU hours** on an HPC
+    cluster with hundreds of parallel SLURM jobs.  Running it on a laptop is not
+    feasible.  **If you only want to verify the pipeline works locally**, use the
+    built-in `test` config (2 datasets, 4 strategies, few cycles — completes in
+    minutes); instructions are in the "Minimal local subset" tab below.
+
+The paper results were produced from the single named config **`full_exp_jan`**
+defined in `resources/exp_config.yaml` (line 156).  The archived results are
+already published at [DOI:10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862);
+download them instead of re-running (see the "Reproduce from OPARA archive" tab
+above).  The steps below are for reference or if you need to recompute from scratch.
+
+=== "Full paper run (HPC/SLURM)"
+
+    **Prerequisites:** `.server_access_credentials.cfg` with `[HPC]` keys filled in
+    (see the **Configuration** section).
+
+    ```bash
+    # Step 1 — generate the 4.6 M-row workload (also writes 02_slurm.slurm)
+    python 01_create_workload.py --EXP_TITLE full_exp_jan
+
+    # Step 2 — submit to SLURM (each job picks one WORKER_INDEX from 01_workload.csv)
+    RESULTS_DIR=/absolute/path/to/results  # OUTPUT_PATH from [HPC] in .server_access_credentials.cfg
+    sbatch ${RESULTS_DIR}/full_exp_jan/02_slurm.slurm
+
+    # Monitor progress (appended to 05_done_workload.csv by each worker)
+    watch -n 60 'wc -l ${RESULTS_DIR}/full_exp_jan/05_done_workload.csv'
+
+    # Step 2b — compress raw CSVs once jobs are done (can run in parallel with jobs)
+    xz ${RESULTS_DIR}/full_exp_jan/*/*/**.csv
+
+    # Step 3 — compute sample-level dataset categorizations
+    python 03_calculate_dataset_categorizations.py \
+        --EXP_TITLE full_exp_jan --SAMPLES_CATEGORIZER _ALL --EVA_MODE local
+
+    # Step 4 — compute derived metrics (AUC, distances, etc.)
+    python 04_calculate_advanced_metrics.py \
+        --EXP_TITLE full_exp_jan --COMPUTED_METRICS _ALL --EVA_MODE local
+
+    # Step 5 — run prerequisite conversion scripts
+    python scripts/convert_y_pred_to_parquet.py --EXP_TITLE full_exp_jan
+    python -m eva_scripts.calculate_dataset_dependend_random_ramp_slope \
+        --EXP_TITLE full_exp_jan
+
+    # Step 6 — build leaderboard rankings (produces paper Table 1)
+    python -m eva_scripts.final_leaderboard --EXP_TITLE full_exp_jan
+    ```
+
+=== "Minimal local subset (laptop-feasible)"
+
+    Uses the built-in `test` config: 2 datasets, 4 strategies, batch sizes 1 and 5,
+    1 train/test split, 5 start sets, 3 AL cycles.  Finishes in a few minutes.
+
+    **Prerequisites:** `.server_access_credentials.cfg` with `[LOCAL]` keys filled in.
+
+    ```bash
+    # Step 1 — generate workload (~240 rows)
+    python 01_create_workload.py --EXP_TITLE test
+
+    # Step 2 — run all workers sequentially (or loop over WORKER_INDEX values)
+    RESULTS_DIR=/absolute/path/to/results  # OUTPUT_PATH from [LOCAL]
+    for i in $(seq 0 9); do
+        python 02_run_experiment.py --EXP_TITLE test --WORKER_INDEX $i
+    done
+
+    # Step 2b — compress
+    xz ${RESULTS_DIR}/test/*/*/**.csv
+
+    # Steps 3–5 — post-processing
+    python 03_calculate_dataset_categorizations.py \
+        --EXP_TITLE test --SAMPLES_CATEGORIZER _ALL --EVA_MODE local
+    python 04_calculate_advanced_metrics.py \
+        --EXP_TITLE test --COMPUTED_METRICS _ALL --EVA_MODE local
+    python scripts/convert_y_pred_to_parquet.py --EXP_TITLE test
+    python -m eva_scripts.calculate_dataset_dependend_random_ramp_slope \
+        --EXP_TITLE test
+
+    # Step 6 — generate leaderboard
+    python -m eva_scripts.final_leaderboard --EXP_TITLE test
+    ```
+
+### Expected output trees
+
+??? info "Minimal run (`test`) — single strategy/dataset combination"
+
+    ```
+    {OUTPUT_PATH}/test/
+    ├── 01_workload.csv                    # ~240-row experiment queue
+    ├── 05_done_workload.csv               # completed experiments (appended per worker)
+    ├── 05_failed_workloads.csv            # failed experiments (if any)
+    │
+    ├── ALIPY_RANDOM/
+    │   ├── Iris/
+    │   │   ├── accuracy.csv.xz
+    │   │   ├── weighted_f1-score.csv.xz
+    │   │   ├── query_selection_time.csv.xz
+    │   │   ├── selected_indices.csv.xz
+    │   │   └── y_pred_train.csv.xz
+    │   └── wine_origin/
+    │       └── ...
+    ├── ALIPY_UNCERTAINTY_LC/
+    │   └── ...                            # same structure per strategy
+    │
+    ├── Iris/                              # Step 3: dataset categorizations
+    │   └── COUNT_WRONG_CLASSIFICATIONS.parquet
+    │
+    ├── _TS/                               # Auto-generated by eva_scripts
+    │   ├── full_auc_weighted_f1-score.parquet
+    │   └── ...
+    │
+    └── plots/
+        └── final_leaderboard/
+            └── rank_sparse_zero_full_auc_weighted_f1-score.parquet
+    ```
+
+??? info "`full_exp_jan` — high-level layout"
+
+    ```
+    {OUTPUT_PATH}/full_exp_jan/
+    ├── 01_workload.csv                    # ~4.6 M rows
+    ├── 02_slurm.slurm                     # Generated SLURM submission script
+    ├── 05_done_workload.csv               # ~4.6 M rows when complete
+    │
+    ├── {STRATEGY}/                        # 28 active strategy directories
+    │   └── {DATASET}/                     # 92 dataset directories each
+    │       ├── accuracy.csv.xz
+    │       ├── weighted_f1-score.csv.xz
+    │       ├── selected_indices.csv.xz
+    │       └── ...                        # ~10 metric files per combination
+    │
+    ├── {DATASET}/                         # 92 dataset categorization directories
+    │   └── *.parquet
+    │
+    ├── _TS/                               # Aggregated time-series parquets
+    │   ├── full_auc_weighted_f1-score.parquet
+    │   ├── selected_indices.parquet
+    │   └── ...
+    │
+    └── plots/
+        ├── final_leaderboard/             # Table 1 from paper
+        ├── single_hyperparameter/         # Sensitivity heatmaps
+        └── ...
     ```
 
 ---
@@ -151,12 +338,16 @@ flowchart TD
 
 ## Post-Processing (Steps 3–6)
 
-After experiments complete (step 2), compress the raw CSV results and run post-processing:
+After experiments complete (step 2), compress the raw CSV results and run post-processing.
+Set `RESULTS_DIR` to the `OUTPUT_PATH` value from the `[LOCAL]` section of
+`.server_access_credentials.cfg`:
 
 ```bash
+RESULTS_DIR=/absolute/path/to/results  # OUTPUT_PATH from [LOCAL] in .server_access_credentials.cfg
+
 # Step 2b: Compress raw CSV results to .csv.xz
 # (02_run_experiment.py outputs .csv files that must be compressed)
-xz ${OGAL_OUTPUT}/my_experiment/*/*/**.csv
+xz ${RESULTS_DIR}/my_experiment/*/*/**.csv
 
 # Step 3: Compute sample-level dataset categorizations
 python 03_calculate_dataset_categorizations.py --EXP_TITLE my_experiment --SAMPLES_CATEGORIZER _ALL --EVA_MODE local
@@ -399,22 +590,56 @@ $\tau_b$ ranges from −1 (reversed rankings) to +1 (identical rankings). Comput
 
 ---
 
-## HPC Configuration
+## Configuration
 
-Create `.server_access_credentials.cfg`:
+OGAL reads all path and environment settings from `.server_access_credentials.cfg`
+in the repository root.  **This file is required for every local and HPC run.**
+It is listed in `.gitignore` so it is never committed.
+
+Copy the committed template and replace the placeholders with your absolute paths:
+
+```bash
+cp .server_access_credentials.cfg.example .server_access_credentials.cfg
+# Then edit .server_access_credentials.cfg
+```
+
+### Local-only required keys (`[LOCAL]` section)
+
+| Key | Description |
+|-----|-------------|
+| `OUTPUT_PATH` | Absolute path where experiment result directories are written |
+| `DATASETS_PATH` | Absolute path to the directory containing preprocessed dataset CSV files |
+| `CODE_PATH` | *(Optional)* Absolute path to the repository root |
+
+### HPC-only required keys (`[HPC]` section)
+
+These keys are only needed when running with `--RUNNING_ENVIRONMENT hpc`.
+
+| Key | Description |
+|-----|-------------|
+| `SSH_LOGIN` | SSH login for the cluster head node (e.g. `user@login.hpc.example.edu`) |
+| `WS_PATH` | Absolute path to the workspace directory on the cluster file system |
+| `PYTHON_PATH` | Absolute path to the Python interpreter inside the conda environment on HPC |
+| `OUTPUT_PATH` | Result directory on the cluster (may differ from `[LOCAL]` path) |
+| `DATASETS_PATH` | Dataset directory on the cluster (may differ from `[LOCAL]` path) |
+| `SLURM_PROJECT` | SLURM account name / project allocation |
+| `SLURM_MAIL` | Email address for SLURM job notifications |
+
+Full example (also available as `.server_access_credentials.cfg.example` in the repo):
 
 ```ini
-[HPC]
-SSH_LOGIN=user@login.hpc.example.edu
-DATASETS_PATH=/path/to/datasets
-OUTPUT_PATH=/path/to/exp_results
-SLURM_MAIL=your.email@example.edu
-SLURM_PROJECT=your_project_account
-PYTHON_PATH=/path/to/conda-env/bin/python
-
 [LOCAL]
-DATASETS_PATH=/path/to/datasets
-OUTPUT_PATH=/path/to/exp_results
+OUTPUT_PATH  = /absolute/path/to/results
+DATASETS_PATH = /absolute/path/to/datasets
+
+[HPC]
+SSH_LOGIN    = your_login@your.cluster.example.edu
+WS_PATH      = /absolute/path/to/workspace
+PYTHON_PATH  = /absolute/path/to/conda-env/bin/python
+OUTPUT_PATH  = /absolute/path/to/results
+DATASETS_PATH = /absolute/path/to/datasets
+SLURM_PROJECT = your_slurm_project_account
+SLURM_MAIL   = your.email@example.com
 ```
 
 ---
@@ -433,7 +658,9 @@ OGAL automatically tracks progress via tracking files:
 
 ```bash
 python 01_create_workload.py --EXP_TITLE my_experiment
-sbatch ${OGAL_OUTPUT}/my_experiment/02_slurm.slurm
+# sbatch uses the SLURM job file written to your HPC OUTPUT_PATH.
+# RESULTS_DIR = OUTPUT_PATH from [HPC] section of .server_access_credentials.cfg
+sbatch ${RESULTS_DIR}/my_experiment/02_slurm.slurm
 ```
 
 ---
@@ -516,8 +743,75 @@ These scripts in `scripts/` are **not part of the normal pipeline** — they exi
 |------|-----|
 | **HPC-scale** | Each experiment independent; `WORKER_INDEX` selects one row from `01_workload.csv` |
 | **Resumable** | `05_done_workload.csv` tracks completed experiments; re-running `01_create_workload.py` skips them |
-| **Deterministic** | Fixed seeds; Cartesian product workload ensures full coverage |
+| **Deterministic** | Two-seed design: global `RANDOM_SEED` seeds library loading; `EXP_RANDOM_SEED` seeds each experiment (see [Seed handling and determinism](#seed-handling-and-determinism)) |
 | **Framework-agnostic** | Unified runner adapts 5+ AL frameworks (ALiPy, libact, small-text, scikit-activeml, playground) |
+
+---
+
+## Seed handling and determinism
+
+OGAL uses two separate integer seeds with different scopes.
+
+### The two seeds
+
+| Seed | Config key | Default | Scope | Where it is set |
+|------|-----------|---------|-------|-----------------|
+| **Global seed** | `RANDOM_SEED` | `1312` | Module-level state at process start | `misc/config.py` `_setup_everything()` calls `np.random.seed(RANDOM_SEED)` and `random.seed(RANDOM_SEED)` once, before the experiment YAML or workload is loaded |
+| **Experiment seed** | `EXP_RANDOM_SEED` | from `EXP_GRID_RANDOM_SEED` in YAML | Per-experiment AL loop | `misc/config.py` `load_workload()` re-seeds NumPy and Python `random` with `EXP_RANDOM_SEED`; `framework_runners/base_runner.py` `run_experiment()` re-seeds them again immediately before the AL loop |
+
+In `full_exp_jan`, `EXP_GRID_RANDOM_SEED: [0]` — so every experiment in the paper run uses
+`EXP_RANDOM_SEED = 0`.
+
+**To change the global seed:** pass `--RANDOM_SEED <value>` on the CLI or set it in
+`.server_access_credentials.cfg`.  Pass `-1` to disable global seeding entirely.
+
+**To change the per-experiment seed:** edit `EXP_GRID_RANDOM_SEED` in
+`resources/exp_config.yaml` for the relevant experiment configuration.
+
+### Per-framework seed coverage
+
+| Framework | How `EXP_RANDOM_SEED` is applied |
+|-----------|----------------------------------|
+| **ALiPy** | Global NumPy seed reset by `base_runner.run_experiment()` before strategy init; ALiPy strategies inherit the seeded NumPy state |
+| **libact** | `random_state=EXP_RANDOM_SEED` passed explicitly to the strategy constructor (`framework_runners/libact_runner.py`) |
+| **playground** | `EXP_RANDOM_SEED` passed as positional argument to the strategy constructor (`framework_runners/playground_runner.py`) |
+| **scikit-activeml** | `random_state=RANDOM_SEED` (the *global* seed, not `EXP_RANDOM_SEED`) passed to the strategy constructor (`framework_runners/skactiveml_runner.py`); this is a known inconsistency |
+| **small-text** | No explicit `random_state`; relies on the global NumPy seed reset by `base_runner.run_experiment()` |
+| **sklearn learner models** (RF, MLP, SVM, …) | No `random_state` in `resources/data_types.py` `learner_models_to_classes_mapping`; models inherit the seeded NumPy/`random` global state at fit time |
+
+### Dataset splits and start sets
+
+Train/test splits and start sets are **pre-generated once** during dataset preparation
+(`datasets/base.py` `calculate_train_test_splits`) and saved to
+`{DATASETS_PATH}/{dataset_name}_split.csv`.  These pre-computed files are used
+as-is at experiment time; the `EXP_TRAIN_TEST_BUCKET_SIZE` and `EXP_START_POINT`
+hyperparameters simply index into the saved arrays.
+
+The split generation itself uses `StratifiedShuffleSplit` **without an explicit
+`random_state`**, meaning splits depend on the global NumPy state at the time
+`00_download_datasets.py` is run.  Start sets are likewise generated with
+`np.random.choice` under the global NumPy state.  If you regenerate datasets on a
+fresh machine, splits and start sets will differ from the paper's unless the same
+global NumPy seed is active.  **The OPARA archive already contains the splits and
+start sets used for the paper**, so downloading the archive avoids this issue.
+
+### What is deterministic in practice
+
+- **Given the same pre-generated split/start-set files and the same
+  `EXP_RANDOM_SEED`**, all ALiPy, libact, playground, and small-text experiments
+  reproduce bit-for-bit on a single CPU thread.
+- scikit-activeml strategies reproduce given the same `RANDOM_SEED` (global default
+  `1312`).
+
+### Known sources of non-determinism
+
+| Source | Details |
+|--------|---------|
+| **`RandomForestClassifier` parallelism** | Defined with `n_jobs=multiprocessing.cpu_count()` in `resources/data_types.py`. Parallel tree building is not deterministic across different CPU counts or thread schedules, even with a fixed `random_state`. |
+| **scikit-activeml seed mismatch** | scikit-activeml strategies receive `RANDOM_SEED` (default 1312) rather than `EXP_RANDOM_SEED`, so sweeping over `EXP_GRID_RANDOM_SEED` does not change their seed. |
+| **sklearn MLP (`adam` solver)** | The Adam solver implementation in scikit-learn may not be fully deterministic across platform/BLAS versions even with the same seed. |
+| **Dataset split/start-set regeneration** | Re-running `00_download_datasets.py` without controlling the global NumPy seed produces different splits and start sets. Use the OPARA-archived datasets for full reproducibility. |
+| **Parallelism in evaluation scripts** | `pandarallel` and `n_jobs=multiprocessing.cpu_count()` in distance computation (`00_download_datasets.py`) are used in some post-processing paths. Results are aggregates and are not affected by operation ordering, but exact timing metadata can vary. |
 
 ---
 
