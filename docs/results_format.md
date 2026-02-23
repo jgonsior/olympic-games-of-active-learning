@@ -1,10 +1,15 @@
 # Results Format
 
-Schema for all output files produced by OGAL experiment runs.  These files are
-written by `02_run_experiment.py` (via `metrics/base_metric.py`) and consumed by
-the post-processing and evaluation scripts.
+!!! abstract "When do I need this?"
+    Read this page to understand the **schema of every output file** — column
+    names, types, and where each file lives on disk.  For a hands-on first run,
+    see [Run a local smoke test](run_local_smoke_test.md).  For pre-computed
+    results, see [Use OPARA archive](use_opara_archive.md).
 
-See [Pipeline](pipeline.md) for how these files fit into the overall workflow.
+All files described below are written by `02_run_experiment.py`
+(via `metrics/base_metric.py`) and consumed by the post-processing and
+evaluation scripts.  See [Pipeline](pipeline.md) for how these files fit into
+the overall workflow.
 
 ---
 
@@ -154,8 +159,10 @@ ts = pd.read_parquet(f"{RESULTS_DIR}/full_exp_jan/_TS/full_auc_weighted_f1-score
 
 ---
 
-## Cross-references
+## Related pages
 
+- [Run a local smoke test](run_local_smoke_test.md) — hands-on first run
+- [Use OPARA archive](use_opara_archive.md) — download pre-computed results
 - [Pipeline](pipeline.md) — how and when each file is produced
 - [Configuration](configuration.md) — config keys that control output paths
-- [Reproduce & Run](personas/reproduce_and_run.md) — expected output directory trees
+- [Evaluation scripts](evaluation_scripts.md) — scripts that consume these files

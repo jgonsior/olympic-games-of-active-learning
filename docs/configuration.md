@@ -1,5 +1,10 @@
 # Configuration Reference
 
+!!! abstract "When do I need this?"
+    Read this page to look up **config keys, their types, and defaults**.
+    For a hands-on first run, see [Run a local smoke test](run_local_smoke_test.md).
+    For path setup, see that tutorial's Step 2.
+
 All configuration is loaded by `misc/config.py` from multiple sources in this
 priority order (highest wins):
 
@@ -98,39 +103,10 @@ These keys control how datasets are prepared and are rarely changed.
 
 ---
 
-## Minimal example
+## Related pages
 
-```ini
-# .server_access_credentials.cfg
-[LOCAL]
-OUTPUT_PATH   = /home/user/ogal_results
-DATASETS_PATH = /home/user/ogal_datasets
-```
-
-```yaml
-# resources/exp_config.yaml  (add a new block)
-my_run:
-  EXP_GRID_DATASET: [Iris, wine_origin]
-  EXP_GRID_STRATEGY: [ALIPY_RANDOM]
-  EXP_GRID_RANDOM_SEED: [0]
-  EXP_GRID_NUM_QUERIES: [10]
-  EXP_GRID_BATCH_SIZE: [5]
-  EXP_GRID_LEARNER_MODEL: [RF]
-  EXP_GRID_TRAIN_TEST_BUCKET_SIZE: [0]
-  EXP_GRID_START_POINT: [0]
-  METRICS: [Standard_ML_Metrics]
-```
-
-```bash
-python 01_create_workload.py --EXP_TITLE my_run
-python 02_run_experiment.py  --EXP_TITLE my_run --WORKER_INDEX 0
-```
-
----
-
-## Cross-references
-
+- [Run a local smoke test](run_local_smoke_test.md) — hands-on first run with config examples
+- [Run at HPC scale](run_hpc.md) — SLURM submission walkthrough
 - [Pipeline](pipeline.md) — step-by-step workflow
 - [Results format](results_format.md) — output file schema
-- [Reproduce & Run](personas/reproduce_and_run.md) — full walkthrough
 - [Extend the Benchmark](personas/extend_benchmark.md) — adding strategies / datasets
