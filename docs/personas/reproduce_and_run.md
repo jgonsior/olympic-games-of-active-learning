@@ -9,48 +9,11 @@
 
 ## Quick Start
 
-=== "Reproduce from OPARA archive"
-
-    Follow the **[Use released OPARA archive](../use_opara_archive.md)** guide to
-    download, extract, and verify the pre-computed results, then run:
-
-    ```bash
-    python -m eva_scripts.final_leaderboard --EXP_TITLE full_exp_jan
-    ```
-
-=== "Run locally (verify setup)"
-
-    Run a small smoke test before going to HPC scale.
-
-    **Prerequisites:** a local config file is required.  The config file tells OGAL
-    where to write results and where to find datasets.
-
-    ```bash
-    conda create --name ogal --file conda-linux-64.lock && conda activate ogal && poetry install
-
-    # Copy the committed template and fill in your local absolute paths.
-    # This file is gitignored — never commit the filled-in version.
-    cp .server_access_credentials.cfg.example .server_access_credentials.cfg
-    # Edit .server_access_credentials.cfg: set OUTPUT_PATH and DATASETS_PATH
-    # under [LOCAL] to real absolute paths on your machine.
-
-    python 01_create_workload.py --EXP_TITLE smoke_test
-    python 02_run_experiment.py --EXP_TITLE smoke_test --WORKER_INDEX 0
-    # Note: 02_run_experiment.py outputs .csv files; compress to .csv.xz afterwards
-    ```
-
-=== "HPC (SLURM)"
-
-    Run millions of experiments on an HPC cluster.  See the **Configuration** section below
-    for the required `[HPC]` keys in `.server_access_credentials.cfg`.
-    Set `RESULTS_DIR` to the `OUTPUT_PATH` value from the `[HPC]` section of your config file.
-
-    ```bash
-    RESULTS_DIR=/absolute/path/to/results  # OUTPUT_PATH from [HPC] in .server_access_credentials.cfg
-    python 01_create_workload.py --EXP_TITLE full_run
-    sbatch ${RESULTS_DIR}/full_run/02_slurm.slurm
-    watch -n 60 'wc -l ${RESULTS_DIR}/full_run/05_done_workload.csv'
-    ```
+| Goal | Canonical page |
+|------|---------------|
+| Download pre-computed results | [Use released OPARA archive](../use_opara_archive.md) |
+| Run a small local test | [Run a local smoke test](../run_local_smoke_test.md) |
+| Submit to HPC/SLURM | [Run at HPC scale](../run_hpc.md) |
 
 ---
 

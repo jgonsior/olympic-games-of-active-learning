@@ -47,18 +47,8 @@ download commands, disk-space requirements, and verification steps.
 
 ### 2. Setup Environment
 
-```bash
-git clone https://github.com/jgonsior/olympic-games-of-active-learning.git
-cd olympic-games-of-active-learning
-conda create --name ogal --file conda-linux-64.lock && conda activate ogal && poetry install
-```
-
-### 3. Generate Leaderboard
-
-Output paths are controlled by `OUTPUT_PATH` in the `[LOCAL]` section of
-`.server_access_credentials.cfg` (copied from `.server_access_credentials.cfg.example`).
-The evaluation scripts read this value automatically via `misc/config.py` — no environment
-variable is needed.
+Follow [Getting Started](../getting_started.md) to install the environment and configure local paths.
+Then generate the leaderboard:
 
 ```bash
 python -m eva_scripts.final_leaderboard --EXP_TITLE full_exp_jan

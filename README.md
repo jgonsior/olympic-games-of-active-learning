@@ -52,31 +52,8 @@ python 01_create_workload.py --EXP_TITLE test && python 02_run_experiment.py --E
 
 The paper results come from config **`full_exp_jan`** in `resources/exp_config.yaml`.
 **The archived results are already on OPARA** (downloaded above) — re-running from scratch
-requires an HPC cluster.  For reference, the pipeline commands are:
-
-```bash
-# 1. Generate 4.6 M-row workload
-python 01_create_workload.py --EXP_TITLE full_exp_jan
-
-# 2. Submit to SLURM (HPC only)
-RESULTS_DIR=/absolute/path/to/results
-sbatch ${RESULTS_DIR}/full_exp_jan/02_slurm.slurm
-
-# 2b. Compress raw CSV output
-xz ${RESULTS_DIR}/full_exp_jan/*/*/**.csv
-
-# 3–5. Post-process
-python 03_calculate_dataset_categorizations.py --EXP_TITLE full_exp_jan --SAMPLES_CATEGORIZER _ALL --EVA_MODE local
-python 04_calculate_advanced_metrics.py --EXP_TITLE full_exp_jan --COMPUTED_METRICS _ALL --EVA_MODE local
-python scripts/convert_y_pred_to_parquet.py --EXP_TITLE full_exp_jan
-python -m eva_scripts.calculate_dataset_dependend_random_ramp_slope --EXP_TITLE full_exp_jan
-
-# 6. Build leaderboard (produces paper Table 1)
-python -m eva_scripts.final_leaderboard --EXP_TITLE full_exp_jan
-```
-
-For a **local sanity check**, replace `full_exp_jan` with `test`
-(2 datasets, 4 strategies, seconds per experiment).
+requires an HPC cluster.  See [Pipeline](https://jgonsior.github.io/olympic-games-of-active-learning/pipeline/)
+for the full step-by-step commands.
 
 ## Links
 - 📊 [**Analyze the dataset**](https://jgonsior.github.io/olympic-games-of-active-learning/personas/analyze_dataset/) — Research tutorials
