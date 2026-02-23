@@ -103,17 +103,18 @@ For a **laptop-feasible smoke test**, replace `full_exp_jan` with `test`
 ## Citation
 
 ```bibtex
-@misc{gonsior2025ogal,
-  title={{Olympic Games of Active Learning: A Large-Scale Empirical Study of Active Learning Strategies}},
-  author={Gonsior, Julius and Rie{\ss}, Tim and Reusch, Anja and Hartmann, Claudio and Thiele, Maik and Lehner, Wolfgang},
+@misc{gonsior2025surveyactivelearninghyperparameters,
+  title={{Survey of Active Learning Hyperparameters: Insights from a Large-Scale Experimental Grid}},
+  author={Julius Gonsior and Tim Rie{\ss} and Anja Reusch and Claudio Hartmann and Maik Thiele and Wolfgang Lehner},
   year={2025},
   eprint={2506.03817},
   archivePrefix={arXiv},
-  primaryClass={cs.LG}
+  primaryClass={cs.LG},
+  url={https://arxiv.org/abs/2506.03817}
 }
 
 @dataset{gonsior2025ogal_dataset,
-  author={Gonsior, Julius and Rie{\ss}, Tim and Reusch, Anja and Hartmann, Claudio and Thiele, Maik and Lehner, Wolfgang},
+  author={Julius Gonsior and Tim Rie{\ss} and Anja Reusch and Claudio Hartmann and Maik Thiele and Wolfgang Lehner},
   title={{OGAL: Olympic Games of Active Learning -- Dataset}},
   year={2025},
   publisher={OPARA},

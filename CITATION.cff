@@ -50,9 +50,12 @@ preferred-citation:
       family-names: Thiele
     - given-names: Wolfgang
       family-names: Lehner
-  title: "Olympic Games of Active Learning: A Large-Scale Empirical Study of Active Learning Strategies"
+  title: "Survey of Active Learning Hyperparameters: Insights from a Large-Scale Experimental Grid"
   year: 2025
   identifiers:
+    - type: doi
+      value: "10.48550/arXiv.2506.03817"
+      description: arXiv preprint DOI
     - type: other
       value: "arXiv:2506.03817"
       description: arXiv preprint
