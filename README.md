@@ -86,6 +86,10 @@ For a **local sanity check**, replace `full_exp_jan` with `test`
 
 ## Citation
 
+See [`CITATION.cff`](CITATION.cff) for machine-readable metadata.
+For the released dataset, cite [DOI:10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862).
+To cite a specific version, include the git commit hash or tag you used.
+
 ```bibtex
 @misc{gonsior2025surveyactivelearninghyperparameters,
   title={{Survey of Active Learning Hyperparameters: Insights from a Large-Scale Experimental Grid}},
@@ -109,4 +113,4 @@ For a **local sanity check**, replace `full_exp_jan` with `test`
 
 ## License
 
-[AGPL-3.0](LICENSE)
+[AGPL-3.0](LICENSE). The `LICENSE` file is authoritative; packaging metadata may be inconsistent.
