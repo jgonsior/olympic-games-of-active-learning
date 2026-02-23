@@ -45,7 +45,6 @@ nav:
     - Strategy catalog: strategy_catalog.md
     - Paper subset: paper_subset.md
   - Extend OGAL: personas/extend_benchmark.md
-  - Contributing: contributing.md
   - Legacy / Deep Dives:
     - Analyze OPARA (legacy): personas/analyze_dataset.md
     - Reproduce & Run (legacy): personas/reproduce_and_run.md

@@ -213,4 +213,3 @@ python -m eva_scripts.final_leaderboard --EXP_TITLE my_experiment
 | Goal | Page |
 |------|------|
 | Run at HPC scale / Reproduce paper | [Reproduce & Run](reproduce_and_run.md) |
-| Development guidelines | [Contributing](../contributing.md) |
