@@ -1,3 +1,6 @@
+!!! info "Legacy page"
+    This page is a deep dive from an earlier docs structure. **Start at [Home](../index.md) / [Getting Started](../getting_started.md)** for the recommended entry points.
+
 # Extend the Benchmark
 
 **Add new strategies, datasets, or hyperparameters and integrate them with the shared benchmark.**
