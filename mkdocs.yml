@@ -34,6 +34,10 @@ nav:
   - Reproduce & Run: personas/reproduce_and_run.md
   - Extend the Benchmark: personas/extend_benchmark.md
   - Research Ideas: personas/research_ideas.md
+  - Reference:
+    - Pipeline: pipeline.md
+    - Configuration: configuration.md
+    - Results Format: results_format.md
   - Contributing: contributing.md
 
 plugins:

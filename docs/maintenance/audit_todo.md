@@ -113,12 +113,13 @@ Each item references the exact files that must be changed.
   - *(create)* `.github/workflows/ci.yml` — runs `ruff check .` and `pytest -q`.
   - `docs/contributing.md` — update to reflect the new test/CI setup.
 
-- [ ] **Add missing documentation pages that docstrings already reference.**
-  Multiple modules point to pages that do not exist in the `docs/` tree.  Add the missing pages
-  and register them in the `mkdocs.yml` nav; then cross-link from existing persona pages.
-  - *(create)* `docs/pipeline.md` — canonical end-to-end workflow diagram and description.
-  - *(create)* `docs/configuration.md` — full config reference with required vs optional keys.
-  - *(create)* `docs/results_format.md` — formal results schema with concrete column examples.
+- [x] **Add missing documentation pages that docstrings already reference.**
+  Created all three missing pages and added them to the `mkdocs.yml` nav under a
+  "Reference" group.  Each page is cross-linked from the others and from
+  `reproduce_and_run.md`.
+  - *(created)* `docs/pipeline.md` — end-to-end workflow with ASCII diagram and step-by-step commands.
+  - *(created)* `docs/configuration.md` — full config reference with required vs optional keys and defaults.
+  - *(created)* `docs/results_format.md` — formal results schema with column definitions and Python reading examples.
   - `mkdocs.yml`
 
 - [ ] **Document dataset preprocessing precisely and tie it to paper statistics.**
