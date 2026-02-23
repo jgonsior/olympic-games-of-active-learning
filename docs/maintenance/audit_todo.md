@@ -59,14 +59,14 @@ Each item references the exact files that must be changed.
   - `README.md`
   - `docs/personas/reproduce_and_run.md`
 
-- [ ] **Clarify and harden seed handling and determinism claims.**
-  Document which random seeds are set (Python `random`, NumPy, and any framework-specific
-  seeds), where they originate, whether multithreading breaks determinism, and any known
-  non-deterministic components.
+- [x] **Clarify and harden seed handling and determinism claims.**
+  Added a "Seed handling and determinism" section to `docs/personas/reproduce_and_run.md`
+  documenting: the two-seed design (`RANDOM_SEED` / `EXP_RANDOM_SEED`), where each originates,
+  per-framework seed coverage (including the `RANDOM_SEED` vs `EXP_RANDOM_SEED` inconsistency
+  in `skactiveml_runner.py`), dataset split/start-set regeneration caveat, and all known
+  sources of non-determinism (RF parallelism, scikit-activeml mismatch, MLP Adam, etc.).
+  No code changes.
   - `docs/personas/reproduce_and_run.md`
-  - `docs/personas/analyze_dataset.md`
-  - `misc/config.py`
-  - Runner modules under `framework_runners/`
 
 - [ ] **Unify project citation metadata across all surfaces.**
   Verify the canonical paper title, author list, arXiv ID, and OPARA DOI, then update every
