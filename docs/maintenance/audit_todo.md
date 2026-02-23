@@ -44,10 +44,11 @@ Each item references the exact files that must be changed.
 
 ## High
 
-- [ ] **Fix config-key naming mismatch in docs.**
-  Replace incorrect key names (e.g. `EXP_GRID_NR_QUERIES`) with the keys actually used in the
-  experiment config YAML (e.g. `EXP_GRID_NUM_QUERIES`).  Add a brief "Config schema" section
-  pointing users to `resources/exp_config.yaml` and `misc/config.py`.
+- [x] **Fix config-key naming mismatch in docs.**
+  Replaced `EXP_GRID_NR_QUERIES` (incorrect) with `EXP_GRID_NUM_QUERIES` (actual key used in
+  `resources/exp_config.yaml` and declared in `misc/config.py`).  Added missing
+  `EXP_GRID_START_POINT` row to the table and example.  Added a "Where config keys come from"
+  subsection pointing to both source files.
   - `docs/personas/extend_benchmark.md`
 
 - [ ] **Add a canonical "paper reproduction config" section.**
