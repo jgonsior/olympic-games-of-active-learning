@@ -19,11 +19,35 @@
 # 1. Install
 conda create --name ogal --file conda-linux-64.lock && conda activate ogal && poetry install
 
-# 2. Analyze pre-computed results (no experiments needed)
-wget <URL_FROM_DOI> && unzip full_exp_jan.zip -d /path/to/results/
+# 2. Download released results from OPARA (DOI: 10.25532/OPARA-862)
+#    The canonical landing page is https://doi.org/10.25532/OPARA-862
+#    Use -c to resume interrupted downloads. Bitstream URLs below are current as of
+#    the dataset release; if OPARA migrates, retrieve updated URLs from the DOI landing page.
+
+#    Step 2a – file manifest (~184 MB, useful for verifying the extracted archive)
+wget -c -O archive_listing.txt \
+  "https://opara.zih.tu-dresden.de/bitstreams/0f4dcc0e-4ba7-4b51-b3ed-778bbbd0c945/download"
+
+#    Step 2b – main archive (~320 GB); aria2c is an alternative for multi-connection downloads
+wget -c -O full_exp_jan.zip \
+  "https://opara.zih.tu-dresden.de/bitstreams/38951489-5076-4544-a99b-c20dddfc2c6b/download"
+# aria2c alternative: aria2c -c -o full_exp_jan.zip \
+#   "https://opara.zih.tu-dresden.de/bitstreams/38951489-5076-4544-a99b-c20dddfc2c6b/download"
+
+#    Step 2c – unpack (ensure ~320 GB free disk space before running)
+export RESULTS_DIR=/path/to/results
+unzip full_exp_jan.zip -d "${RESULTS_DIR}/full_exp_jan"
+
+#    Step 2d – verify: archive_listing.txt should exist and list the extracted files
+ls archive_listing.txt   # must be present
+# Compare extracted tree against the manifest:
+# diff <(sort archive_listing.txt) <(find "${RESULTS_DIR}/full_exp_jan" -type f | sort)
+
+# 3. Analyze pre-computed results
+export OGAL_OUTPUT="${RESULTS_DIR}"
 python -m eva_scripts.final_leaderboard --EXP_TITLE full_exp_jan
 
-# 3. Or run your own experiment
+# 4. Or run your own experiment
 python 01_create_workload.py --EXP_TITLE test && python 02_run_experiment.py --EXP_TITLE test --WORKER_INDEX 0
 ```
 

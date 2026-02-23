@@ -16,10 +16,30 @@
     cd olympic-games-of-active-learning
     conda create --name ogal --file conda-linux-64.lock && conda activate ogal && poetry install
 
-    # Download and extract data
-    wget <URL_FROM_DOI_LANDING_PAGE>
-    unzip full_exp_jan.zip -d /path/to/results/
-    export OGAL_OUTPUT=/path/to/results
+    # Download released results from OPARA (DOI: 10.25532/OPARA-862)
+    # Canonical landing page: https://doi.org/10.25532/OPARA-862
+    # If OPARA migrates, retrieve updated bitstream URLs from that page.
+
+    # File manifest (~184 MB) — use to verify the extracted archive
+    wget -c -O archive_listing.txt \
+      "https://opara.zih.tu-dresden.de/bitstreams/0f4dcc0e-4ba7-4b51-b3ed-778bbbd0c945/download"
+
+    # Main archive (~320 GB) — use -c to resume if interrupted
+    wget -c -O full_exp_jan.zip \
+      "https://opara.zih.tu-dresden.de/bitstreams/38951489-5076-4544-a99b-c20dddfc2c6b/download"
+    # aria2c alternative for multi-connection download:
+    # aria2c -c -o full_exp_jan.zip \
+    #   "https://opara.zih.tu-dresden.de/bitstreams/38951489-5076-4544-a99b-c20dddfc2c6b/download"
+
+    # Unpack — ensure ~320 GB free disk space
+    export RESULTS_DIR=/path/to/results
+    unzip full_exp_jan.zip -d "${RESULTS_DIR}/full_exp_jan"
+
+    # Verify: archive_listing.txt must exist and should match extracted files
+    ls archive_listing.txt
+    # diff <(sort archive_listing.txt) <(find "${RESULTS_DIR}/full_exp_jan" -type f | sort)
+
+    export OGAL_OUTPUT="${RESULTS_DIR}"
     ```
 
 === "Run locally (verify setup)"
