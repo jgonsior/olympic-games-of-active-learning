@@ -65,6 +65,19 @@ Runtime limit: **5 minutes (300 s) per AL cycle**.
 
 Released results: [DOI:10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862)
 
+### Paper notation → config keys (§II-B)
+
+| Paper symbol | Meaning | Config key |
+|-------------|---------|-----------|
+| $\mathbb{S}$ | AL strategies | `EXP_GRID_STRATEGY` |
+| $\mathbb{D}$ | Datasets | `EXP_GRID_DATASET` |
+| $\mathbb{T}$ | Train/test splits | `EXP_GRID_TRAIN_TEST_BUCKET_SIZE` |
+| $\mathbb{I}$ | Initial start sets | `EXP_GRID_START_POINT` |
+| $\mathbb{B}$ | Batch sizes | `EXP_GRID_BATCH_SIZE` |
+| $\mathbb{L}$ | Learner models | `EXP_GRID_LEARNER_MODEL` |
+| $\mathbb{M}$ | Metrics | Computed post-hoc; see [aggregation metrics](results.md#aggregation-metrics-paper-ii-d-fig-3) |
+| $c$ | AL cycles | `EXP_GRID_NUM_QUERIES` |
+
 ### Strategies used in the paper
 
 | Framework | Strategy enum |

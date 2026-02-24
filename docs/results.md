@@ -25,7 +25,48 @@ Each file (e.g. `accuracy.csv.xz`) has one **row per experiment** with:
 | `EXP_UNIQUE_ID` | Links back to the workload CSVs (`01_workload.csv`, `05_done_workload.csv`) |
 | `0`, `1`, … `N-1` | Metric value at each AL cycle |
 
-Workload tracking files (`01_workload.csv`, `05_done_workload.csv`, `05_failed_workloads.csv`) are plain CSVs in `{OUTPUT_PATH}/{EXP_TITLE}/` — see [Reference](reference.md) for their columns.
+### Workload CSVs
+
+`01_workload.csv`, `05_done_workload.csv`, and `05_failed_workloads.csv` live in `{OUTPUT_PATH}/{EXP_TITLE}/`.
+Each row is one experiment with columns:
+
+`EXP_UNIQUE_ID` · `EXP_DATASET` · `EXP_STRATEGY` · `EXP_LEARNER_MODEL` · `EXP_BATCH_SIZE` · `EXP_TRAIN_TEST_BUCKET_SIZE` · `EXP_START_POINT` · `EXP_RANDOM_SEED` · `EXP_NUM_QUERIES`
+
+### Generated directories
+
+| Path | Contents | Created by |
+|------|----------|------------|
+| `{STRATEGY}/{DATASET}/` | Per-cycle metric `.csv` / `.csv.xz` files | `02_run_experiment.py` |
+| `_TS/` | Pre-joined Parquet files (metrics + workload metadata) — enables fast groupby/correlation | Evaluation scripts (auto-generated on first run) |
+| `plots/final_leaderboard/` | Strategy ranking Parquet files | `eva_scripts.final_leaderboard` |
+
+### Leaderboard file naming
+
+Files in `plots/final_leaderboard/` follow the pattern:
+
+`rank_{interpolation}_{aggregation}_{base_metric}.parquet`
+
+Example: **`rank_sparse_zero_full_auc_weighted_f1-score.parquet`**
+
+| Part | Meaning | Options |
+|------|---------|---------|
+| `rank` | Contains strategy rankings (lower = better) | — |
+| `sparse_zero` | Missing results filled with 0 (rank last) | `sparse_zero`, `sparse_nan`, `dense` |
+| `full_auc` | Aggregation over the learning curve | see table below |
+| `weighted_f1-score` | Base evaluation metric | `accuracy`, `weighted_f1-score`, `macro_f1-score`, … |
+
+### Aggregation metrics (paper §II-D, Fig. 3)
+
+| Paper term | Code prefix | What it computes |
+|------------|-------------|-----------------|
+| Full mean AUC | `full_auc` | Arithmetic mean over all AL cycles |
+| Ramp-up AUC | `ramp_up_auc` | Mean over early cycles (before random baseline plateau) |
+| Plateau AUC | `plateau_auc` | Mean over later cycles (after random baseline plateau) |
+| First 5 | `first_5` | Mean of the first 5 cycle values |
+| Last 5 | `last_5` | Mean of the last 5 cycle values |
+| Final value | `final_value` | Last cycle's value only |
+
+The ramp-up / plateau split is **dataset-dependent**: computed using the random strategy's mean performance as a dynamic threshold (see paper §II-D and `eva_scripts.calculate_dataset_dependend_random_ramp_slope`).
 
 ---
 
