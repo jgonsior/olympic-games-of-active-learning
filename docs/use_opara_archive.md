@@ -71,17 +71,16 @@ ls archive_listing.txt
 
 ---
 
-## 4. Set up the environment
+## 4. Install OGAL & configure
 
-```bash
-git clone https://github.com/jgonsior/olympic-games-of-active-learning.git
-cd olympic-games-of-active-learning
-conda create --name ogal --file conda-linux-64.lock && conda activate ogal && poetry install
-cp .server_access_credentials.cfg.example .server_access_credentials.cfg
-# Edit .server_access_credentials.cfg → set OUTPUT_PATH under [LOCAL] to your RESULTS_DIR
-```
+Follow **[Steps 1–2 of Run a local smoke test](run_local_smoke_test.md#1-install)** to
+clone the repo, install dependencies, and create `.server_access_credentials.cfg`.
+Set `OUTPUT_PATH` under `[LOCAL]` to the `RESULTS_DIR` you used above.
 
-## 5. Generate the leaderboard
+## 5. Analyze
+
+See [Evaluation scripts](evaluation_scripts.md) for the full list of analysis
+scripts. For example, to generate the strategy leaderboard (Table 1 in the paper):
 
 ```bash
 python -m eva_scripts.final_leaderboard --EXP_TITLE full_exp_jan

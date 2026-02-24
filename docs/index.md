@@ -6,23 +6,23 @@ Choose your path:
 
 <div class="grid cards" markdown>
 
--   :material-download:{ .lg .middle } **Analyze the OPARA archive**
+-   :material-download:{ .lg .middle } **Use released OPARA archive** *(recommended)*
 
     Download pre-computed results and start exploring — no experiments needed.
 
-    [:octicons-arrow-right-24: Use OPARA archive](use_opara_archive.md)
+    [:octicons-arrow-right-24: Download & set up](use_opara_archive.md)
 
--   :material-play-circle:{ .lg .middle } **Local smoke test**
+-   :material-chart-bar:{ .lg .middle } **Analyze results**
 
-    Run a tiny experiment end-to-end on your laptop.
+    Run evaluation scripts on the downloaded archive to reproduce paper figures.
 
-    [:octicons-arrow-right-24: Run locally](run_local_smoke_test.md)
+    [:octicons-arrow-right-24: Evaluation scripts](evaluation_scripts.md)
 
--   :material-server:{ .lg .middle } **HPC scale**
+-   :material-flask:{ .lg .middle } **Run from scratch / HPC** *(advanced)*
 
-    Submit thousands of experiments to a SLURM cluster.
+    Run your own experiments locally or at HPC scale.
 
-    [:octicons-arrow-right-24: Run at HPC scale](run_hpc.md)
+    [:octicons-arrow-right-24: Local smoke test](run_local_smoke_test.md) · [:octicons-arrow-right-24: HPC](run_hpc.md)
 
 </div>
 
