@@ -12,25 +12,19 @@
 - **Consistent protocol** — same splits, seeds, and output schema for all strategies
 - **Reusable dataset** archived at [DOI:10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862)
 
-The paper run covers **92 datasets × 28 strategies = 4,636,800 experiments**.
-See [Paper Run Definition](https://jgonsior.github.io/olympic-games-of-active-learning/paper_subset/) for the full grid and strategy list.
-
 ## Quickstart
 
 Most users should **download the pre-computed OPARA results** rather than
-re-running experiments:
+re-running experiments. The documentation home page walks you through
+downloading, extracting, and verifying the archive in about 10 minutes:
 
-> **📦 [Use released OPARA archive](https://jgonsior.github.io/olympic-games-of-active-learning/use_opara_archive/)** — download, extract, and start analysing in minutes.
-
-To run a small local sanity check instead, see
-[Run a local smoke test](https://jgonsior.github.io/olympic-games-of-active-learning/run_local_smoke_test/).
+> **📦 [Start here](https://jgonsior.github.io/olympic-games-of-active-learning/)** — download OPARA results and begin analysing.
 
 ## Links
 
 - 📖 [**Full documentation**](https://jgonsior.github.io/olympic-games-of-active-learning/)
 - 📄 [**Paper (arXiv:2506.03817)**](https://arxiv.org/abs/2506.03817) — Methodology and findings
 - 📦 [**Archived data (DOI)**](https://doi.org/10.25532/OPARA-862) — 4.6M experiment results
-- 🔬 [**Paper Run Definition**](https://jgonsior.github.io/olympic-games-of-active-learning/paper_subset/) — exact grid (92 datasets, 28 strategies)
 
 ## Citation
 
