@@ -683,68 +683,11 @@ These scripts in `scripts/` are **not part of the normal pipeline** — they exi
 
 ## Seed handling and determinism
 
-OGAL uses two separate integer seeds with different scopes.
+OGAL uses a two-seed design (global + per-experiment) with known caveats around
+third-party framework determinism.
 
-### The two seeds
-
-| Seed | Config key | Default | Scope | Where it is set |
-|------|-----------|---------|-------|-----------------|
-| **Global seed** | `RANDOM_SEED` | `1312` | Module-level state at process start | `misc/config.py` `_setup_everything()` calls `np.random.seed(RANDOM_SEED)` and `random.seed(RANDOM_SEED)` once, before the experiment YAML or workload is loaded |
-| **Experiment seed** | `EXP_RANDOM_SEED` | from `EXP_GRID_RANDOM_SEED` in YAML | Per-experiment AL loop | `misc/config.py` `load_workload()` re-seeds NumPy and Python `random` with `EXP_RANDOM_SEED`; `framework_runners/base_runner.py` `run_experiment()` re-seeds them again immediately before the AL loop |
-
-In `full_exp_jan`, `EXP_GRID_RANDOM_SEED: [0]` — so every experiment in the paper run uses
-`EXP_RANDOM_SEED = 0`.
-
-**To change the global seed:** pass `--RANDOM_SEED <value>` on the CLI or set it in
-`.server_access_credentials.cfg`.  Pass `-1` to disable global seeding entirely.
-
-**To change the per-experiment seed:** edit `EXP_GRID_RANDOM_SEED` in
-`resources/exp_config.yaml` for the relevant experiment configuration.
-
-### Per-framework seed coverage
-
-| Framework | How `EXP_RANDOM_SEED` is applied |
-|-----------|----------------------------------|
-| **ALiPy** | Global NumPy seed reset by `base_runner.run_experiment()` before strategy init; ALiPy strategies inherit the seeded NumPy state |
-| **libact** | `random_state=EXP_RANDOM_SEED` passed explicitly to the strategy constructor (`framework_runners/libact_runner.py`) |
-| **playground** | `EXP_RANDOM_SEED` passed as positional argument to the strategy constructor (`framework_runners/playground_runner.py`) |
-| **scikit-activeml** | `random_state=RANDOM_SEED` (the *global* seed, not `EXP_RANDOM_SEED`) passed to the strategy constructor (`framework_runners/skactiveml_runner.py`); this is a known inconsistency |
-| **small-text** | No explicit `random_state`; relies on the global NumPy seed reset by `base_runner.run_experiment()` |
-| **sklearn learner models** (RF, MLP, SVM, …) | No `random_state` in `resources/data_types.py` `learner_models_to_classes_mapping`; models inherit the seeded NumPy/`random` global state at fit time |
-
-### Dataset splits and start sets
-
-Train/test splits and start sets are **pre-generated once** during dataset preparation
-(`datasets/base.py` `calculate_train_test_splits`) and saved to
-`{DATASETS_PATH}/{dataset_name}_split.csv`.  These pre-computed files are used
-as-is at experiment time; the `EXP_TRAIN_TEST_BUCKET_SIZE` and `EXP_START_POINT`
-hyperparameters simply index into the saved arrays.
-
-The split generation itself uses `StratifiedShuffleSplit` **without an explicit
-`random_state`**, meaning splits depend on the global NumPy state at the time
-`00_download_datasets.py` is run.  Start sets are likewise generated with
-`np.random.choice` under the global NumPy state.  If you regenerate datasets on a
-fresh machine, splits and start sets will differ from the paper's unless the same
-global NumPy seed is active.  **The OPARA archive already contains the splits and
-start sets used for the paper**, so downloading the archive avoids this issue.
-
-### What is deterministic in practice
-
-- **Given the same pre-generated split/start-set files and the same
-  `EXP_RANDOM_SEED`**, all ALiPy, libact, playground, and small-text experiments
-  reproduce bit-for-bit on a single CPU thread.
-- scikit-activeml strategies reproduce given the same `RANDOM_SEED` (global default
-  `1312`).
-
-### Known sources of non-determinism
-
-| Source | Details |
-|--------|---------|
-| **`RandomForestClassifier` parallelism** | Defined with `n_jobs=multiprocessing.cpu_count()` in `resources/data_types.py`. Parallel tree building is not deterministic across different CPU counts or thread schedules, even with a fixed `random_state`. |
-| **scikit-activeml seed mismatch** | scikit-activeml strategies receive `RANDOM_SEED` (default 1312) rather than `EXP_RANDOM_SEED`, so sweeping over `EXP_GRID_RANDOM_SEED` does not change their seed. |
-| **sklearn MLP (`adam` solver)** | The Adam solver implementation in scikit-learn may not be fully deterministic across platform/BLAS versions even with the same seed. |
-| **Dataset split/start-set regeneration** | Re-running `00_download_datasets.py` without controlling the global NumPy seed produces different splits and start sets. Use the OPARA-archived datasets for full reproducibility. |
-| **Parallelism in evaluation scripts** | `pandarallel` and `n_jobs=multiprocessing.cpu_count()` in distance computation (`00_download_datasets.py`) are used in some post-processing paths. Results are aggregates and are not affected by operation ordering, but exact timing metadata can vary. |
+For the full details — seed knobs, per-framework coverage, and known sources of
+non-determinism — see **[Determinism & Seeds](../determinism_and_seeds.md)**.
 
 ---
 
