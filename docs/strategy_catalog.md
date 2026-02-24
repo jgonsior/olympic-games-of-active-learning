@@ -18,8 +18,8 @@ OGAL benchmarks many active learning strategies across multiple AL frameworks.
 | libact | `framework_runners/libact_runner.py` | QUIRE, DWUS |
 | small-text | `framework_runners/smalltext_runner.py` | Prediction entropy, Breaking ties |
 | scikit-activeml | `framework_runners/skactiveml_runner.py` | QBC, Uncertainty sampling |
-| Google Playground | `framework_runners/playground_runner.py` | Playground-based strategies |
-| OGAL-native | `framework_runners/optimal_runner.py` | OPTIMAL_GREEDY baselines |
+| Google Playground | `framework_runners/playground_runner.py` | Margin, Mixture, KCenter Greedy |
+| OGAL-native | `framework_runners/optimal_runner.py` | OPTIMAL_GREEDY_10, OPTIMAL_GREEDY_20 |
 
 ## Strategy enums
 
