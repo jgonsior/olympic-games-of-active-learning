@@ -53,14 +53,17 @@ unzip full_exp_jan.zip -d "${RESULTS_DIR}/full_exp_jan"
 - [ ] `archive_listing.txt` exists in the current directory.
 - [ ] `${RESULTS_DIR}/full_exp_jan/` directory exists and contains result files.
 
+**Next step →** Read [Results & evaluation](results.md) to understand the file format, then run an [evaluation script](results.md#evaluation-scripts).
+
 ---
 
 ## What to read next
 
 | Page | When to read |
 |------|-------------|
+| [Results & evaluation](results.md) | Understand the output format and run evaluation scripts |
+| [Reference](reference.md) | Configuration keys, data sources, splits, determinism |
 | [Run & reproduce](run.md) | Re-run experiments yourself (locally or on HPC) |
-| [Results & evaluation](results.md) | Understand the output format and evaluation scripts |
 | [Strategies & extending](extend.md) | Add a new query strategy or dataset |
 
 📄 [Paper](https://arxiv.org/abs/2506.03817) ・ 📦 [Dataset (DOI)](https://doi.org/10.25532/OPARA-862) ・ 💻 [GitHub](https://github.com/jgonsior/olympic-games-of-active-learning)
