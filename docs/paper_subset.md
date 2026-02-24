@@ -29,7 +29,7 @@ Runtime limit: **5 minutes (300 s) per AL cycle**.
 !!! note "Why counts can look different in the repo"
     The dataset registry may contain aliases that refer to the same OpenML
     dataset (e.g., `scale` and `balance-scale` both map to `data_id=11`).
-    The paper grid counts **92 unique datasets** after de-duplication.
+    The paper grid counts **92 unique datasets** after deduplication.
     Similarly, the repository includes additional strategies beyond the paper
     subset; only the 28 listed below were used in the paper.
 
