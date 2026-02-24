@@ -1,5 +1,5 @@
-!!! info "Legacy page"
-    This page is a deep dive from an earlier docs structure. **Start at [Home](../index.md) / [Getting Started](../getting_started.md)** for the recommended entry points.
+!!! warning "Archived page"
+    Start at [Home](../index.md) / [Getting Started](../getting_started.md). See [Archive](../archive.md) for all legacy pages.
 
 # Research Ideas
 

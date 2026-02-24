@@ -44,11 +44,9 @@ nav:
     - Evaluation scripts: evaluation_scripts.md
     - Strategy catalog: strategy_catalog.md
     - Paper subset: paper_subset.md
+    - Determinism & seeds: determinism_and_seeds.md
   - Extend OGAL: personas/extend_benchmark.md
-  - Legacy / Deep Dives:
-    - Analyze OPARA (legacy): personas/analyze_dataset.md
-    - Reproduce & Run (legacy): personas/reproduce_and_run.md
-    - Research Ideas (legacy): personas/research_ideas.md
+  - Archive: archive.md
 
 plugins:
   - search

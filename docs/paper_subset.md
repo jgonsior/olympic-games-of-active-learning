@@ -1,6 +1,8 @@
-# Paper Subset
+# Paper Run Definition
 
-What was used in the paper [arXiv:2506.03817](https://arxiv.org/abs/2506.03817).
+Authoritative reference for the paper run described in [arXiv:2506.03817](https://arxiv.org/abs/2506.03817).
+
+Released results: [DOI:10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862)
 
 ---
 
@@ -12,16 +14,24 @@ The paper run is defined as **`full_exp_jan`** in `resources/exp_config.yaml`.
 
 | Dimension | Values | Count |
 |-----------|--------|-------|
-| Strategies | see list below | 31 |
-| Datasets | 93 tabular classification datasets (OpenML + Kaggle) | 93 |
+| Strategies | see list below | 28 |
+| Datasets | 92 unique tabular classification datasets (OpenML + Kaggle) | 92 |
 | Learner models | RF, RBF_SVM, MLP | 3 |
 | Batch sizes | 1, 5, 10, 20, 50, 100 | 6 |
-| AL cycles | 100 | 1 |
 | Train/test splits | 0–4 | 5 |
 | Start sets | 0–19 | 20 |
 | Random seeds | 0 | 1 |
 
-Total: ~4.6M experiments (~3.6M CPU hours on HPC).
+**Total: 4,636,800 experiments** (92 × 28 × 3 × 6 × 5 × 20 × 1).
+
+Runtime limit: **5 minutes (300 s) per AL cycle**.
+
+!!! note "Why counts can look different in the repo"
+    The dataset registry may contain aliases that refer to the same OpenML
+    dataset (e.g., `scale` and `balance-scale` both map to `data_id=11`).
+    The paper grid counts **92 unique datasets** after deduplication.
+    Similarly, the repository includes additional strategies beyond the paper
+    subset; only the 28 listed below were used in the paper.
 
 ## Strategies used in the paper
 
@@ -46,16 +56,13 @@ Total: ~4.6M experiments (~3.6M CPU hours on HPC).
 | small-text | `SMALLTEXT_BREAKINGTIES` |
 | small-text | `SMALLTEXT_EMBEDDINGKMEANS` |
 | small-text | `SMALLTEXT_GREEDYCORESET` |
-| small-text | `SMALLTEXT_LIGHTWEIGHTCORESET` |
 | small-text | `SMALLTEXT_CONTRASTIVEAL` |
 | small-text | `SMALLTEXT_RANDOM` |
 | scikit-activeml | `SKACTIVEML_QBC` |
 | scikit-activeml | `SKACTIVEML_US_MARGIN` |
 | scikit-activeml | `SKACTIVEML_US_LC` |
 | scikit-activeml | `SKACTIVEML_US_ENTROPY` |
-| scikit-activeml | `SKACTIVEML_EXPECTED_AVERAGE_PRECISION` |
 | scikit-activeml | `SKACTIVEML_COST_EMBEDDING` |
-| scikit-activeml | `SKACTIVEML_DAL` |
 | scikit-activeml | `SKACTIVEML_QBC_VOTE_ENTROPY` |
 | scikit-activeml | `SKACTIVEML_QUIRE` |
 
