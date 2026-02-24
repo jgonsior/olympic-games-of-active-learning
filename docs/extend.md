@@ -61,6 +61,7 @@ The paper ([arXiv:2506.03817](https://arxiv.org/abs/2506.03817)) uses the **`ful
 | Random seeds | 0 | 1 |
 
 **Total: 4,636,800 experiments** (92 × 28 × 3 × 6 × 5 × 20 × 1).
+Runtime limit: **5 minutes (300 s) per AL cycle**.
 
 Released results: [DOI:10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862)
 

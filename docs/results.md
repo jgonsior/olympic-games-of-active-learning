@@ -74,6 +74,8 @@ Scripts in `eva_scripts/` consume result files and produce the paper's figures a
 | `eva_scripts.final_leaderboard` | Strategy ranking table (Table 1) |
 | `eva_scripts.calculate_dataset_dependend_random_ramp_slope` | Random baseline slope for normalised rankings |
 | `eva_scripts.workload_reduction` | Pearson-*r* heatmaps (metric correlation) |
+| `eva_scripts.single_hyperparameter_evaluation_indices` | Jaccard-*J* heatmaps (sample selection overlap) |
+| `eva_scripts.leaderboard_single_hyperparameter_influence` | Kendall-*τ*<sub>b</sub> heatmaps (ranking stability) |
 
 Run any script with:
 
