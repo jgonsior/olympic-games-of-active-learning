@@ -28,7 +28,12 @@ unzip full_exp_jan.zip -d /path/to/results/
 python -m eva_scripts.final_leaderboard --EXP_TITLE full_exp_jan
 
 # 3. Or run your own experiment
-python 01_create_workload.py --EXP_TITLE test && python 02_run_experiment.py --EXP_TITLE test --WORKER_INDEX 0
+python 01_create_workload.py --EXP_TITLE test
+# This creates several files in OUTPUT_PATH/test/, including:
+#   01_workload.csv              – hyperparameter grid (one row per experiment)
+#   02b_run_bash_parallel.py     – script to run all experiments in parallel locally
+# Run all experiments locally in parallel:
+python "$OUTPUT_PATH/test/02b_run_bash_parallel.py"
 ```
 
 ## Links

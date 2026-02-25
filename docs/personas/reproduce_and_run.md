@@ -34,7 +34,14 @@
     # edit .server_access_credentials.cfg → set OUTPUT_PATH and DATASETS_PATH under [LOCAL]
 
     python 01_create_workload.py --EXP_TITLE smoke_test
-    python 02_run_experiment.py --EXP_TITLE smoke_test --WORKER_INDEX 0
+    # This creates several files in OUTPUT_PATH/smoke_test/, including:
+    #   01_workload.csv              – hyperparameter grid (one row per experiment)
+    #   02b_run_bash_parallel.py     – runs all experiments in parallel locally
+    #   02_slurm.slurm               – SLURM job array script (for HPC clusters)
+    # Run all experiments locally in parallel:
+    python "$OUTPUT_PATH/smoke_test/02b_run_bash_parallel.py"
+    # On a SLURM cluster, use the generated job array instead:
+    # sbatch "$OUTPUT_PATH/smoke_test/02_slurm.slurm"
     # Note: 02_run_experiment.py outputs .csv files; compress to .csv.xz afterwards
     ls "$OUTPUT_PATH/smoke_test/05_done_workload.csv"
     ```
@@ -84,7 +91,15 @@ flowchart TD
 
 ??? info "Step 0: Download Datasets"
 
+    Kaggle datasets require a Kaggle API token before running this step. OpenML datasets need no extra credentials.
+
     ```bash
+    # Kaggle setup (skip if you only use OpenML datasets):
+    # 1. Create an API token at https://www.kaggle.com/settings
+    # 2. Place kaggle.json in ~/.kaggle/ and restrict permissions:
+    mkdir -p ~/.kaggle && chmod 700 ~/.kaggle
+    # mv ~/Downloads/kaggle.json ~/.kaggle/ && chmod 600 ~/.kaggle/kaggle.json
+
     python 00_download_datasets.py
     ```
 
@@ -92,26 +107,30 @@ flowchart TD
     - **Produces:** Dataset CSV files in `DATASETS_PATH`
     - **Also computes:** Cosine distance matrices for datasets (used later by distance metrics)
 
+    If you only want to analyze the OPARA archive, you can skip dataset downloading entirely.
+
 ??? info "Step 2: Per-experiment output files"
 
     Each worker picks one row from `01_workload.csv` and runs the full AL loop. The framework runner (determined by `EXP_STRATEGY`) handles: initialization → query selection → labeling → model retraining → metric recording, repeated for all AL cycles.
 
-    Output files per experiment in `{OUTPUT_PATH}/{STRATEGY_NAME}/{DATASET_NAME}/` (as `.csv`, then compressed to `.csv.xz`):
+    **Results lifecycle:** Workers append results to plain `.csv` files — this append-only format supports massive parallel HPC jobs writing to shared files concurrently. After all experiments finish, compress CSVs to `.csv.xz` (step 2b) to save disk space. Evaluation scripts and the OPARA archive consume `.csv.xz`.
+
+    Output files per experiment in `{OUTPUT_PATH}/{STRATEGY_NAME}/{DATASET_NAME}/` (`.csv` during execution, `.csv.xz` after compression):
 
     | File | Contents |
     |------|----------|
-    | `accuracy.csv.xz` | Per-cycle accuracy values |
-    | `weighted_f1-score.csv.xz` | Per-cycle weighted F1 scores |
-    | `macro_f1-score.csv.xz` | Per-cycle macro F1 scores |
-    | `weighted_precision.csv.xz` | Per-cycle weighted precision |
-    | `macro_precision.csv.xz` | Per-cycle macro precision |
-    | `weighted_recall.csv.xz` | Per-cycle weighted recall |
-    | `macro_recall.csv.xz` | Per-cycle macro recall |
-    | `query_selection_time.csv.xz` | Time taken per query selection |
-    | `learner_training_time.csv.xz` | Time taken per model retraining |
-    | `selected_indices.csv.xz` | Which sample indices were queried |
-    | `y_pred_train.csv.xz` | Model predictions on training set |
-    | `y_pred_test.csv.xz` | Model predictions on test set |
+    | `accuracy.csv` | Per-cycle accuracy values |
+    | `weighted_f1-score.csv` | Per-cycle weighted F1 scores |
+    | `macro_f1-score.csv` | Per-cycle macro F1 scores |
+    | `weighted_precision.csv` | Per-cycle weighted precision |
+    | `macro_precision.csv` | Per-cycle macro precision |
+    | `weighted_recall.csv` | Per-cycle weighted recall |
+    | `macro_recall.csv` | Per-cycle macro recall |
+    | `query_selection_time.csv` | Time taken per query selection |
+    | `learner_training_time.csv` | Time taken per model retraining |
+    | `selected_indices.csv` | Which sample indices were queried |
+    | `y_pred_train.csv` | Model predictions on training set |
+    | `y_pred_test.csv` | Model predictions on test set |
 
     Each CSV has one row per experiment (`EXP_UNIQUE_ID`) with columns for each AL cycle iteration.
 
@@ -235,170 +254,13 @@ print("Top 5 strategies (avg rank):", lb.mean(axis=0).sort_values().head(5))
 
 ## Complete Eva Scripts Index
 
-### Core Analysis Scripts
-
-| Script | Reads | Produces | Description |
-|--------|-------|----------|-------------|
-| `learning_curve.py` | Per-cycle CSVs, `05_done_workload.csv` | `plots/single_learning_curve/*.parquet`, PDF | Generates an example learning curve plot for illustration. Auto-generates `_TS/*.parquet` if missing (as do most other eva_scripts). |
-| `calculate_leaderboard_rankings.py` | `_TS/*.parquet` | Ranking parquets (multiple interpolation modes) | Generates strategy rankings across datasets using different metrics and interpolation methods. |
-| `final_leaderboard.py` | `_TS/*.parquet`, ranking data | `plots/final_leaderboard/*.parquet` | Main leaderboard generation — ranks strategies and produces the paper's Table 1. |
-| `runtime.py` | `query_selection_time.csv.xz` | `plots/runtime/query_selection_time.parquet` | Analyzes and plots query selection time distributions per strategy. |
-
-### Correlation & Hyperparameter Analysis Scripts
-
-| Script | Reads | Produces | Description |
-|--------|-------|----------|-------------|
-| `basic_metrics_correlation.py` | Per-cycle CSVs (accuracy, F1, etc.) | `plots/basic_metrics/Standard Metrics.parquet` | Pearson correlation matrix between standard ML metrics. |
-| `auc_metric_correlation.py` | AUC metric parquets | `plots/AUC/auc_*.parquet` | Pearson correlation between AUC-based aggregation metrics. |
-| `single_hyperparameter_evaluation_metric.py` | `_TS/*.parquet` | `plots/single_hyperparameter/*/` (Blue heatmaps) | Metric-based (Pearson) correlation — how metric outcomes change when varying one hyperparameter. |
-| `single_hyperparameter_evaluation_indices.py` | `selected_indices.parquet` | `plots/single_hyperparameter/*/` (Green heatmaps) | Jaccard similarity of queried samples — do strategies select the same samples under different hyperparameters? |
-| `leaderboard_single_hyperparameter_influence.py` | `_TS/*.parquet` | Single hyperparameter influence parquets | Kendall τ ranking invariance — how much does changing one hyperparameter affect strategy ordering? |
-| `leaderboard_single_hyperparameter_influence_analyze.py` | Rankings CSV | Influence plots | Plots and analyzes the hyperparameter influence data. |
-| `workload_reduction.py` | `_TS/*.parquet`, dense workload | Correlation/reduction stats | Analyzes how much the workload can be reduced while maintaining result quality. |
-| `similar_strategies.py` | `selected_indices.parquet` | Jaccard correlation heatmaps | Strategy similarity via selected indices — which strategies behave most alike? |
-| `strateg_framework_correlation.py` | Strategy metrics | Framework correlation plot | Cross-framework correlation analysis. |
-
-### Leaderboard Variant Scripts
-
-| Script | Reads | Produces | Description |
-|--------|-------|----------|-------------|
-| `leaderboard_scenarios.py` | Scenario metrics | Scenario rankings | Ranks strategies under different real-world scenarios (dataset type, start point, hyperparameter variations). |
-| `leaderboard_c6_rebuttal.py` | Metric files | Kendall tau correlations, PDFs | Rebuttal analysis with bootstrap confidence intervals for ranking stability. |
-| `final_leaderboard_single_cell_correlation.py` | Leaderboard parquets | Correlation stats, plots | Cell-wise correlation analysis within the leaderboard matrix. |
-| `analyze_leaderboard_rankings.py` | `plots/leaderboard_invariances/leaderboard_types.csv` | Heatmap correlations | Correlates different leaderboard construction methods. |
-
-### Learning Curve & Example Scripts
-
-| Script | Reads | Produces | Description |
-|--------|-------|----------|-------------|
-| `single_learning_curve_example.py` | Sample data | Line plot | Example visualization of a single learning curve. |
-| `single_learning_curve_example_auc.py` | Sample data | Line plot with AUC | Example learning curve with AUC annotation. |
-
-### Dataset & Metric Analysis Scripts
-
-| Script | Reads | Produces | Description |
-|--------|-------|----------|-------------|
-| `calc_cycle_duration_parquets.py` | Metric CSVs, `05_done_workload.csv` | Threshold plots, duration analysis | Analyzes learning cycle durations and computes duration thresholds. |
-| `calculate_dataset_dependend_random_ramp_slope.py` | Selected indices time series | Leaderboard rankings CSV | Computes dataset-dependent random baseline slopes. |
-| `dataset_stats.py` | — | — | Dataset statistics (placeholder). |
-
-### Scenario & Real-World Analysis Scripts
-
-| Script | Reads | Produces | Description |
-|--------|-------|----------|-------------|
-| `real_world_scenarios_corrs.py` | Scenario metrics CSV | Decomposed correlations | Real-world scenario correlation decomposition. |
-| `real_world_scenarios_plots.py` | Scenario data | Scatter/correlation plots | Plots for real-world scenario analysis. |
-
-### Publication & Output Scripts
-
-| Script | Reads | Produces | Description |
-|--------|-------|----------|-------------|
-| `redo_plots_for_paper.py` | All parquet files | Combined ranking plots (PDFs) | Regenerates all publication-ready plots at once. |
-| `merge_multiple_plots_single_page.py` | Plot parquets | Merged PDF | Merges multiple parquet-based plots into a single multi-page PDF. |
-
-### Important Utility Scripts (`scripts/`)
-
-??? info "Data Preparation Scripts"
-
-    | Script | Description |
-    |--------|-------------|
-    | `scripts/create_dense_workload.py` | Generate a dense workload (all dataset × strategy combinations). |
-    | `scripts/create_new_extended_dense_workload.py` | Extended version of the dense workload. |
-    | `scripts/create_gaussian.py` | Generate synthetic Gaussian datasets (balanced/unbalanced). |
-    | `scripts/create_xor.py` | Download XOR datasets from the LAL project. |
-    | `scripts/create_auc_selected_ts.py` | Create AUC time series from selected indices data. |
-    | `scripts/reduce_to_dense.py` | Remove results where the full hyperparameter grid is incomplete, creating a dense grid from sparse experimental results. |
-
-??? info "Conversion Scripts"
-
-    | Script | Description |
-    |--------|-------------|
-    | `scripts/convert_metrics_csvs_to_exp_id_csvs.py` | Reorganize metric CSVs indexed by experiment ID. |
-    | `scripts/convert_dataset_distances_to_parqet.py` | Convert dataset distance CSV files to parquet format. |
-    | `scripts/convert_y_pred_to_parquet.py` | Convert y_pred CSV files to parquet format (with timeout handling). |
-
-??? info "Validation Scripts"
-
-    | Script | Description |
-    |--------|-------------|
-    | `scripts/validate_results_schema.py` | Verify that result file formats match the expected schema. |
-    | `scripts/check_if_exp_ids_are_present.py` | Verify all experiment IDs exist in all metric files. |
-    | `scripts/find_missing_exp_ids_in_metric_files.py` | Find experiments that are missing from metric CSV files. |
-    | `scripts/find_broken_file.py` | Identify corrupted or malformed metric CSV files. |
-    | `scripts/exp_results_data_format_test.py` | Test that result CSV generation and format is correct. |
-
-??? info "Export & Documentation Scripts"
-
-    | Script | Description |
-    |--------|-------------|
-    | `scripts/export_strategy_catalog.py` | Export all AL strategies to JSON/CSV/Markdown with framework info. |
-    | `scripts/add_github_hyperlinks.py` | Convert file references to GitHub hyperlinks in markdown. |
-    | `scripts/render_mermaid.py` | Pre-render Mermaid diagrams to SVG for static fallback. |
-    | `scripts/single_learning_curve.py` | Generate a single example learning curve visualization. |
+For the full list of all evaluation and utility scripts, see [Reference → Eva Scripts Index](reference.md#complete-eva-scripts-index).
 
 ---
 
 ## Correlation Metrics (Paper ↔ Code)
 
-Three correlation metrics from the OGAL paper ([arXiv:2506.03817](https://arxiv.org/abs/2506.03817)) and their code implementations:
-
-### Metric-based (Pearson $r$, §IV-B1)
-
-For each value of a hyperparameter (e.g., batch size $b_i$), build a result vector $V_{b_i}(M)$ of aggregated metric values. Then compute the pairwise Pearson correlation matrix. High $r$ ≈ hyperparameter has little effect.
-
-$$
-V_{b_i}(M) = \begin{bmatrix} M_{b_i 1} \\ M_{b_i 2} \\ \vdots \end{bmatrix}
-\qquad
-\text{Heatmap cell} = r\!\bigl(V_{b_i}(M),\; V_{b_j}(M)\bigr)
-$$
-
-The Pearson correlation coefficient is defined as:
-
-$$
-r(X, Y) = \frac{\sum_{i=1}^{n}(X_i - \bar{X})(Y_i - \bar{Y})}{\sqrt{\sum_{i=1}^{n}(X_i - \bar{X})^2 \;\sum_{i=1}^{n}(Y_i - \bar{Y})^2}}
-$$
-
-Computed via `np.corrcoef` in `single_hyperparameter_evaluation_metric.py`.
-
-### Queried Samples (Jaccard $J$, §IV-B2)
-
-Union each experiment's per-cycle queried sets into $\widehat{Q}$, then compute pairwise Jaccard similarity. The heatmap shows $1 - \bar{J}$ (so 1 = identical queries).
-
-$$
-\widehat{Q} = \bigcup_{i=0}^{c} Q^i
-\qquad
-J(A,B) = \frac{\lvert A \cap B \rvert}{\lvert A \cup B \rvert}
-$$
-
-$J$ ranges from 0 (disjoint sets) to 1 (identical sets). Computed in `single_hyperparameter_evaluation_indices.py`.
-
-### Ranking Invariance (Kendall $\tau_b$, §IV-B3)
-
-Build a leaderboard (strategies × datasets), average to get a ranking vector per hyperparameter value, then compare rankings with Kendall $\tau_b$.
-
-$$
-\tau_b = \frac{n_c - n_d}{\sqrt{(n_0 - n_1)(n_0 - n_2)}}
-$$
-
-where:
-
-- $n_c$ = concordant pairs, $n_d$ = discordant pairs
-- $n_0 = n(n-1)/2$
-- $n_1 = \sum_k t_k(t_k-1)/2$ (ties in $X$)
-- $n_2 = \sum_l u_l(u_l-1)/2$ (ties in $Y$)
-
-$\tau_b$ ranges from −1 (reversed rankings) to +1 (identical rankings). Computed via `scipy.stats.kendalltau` in `leaderboard_single_hyperparameter_influence.py`.
-
-### Terminology Cross-Reference
-
-| Paper Term | Code Alias | File Pattern |
-|------------|-----------|--------------|
-| Full mean AUC | `full_auc` | `full_auc_*.parquet` |
-| Ramp-up AUC | `ramp_up_auc` | `ramp_up_auc_*.parquet` |
-| Plateau AUC | `plateau_auc` | `plateau_auc_*.parquet` |
-| Final value | `final_value` | `final_value_*.parquet` |
-| Queried sample sets | `selected_indices` | `selected_indices.csv.xz` |
-| Weighted F1-score | `weighted_f1-score` | `weighted_f1-score.parquet` |
+For correlation metric definitions (Pearson, Jaccard, Kendall) and terminology cross-reference, see [Reference → Correlation Metrics](reference.md#correlation-metrics-paper-code).
 
 ---
 
@@ -553,14 +415,14 @@ All configuration flows through `misc/config.py`, which loads settings from mult
 ├── 05_failed_workloads.csv                  # Step 2: failed experiments
 ├── 05_started_oom_workloads.csv             # Step 2: OOM-killed experiments
 │
-├── {STRATEGY}/{DATASET}/                    # Step 2: raw per-cycle metrics (.csv, compress to .csv.xz)
-│   ├── accuracy.csv.xz
-│   ├── weighted_f1-score.csv.xz
-│   ├── macro_f1-score.csv.xz
-│   ├── query_selection_time.csv.xz
-│   ├── selected_indices.csv.xz
-│   ├── y_pred_train.csv.xz
-│   ├── y_pred_test.csv.xz
+├── {STRATEGY}/{DATASET}/                    # Step 2: raw per-cycle metrics (.csv during execution, .csv.xz after compression)
+│   ├── accuracy.csv(.xz)
+│   ├── weighted_f1-score.csv(.xz)
+│   ├── macro_f1-score.csv(.xz)
+│   ├── query_selection_time.csv(.xz)
+│   ├── selected_indices.csv(.xz)
+│   ├── y_pred_train.csv(.xz)
+│   ├── y_pred_test.csv(.xz)
 │   └── ...
 │
 ├── {STRATEGY}/{DATASET}/                    # Step 4: advanced metrics
@@ -590,60 +452,13 @@ All configuration flows through `misc/config.py`, which loads settings from mult
 
 ## Directory Map
 
-```
-olympic-games-of-active-learning/
-├── 00_download_datasets.py         # Dataset acquisition from OpenML/Kaggle
-├── 01_create_workload.py           # Workload generation (hyperparameter grid)
-├── 02_run_experiment.py            # Experiment execution (one per worker)
-├── 03_calculate_dataset_categorizations.py  # Sample-level features
-├── 04_calculate_advanced_metrics.py         # Derived metrics (AUC, etc.)
-├── 05_analyze_partially_run_workload.py     # Progress monitoring
-├── 07b_create_results_without_flask.py      # Standalone HTML visualization
-├── framework_runners/              # AL framework adapters
-│   ├── base_runner.py              # Abstract base class (AL loop)
-│   ├── alipy_runner.py             # ALiPy strategies
-│   ├── libact_runner.py            # libact strategies
-│   ├── smalltext_runner.py         # small-text strategies
-│   ├── skactiveml_runner.py        # scikit-activeml strategies
-│   ├── playground_runner.py        # Custom strategies
-│   └── optimal_runner.py           # Oracle strategies
-├── metrics/                        # Metric recording during experiments
-│   ├── Standard_ML_Metrics.py      # accuracy, F1, precision, recall
-│   ├── Timing_Metrics.py           # query_selection_time, learner_training_time
-│   ├── Selected_Indices.py         # selected sample indices
-│   └── Predicted_Samples.py        # y_pred_train, y_pred_test
-├── resources/
-│   ├── data_types.py               # ALL enums (AL_STRATEGY, COMPUTED_METRIC, etc.)
-│   ├── exp_config.yaml             # Experiment grid definitions
-│   └── openml_datasets.yaml        # OpenML dataset configurations
-├── misc/config.py                  # Central configuration
-├── eva_scripts/                    # Evaluation & plotting scripts
-└── scripts/                        # Utility, fix, and maintenance scripts
-```
+For the full source tree, see [Reference → Directory Map](reference.md#directory-map).
 
 ---
 
 ## Key Abstractions
 
-### AL_Experiment (`framework_runners/base_runner.py`)
-
-Abstract base class for framework adapters. Key methods:
-
-- `get_AL_strategy()` — Initialize the strategy
-- `query_AL_strategy()` → indices — Select samples to query
-- `al_cycle()` — Main loop: query → update → retrain → record metrics
-
-### Monitoring (`05_analyze_partially_run_workload.py`)
-
-Analyzes progress of a partially completed experiment run:
-
-- Groups completed experiments by dataset/strategy/model/hyperparameters
-- Calculates mean query selection time per combination
-- Identifies which parameter combinations are missing
-
-### Visualization (`07b_create_results_without_flask.py`)
-
-Generates a standalone HTML file with interactive result visualizations (AUC tables, learning curves, runtime plots) without requiring a Flask server.
+For details on `AL_Experiment`, monitoring, and visualization internals, see [Reference → Key Abstractions](reference.md#key-abstractions).
 
 ---
 
