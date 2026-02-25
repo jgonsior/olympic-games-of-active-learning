@@ -10,9 +10,9 @@ The OGAL benchmark archived at [OPARA (DOI:10.25532/OPARA-862)](https://doi.org/
 
 The archived results use two main storage formats:
 
-### Raw Per-Cycle Results (`.csv.xz`)
+### Raw Per-Cycle Results (`.csv` → `.csv.xz`)
 
-Each experiment produces compressed CSV files (`.csv.xz`) organized by strategy and dataset. For example, `ALIPY_RANDOM/Iris/weighted_f1-score.csv.xz` contains the weighted F1-score at each active learning cycle for all experiments using the ALIPY_RANDOM strategy on the Iris dataset. Each row represents one experiment (identified by `EXP_UNIQUE_ID`), and each column represents one AL cycle iteration.
+During execution, workers append results to plain `.csv` files (one row per experiment). This append-only format supports massive parallel HPC jobs writing to shared files. After all experiments finish, the CSVs are compressed to `.csv.xz` to save space. The OPARA archive contains the compressed `.csv.xz` files. For example, `ALIPY_RANDOM/Iris/weighted_f1-score.csv.xz` contains the weighted F1-score at each active learning cycle for all experiments using the ALIPY_RANDOM strategy on the Iris dataset. Each row represents one experiment (identified by `EXP_UNIQUE_ID`), and each column represents one AL cycle iteration.
 
 ### Aggregated Time Series (`_TS/*.parquet`)
 

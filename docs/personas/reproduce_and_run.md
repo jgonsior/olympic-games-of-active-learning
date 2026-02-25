@@ -103,22 +103,24 @@ flowchart TD
 
     Each worker picks one row from `01_workload.csv` and runs the full AL loop. The framework runner (determined by `EXP_STRATEGY`) handles: initialization → query selection → labeling → model retraining → metric recording, repeated for all AL cycles.
 
-    Output files per experiment in `{OUTPUT_PATH}/{STRATEGY_NAME}/{DATASET_NAME}/` (as `.csv`, then compressed to `.csv.xz`):
+    **Results lifecycle:** Workers append results to plain `.csv` files — this append-only format supports massive parallel HPC jobs writing to shared files concurrently. After all experiments finish, compress CSVs to `.csv.xz` (step 2b) to save disk space. Evaluation scripts and the OPARA archive consume `.csv.xz`.
+
+    Output files per experiment in `{OUTPUT_PATH}/{STRATEGY_NAME}/{DATASET_NAME}/` (`.csv` during execution, `.csv.xz` after compression):
 
     | File | Contents |
     |------|----------|
-    | `accuracy.csv.xz` | Per-cycle accuracy values |
-    | `weighted_f1-score.csv.xz` | Per-cycle weighted F1 scores |
-    | `macro_f1-score.csv.xz` | Per-cycle macro F1 scores |
-    | `weighted_precision.csv.xz` | Per-cycle weighted precision |
-    | `macro_precision.csv.xz` | Per-cycle macro precision |
-    | `weighted_recall.csv.xz` | Per-cycle weighted recall |
-    | `macro_recall.csv.xz` | Per-cycle macro recall |
-    | `query_selection_time.csv.xz` | Time taken per query selection |
-    | `learner_training_time.csv.xz` | Time taken per model retraining |
-    | `selected_indices.csv.xz` | Which sample indices were queried |
-    | `y_pred_train.csv.xz` | Model predictions on training set |
-    | `y_pred_test.csv.xz` | Model predictions on test set |
+    | `accuracy.csv` | Per-cycle accuracy values |
+    | `weighted_f1-score.csv` | Per-cycle weighted F1 scores |
+    | `macro_f1-score.csv` | Per-cycle macro F1 scores |
+    | `weighted_precision.csv` | Per-cycle weighted precision |
+    | `macro_precision.csv` | Per-cycle macro precision |
+    | `weighted_recall.csv` | Per-cycle weighted recall |
+    | `macro_recall.csv` | Per-cycle macro recall |
+    | `query_selection_time.csv` | Time taken per query selection |
+    | `learner_training_time.csv` | Time taken per model retraining |
+    | `selected_indices.csv` | Which sample indices were queried |
+    | `y_pred_train.csv` | Model predictions on training set |
+    | `y_pred_test.csv` | Model predictions on test set |
 
     Each CSV has one row per experiment (`EXP_UNIQUE_ID`) with columns for each AL cycle iteration.
 
@@ -560,14 +562,14 @@ All configuration flows through `misc/config.py`, which loads settings from mult
 ├── 05_failed_workloads.csv                  # Step 2: failed experiments
 ├── 05_started_oom_workloads.csv             # Step 2: OOM-killed experiments
 │
-├── {STRATEGY}/{DATASET}/                    # Step 2: raw per-cycle metrics (.csv, compress to .csv.xz)
-│   ├── accuracy.csv.xz
-│   ├── weighted_f1-score.csv.xz
-│   ├── macro_f1-score.csv.xz
-│   ├── query_selection_time.csv.xz
-│   ├── selected_indices.csv.xz
-│   ├── y_pred_train.csv.xz
-│   ├── y_pred_test.csv.xz
+├── {STRATEGY}/{DATASET}/                    # Step 2: raw per-cycle metrics (.csv during execution, .csv.xz after compression)
+│   ├── accuracy.csv(.xz)
+│   ├── weighted_f1-score.csv(.xz)
+│   ├── macro_f1-score.csv(.xz)
+│   ├── query_selection_time.csv(.xz)
+│   ├── selected_indices.csv(.xz)
+│   ├── y_pred_train.csv(.xz)
+│   ├── y_pred_test.csv(.xz)
 │   └── ...
 │
 ├── {STRATEGY}/{DATASET}/                    # Step 4: advanced metrics
