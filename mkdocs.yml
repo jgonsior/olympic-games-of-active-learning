@@ -29,11 +29,11 @@ theme:
         name: Switch to light mode
 
 nav:
-  - Home: index.md
-  - Run & reproduce: run.md
-  - Reference: reference.md
-  - Results & evaluation: results.md
-  - Strategies & extending: extend.md
+  - Choose Your Path: index.md
+  - Analyze OPARA: personas/analyze_dataset.md
+  - Reproduce & Run: personas/reproduce_and_run.md
+  - Extend the Benchmark: personas/extend_benchmark.md
+  - Research Ideas: personas/research_ideas.md
 
 plugins:
   - search

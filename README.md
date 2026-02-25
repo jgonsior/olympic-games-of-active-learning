@@ -8,21 +8,33 @@
 ## Why OGAL?
 
 - **4.6M pre-computed experiments** — skip ~3.6 million CPU hours of compute
-- **Unified API** across multiple AL frameworks (ALiPy, libact, small-text, scikit-activeml, Playground) plus OGAL-native baselines
+- **Unified API** for 50+ AL strategies across 5 frameworks (ALiPy, libact, small-text, scikit-activeml, playground)
 - **Consistent protocol** — same splits, seeds, and output schema for all strategies
 - **Reusable dataset** archived at [DOI:10.25532/OPARA-862](https://doi.org/10.25532/OPARA-862)
+- **Ready-to-use analysis scripts** (`eva_scripts/`) for leaderboards, correlations, and paper figures
 
 ## Quickstart
 
-Most users should **download the pre-computed OPARA results** rather than
-re-running experiments. The documentation home page walks you through
-downloading, extracting, and verifying the archive in about 10 minutes:
+```bash
+# 1. Install
+conda create --name ogal --file conda-linux-64.lock && conda activate ogal && poetry install
+cp .server_access_credentials.cfg.example .server_access_credentials.cfg
+# edit .server_access_credentials.cfg → set OUTPUT_PATH and DATASETS_PATH under [LOCAL]
 
-> **📦 [Start here](https://jgonsior.github.io/olympic-games-of-active-learning/)** — download OPARA results and begin analysing.
+# 2. Analyze pre-computed results (no experiments needed)
+wget -c -O full_exp_jan.zip \
+  "https://opara.zih.tu-dresden.de/bitstreams/38951489-5076-4544-a99b-c20dddfc2c6b/download"
+unzip full_exp_jan.zip -d /path/to/results/
+python -m eva_scripts.final_leaderboard --EXP_TITLE full_exp_jan
+
+# 3. Or run your own experiment
+python 01_create_workload.py --EXP_TITLE test && python 02_run_experiment.py --EXP_TITLE test --WORKER_INDEX 0
+```
 
 ## Links
 
-- 📖 [**Full documentation**](https://jgonsior.github.io/olympic-games-of-active-learning/)
+- 📖 [**Documentation**](https://jgonsior.github.io/olympic-games-of-active-learning/) — Start here
+- 📊 [**Analyze the dataset**](https://jgonsior.github.io/olympic-games-of-active-learning/personas/analyze_dataset/) — Research tutorials
 - 📄 [**Paper (arXiv:2506.03817)**](https://arxiv.org/abs/2506.03817) — Methodology and findings
 - 📦 [**Archived data (DOI)**](https://doi.org/10.25532/OPARA-862) — 4.6M experiment results
 
