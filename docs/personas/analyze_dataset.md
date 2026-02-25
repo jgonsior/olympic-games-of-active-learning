@@ -4,6 +4,10 @@
 
 The OGAL benchmark archived at [OPARA (DOI:10.25532/OPARA-862)](https://doi.org/10.25532/OPARA-862) contains all results from the paper [arXiv:2506.03817](https://arxiv.org/abs/2506.03817). Reproducing these experiments from scratch requires significant computational resources (multiple CPU-weeks on an HPC cluster with hundreds of parallel SLURM jobs). However, you can skip the expensive computation entirely by downloading the pre-computed results and running only the lightweight evaluation scripts.
 
+!!! note "Scope of the archive"
+    The OPARA archive contains experiment outputs and metadata needed to analyze the published results.
+    It does not bundle the concrete dataset split or start-set artifacts used during execution.
+
 ---
 
 ## Understanding the Data Format
