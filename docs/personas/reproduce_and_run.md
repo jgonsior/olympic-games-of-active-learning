@@ -91,13 +91,23 @@ flowchart TD
 
 ??? info "Step 0: Download Datasets"
 
+    Kaggle datasets require a Kaggle API token before running this step. OpenML datasets need no extra credentials.
+
     ```bash
+    # Kaggle setup (skip if you only use OpenML datasets):
+    # 1. Create an API token at https://www.kaggle.com/settings
+    # 2. Place kaggle.json in ~/.kaggle/ and restrict permissions:
+    mkdir -p ~/.kaggle && chmod 700 ~/.kaggle
+    # mv ~/Downloads/kaggle.json ~/.kaggle/ && chmod 600 ~/.kaggle/kaggle.json
+
     python 00_download_datasets.py
     ```
 
     - **Reads:** `resources/openml_datasets.yaml`, `resources/kaggle_datasets.yaml`
     - **Produces:** Dataset CSV files in `DATASETS_PATH`
     - **Also computes:** Cosine distance matrices for datasets (used later by distance metrics)
+
+    If you only want to analyze the OPARA archive, you can skip dataset downloading entirely.
 
 ??? info "Step 2: Per-experiment output files"
 
