@@ -34,7 +34,12 @@
     # edit .server_access_credentials.cfg → set OUTPUT_PATH and DATASETS_PATH under [LOCAL]
 
     python 01_create_workload.py --EXP_TITLE smoke_test
-    python 02_run_experiment.py --EXP_TITLE smoke_test --WORKER_INDEX 0
+    # This creates several files in OUTPUT_PATH/smoke_test/, including:
+    #   01_workload.csv              – hyperparameter grid (one row per experiment)
+    #   02b_run_bash_parallel.py     – runs all experiments in parallel locally
+    #   02_slurm.slurm               – SLURM job array script (for HPC clusters)
+    # Run all experiments locally in parallel:
+    python "$OUTPUT_PATH/smoke_test/02b_run_bash_parallel.py"
     # Note: 02_run_experiment.py outputs .csv files; compress to .csv.xz afterwards
     ls "$OUTPUT_PATH/smoke_test/05_done_workload.csv"
     ```
