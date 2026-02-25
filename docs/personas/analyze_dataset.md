@@ -51,7 +51,7 @@ git clone https://github.com/jgonsior/olympic-games-of-active-learning.git
 cd olympic-games-of-active-learning
 conda create --name ogal --file conda-linux-64.lock && conda activate ogal && poetry install
 cp .server_access_credentials.cfg.example .server_access_credentials.cfg
-# edit .server_access_credentials.cfg → set OUTPUT_PATH to /path/to/results under [LOCAL]
+# edit .server_access_credentials.cfg → set OUTPUT_PATH and DATASETS_PATH under [LOCAL]
 ```
 
 ### 3. Generate Leaderboard
