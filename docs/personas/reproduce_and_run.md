@@ -287,6 +287,7 @@ print("Top 5 strategies (avg rank):", lb.mean(axis=0).sort_values().head(5))
 |--------|-------|----------|-------------|
 | `calc_cycle_duration_parquets.py` | Metric CSVs, `05_done_workload.csv` | Threshold plots, duration analysis | Analyzes learning cycle durations and computes duration thresholds. |
 | `calculate_dataset_dependend_random_ramp_slope.py` | Selected indices time series | Leaderboard rankings CSV | Computes dataset-dependent random baseline slopes. |
+| `dataset_stats.py` | — | — | Dataset statistics. |
 
 ### Scenario & Real-World Analysis Scripts
 
