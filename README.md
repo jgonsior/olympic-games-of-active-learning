@@ -35,6 +35,8 @@ python 01_create_workload.py --EXP_TITLE test
 #   02_slurm.slurm               – SLURM job array script (for HPC clusters)
 # Run all experiments locally in parallel:
 python "$OUTPUT_PATH/test/02b_run_bash_parallel.py"
+# Or, on a SLURM cluster, submit the generated job array instead:
+# sbatch "$OUTPUT_PATH/test/02_slurm.slurm"
 ```
 
 ## Links

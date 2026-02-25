@@ -40,6 +40,8 @@
     #   02_slurm.slurm               – SLURM job array script (for HPC clusters)
     # Run all experiments locally in parallel:
     python "$OUTPUT_PATH/smoke_test/02b_run_bash_parallel.py"
+    # On a SLURM cluster, use the generated job array instead:
+    # sbatch "$OUTPUT_PATH/smoke_test/02_slurm.slurm"
     # Note: 02_run_experiment.py outputs .csv files; compress to .csv.xz afterwards
     ls "$OUTPUT_PATH/smoke_test/05_done_workload.csv"
     ```
